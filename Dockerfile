@@ -7,7 +7,8 @@ RUN python3 -m venv /venv && \
 ENV POETRY_VIRTUALENVS_CREATE=false
 COPY . ./
 
-RUN /venv/bin/poetry install
+RUN /venv/bin/poetry install && \
+    /venv/bin/pip install git+https://github.com/trustimaging/stride
 
 FROM python:3.10.0-slim
 
@@ -25,7 +26,7 @@ ENV PATH "/venv/bin:$PATH"
 
 LABEL org.opencontainers.image.source="https://github.com/agencyenterprise/neurotechdevkit"
 
-RUN apt-get update && apt-get install -y git gcc gcc+ make
+RUN apt-get update && apt-get install -y gcc gcc+ make
 
 WORKDIR /app
 RUN /venv/bin/pip install .
