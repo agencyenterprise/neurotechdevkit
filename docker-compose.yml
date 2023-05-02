@@ -2,9 +2,7 @@ version: '2'
 
 services:
   ndk:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: ghcr.io/agencyenterprise/neurotechdevkit:latest
     volumes:
       - ./:/app
     ports:
