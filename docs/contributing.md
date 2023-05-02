@@ -53,8 +53,14 @@ Install the dependencies by running the following command in a shell within the 
 poetry install
 ```
 
-This will resolve and install the dependencies from `poetry.lock` and will install the `ndk` package in editable mode.
+This will resolve and install the dependencies from `poetry.lock` and will install the `neurotechdevkit` package in editable mode.
 
+
+Install stride with
+
+```bash
+$ poetry run pip install git+https://github.com/trustimaging/stride
+```
 
 ### Using the environment
 
