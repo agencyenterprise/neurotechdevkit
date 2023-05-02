@@ -33,11 +33,16 @@ Install research dependencies for the project either to the current virtual envi
 $ poetry install
 ```
 
+Install stride with
+```bash
+$ poetry run pip install git+https://github.com/trustimaging/stride
+```
 ---
 
 This will also install the `neurotechdevkit` package.
 
 If you are not using a virtual environment, `poetry` will [create one for you by default](https://python-poetry.org/docs/basic-usage/#using-your-virtual-environment). If you are already using a virtual environment, then `poetry` will install dependencies to that environment.
+
 
 ### Environment
 
