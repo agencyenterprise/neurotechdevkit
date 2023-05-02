@@ -1,0 +1,84 @@
+[tool.poetry]
+name = "neurotechdevkit"
+version = "v0.13.8"
+description = "A research repo for the NDK (Neurotech Development Kit) project"
+authors = ["AE Studio <bci@ae.studio>"]
+maintainers = ["AE Studio <bci@ae.studio>"]
+packages = [{include = "neurotechdevkit", from = "src" }]
+
+readme = "README.md"
+license = "Apache-2.0"
+classifiers = [
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: MacOS",
+    "Operating System :: Microsoft :: Windows",
+    "Operating System :: POSIX :: Linux",
+]
+
+[tool.poetry.urls]
+"Homepage" = "https://github.com/agencyenterprise/neurotechdevkit"
+"Documentation" = "https://agencyenterprise.github.io/neurotechdevkit/"
+"Bug Tracker" = "https://github.com/agencyenterprise/neurotechdevkit/issues"
+
+
+[tool.poetry.dependencies]
+python = ">=3.9,<3.11"
+numpy = "^1.23.3"
+matplotlib = "^3.5.3"
+imageio = "^2.21.2"
+jupyterlab = "^3.4.6"
+devito = "^4.8.1"
+stride = {git = "https://github.com/trustimaging/stride.git"}
+scipy = "^1.9.2"
+hdf5storage = "^0.1.18"
+psutil = "^5.9.0"
+nest-asyncio = "^1.5.6"
+
+
+[tool.poetry.group.dev.dependencies]
+black = "^22.8.0"
+flake8 = "^5.0.4"
+frozenlist = "^1.3.3"
+isort = "^5.10.1"
+mypy = "^0.990"
+pytest = "^7.2.0"
+pytest-cov = "^4.0.0"
+pytest-asyncio = "^0.20.2"
+mkdocs-material = "^9.1.6"
+mkdocs-gallery = "^0.7.6"
+mkdocstrings = {extras = ["python"], version = "^0.21.2"}
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 88
+
+[tool.mypy]
+ignore_missing_imports = "True"
+exclude = [
+    "tests"
+]
+
+[tool.isort]
+profile = "black"
+src_paths = "."
+
+known_first_party = "neurotechdevkit"
+line_length = 88
+multi_line_output = 3
+include_trailing_comma = true
+
+[tool.pytest.ini_options]
+testpaths = "tests"
+addopts = [
+    "--import-mode=importlib",
+    "--cov=src/neurotechdevkit"
+]
+markers = [
+    "integration: marks tests that are integration tests."
+]
+
+# [tool.flake8]
+# flake8 does not support config in pyproject.toml, see .flake8

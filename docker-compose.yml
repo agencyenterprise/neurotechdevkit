@@ -1,0 +1,11 @@
+version: '2'
+
+services:
+  ndk:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./:/app
+    ports:
+      - 8888:8888

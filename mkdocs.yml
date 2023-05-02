@@ -1,0 +1,70 @@
+site_name: Neurotech Development Kit
+site_url: https://agencyenterprise.github.io/neurotechdevkit/
+repo_url: https://github.com/agencyenterprise/neurotechdevkit
+
+theme:
+  name: material
+  features:
+    - search.suggest
+    - search.highlight
+    - content.tabs.link
+    - content.code.annotation
+    - content.code.copy
+  language: en
+  palette:
+    - scheme: default
+      toggle:
+        icon: material/toggle-switch-off-outline
+        name: Switch to dark mode
+      primary: indigo
+      accent: indigo
+    - scheme: slate
+      toggle:
+        icon: material/toggle-switch
+        name: Switch to light mode
+      primary: indigo
+      accent: indigo
+
+nav:
+  - Home: index.md
+  - Usage:
+      - Scenarios: usage/loading_scenarios.md
+      - Sources: usage/defining_sources.md
+      - Simulation: usage/running_simulation.md
+      - 3D Visualization: usage/3d.md
+  - API:
+      - Make: api/make.md
+      - Scenarios: api/scenarios.md
+      - Sources: api/sources.md
+      - Results: api/results.md
+  - Examples: generated/gallery
+  - Contributing: contributing.md
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - admonition
+  - pymdownx.arithmatex:
+      generic: true
+  - footnotes
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.mark
+  - attr_list
+  - md_in_html
+
+plugins:
+  - gallery:
+      examples_dirs: docs/examples # path to your example scripts
+      gallery_dirs: docs/generated/gallery # where to save generated gallery
+
+  - search
+
+  - mkdocstrings:
+      default_handler: python
+      handlers:
+        python:
+          options:
+            show_source: false
