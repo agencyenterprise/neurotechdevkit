@@ -43,11 +43,11 @@ jobs:
       - name: Build and publish to pypi
         uses: JRubics/poetry-publish@v1.16
         with:
-          pypi_token: ${{ secrets.TEST_PYPI_TOKEN }}
+          pypi_token: ${{ secrets.PYPI_TOKEN }}
           python_version: "3.10"
           # following 2 lines set deployment to testpypi
-          repository_name: "testpypi"
-          repository_url: "https://test.pypi.org/legacy/"
+          # repository_name: "testpypi"
+          # repository_url: "https://test.pypi.org/legacy/"
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v1
