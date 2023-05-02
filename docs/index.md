@@ -18,7 +18,7 @@ You can run `NDK` inside a docker container with a couple of steps:
 
 1. Install [docker](https://docs.docker.com/engine/install/#desktop)
 
-1. Execute `docker run -p 8888:8888 ghcr.io/agencyenterprise/ndk-research:latest`
+1. Execute `docker run -p 8888:8888 ghcr.io/agencyenterprise/neurotechdevkit:latest`
 
 The output of the command above contains the URL of a jupyter notebook server, you can open the URL in your browser or connect to it using your IDE.
 

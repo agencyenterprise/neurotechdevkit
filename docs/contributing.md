@@ -24,8 +24,8 @@ To ensure efficient collaborative development, a variety of standards are utiliz
 Start by cloning the repository:
 
 ```
-git clone https://github.com/agencyenterprise/ndk-research.git
-cd ndk-research
+git clone https://github.com/agencyenterprise/neurotechdevkit.git
+cd neurotechdevkit
 ```
 
 #### Running on docker
