@@ -21,49 +21,22 @@ result.render_steady_state_amplitudes()
 
 ## Setup
 
-Install `poetry` if it is not already on your system:
+`neurotechdevkit` requires Python `>=3.9` and `<3.11` to be installed. You can find which Python version you have installed by running `python --version` in a terminal. If you don't have Python installed, or you are running an unsupported version, you can download it from [python.org](https://www.python.org/downloads/). Python environment managers like pyenv, conda, and poetry are all perfectly suitable as well.
 
-```bash
-$ curl -sSL https://install.python-poetry.org | python -
+You can install the package using:
+
+``` bash
+pip install neurotechdevkit
 ```
 
-Install research dependencies for the project either to the current virtual environment or a new one:
-
-```bash
-$ poetry install
+And then you must install stride using:
+``` bash
+pip install git+https://github.com/trustimaging/stride
 ```
-
-Install stride with
-```bash
-$ poetry run pip install git+https://github.com/trustimaging/stride
-```
----
-
-This will also install the `neurotechdevkit` package.
-
-If you are not using a virtual environment, `poetry` will [create one for you by default](https://python-poetry.org/docs/basic-usage/#using-your-virtual-environment). If you are already using a virtual environment, then `poetry` will install dependencies to that environment.
-
-
-### Environment
-
-If you let poetry manage your virtual environment, you can use the environment in one of two ways:
-
-1. Activate the environment directly via:
-   ```bash
-   $ poetry shell
-   ```
-2. Prepend `poetry run` to any python command in order to run the command within the virtual environment. Example:
-   ```bash
-   $ poetry run foo
-   ```
-
-If you are already using your own virtual environment, you should not need to change anything.
 
 ### Development
 
-For development, the installation instructions are the same as listed above (poetry installs developer requirements by default).
-
-See our [contribution requirements](docs/contributing.md) for more information on how to contribute.
+See our [contribution requirements](docs/contributing.md) for more information on how to install the package locally using poetry and on how to contribute.
 
 A Makefile is provided to assist with common commands such as linting and running unit tests.
 
