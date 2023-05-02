@@ -14,6 +14,22 @@ The initial release of NDK provides support for transcranial functional ultrasou
 
 ## Running
 
+### Local installation
+
+`neurotechdevkit` requires Python `>=3.9` and `<3.11` to be installed. You can find which Python version you have installed by running `python --version` in a terminal. If you don't have Python installed, or you are running an unsupported version, you can download it from [python.org](https://www.python.org/downloads/). Python environment managers like pyenv, conda, and poetry are all perfectly suitable as well.
+
+You can install the package using:
+
+``` bash
+pip install neurotechdevkit
+```
+
+And then you must install stride using:
+``` bash
+pip install git+https://github.com/trustimaging/stride
+```
+
+### Docker
 You can run `NDK` inside a docker container with a couple of steps:
 
 1. Install [docker](https://docs.docker.com/engine/install/#desktop)
