@@ -333,12 +333,14 @@ def test_execute_pde(tester_with_time, fake_pde, sim_mode):
     sub_problem = tester_with_time._setup_sub_problem(
         center_frequency=50.0, simulation_mode=sim_mode
     )
+    test_save_bounds = (1, 100)
     test_undersampling = 7
     test_wavefield_slice = (slice(2, 1000),)
     n_jobs = 237
     result = tester_with_time._execute_pde(
         pde=fake_pde,
         sub_problem=sub_problem,
+        save_bounds=test_save_bounds,
         save_undersampling=test_undersampling,
         wavefield_slice=test_wavefield_slice,
         n_jobs=n_jobs,
@@ -353,6 +355,7 @@ def test_execute_pde(tester_with_time, fake_pde, sim_mode):
     assert kwargs["boundary_type"] == "complex_frequency_shift_PML_2"
     assert kwargs["diff_source"]
     assert kwargs["save_wavefield"]
+    assert kwargs["save_bounds"] == test_save_bounds
     assert kwargs["save_undersampling"] == test_undersampling
     assert kwargs["wavefield_slice"] == test_wavefield_slice
     assert kwargs["devito_args"]["nthreads"] == n_jobs
@@ -399,6 +402,24 @@ def test_wavefield_slice_selects_right_position(
     assert updated_slices[selected_axis + 1] == expected_updated_slice
 
 
+def test_get_steady_state_recording_time_bounds(tester_with_time):
+    """Verify that expected time bounds for steady-state are returned."""
+    time = tester_with_time.problem.time
+    expected_bounds = (time.num - 24, time.num - 1)
+    actual_bounds = tester_with_time._get_steady_state_recording_time_bounds(
+        ppp=8, n_cycles=3
+    )
+    assert actual_bounds == expected_bounds
+
+
+def test_get_pulsed_recording_time_bounds(tester_with_time):
+    """Verify that expected time bounds for pulsed are returned."""
+    time = tester_with_time.problem.time
+    expected_bounds = (0, time.num - 1)
+    actual_bounds = tester_with_time._get_pulsed_recording_time_bounds()
+    assert actual_bounds == expected_bounds
+
+
 def test_simulate_steady_state_pde_args(base_tester, fake_pde, monkeypatch):
     """Verify the pde call args from simulate_steady_state."""
     monkeypatch.setattr(base_tester, "_create_pde", lambda: fake_pde)
@@ -412,6 +433,10 @@ def test_simulate_steady_state_pde_args(base_tester, fake_pde, monkeypatch):
     )
 
     pde_kwargs = fake_pde.last_kwargs
+    expected_bounds = base_tester._get_steady_state_recording_time_bounds(
+        test_ppp, test_n_cycles
+    )
+    assert pde_kwargs["save_bounds"] == expected_bounds
     expected_wavefield = base_tester._wavefield_slice()
     assert pde_kwargs["wavefield_slice"] == expected_wavefield
     assert pde_kwargs["save_undersampling"] == test_undersampling
@@ -458,6 +483,9 @@ def test_simulate_pulse_pde_args(base_tester, fake_pde, monkeypatch):
     )
 
     pde_kwargs = fake_pde.last_kwargs
+
+    expected_bounds = base_tester._get_pulsed_recording_time_bounds()
+    assert pde_kwargs["save_bounds"] == expected_bounds
     expected_wavefield = base_tester._wavefield_slice()
     assert pde_kwargs["wavefield_slice"] == expected_wavefield
     assert pde_kwargs["save_undersampling"] == test_undersampling
