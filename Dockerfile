@@ -8,7 +8,7 @@ ENV POETRY_VIRTUALENVS_CREATE=false
 COPY . ./
 
 RUN /venv/bin/poetry install && \
-    /venv/bin/pip install git+https://github.com/trustimaging/stride --no-deps
+    /venv/bin/pip install git+https://github.com/trustimaging/stride
 
 FROM python:3.10.0-slim
 
