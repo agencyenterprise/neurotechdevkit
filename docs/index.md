@@ -26,7 +26,7 @@ pip install neurotechdevkit
 
 And then you must install stride using:
 ``` bash
-pip install git+https://github.com/trustimaging/stride --no-deps
+pip install git+https://github.com/trustimaging/stride
 ```
 
 ### Docker

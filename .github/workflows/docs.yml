@@ -40,6 +40,6 @@ jobs:
         run: poetry install --no-interaction
 
       - name: Install stride
-        run: poetry run pip install git+https://github.com/trustimaging/stride --no-deps
+        run: poetry run pip install git+https://github.com/trustimaging/stride
 
       - run: poetry run mkdocs gh-deploy --force
