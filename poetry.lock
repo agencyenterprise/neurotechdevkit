@@ -529,6 +529,22 @@ files = [
 ]
 
 [[package]]
+name = "codecov"
+version = "2.1.13"
+description = "Hosted coverage reports for GitHub, Bitbucket and Gitlab"
+category = "main"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+files = [
+    {file = "codecov-2.1.13-py2.py3-none-any.whl", hash = "sha256:c2ca5e51bba9ebb43644c43d0690148a55086f7f5e6fd36170858fa4206744d5"},
+    {file = "codecov-2.1.13.tar.gz", hash = "sha256:2362b685633caeaf45b9951a9b76ce359cd3581dd515b430c6c3f5dfb4d92a8c"},
+]
+
+[package.dependencies]
+coverage = "*"
+requests = ">=2.7.9"
+
+[[package]]
 name = "codepy"
 version = "2019.1"
 description = "Generate and execute native code at run time."
@@ -745,33 +761,31 @@ files = [
 
 [[package]]
 name = "dask"
-version = "2023.3.2"
+version = "2022.6.1"
 description = "Parallel PyData with Task Scheduling"
 category = "main"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "dask-2023.3.2-py3-none-any.whl", hash = "sha256:5e64763d62feb18afd3ad66f364e0b4f456f7ac92e894fcc87950af75029ecdf"},
-    {file = "dask-2023.3.2.tar.gz", hash = "sha256:51009e92ba9a280bd417633d1ae84f3ed23a8940f0a19594a4b7797ef226fff4"},
+    {file = "dask-2022.6.1-py3-none-any.whl", hash = "sha256:fbd2707070ee8cba080a297301c3984de3d0dee211f30c81387d5fa8adc7de74"},
+    {file = "dask-2022.6.1.tar.gz", hash = "sha256:6ecc4571da3e5575dd1fa1537237434908f81b929f7f2a3493a7f6eb8507903e"},
 ]
 
 [package.dependencies]
-click = ">=7.0"
 cloudpickle = ">=1.1.1"
 fsspec = ">=0.6.0"
-importlib-metadata = ">=4.13.0"
 packaging = ">=20.0"
-partd = ">=1.2.0"
+partd = ">=0.3.10"
 pyyaml = ">=5.3.1"
 toolz = ">=0.8.2"
 
 [package.extras]
-array = ["numpy (>=1.21)"]
-complete = ["bokeh (>=2.4.2,<3)", "distributed (==2023.3.2)", "jinja2 (>=2.10.3)", "lz4 (>=4.3.2)", "numpy (>=1.21)", "pandas (>=1.3)", "pyarrow (>=7.0)"]
-dataframe = ["numpy (>=1.21)", "pandas (>=1.3)"]
-diagnostics = ["bokeh (>=2.4.2,<3)", "jinja2 (>=2.10.3)"]
-distributed = ["distributed (==2023.3.2)"]
-test = ["pandas[test]", "pre-commit", "pytest", "pytest-rerunfailures", "pytest-xdist"]
+array = ["numpy (>=1.18)"]
+complete = ["bokeh (>=2.4.2)", "distributed (==2022.6.1)", "jinja2", "numpy (>=1.18)", "pandas (>=1.0)"]
+dataframe = ["numpy (>=1.18)", "pandas (>=1.0)"]
+diagnostics = ["bokeh (>=2.4.2)", "jinja2"]
+distributed = ["distributed (==2022.6.1)"]
+test = ["pre-commit", "pytest", "pytest-rerunfailures", "pytest-xdist"]
 
 [[package]]
 name = "debugpy"
@@ -827,14 +841,14 @@ files = [
 
 [[package]]
 name = "devito"
-version = "4.8.1"
+version = "4.7.1"
 description = "Finite Difference DSL for symbolic computation."
 category = "main"
 optional = false
 python-versions = "*"
 files = [
-    {file = "devito-4.8.1-py3-none-any.whl", hash = "sha256:f6463354e9be74e54a00e6e522fbb888026df0c04ad2d54a1271708efff7271d"},
-    {file = "devito-4.8.1.tar.gz", hash = "sha256:56d0957a3226ed2a81c408107a614f04faa896d42c83a8b2bd1c8b1100adf51d"},
+    {file = "devito-4.7.1-py3-none-any.whl", hash = "sha256:7ca48b79a92f01eb36cf0d6dfdc9bf1d26d49ed6f9eaf38933b72cceef559500"},
+    {file = "devito-4.7.1.tar.gz", hash = "sha256:bb7bf65b423a15bfb7e31a54fc0d82070ee59ce021e02bcd3a0aa7df1db9b25a"},
 ]
 
 [package.dependencies]
@@ -842,55 +856,56 @@ anytree = ">=2.4.3,<=2.8"
 cached-property = "*"
 cgen = ">=2020.1"
 click = "<9.0"
+codecov = "*"
 codepy = ">=2019.1"
-distributed = "<2023.4"
+distributed = "<2022.8"
 flake8 = ">=2.1.0"
 multidict = "*"
 nbval = "*"
 numpy = ">1.16"
 pip = ">=9.0.1"
 psutil = ">=5.1.0,<6.0"
-py-cpuinfo = "<10"
+py-cpuinfo = "<=8"
 pyrevolve = ">=2.1.3"
-pytest = ">=7.2,<8.0"
+pytest = ">=3.6,<8.0"
 pytest-cov = "*"
 pytest-runner = "*"
 scipy = "*"
-sympy = ">=1.9,<1.12"
+sympy = ">=1.7,<1.11"
 
 [package.extras]
 extras = ["matplotlib", "pandas"]
-mpi = ["ipyparallel (<8.6)", "mpi4py (<4.0)"]
+mpi = ["ipyparallel (<8.5)", "mpi4py (<4.0)"]
 nvidia = ["cupy-cuda110", "dask-cuda", "dask-labextension", "fsspec", "jupyterlab (>=3)", "jupyterlab-nvdashboard"]
 
 [[package]]
 name = "distributed"
-version = "2023.3.2.1"
+version = "2022.6.1"
 description = "Distributed scheduler for Dask"
 category = "main"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "distributed-2023.3.2.1-py3-none-any.whl", hash = "sha256:a7756a4b952ec5a7fd3163e93aef99aaf8b0000568fa9ee7c000113a470d7f8e"},
-    {file = "distributed-2023.3.2.1.tar.gz", hash = "sha256:f40c4578622a15261bb59676ca8d7024f7d108aecc58406a5482bdfb7e69ce99"},
+    {file = "distributed-2022.6.1-py3-none-any.whl", hash = "sha256:4c614050e86ac8a0230418625f313a71dffdcd9cfb3b7128a33b7faa611a686c"},
+    {file = "distributed-2022.6.1.tar.gz", hash = "sha256:c4efd70aeb072725e683bca1c2de8173cd577018a7a5c3795886a5691e70bc37"},
 ]
 
 [package.dependencies]
-click = ">=8.0"
+click = ">=6.6"
 cloudpickle = ">=1.5.0"
-dask = "2023.3.2"
-jinja2 = ">=2.10.3"
+dask = "2022.6.1"
+jinja2 = "*"
 locket = ">=1.0.0"
-msgpack = ">=1.0.0"
+msgpack = ">=0.6.0"
 packaging = ">=20.0"
-psutil = ">=5.7.0"
-pyyaml = ">=5.3.1"
-sortedcontainers = ">=2.0.5"
+psutil = ">=5.0"
+pyyaml = "*"
+sortedcontainers = "<2.0.0 || >2.0.0,<2.0.1 || >2.0.1"
 tblib = ">=1.6.0"
-toolz = ">=0.10.0"
+toolz = ">=0.8.2"
 tornado = ">=6.0.3"
-urllib3 = ">=1.24.3"
-zict = ">=2.1.0"
+urllib3 = "*"
+zict = ">=0.1.3"
 
 [[package]]
 name = "exceptiongroup"
@@ -2973,14 +2988,13 @@ tests = ["pytest"]
 
 [[package]]
 name = "py-cpuinfo"
-version = "9.0.0"
-description = "Get CPU info with pure Python"
+version = "8.0.0"
+description = "Get CPU info with pure Python 2 & 3"
 category = "main"
 optional = false
 python-versions = "*"
 files = [
-    {file = "py-cpuinfo-9.0.0.tar.gz", hash = "sha256:3cdbbf3fac90dc6f118bfd64384f309edeadd902d7c8fb17f02ffa1fc3f49690"},
-    {file = "py_cpuinfo-9.0.0-py3-none-any.whl", hash = "sha256:859625bc251f64e21f077d099d4162689c762b5d6a4c3c97553d56241c9674d5"},
+    {file = "py-cpuinfo-8.0.0.tar.gz", hash = "sha256:5f269be0e08e33fd959de96b34cd4aeeeacac014dd8305f70eb28d06de2345c5"},
 ]
 
 [[package]]
@@ -3709,14 +3723,14 @@ tests = ["cython", "littleutils", "pygments", "pytest", "typeguard"]
 
 [[package]]
 name = "sympy"
-version = "1.11.1"
+version = "1.10.1"
 description = "Computer algebra system (CAS) in Python"
 category = "main"
 optional = false
-python-versions = ">=3.8"
+python-versions = ">=3.7"
 files = [
-    {file = "sympy-1.11.1-py3-none-any.whl", hash = "sha256:938f984ee2b1e8eae8a07b884c8b7a1146010040fccddc6539c54f401c8f6fcf"},
-    {file = "sympy-1.11.1.tar.gz", hash = "sha256:e32380dce63cb7c0108ed525570092fd45168bdae2faa17e528221ef72e88658"},
+    {file = "sympy-1.10.1-py3-none-any.whl", hash = "sha256:df75d738930f6fe9ebe7034e59d56698f29e85f443f743e51e47df0caccc2130"},
+    {file = "sympy-1.10.1.tar.gz", hash = "sha256:5939eeffdf9e152172601463626c022a2c27e75cf6278de8d401d50c9d58787b"},
 ]
 
 [package.dependencies]
@@ -4124,4 +4138,4 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<3.11"
-content-hash = "98af7dcee36fe6205caf365f624ca3f65db861f4fac6497aa0e0e3dc0ac3c1ad"
+content-hash = "4057c5c78346f4f421580da855b3b2bbc8474b42e0d97eb6a5ec5939c28e1695"
