@@ -433,6 +433,9 @@ class Scenario(abc.ABC):
         traces = self._execute_pde(
             pde=pde,
             sub_problem=sub_problem,
+            save_bounds=self._get_steady_state_recording_time_bounds(
+                points_per_period, n_cycles_steady_state
+            ),
             save_undersampling=recording_time_undersampling,
             wavefield_slice=self._wavefield_slice(),
             n_jobs=n_jobs,
@@ -589,6 +592,7 @@ class Scenario(abc.ABC):
         traces = self._execute_pde(
             pde=pde,
             sub_problem=sub_problem,
+            save_bounds=self._get_pulsed_recording_time_bounds(),
             save_undersampling=recording_time_undersampling,
             wavefield_slice=self._wavefield_slice(slice_axis, slice_position),
             n_jobs=n_jobs,
@@ -773,10 +777,45 @@ class Scenario(abc.ABC):
                 f"current range is {current_range}.",
             )
 
+    def _get_steady_state_recording_time_bounds(
+        self, ppp: int, n_cycles: int
+    ) -> tuple[int, int]:
+        """Defines the indices bounding the period of time to be recorded.
+
+        For steady-state simulations, we only want to keep the last few cycles of the
+        simulation.
+
+        Args:
+            ppp: The number of points in time per phase to simulate for each cycle of
+                the wave.
+            n_cycles: The number of complete cycles to record at the end of the
+                simulation.
+
+        Returns:
+            A tuple containing the time indices bounding the period of time which should
+                be recorded for a steady-state simulation.
+        """
+        n_frames = ppp * n_cycles
+        time = self.problem.time
+        return (time.num - n_frames, time.num - 1)
+
+    def _get_pulsed_recording_time_bounds(self) -> tuple[int, int]:
+        """Defines the indices bounding the period of time to be recorded.
+
+        For pulsed simulations, we want to keep the data from all timesteps.
+
+        Returns:
+            A tuple containing the time indices bounding the period of time which should
+                be recorded for a pulsed simulation.
+        """
+        time = self.problem.time
+        return (0, time.num - 1)
+
     def _execute_pde(
         self,
         pde: stride.Operator,
         sub_problem: stride.SubProblem,
+        save_bounds: tuple[int, int],
         save_undersampling: int,
         wavefield_slice: tuple[slice, ...],
         n_jobs: int | None = None,
@@ -787,6 +826,7 @@ class Scenario(abc.ABC):
             pde: The `Operator` containing the PDE to execute.
             sub_problem: The `SubProblem` containing details of the source and waveform
                 for the simulation.
+            save_bounds: The time indices bounding the period of time to be recorded.
             save_undersampling: The undersampling factor to apply to the time axis when
                 recording simulation results.
             wavefield_slice: A tuple of slices defining the region of the grid to
@@ -812,6 +852,7 @@ class Scenario(abc.ABC):
                 boundary_type="complex_frequency_shift_PML_2",
                 diff_source=True,
                 save_wavefield=True,
+                save_bounds=save_bounds,
                 save_undersampling=save_undersampling,
                 wavefield_slice=wavefield_slice,
                 devito_args=devito_args,
