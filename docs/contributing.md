@@ -59,7 +59,7 @@ This will resolve and install the dependencies from `poetry.lock` and will insta
 Install stride with
 
 ```bash
-$ poetry run pip install git+https://github.com/trustimaging/stride --no-deps
+$ poetry run pip install git+https://github.com/trustimaging/stride
 ```
 
 ### Using the environment
