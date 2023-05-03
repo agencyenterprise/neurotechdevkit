@@ -1116,7 +1116,7 @@ tqdm = ["tqdm"]
 name = "ghp-import"
 version = "2.1.0"
 description = "Copy your docs directly to the gh-pages branch."
-category = "dev"
+category = "main"
 optional = false
 python-versions = "*"
 files = [
@@ -1857,7 +1857,7 @@ files = [
 name = "markdown"
 version = "3.3.7"
 description = "Python implementation of Markdown."
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.6"
 files = [
@@ -2025,7 +2025,7 @@ files = [
 name = "mergedeep"
 version = "1.3.4"
 description = "A deep merge function for 🐍."
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.6"
 files = [
@@ -2049,7 +2049,7 @@ files = [
 name = "mkdocs"
 version = "1.4.3"
 description = "Project documentation with Markdown."
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.7"
 files = [
@@ -2092,14 +2092,14 @@ mkdocs = ">=1.1"
 
 [[package]]
 name = "mkdocs-gallery"
-version = "0.7.7"
+version = "0.7.6"
 description = "a `mkdocs` plugin to generate example galleries from python scripts, similar to `sphinx-gallery`."
-category = "dev"
+category = "main"
 optional = false
 python-versions = "*"
 files = [
-    {file = "mkdocs-gallery-0.7.7.tar.gz", hash = "sha256:c9758ba30eef437708d6e12a417f0d56f24aeeb194d664d5dbf7c394f6ddc58c"},
-    {file = "mkdocs_gallery-0.7.7-py2.py3-none-any.whl", hash = "sha256:f0867751780d625c9b56bffd87174e77d1458acc87765254344e952f19b3025b"},
+    {file = "mkdocs-gallery-0.7.6.tar.gz", hash = "sha256:cf6cd5b548c4c7112ebea892462d773c1afe9d3114be226e38509ea0a0dafde8"},
+    {file = "mkdocs_gallery-0.7.6-py2.py3-none-any.whl", hash = "sha256:69e9c87714e8ec461343e8516ad9938ce080360702f16bcd06754fda7cb9e5ca"},
 ]
 
 [package.dependencies]
@@ -2111,7 +2111,7 @@ tqdm = "*"
 name = "mkdocs-material"
 version = "9.1.9"
 description = "Documentation that simply works"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.7"
 files = [
@@ -2134,7 +2134,7 @@ requests = ">=2.26"
 name = "mkdocs-material-extensions"
 version = "1.1.1"
 description = "Extension pack for Python Markdown and MkDocs Material."
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.7"
 files = [
@@ -3038,7 +3038,7 @@ plugins = ["importlib-metadata"]
 name = "pymdown-extensions"
 version = "9.11"
 description = "Extension pack for Python Markdown."
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.7"
 files = [
@@ -3335,7 +3335,7 @@ files = [
 name = "pyyaml-env-tag"
 version = "0.1"
 description = "A custom YAML tag for referencing environment variables in YAML files. "
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.6"
 files = [
@@ -3440,7 +3440,7 @@ cffi = {version = "*", markers = "implementation_name == \"pypy\""}
 name = "regex"
 version = "2023.5.4"
 description = "Alternative regular expression module, to replace re."
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.6"
 files = [
@@ -3823,7 +3823,7 @@ files = [
 name = "tqdm"
 version = "4.65.0"
 description = "Fast, Extensible Progress Meter"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.7"
 files = [
@@ -3904,7 +3904,7 @@ socks = ["PySocks (>=1.5.6,!=1.5.7,<2.0)"]
 name = "watchdog"
 version = "3.0.0"
 description = "Filesystem events monitoring"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.7"
 files = [
@@ -4124,4 +4124,4 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<3.11"
-content-hash = "2515a037e14c0c912427311ecbdba6ba2302085b473af925f20f70b0ab60b823"
+content-hash = "98af7dcee36fe6205caf365f624ca3f65db861f4fac6497aa0e0e3dc0ac3c1ad"
