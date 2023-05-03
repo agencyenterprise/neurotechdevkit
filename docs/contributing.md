@@ -36,6 +36,8 @@ If you don't want to install NDK's dependencies on your machine, you can run it 
 
 * Run the container, which will start a jupyter notebook server:
    ```
+   git clone https://github.com/agencyenterprise/neurotechdevkit.git
+   cd neurotechdevkit
    docker compose up
    ```
 
@@ -61,6 +63,22 @@ Install stride with
 ```bash
 $ poetry run pip install git+https://github.com/trustimaging/stride
 ```
+
+`devito`, a dependency of `neurotechdevkit`, requires `libomp` to perform its runtime compilation. It can be installed on *MacOS* with:
+
+```
+brew install libomp
+```
+
+You will also have to set an environment variable that defines what compiler `devito` will use, like so:
+
+```
+export DEVITO_ARCH=clang
+```
+
+the supported values for `DEVITO_ARCH` are: `'custom', 'gnu', 'gcc', 'clang', 'aomp', 'pgcc', 'pgi', 'nvc', 'nvc++', 'nvidia', 'cuda', 'osx', 'intel', 'icpc', 'icc', 'intel-knl', 'knl', 'dpcpp', 'gcc-4.9', 'gcc-5', 'gcc-6', 'gcc-7', 'gcc-8', 'gcc-9', 'gcc-10', 'gcc-11'`
+
+
 
 ### Using the environment
 
