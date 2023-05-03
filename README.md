@@ -12,7 +12,6 @@ In the future, we plan to expand the NDK's features to incorporate additional fu
 The initial release of NDK provides support for transcranial functional ultrasound stimulation, with a focus on providing comprehensive documentation, API flexibility, and visualizations.
 The Neurotech Development Kit is actively developed and we welcome feedback and contributions.
 
-
 ## Exploring the Repository
 
 The NDK API was developed with easy-of-use in mind, and **3 lines of code is all you need to run a simulation**:
@@ -38,16 +37,32 @@ result.render_steady_state_amplitudes()
 
 You can install the package using:
 
-``` bash
+```bash
 pip install neurotechdevkit
 ```
 
 And then you must install stride using:
-``` bash
+
+```bash
 pip install git+https://github.com/trustimaging/stride
 ```
 
-### Development
+`devito`, a dependency of `neurotechdevkit`, requires `libomp` to perform its runtime compilation. It can be installed on *MacOS* with:
+
+```
+brew install libomp
+```
+
+You will also have to set an environment variable that defines what compiler `devito` will use, like so:
+
+```
+export DEVITO_ARCH=clang
+```
+
+the supported values for `DEVITO_ARCH` are: `'custom', 'gnu', 'gcc', 'clang', 'aomp', 'pgcc', 'pgi', 'nvc', 'nvc++', 'nvidia', 'cuda', 'osx', 'intel', 'icpc', 'icc', 'intel-knl', 'knl', 'dpcpp', 'gcc-4.9', 'gcc-5', 'gcc-6', 'gcc-7', 'gcc-8', 'gcc-9', 'gcc-10', 'gcc-11'`
+
+
+## Development
 
 See our [contribution requirements](docs/contributing.md) for more information on how to install the package locally using poetry and on how to contribute.
 
@@ -61,6 +76,6 @@ $ make test
 
 See the Makefile for other commands.
 
-### Acknowledgements
+## Acknowledgements
 
 Thanks to Fred Ehrsam for supporting this project, Quintin Frerichs and Milan Cvitkovic for providing direction, and to Sumner Norman for his ultrasound and neuroscience expertise. Thanks to [Stride](https://www.stride.codes/) for facilitating ultrasound simulations, [Devito](https://www.devitoproject.org/) for providing the backend solver, [Napari](https://napari.org/stable/) for great 3D visualization, and to [Jean-Francois Aubry, et al.](https://doi.org/10.1121/10.0013426) for the basis of the simulation scenarios.
