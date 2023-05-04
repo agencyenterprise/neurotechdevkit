@@ -5,7 +5,7 @@ version: 2.1
 jobs:
   build_docs:
     docker:
-      - image: cimg/base:current-22.04
+      - image: cimg/python:3.10.10
     steps:
       - checkout
 
