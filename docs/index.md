@@ -12,9 +12,7 @@ In the future, we plan to expand the NDK's features to incorporate additional fu
 The initial release of NDK provides support for transcranial functional ultrasound stimulation, with a focus on providing comprehensive documentation, API flexibility, and visualizations.
 The Neurotech Development Kit is actively developed and we welcome feedback and contributions.
 
-<figure markdown>
-  ![Simulation](images/ndk_example.gif){ width="900" }
-</figure>
+![Simulation](images/ndk_example.gif)
 
 ## Running
 
@@ -84,9 +82,7 @@ result = scenario.simulate_steady_state()
 result.render_steady_state_amplitudes(show_material_outlines=False)
 ```
 
-<figure markdown>
-  ![Simulation](images/simulation_steady_state.png){ width="900" }
-</figure>
+![Simulation](images/simulation_steady_state.png)
 
 ### Acknowledgements
 
