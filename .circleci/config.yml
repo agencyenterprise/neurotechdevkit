@@ -20,6 +20,11 @@ jobs:
             poetry install --no-ansi
 
       - run:
+          name: Install stride
+          command: |
+            poetry run pip install git+https://github.com/trustimaging/stride
+
+      - run:
           name: Build HTML
           command: |
             make docs
