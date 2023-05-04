@@ -33,36 +33,51 @@ result.render_steady_state_amplitudes()
 
 ## Setup
 
-`neurotechdevkit` requires Python `>=3.9` and `<3.11` to be installed. You can find which Python version you have installed by running `python --version` in a terminal. If you don't have Python installed, or you are running an unsupported version, you can download it from [python.org](https://www.python.org/downloads/). Python environment managers like pyenv, conda, and poetry are all perfectly suitable as well.
+`neurotechdevkit` requires Python `>=3.9` and `<3.11` to be installed. You can find which Python version you have installed by running `python --version` in a terminal.
 
-You can install the package using:
+If you don't have Python installed, or you are running an unsupported version, you can download it from [python.org](https://www.python.org/downloads/). Python environment managers like pyenv, conda, and poetry are all perfectly suitable as well.
+
+You can install the `neurotechdevkit` package using:
 
 ```bash
 pip install neurotechdevkit
 ```
 
-And then you must install stride using:
+You also have to install stride, it can be done running:
 
 ```bash
 pip install git+https://github.com/trustimaging/stride
 ```
 
-`devito`, a dependency of `neurotechdevkit`, requires `libomp` to perform its runtime compilation. It can be installed on *MacOS* with:
+`devito`, a dependency of `neurotechdevkit`, requires `libomp`. On MacOS it can be installed with:
 
 ```
 brew install libomp
 ```
 
+the output of the command above will look like this:
+
+```
+For compilers to find libomp you may need to set:
+export LDFLAGS="-L/usr/local/opt/libomp/lib"
+export CPPFLAGS="-I/usr/local/opt/libomp/include"
+```
+
+`devito` requires the directory with `libomp` headers to be accessible during the runtime compilation, you can make it accessible by exporting a new environment variable `CPATH` with the path for libomp headers, like so:
+
+```
+export CPATH="/usr/local/opt/libomp/include"
+```
+
 You will also have to set an environment variable that defines what compiler `devito` will use, like so:
 
 ```
-export DEVITO_ARCH=clang
+export DEVITO_ARCH=gcc
 ```
 
 the supported values for `DEVITO_ARCH` are: `'custom', 'gnu', 'gcc', 'clang', 'aomp', 'pgcc', 'pgi', 'nvc', 'nvc++', 'nvidia', 'cuda', 'osx', 'intel', 'icpc', 'icc', 'intel-knl', 'knl', 'dpcpp', 'gcc-4.9', 'gcc-5', 'gcc-6', 'gcc-7', 'gcc-8', 'gcc-9', 'gcc-10', 'gcc-11'`
 
-
-## Development
+### Development
 
 See our [contribution requirements](docs/contributing.md) for more information on how to install the package locally using poetry and on how to contribute.
 
@@ -76,6 +91,6 @@ $ make test
 
 See the Makefile for other commands.
 
-## Acknowledgements
+### Acknowledgements
 
 Thanks to Fred Ehrsam for supporting this project, Quintin Frerichs and Milan Cvitkovic for providing direction, and to Sumner Norman for his ultrasound and neuroscience expertise. Thanks to [Stride](https://www.stride.codes/) for facilitating ultrasound simulations, [Devito](https://www.devitoproject.org/) for providing the backend solver, [Napari](https://napari.org/stable/) for great 3D visualization, and to [Jean-Francois Aubry, et al.](https://doi.org/10.1121/10.0013426) for the basis of the simulation scenarios.
