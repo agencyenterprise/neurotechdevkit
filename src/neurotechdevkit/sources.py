@@ -4,7 +4,6 @@ from __future__ import annotations
 import abc
 import math
 import warnings
-from typing import Protocol
 
 import numpy as np
 import numpy.typing as npt
@@ -393,8 +392,8 @@ class FocusedSource3D(Source):
         return axis, theta
 
 
-class UnfocusedMixin:
-    """A mixin class for unfocused sources.
+class UnfocusedSource(Source):
+    """A base class for unfocused sources.
 
     Automatically sets `focal_length` to `np.inf`
     """
@@ -416,10 +415,10 @@ class UnfocusedMixin:
             focal_length=np.inf,
             num_points=num_points,
             delay=delay,
-        )  # type: ignore[call-arg]
+        )
 
 
-class PlanarSource2D(UnfocusedMixin, Source):
+class PlanarSource2D(UnfocusedSource):
     """A planar source in 2D.
 
     This source is shaped like a line segment and has no focus. The source is composed
@@ -460,7 +459,7 @@ class PlanarSource2D(UnfocusedMixin, Source):
         return grid_point_density / source_density
 
 
-class PlanarSource3D(UnfocusedMixin, Source):
+class PlanarSource3D(UnfocusedSource):
     """A planar source in 3D.
 
     This source is shaped like a disk and has no focus. It is created by defining a
@@ -504,90 +503,8 @@ class PlanarSource3D(UnfocusedMixin, Source):
         return grid_point_density / source_density
 
 
-class _PhasedArrayMixinProtocol(Protocol):
-    """Provide type-hinting for PhasedMixin."""
-
-    _element_delays: npt.NDArray[np.float_]
-
-    @property
-    def num_points(self) -> int:
-        ...
-
-    @property
-    def num_elements(self) -> int:
-        ...
-
-    @property
-    def pitch(self) -> float:
-        ...
-
-    @property
-    def tilt_angle(self) -> float:
-        ...
-
-    @property
-    def position(self) -> npt.NDArray[np.float_]:
-        ...
-
-    @property
-    def coordinates(self) -> npt.NDArray[np.float_]:
-        ...
-
-    @property
-    def point_source_delays(self) -> npt.NDArray[np.float_]:
-        ...
-
-    @property
-    def delay(self) -> float:
-        ...
-
-    @property
-    def focal_length(self) -> float:
-        ...
-
-    @property
-    def focal_point(self) -> npt.NDArray[np.float_]:
-        ...
-
-    @property
-    def point_mapping(self) -> tuple[slice, ...]:
-        ...
-
-    @property
-    def element_positions(self) -> npt.NDArray[np.float_]:
-        ...
-
-    @property
-    def element_delays(self) -> npt.NDArray[np.float_]:
-        ...
-
-    def _broadcast_delays(
-        self, delays: npt.NDArray[np.float_]
-    ) -> npt.NDArray[np.float_]:
-        ...
-
-    def _set_element_delays(
-        self,
-        element_delays: npt.NDArray[np.float_] | None,
-    ) -> npt.NDArray[np.float_]:
-        ...
-
-    @staticmethod
-    def txdelay(tilt_angle: float, pitch: float, speed: float = 1500.0) -> float:
-        ...
-
-    def _calculate_tilt_element_delays(self) -> npt.NDArray[np.float_]:
-        ...
-
-    def _calculate_focus_tilt_element_delays(
-        self, speed: float = 1500.0
-    ) -> npt.NDArray[np.float_]:
-        ...
-
-
-class PhasedArrayMixin:
-    """A mixin class for phased array sources.
-
+class PhasedArraySource(Source):
+    """A base class for phased array sources.
     Args:
         position (npt.NDArray[np.float_]): a numpy float array indicating
             the coordinates (in meters) of the point at the center of the
@@ -662,6 +579,10 @@ class PhasedArrayMixin:
 
         self._element_delays = self._set_element_delays(element_delays)  # type: ignore
 
+    @abc.abstractproperty
+    def focal_point(self) -> npt.NDArray[np.float_]:
+        ...
+
     @property
     def num_elements(self) -> int:
         """The number of elements in the source array."""
@@ -703,7 +624,7 @@ class PhasedArrayMixin:
         return self._element_delays
 
     @property
-    def point_source_delays(self: _PhasedArrayMixinProtocol) -> npt.NDArray[np.float_]:
+    def point_source_delays(self) -> npt.NDArray[np.float_]:
         """The delay before emitting (in seconds) for each point source.
 
         The delays are computed at the element level. All source points within an
@@ -712,7 +633,7 @@ class PhasedArrayMixin:
         return self._broadcast_delays(self.element_delays)
 
     @property
-    def element_positions(self: _PhasedArrayMixinProtocol) -> npt.NDArray[np.float_]:
+    def element_positions(self) -> npt.NDArray[np.float_]:
         """An array with the position of the center of each element of the array."""
         positions = np.zeros(shape=(self.num_elements, len(self.position)))
         point_mapping = self.point_mapping
@@ -891,7 +812,7 @@ class PhasedArrayMixin:
         return coords
 
     def _broadcast_delays(
-        self: _PhasedArrayMixinProtocol, delays: npt.NDArray[np.float_]
+        self, delays: npt.NDArray[np.float_]
     ) -> npt.NDArray[np.float_]:
         """Translate the delays per element into delays per source point.
 
@@ -937,9 +858,7 @@ class PhasedArrayMixin:
 
         return phase_time
 
-    def _calculate_tilt_element_delays(
-        self: _PhasedArrayMixinProtocol,
-    ) -> npt.NDArray[np.float_]:
+    def _calculate_tilt_element_delays(self) -> npt.NDArray[np.float_]:
         """
         Calculate delays (in seconds) per array element to produce a given `tilt_angle`.
 
@@ -951,7 +870,7 @@ class PhasedArrayMixin:
         return delays
 
     def _calculate_focus_tilt_element_delays(
-        self: _PhasedArrayMixinProtocol, speed=1500.0  # m/s speed of sound in water
+        self, speed=1500.0  # m/s speed of sound in water
     ) -> npt.NDArray[np.float_]:
         """
         Calculate delays (in seconds) per array element to focus the source.
@@ -974,7 +893,7 @@ class PhasedArrayMixin:
         return delays
 
     def _set_element_delays(
-        self: _PhasedArrayMixinProtocol,
+        self,
         element_delays: npt.NDArray[np.float_] | None,
     ) -> npt.NDArray[np.float_]:
         """
@@ -1011,7 +930,7 @@ class PhasedArrayMixin:
         return delays
 
 
-class PhasedArraySource2D(PhasedArrayMixin, Source):
+class PhasedArraySource2D(PhasedArraySource):
     """A phased array source in 2D.
 
     This source is shaped like a multiple segments in a line. Each segment can emit
@@ -1111,7 +1030,7 @@ class PhasedArraySource2D(PhasedArrayMixin, Source):
         return grid_point_density / source_density
 
 
-class PhasedArraySource3D(PhasedArrayMixin, Source):
+class PhasedArraySource3D(PhasedArraySource):
     """A linear phased array source in 3D.
 
     This source is shaped like a multiple rectangular segments in a line. Each segment

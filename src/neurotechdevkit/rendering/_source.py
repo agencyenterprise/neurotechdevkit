@@ -8,7 +8,7 @@ import scipy
 from matplotlib.image import BboxImage
 from matplotlib.transforms import Bbox, Transform, TransformedBbox
 
-from neurotechdevkit.sources import PhasedArrayMixin, Source
+from neurotechdevkit.sources import PhasedArraySource, Source
 
 _COMPONENT_DIR = pathlib.Path(__file__).parent / "components"
 
@@ -173,7 +173,7 @@ def source_should_be_flat(source: Source) -> bool:
     Returns:
         True if the source is a flat transducer, and False otherwise.
     """
-    is_phased_array = isinstance(source, PhasedArrayMixin)
+    is_phased_array = isinstance(source, PhasedArraySource)
     return is_phased_array or np.isinf(source.focal_length)
 
 

@@ -5,7 +5,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 import numpy.typing as npt
-from IPython.display import Video
+from IPython.core.display import Video
 from matplotlib.animation import FFMpegWriter, FuncAnimation
 
 ARTIST_NAME = "NDK Research"
