@@ -12,7 +12,6 @@ In the future, we plan to expand the NDK's features to incorporate additional fu
 The initial release of NDK provides support for transcranial functional ultrasound stimulation, with a focus on providing comprehensive documentation, API flexibility, and visualizations.
 The Neurotech Development Kit is actively developed and we welcome feedback and contributions.
 
-
 ## Exploring the Repository
 
 The NDK API was developed with easy-of-use in mind, and **3 lines of code is all you need to run a simulation**:
@@ -34,18 +33,49 @@ result.render_steady_state_amplitudes()
 
 ## Setup
 
-`neurotechdevkit` requires Python `>=3.9` and `<3.11` to be installed. You can find which Python version you have installed by running `python --version` in a terminal. If you don't have Python installed, or you are running an unsupported version, you can download it from [python.org](https://www.python.org/downloads/). Python environment managers like pyenv, conda, and poetry are all perfectly suitable as well.
+`neurotechdevkit` requires Python `>=3.9` and `<3.11` to be installed. You can find which Python version you have installed by running `python --version` in a terminal.
 
-You can install the package using:
+If you don't have Python installed, or you are running an unsupported version, you can download it from [python.org](https://www.python.org/downloads/). Python environment managers like pyenv, conda, and poetry are all perfectly suitable as well.
 
-``` bash
+You can install the `neurotechdevkit` package using:
+
+```bash
 pip install neurotechdevkit
 ```
 
-And then you must install stride using:
-``` bash
+You also have to install stride, it can be done running:
+
+```bash
 pip install git+https://github.com/trustimaging/stride
 ```
+
+`devito`, a dependency of `neurotechdevkit`, requires `libomp`. On MacOS it can be installed with:
+
+```
+brew install libomp
+```
+
+the output of the command above will look like this:
+
+```
+For compilers to find libomp you may need to set:
+export LDFLAGS="-L/usr/local/opt/libomp/lib"
+export CPPFLAGS="-I/usr/local/opt/libomp/include"
+```
+
+`devito` requires the directory with `libomp` headers to be accessible during the runtime compilation, you can make it accessible by exporting a new environment variable `CPATH` with the path for libomp headers, like so:
+
+```
+export CPATH="/usr/local/opt/libomp/include"
+```
+
+You will also have to set an environment variable that defines what compiler `devito` will use, like so:
+
+```
+export DEVITO_ARCH=gcc
+```
+
+the supported values for `DEVITO_ARCH` are: `'custom', 'gnu', 'gcc', 'clang', 'aomp', 'pgcc', 'pgi', 'nvc', 'nvc++', 'nvidia', 'cuda', 'osx', 'intel', 'icpc', 'icc', 'intel-knl', 'knl', 'dpcpp', 'gcc-4.9', 'gcc-5', 'gcc-6', 'gcc-7', 'gcc-8', 'gcc-9', 'gcc-10', 'gcc-11'`
 
 ### Development
 
