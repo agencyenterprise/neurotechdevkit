@@ -835,75 +835,87 @@ class TestPhasedArraySource2D(Source2DTestMixin):
 
     def test_num_points_property(self):
         """Verify that .num_points matches the value received in the constructor."""
-        source = self.create_test_source(num_points=10 * 13, num_elements=13)
+        source = TestPhasedArraySource2D.create_test_source(
+            num_points=10 * 13, num_elements=13
+        )
         assert source.num_points == 130
 
     def test_point_source_delays_property_has_correct_shape(self):
         """Verify that .point_source_delays have the correct shape."""
-        source = self.create_test_source(num_points=3, num_elements=3)
+        source = TestPhasedArraySource2D.create_test_source(
+            num_points=3, num_elements=3
+        )
         assert source.point_source_delays.shape[0] == 3
 
     def test_aperture_property(self):
         """Verify that .aperture is constructed correctly.
         Note that for PhasedArraySource2D aperture must be computed.
         """
-        source = self.create_test_source(pitch=1, num_elements=5, element_width=0.75)
+        source = TestPhasedArraySource2D.create_test_source(
+            pitch=1, num_elements=5, element_width=0.75
+        )
         # spacing = pitch - element_width
         # aperture = pitch * num_elements - spacing
         assert source.aperture == 4.75
 
     def test_pitch_property(self):
         """Verify that .pitch matches the value received in the constructor."""
-        source = self.create_test_source(pitch=0.01)
+        source = TestPhasedArraySource2D.create_test_source(pitch=0.01)
         assert source.pitch == 0.01
 
     def test_num_elements_property(self):
         """Verify that .num_elements matches the value received in the constructor."""
         warnings.simplefilter("ignore")
-        source = self.create_test_source(num_elements=12)
+        source = TestPhasedArraySource2D.create_test_source(num_elements=12)
         assert source.num_elements == 12
 
     def test_num_elements_raises_error(self):
         """Verify that value error is raised if num elements is one."""
         with pytest.raises(ValueError):
-            self.create_test_source(num_elements=1)
+            TestPhasedArraySource2D.create_test_source(num_elements=1)
 
     def test_tilt_angle_property(self):
         """Verify that .tilt_angle matches the value received in the constructor."""
-        source = self.create_test_source(tilt_angle=12.34)
+        source = TestPhasedArraySource2D.create_test_source(tilt_angle=12.34)
         assert source.tilt_angle == 12.34
 
     def test_spacing_property(self):
         """Verify that .spacing is set up correctly."""
-        source = self.create_test_source(pitch=0.1123, element_width=0.100)
+        source = TestPhasedArraySource2D.create_test_source(
+            pitch=0.1123, element_width=0.100
+        )
         np.testing.assert_allclose(source.spacing, 0.0123)
 
     def test_focal_length_property(self):
         """Verify that .focal_length is set up correctly."""
-        source = self.create_test_source(focal_length=0.123)
+        source = TestPhasedArraySource2D.create_test_source(focal_length=0.123)
         assert source.focal_length == 0.123
 
     def test_validate_num_points_warns_user(self):
         """Verify that the user is warned when the number of points is adjusted."""
         with pytest.warns(UserWarning):
-            self.create_test_source(num_points=13, num_elements=5)
+            TestPhasedArraySource2D.create_test_source(num_points=13, num_elements=5)
 
     def test_validate_num_points_modify_value(self):
         """Verify that the number of points are truncated when needed."""
         warnings.simplefilter("ignore")
-        source = self.create_test_source(num_points=101, num_elements=10)
+        source = TestPhasedArraySource2D.create_test_source(
+            num_points=101, num_elements=10
+        )
         assert source.num_points == 100
 
     def test_validate_num_points_does_not_modify_value(self):
         """Verify that the number of points is not modified if not required."""
-        source = self.create_test_source(num_points=100, num_elements=10)
+        source = TestPhasedArraySource2D.create_test_source(
+            num_points=100, num_elements=10
+        )
         assert source.num_points == 100
 
     def test_validate_num_points_does_not_warns(self):
         """Verify that no warning is shown when no modification is required."""
         with warnings.catch_warnings():
             warnings.simplefilter("error")
-            self.create_test_source(num_points=100, num_elements=10)
+            TestPhasedArraySource2D.create_test_source(num_points=100, num_elements=10)
 
     @pytest.mark.parametrize(
         "position, direction, focal_length, angle",
@@ -925,7 +937,7 @@ class TestPhasedArraySource2D(Source2DTestMixin):
         Test 3: displace in Y axis as a result from the negative unit direction.
         Test 4: Direction with x and y non-zero components.
         """
-        source = self.create_test_source(
+        source = TestPhasedArraySource2D.create_test_source(
             position=position,
             direction=direction,
             focal_length=focal_length,
@@ -935,7 +947,7 @@ class TestPhasedArraySource2D(Source2DTestMixin):
 
     def test_focal_point_is_inf_for_unfocused_arrays(self):
         """Verify that focal point is (inf,inf) when unfocused."""
-        source = self.create_test_source(
+        source = TestPhasedArraySource2D.create_test_source(
             focal_length=np.inf,
         )
         assert all([np.isinf(x) for x in source.focal_point])
@@ -946,7 +958,7 @@ class TestPhasedArraySource2D(Source2DTestMixin):
     )
     def test_point_source_delays_property(self, tilt_angle, delay, expected_delays):
         """Verify that the original .point_source_delays are set correctly."""
-        source = self.create_test_source(
+        source = TestPhasedArraySource2D.create_test_source(
             tilt_angle=tilt_angle,
             num_points=2,
             num_elements=2,
@@ -959,19 +971,23 @@ class TestPhasedArraySource2D(Source2DTestMixin):
 
     def test_point_source_delays_property_positive_delay(self):
         """Verify that .point_source_delays are set up correctly in the constructor."""
-        source = self.create_test_source(num_points=10, delay=1, tilt_angle=0)
+        source = TestPhasedArraySource2D.create_test_source(
+            num_points=10, delay=1, tilt_angle=0
+        )
         np.testing.assert_allclose(source.point_source_delays, np.ones(shape=10))
 
     def test_element_delays_property(self):
         """Verify that .element_delays property is set up correctly"""
-        source = self.create_test_source(
+        source = TestPhasedArraySource2D.create_test_source(
             num_points=10, num_elements=5, tilt_angle=0, element_delays=np.arange(0, 5)
         )
         np.testing.assert_array_equal(source.element_delays, np.array([0, 1, 2, 3, 4]))
 
     def test_coordinates_has_correct_shape(self):
         """Verify that .coordinates has the expected shape."""
-        source = self.create_test_source(num_points=1200, num_elements=10)
+        source = TestPhasedArraySource2D.create_test_source(
+            num_points=1200, num_elements=10
+        )
         assert source.coordinates.shape == (1200, 2)
 
     def test_coordinates_position(self, dense_source):
@@ -1012,7 +1028,7 @@ class TestPhasedArraySource2D(Source2DTestMixin):
         length = num_elements * pitch - spacing
         num_points = 1000
         dx = 0.01
-        source = self.create_test_source(
+        source = TestPhasedArraySource2D.create_test_source(
             num_points=num_points, num_elements=5, pitch=0.01, element_width=0.009
         )
         scale = source.calculate_waveform_scale(dx=dx)
@@ -1026,7 +1042,7 @@ class TestPhasedArraySource2D(Source2DTestMixin):
         num_points = 52
         expected_points_per_el = 10
         warnings.simplefilter("ignore")
-        source = self.create_test_source(
+        source = TestPhasedArraySource2D.create_test_source(
             num_points=num_points, num_elements=num_elements
         )
         pm = source._distribute_points_in_elements(num_elements, num_points)
@@ -1037,7 +1053,7 @@ class TestPhasedArraySource2D(Source2DTestMixin):
         """Verify that the last index matches `num_points`."""
         num_points = 10
         num_elements = 5
-        source = self.create_test_source(
+        source = TestPhasedArraySource2D.create_test_source(
             num_points=num_points, num_elements=num_elements
         )
         pm = source._distribute_points_in_elements(num_elements, num_points)
@@ -1045,7 +1061,7 @@ class TestPhasedArraySource2D(Source2DTestMixin):
 
     def test_element_positions_property(self):
         """Verify that .elements_positions has the expected shape and values"""
-        source = self.create_test_source(
+        source = TestPhasedArraySource2D.create_test_source(
             num_elements=3,
             num_points=12,
             position=np.array((1.0, 2.0)),
@@ -1063,7 +1079,7 @@ class TestPhasedArraySource2D(Source2DTestMixin):
         num_points = 50
         num_elements = 5
         expected_points_per_el = 10
-        source = self.create_test_source(
+        source = TestPhasedArraySource2D.create_test_source(
             num_points=num_points, num_elements=num_elements
         )
         pm = source._distribute_points_in_elements(num_elements, num_points)
@@ -1082,7 +1098,7 @@ class TestPhasedArraySource2D(Source2DTestMixin):
     def test_calculate_focus_tilt_elements_delays_no_tilt(self):
         """Verify that delays are defined correctly only focusing."""
 
-        source = self.create_test_source(
+        source = TestPhasedArraySource2D.create_test_source(
             num_elements=3,
             num_points=3,
             pitch=1,
@@ -1097,7 +1113,7 @@ class TestPhasedArraySource2D(Source2DTestMixin):
     def test_calculate_focus_tilt_point_source_delays_tilt_and_focus(self):
         """Verify that delays are defined correctly only focusing."""
 
-        source = self.create_test_source(
+        source = TestPhasedArraySource2D.create_test_source(
             num_elements=3,
             num_points=3,
             pitch=1,
@@ -1119,7 +1135,7 @@ class TestPhasedArraySource2D(Source2DTestMixin):
         self, tilt_angle, focal_length
     ):
         """Verify that all delays are positive."""
-        source = self.create_test_source(
+        source = TestPhasedArraySource2D.create_test_source(
             tilt_angle=tilt_angle, focal_length=focal_length
         )
         assert np.min(source.point_source_delays) >= 0
@@ -1127,29 +1143,31 @@ class TestPhasedArraySource2D(Source2DTestMixin):
     def test_calculate_point_source_delays_tilt_time_order(self):
         """Verify that point delays have the correct order."""
         # positive angles, correct orientation
-        source = self.create_test_source(
+        source = TestPhasedArraySource2D.create_test_source(
             num_elements=5, direction=np.array([1.0, 0]), tilt_angle=30.0
         )
         assert source.point_source_delays[0] < source.point_source_delays[-1]
         # negative angles, correct orientation
-        source = self.create_test_source(
+        source = TestPhasedArraySource2D.create_test_source(
             num_elements=5, direction=np.array([1.0, 0]), tilt_angle=-30.0
         )
         assert source.point_source_delays[0] > source.point_source_delays[-1]
         # bottom source, shouldn't change behavior.
-        source = self.create_test_source(
+        source = TestPhasedArraySource2D.create_test_source(
             num_elements=5, direction=np.array([-1.0, 0]), tilt_angle=-30.0
         )
         assert source.point_source_delays[0] > source.point_source_delays[-1]
 
     def test_calculate_point_source_delays_focus_non_focused(self):
         """Verify that delays are zero when the array should not focus."""
-        source = self.create_test_source(focal_length=np.inf, tilt_angle=0)
+        source = TestPhasedArraySource2D.create_test_source(
+            focal_length=np.inf, tilt_angle=0
+        )
         assert all(np.isclose(source.point_source_delays, 0.0))
 
     def test_calculate_point_source_delays_focus_are_symmetric_even(self):
         """Verify that delays are symmetric when focusing without tilt."""
-        source = self.create_test_source(
+        source = TestPhasedArraySource2D.create_test_source(
             num_elements=10,
             focal_length=0.02,
             tilt_angle=0,
@@ -1159,7 +1177,7 @@ class TestPhasedArraySource2D(Source2DTestMixin):
 
     def test_calculate_point_source_delays_focus_are_symmetric_odd(self):
         """Verify that delays are symmetric when focusing without tilt."""
-        source = self.create_test_source(
+        source = TestPhasedArraySource2D.create_test_source(
             num_elements=5,
             focal_length=0.02,
             tilt_angle=0,
@@ -1173,12 +1191,12 @@ class TestPhasedArraySource2D(Source2DTestMixin):
         The test creates two sources with opposite tilt angle. The obtained delays
         should be identical, except that in reverse order.
         """
-        source1 = self.create_test_source(
+        source1 = TestPhasedArraySource2D.create_test_source(
             num_elements=5,
             focal_length=0.02,
             tilt_angle=45,
         )
-        source2 = self.create_test_source(
+        source2 = TestPhasedArraySource2D.create_test_source(
             num_elements=5,
             focal_length=0.02,
             tilt_angle=-45,
@@ -1199,7 +1217,7 @@ class TestPhasedArraySource2D(Source2DTestMixin):
 
     def test_calculate_point_source_delays_focus_distance_consistency(self):
         """Verify that delays have the expected order."""
-        source = self.create_test_source(
+        source = TestPhasedArraySource2D.create_test_source(
             num_elements=10,
             num_points=10,
             focal_length=1.0,
@@ -1232,7 +1250,7 @@ class TestPhasedArraySource2D(Source2DTestMixin):
 
     def test_set_element_delays_is_none(self):
         """Verify that None `element_delays` is translated to zeros"""
-        source = self.create_test_source(
+        source = TestPhasedArraySource2D.create_test_source(
             num_elements=5, tilt_angle=0.0, element_delays=None
         )
         np.testing.assert_allclose(
@@ -1241,7 +1259,7 @@ class TestPhasedArraySource2D(Source2DTestMixin):
 
     def test_set_element_delays_returns_array(self):
         """Verify that `element_delays` is a 1D numpy array with shape `num_elements`"""
-        source = self.create_test_source(
+        source = TestPhasedArraySource2D.create_test_source(
             num_elements=10,
             tilt_angle=0,
             element_delays=list(range(0, 10)),
@@ -1251,7 +1269,9 @@ class TestPhasedArraySource2D(Source2DTestMixin):
 
     def test_broadcast_delays_returns_correct_shape(self):
         """Verify that broadcast_delays returns the right shape and distribution."""
-        source = self.create_test_source(num_elements=2, num_points=10)
+        source = TestPhasedArraySource2D.create_test_source(
+            num_elements=2, num_points=10
+        )
         point_source_delays = source._broadcast_delays(np.array([0.1, 0.2]))
         assert point_source_delays.shape == (10,)
         assert all(point_source_delays[0:5] == 0.1)

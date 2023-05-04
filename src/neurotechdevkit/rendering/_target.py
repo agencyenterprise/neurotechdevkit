@@ -1,5 +1,6 @@
 import pathlib
 
+import matplotlib.artist
 import matplotlib.pyplot as plt
 import numpy as np
 import numpy.typing as npt
@@ -13,7 +14,7 @@ def create_target_drawing_artist(
     target_loc: npt.NDArray[np.float_],
     target_radius: float,
     transform: Transform,
-) -> plt.Artist:
+) -> matplotlib.artist.Artist:
     """Create the matplotlib artist for the target symbol.
 
     The caller is expected to provide the transform that takes the coordinates for the
@@ -49,7 +50,7 @@ def create_target_legend_artist(
     center_loc: npt.NDArray[np.float_],
     target_radius: float,
     transform: Transform,
-) -> plt.Artist:
+) -> matplotlib.artist.Artist:
     """Create the matplotlib artist for the target symbol.
 
     The caller is expected to provide the transform that takes the coordinates for the

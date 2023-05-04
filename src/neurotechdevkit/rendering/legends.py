@@ -1,6 +1,8 @@
 """Legends module."""
-import matplotlib as mpl
-import matplotlib.pyplot as plt
+import matplotlib.artist
+import matplotlib.legend
+import matplotlib.legend_handler
+import matplotlib.offsetbox
 import numpy as np
 
 from ._source import create_source_legend_artist
@@ -20,7 +22,7 @@ class LegendConfig:
         self,
         label: str,
         handle: object,
-        custom_handler: mpl.legend_handler.HandlerBase = None,
+        custom_handler: matplotlib.legend_handler.HandlerBase = None,
     ) -> None:
         """Add a new legend item to the config.
 
@@ -58,7 +60,7 @@ class LegendConfig:
         """
         return self._handles.copy()
 
-    def get_custom_handlers(self) -> dict[type, mpl.legend_handler.HandlerBase]:
+    def get_custom_handlers(self) -> dict[type, matplotlib.legend_handler.HandlerBase]:
         """Return a map containing custom legend handlers.
 
         Returns:
@@ -87,11 +89,11 @@ class TargetHandler:
 
     def legend_artist(
         self,
-        legend: mpl.legend.Legend,
+        legend: matplotlib.legend.Legend,
         orig_handle: TargetHandle,
         fontsize: float,
-        handlebox: mpl.offsetbox.OffsetBox,
-    ) -> plt.Artist:
+        handlebox: matplotlib.offsetbox.DrawingArea,
+    ) -> matplotlib.artist.Artist:
         """Return the artist that draws the target in the legend.
 
         Args:
@@ -107,7 +109,6 @@ class TargetHandler:
             An artist that draws the target in the legend.
         """
         TARGET_LEGEND_SCALE_FACTOR = 1.5
-
         center = np.array(  # in scenario coordinates
             [
                 handlebox.xdescent + handlebox.width / 2,
@@ -145,11 +146,11 @@ class SourceHandler:
 
     def legend_artist(
         self,
-        legend: mpl.legend.Legend,
+        legend: matplotlib.legend.Legend,
         orig_handle: TargetHandle,
         fontsize: float,
-        handlebox: mpl.offsetbox.OffsetBox,
-    ) -> tuple[plt.Artist, ...]:
+        handlebox: matplotlib.offsetbox.OffsetBox,
+    ) -> tuple[matplotlib.artist.Artist, ...]:
         """Return the artist that draws the source in the legend.
 
         Args:

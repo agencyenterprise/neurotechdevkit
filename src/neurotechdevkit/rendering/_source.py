@@ -1,6 +1,7 @@
 import pathlib
 from typing import NamedTuple
 
+import matplotlib.artist
 import matplotlib.pyplot as plt
 import numpy as np
 import numpy.typing as npt
@@ -46,7 +47,7 @@ class SourceDrawingParams(NamedTuple):
 
 def create_source_drawing_artist(
     source_params: SourceDrawingParams, transform: Transform
-) -> plt.Artist:
+) -> matplotlib.artist.Artist:
     """Create a matplotlib artist for a source rendered inside a scenario.
 
     Note that the source coordinates are in scenario coordinates, and not plot
@@ -90,7 +91,7 @@ def create_source_drawing_artist(
 
 def create_source_legend_artist(
     loc: npt.NDArray[np.float_], width: float, transform: Transform
-) -> plt.Artist:
+) -> matplotlib.artist.Artist:
     """Create a matplotlib artist for a source icon used in a legend.
 
     Note that `loc` and `width` should  be in legend canvas coordinates. Ideally, they

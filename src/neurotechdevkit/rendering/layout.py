@@ -1,5 +1,8 @@
 """Functions for rendering a layout plot of a scenario."""
-import matplotlib as mpl
+import matplotlib.axes
+import matplotlib.colors
+import matplotlib.figure
+import matplotlib.lines
 import matplotlib.pyplot as plt
 import numpy as np
 import numpy.typing as npt
@@ -25,7 +28,7 @@ def create_layout_fig(
     origin: npt.NDArray[np.float_],
     color_sequence: list[str],
     field: npt.NDArray[np.int_],
-) -> tuple[plt.Figure, plt.Axes]:
+) -> tuple[matplotlib.figure.Figure, matplotlib.axes.Axes]:
     """Create an unformatted figure showing the layout of a scenario.
 
     Unformatted means that the data has been plotted, but things like axes ticks and
@@ -57,7 +60,7 @@ def create_layout_fig(
         [origin[1], origin[1] + extent[1], origin[0] + extent[0], origin[0]]
     )
 
-    cmap = mpl.colors.ListedColormap(color_sequence)
+    cmap = matplotlib.colors.ListedColormap(color_sequence)
     clim = (-0.5, len(color_sequence) - 0.5)
     ax.imshow(field, cmap=cmap, extent=imshow_extent, clim=clim)
 
@@ -65,8 +68,8 @@ def create_layout_fig(
 
 
 def configure_layout_plot(
-    fig: plt.Figure,
-    ax: plt.Axes,
+    fig: matplotlib.figure.Figure,
+    ax: matplotlib.axes.Axes,
     color_sequence: list[str],
     layer_labels: list[str],
     show_sources: bool,
@@ -109,7 +112,7 @@ def configure_layout_plot(
 
 
 def _configure_legend(
-    ax: plt.Axes,
+    ax: matplotlib.axes.Axes,
     layer_labels: list[str],
     color_sequence: list[str],
     show_target: bool,
@@ -148,7 +151,7 @@ def _configure_legend(
     )
 
 
-def _get_material_layer_handle(color: str) -> plt.Line2D:
+def _get_material_layer_handle(color: str) -> matplotlib.lines.Line2D:
     """Create a legend handle for a material layer in the layout figure.
 
     Args:
@@ -157,4 +160,6 @@ def _get_material_layer_handle(color: str) -> plt.Line2D:
     Returns:
         A handle for the layer linestyle.
     """
-    return plt.Line2D([], [], color=color, linestyle="", marker="s", markersize=12)
+    return matplotlib.lines.Line2D(
+        [], [], color=color, linestyle="", marker="s", markersize=12
+    )
