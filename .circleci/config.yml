@@ -1,0 +1,36 @@
+# Tagging a commit with [circle front] will build the front page and perform tests-doc.
+# Tagging a commit with [circle full] will build everything.
+version: 2.1
+
+jobs:
+  build_docs:
+    docker:
+      - image: cimg/base:current-22.04
+    steps:
+      - checkout
+
+      - run:
+          name: Install the latest version of Poetry
+          command: |
+            curl -sSL https://install.python-poetry.org | python3 -
+
+      - run:
+          name: Install dependencies
+          command: |
+            poetry install --no-ansi
+
+      - run:
+          name: Build HTML
+          command: |
+            make docs
+
+      - store_artifacts:
+          path: site/
+          destination: html
+
+workflows:
+  version: 2
+
+  default:
+    jobs:
+      - build_docs
