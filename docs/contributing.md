@@ -64,20 +64,33 @@ Install stride with
 $ poetry run pip install git+https://github.com/trustimaging/stride
 ```
 
-`devito`, a dependency of `neurotechdevkit`, requires `libomp` to perform its runtime compilation. It can be installed on *MacOS* with:
+`devito`, a dependency of `neurotechdevkit`, requires `libomp`. On MacOS it can be installed with:
 
 ```
 brew install libomp
 ```
 
+the output of the command above will look like this:
+
+```
+For compilers to find libomp you may need to set:
+export LDFLAGS="-L/usr/local/opt/libomp/lib"
+export CPPFLAGS="-I/usr/local/opt/libomp/include"
+```
+
+`devito` requires the directory with `libomp` headers to be accessible during the runtime compilation, you can make it accessible by exporting a new environment variable `CPATH` with the path for libomp headers, like so:
+
+```
+export CPATH="/usr/local/opt/libomp/include"
+```
+
 You will also have to set an environment variable that defines what compiler `devito` will use, like so:
 
 ```
-export DEVITO_ARCH=clang
+export DEVITO_ARCH=gcc
 ```
 
 the supported values for `DEVITO_ARCH` are: `'custom', 'gnu', 'gcc', 'clang', 'aomp', 'pgcc', 'pgi', 'nvc', 'nvc++', 'nvidia', 'cuda', 'osx', 'intel', 'icpc', 'icc', 'intel-knl', 'knl', 'dpcpp', 'gcc-4.9', 'gcc-5', 'gcc-6', 'gcc-7', 'gcc-8', 'gcc-9', 'gcc-10', 'gcc-11'`
-
 
 
 ### Using the environment
