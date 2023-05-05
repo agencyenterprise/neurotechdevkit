@@ -149,7 +149,7 @@ class SourceHandler:
         legend: matplotlib.legend.Legend,
         orig_handle: TargetHandle,
         fontsize: float,
-        handlebox: matplotlib.offsetbox.OffsetBox,
+        handlebox: matplotlib.offsetbox.DrawingArea,
     ) -> tuple[matplotlib.artist.Artist, ...]:
         """Return the artist that draws the source in the legend.
 
