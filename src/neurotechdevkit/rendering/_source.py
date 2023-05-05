@@ -133,7 +133,7 @@ def _load_most_similar_source_image(
     focal_length: float,
     source_is_flat: bool,
 ) -> npt.NDArray[np.float_]:
-    """Loads the source image which best matches the specified aperture and focus.
+    """Load the source image which best matches the specified aperture and focus.
 
     Args:
         aperture: The aperture of the source (in meters).
@@ -161,7 +161,7 @@ def _load_most_similar_source_image(
 
 
 def source_should_be_flat(source: Source) -> bool:
-    """Determines if a source is flat based on the source type and focal length.
+    """Determine if a source is flat based on the source type and focal length.
 
     A source should be represented flat if the source is unfocused (as determined by
     `focal_length`) or the source is a phased array
@@ -180,7 +180,7 @@ def source_should_be_flat(source: Source) -> bool:
 def _select_image_file(
     aperture: float, focal_length: float, source_is_flat: bool
 ) -> pathlib.Path:
-    """Selects the image file to load based on aperture and focal length.
+    """Select the image file to load based on aperture and focal length.
 
     For focused transducers, we select the image file based on the angle subtended. For
     planar transducers, there is only one option.
@@ -205,7 +205,7 @@ def _select_image_file(
 
 
 def _choose_nearest(desired: float, options: list[int]) -> int:
-    """Returns the closest option to a desired value from a list of options.
+    """Return the closest option to a desired value from a list of options.
 
     Args:
         desired: The value for which we want the closest match.
@@ -221,7 +221,7 @@ def _choose_nearest(desired: float, options: list[int]) -> int:
 def _translate_and_rotate(
     raw_img: npt.NDArray[np.float_], direction: npt.NDArray[np.float_]
 ) -> npt.NDArray[np.float_]:
-    """Applies the required transformations to a source image.
+    """Apply the required transformations to a source image.
 
     This function encapsulates three operations:
     1. Pad the image array so that a rotation will not cut off parts of the image.

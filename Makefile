@@ -9,6 +9,7 @@ lint:
 	poetry run flake8 src tests
 	poetry run mypy src
 	poetry run codespell src
+	poetry run pydocstyle src
 
 lint-check:
 	poetry run isort --check  src tests
@@ -16,6 +17,7 @@ lint-check:
 	poetry run flake8  src tests
 	poetry run mypy src
 	poetry run codespell src
+	poetry run pydocstyle src
 
 test:
 	poetry run pytest tests

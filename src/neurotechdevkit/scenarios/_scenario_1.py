@@ -14,7 +14,7 @@ from ._utils import add_material_fields_to_problem, make_grid
 
 
 class _Scenario1MixinProtocol(Protocol):
-    """Provide type-hinting for Scenario 1 members used by mixins"""
+    """Provide type-hinting for Scenario 1 members used by mixins."""
 
     @property
     def scenario_id(self) -> str:

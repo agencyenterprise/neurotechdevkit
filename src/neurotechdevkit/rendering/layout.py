@@ -47,7 +47,6 @@ def create_layout_fig(
         fig: The new matplotlib figure.
         ax: The axes containing the plotted data.
     """
-
     assert len(extent) == 2, "The rendering only supports 2D fields."
 
     fig = plt.figure()
@@ -77,7 +76,7 @@ def configure_layout_plot(
     horizontal_label: str = "Y",
     title: str = "Scenario Layout",
 ) -> None:
-    """Configures a layout plot figure including axes, title, and legend.
+    """Configure a layout plot figure including axes, title, and legend.
 
     Args:
         fig: The layout plot figure to configure.
@@ -96,7 +95,6 @@ def configure_layout_plot(
         horizontal_label: The label to apply to the horizontal axis.
         title: The title to give the figure.
     """
-
     configure_title(fig, title)
     _configure_legend(ax, layer_labels, color_sequence, show_target, show_sources)
     configure_grid(ax)
@@ -125,7 +123,6 @@ def _configure_legend(
         show_target: Whether or not to show the target marker.
         show_sources: Whether or not to show the source markers.
     """
-
     config = LegendConfig()
 
     for label, color in zip(layer_labels, color_sequence):
@@ -151,7 +148,7 @@ def _configure_legend(
 
 
 def _get_material_layer_handle(color: str) -> plt.Line2D:
-    """Creates a legend handle for a material layer in the layout figure.
+    """Create a legend handle for a material layer in the layout figure.
 
     Args:
         color: the color to use for the layer in the legend.

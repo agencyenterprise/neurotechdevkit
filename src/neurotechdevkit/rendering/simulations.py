@@ -46,7 +46,6 @@ def create_steady_state_figure(
     Returns:
         A tuple with the figure and the axis that contain the steady-state data plot.
     """
-
     assert len(extent) == 2, "The rendering only supports 2D fields."
 
     fig = plt.figure()
@@ -66,7 +65,7 @@ def create_pulsed_figure(
     wavefield: npt.NDArray[np.float_],
     norm: str = "linear",
 ) -> tuple[plt.Figure, plt.Axes]:
-    """Creates a base figure containing the pulsed wavefield pressures.
+    """Create a base figure containing the pulsed wavefield pressures.
 
     The figure is used as a template to created frames for an animation. The colorbar
     is adjusted to the minimum and maximum pressure observed in the wavefield.
@@ -120,7 +119,7 @@ def configure_result_plot(
     title: str,
     clim: tuple[float, float] | None = None,
 ) -> None:
-    """Configures a results plot figure.
+    """Configure a results plot figure.
 
       Configuration includes: axes, title, colorbar, and legend.
 
@@ -139,7 +138,6 @@ def configure_result_plot(
         title: The title to give the figure.
         clim: A tuple with (min, max) values for the limits for the colorbar.
     """
-
     configure_title(fig, title, x_pos=0.63)
     _configure_colorbar(fig, ax, clim=clim)
 
@@ -185,7 +183,6 @@ def _configure_legend(ax: plt.Axes, show_sources: bool, show_target: bool) -> No
         show_target: Whether or not to show the target marker.
         show_sources: Whether or not to show the source markers.
     """
-
     config = LegendConfig()
 
     if show_target:
@@ -211,7 +208,7 @@ def _create_centered_bidirectional_cmap(
     vmin: float, vmax: float
 ) -> LinearSegmentedColormap:
     """
-    Extends the default colormap (viridis) to support negative values.
+    Extend the default colormap (viridis) to support negative values.
 
     Values close to zero in absolute value have almost identical color.
     Values diverge as they approach the extremes values `vmin` and `vmax`.
@@ -223,7 +220,6 @@ def _create_centered_bidirectional_cmap(
     Returns:
         A colormap where zero has always the same color (LinearSegmentedColorMap).
     """
-
     ratio = np.abs(vmin / vmax)
     n_points = 128
     colors1 = cm.viridis(np.linspace(0, 1, int(n_points * ratio)))

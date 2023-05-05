@@ -144,7 +144,7 @@ def add_material_layers(
     scenario: "scenarios.Scenario3D",
     viewer_config: ViewerConfig3D,
 ) -> None:
-    """Adds the individual material layers as images to a napari Viewer.
+    """Add the individual material layers as images to a napari Viewer.
 
     Args:
         viewer: The napari Viewer to which the layers should be added.
@@ -169,7 +169,7 @@ def add_material_layers(
 def add_steady_state_amplitudes(
     viewer: _NapariViewer, amplitudes: npt.NDArray[np.float_]
 ) -> None:
-    """Adds the steady-state amplitudes as an image layer to a napari Viewer.
+    """Add the steady-state amplitudes as an image layer to a napari Viewer.
 
     Args:
         viewer: The napari Viewer to which the target should be added.
@@ -184,7 +184,7 @@ def add_steady_state_amplitudes(
 
 
 def add_target(viewer: _NapariViewer, scenario: "scenarios.Scenario3D") -> None:
-    """Adds the target as a shapes layer to a napari Viewer.
+    """Add the target as a shapes layer to a napari Viewer.
 
     Args:
         viewer: The napari Viewer to which the target should be added.
@@ -241,7 +241,7 @@ def add_target(viewer: _NapariViewer, scenario: "scenarios.Scenario3D") -> None:
 def add_source(
     viewer: _NapariViewer, scenario: "scenarios.Scenario3D", source: "sources.Source"
 ) -> None:
-    """Adds the source as a points layer to a napari Viewer.
+    """Add the source as a points layer to a napari Viewer.
 
     Each individual point source is plotted as a point.
 
