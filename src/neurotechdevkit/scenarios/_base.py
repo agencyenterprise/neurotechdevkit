@@ -3,7 +3,8 @@ from __future__ import annotations
 import abc
 import asyncio
 from dataclasses import dataclass
-from typing import Mapping
+from stride.problem import StructuredData
+from typing import Mapping, cast
 
 import nest_asyncio
 import numpy as np
@@ -425,7 +426,7 @@ class Scenario(abc.ABC):
             grid_shape=self.shape,
             recording_time_undersampling=recording_time_undersampling,
             n_cycles_steady_state=n_cycles_steady_state,
-            time_steps=problem.grid.time.grid.shape[0],
+            time_steps=cast(np.ndarray, problem.grid.time.grid).shape[0],
         )
 
         sub_problem = self._setup_sub_problem(center_frequency, "steady-state")
@@ -440,10 +441,11 @@ class Scenario(abc.ABC):
             wavefield_slice=self._wavefield_slice(),
             n_jobs=n_jobs,
         )
+        assert isinstance(pde.wavefield, StructuredData)
+        assert sub_problem.shot is not None
 
         # put the time axis last and remove the empty last frame
         wavefield = np.moveaxis(pde.wavefield.data[:-1], 0, -1)
-        assert sub_problem.shot is not None
         return scenarios.create_steady_state_result(
             scenario=self,
             center_frequency=center_frequency,
@@ -596,6 +598,8 @@ class Scenario(abc.ABC):
             wavefield_slice=self._wavefield_slice(slice_axis, slice_position),
             n_jobs=n_jobs,
         )
+        assert isinstance(pde.wavefield, StructuredData)
+        assert sub_problem.shot is not None
 
         # put the time axis last and remove the empty last frame
         wavefield = np.moveaxis(pde.wavefield.data[:-1], 0, -1)
@@ -648,6 +652,7 @@ class Scenario(abc.ABC):
             the `Shot` to use for the simulation.
         """
         problem = self.problem
+        assert problem.grid.time is not None
 
         wavelet_name = choose_wavelet_for_mode(simulation_mode)
         wavelet = wavelet_helper(
@@ -655,7 +660,7 @@ class Scenario(abc.ABC):
         )
         return create_shot(problem, sources, self.origin, wavelet, self.dx)
 
-    def _create_pde(self) -> stride.Operator:
+    def _create_pde(self) -> stride.IsoAcousticDevito:
         """Instantiate the stride `Operator` representing the PDE for the scenario.
 
         All existing scenarios use the `IsoAcousticDevito` operator.
@@ -844,7 +849,7 @@ class Scenario(abc.ABC):
             devito_args = dict(nthreads=n_jobs)
         assert sub_problem.shot is not None
         loop = asyncio.get_event_loop()
-        return loop.run_until_complete(
+        return cast(stride.Traces, loop.run_until_complete(
             pde(
                 wavelets=sub_problem.shot.wavelets,
                 vp=problem.medium.fields["vp"],
@@ -859,7 +864,7 @@ class Scenario(abc.ABC):
                 wavefield_slice=wavefield_slice,
                 devito_args=devito_args,
             )
-        )
+        ))
 
     @abc.abstractmethod
     def render_material_property(
@@ -906,9 +911,9 @@ class Scenario2D(Scenario):
             show_material_outlines: whether or not to display a thin white outline of
                 the transition between different materials.
         """
-        color_sequence = [
+        color_sequence = cast(list[str], [
             self.materials[name].render_color for name in self.ordered_layers
-        ]
+        ])
         field = self.get_field_data("layer").astype(int)
         fig, ax = rendering.create_layout_fig(
             self.extent, self.origin, color_sequence, field
@@ -1090,9 +1095,9 @@ class Scenario3D(Scenario):
         if slice_position is None:
             slice_position = self.get_default_slice_position(slice_axis)
 
-        color_sequence = [
+        color_sequence = cast(list[str], [
             self.materials[name].render_color for name in self.ordered_layers
-        ]
+        ])
         field = self.get_field_data("layer").astype(int)
         field = slice_field(field, self, slice_axis, slice_position)
         extent = drop_element(self.extent, slice_axis)

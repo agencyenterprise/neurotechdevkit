@@ -125,8 +125,8 @@ def _create_scenario_0_mask(material, grid, origin):
 
 
 def _create_skull_interface_mask(grid, origin):
-    skull_outer_radii = (0.01275, 0.01)
-    skull_center = (0.025, 0.0)
+    skull_outer_radii = np.array([0.01275, 0.01])
+    skull_center = np.array([0.025, 0.0])
 
     skull_a, skull_b = skull_outer_radii
     outer_skull_mask = create_grid_elliptical_mask(
@@ -138,9 +138,9 @@ def _create_skull_interface_mask(grid, origin):
 
 
 def _create_brain_interface_mask(grid, origin):
-    skull_outer_radii = (0.01275, 0.01)
+    skull_outer_radii = np.array([0.01275, 0.01])
     skull_thickness = 0.001
-    skull_center = (0.025, 0.0)
+    skull_center = np.array([0.025, 0.0])
 
     skull_a, skull_b = skull_outer_radii
     brain_center = skull_center
@@ -156,6 +156,6 @@ def _create_brain_interface_mask(grid, origin):
 
 def _create_tumor_mask(grid, origin):
     tumor_radius = 0.0013
-    tumor_center = (0.0285, 0.0025)
+    tumor_center = np.array([0.0285, 0.0025])
     tumor_mask = create_grid_circular_mask(grid, origin, tumor_center, tumor_radius)
     return tumor_mask

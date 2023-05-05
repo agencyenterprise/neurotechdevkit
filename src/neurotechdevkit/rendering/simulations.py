@@ -1,6 +1,7 @@
 """Simulation rendering functions."""
 from __future__ import annotations
 
+import matplotlib as mpl
 import matplotlib.axes
 import matplotlib.figure
 import matplotlib.pyplot as plt
@@ -230,8 +231,9 @@ def _create_centered_bidirectional_cmap(
     """
     ratio = np.abs(vmin / vmax)
     n_points = 128
-    colors1 = cm.viridis(np.linspace(0, 1, int(n_points * ratio)))
-    colors2 = cm.viridis(np.linspace(0.0, 1, n_points))
+    cmap = mpl.colormaps['viridis']
+    colors1 = cmap(np.linspace(0, 1, int(n_points * ratio)))
+    colors2 = cmap(np.linspace(0.0, 1, n_points))
 
     def modify_viridis(color, it, delta_color=1 / int(n_points * ratio)):
         """Gradually modifies the color of the original color map."""

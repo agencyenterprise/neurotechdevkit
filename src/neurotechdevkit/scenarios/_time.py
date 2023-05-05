@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Mapping
+from typing import Mapping, cast
 
 import numpy as np
 import stride
@@ -16,7 +16,7 @@ def select_simulation_time_for_steady_state(
     time_to_steady_state: float | None,
     n_cycles_steady_state: int,
     delay: float,
-) -> stride.Time:
+) -> float:
     """Determine how much time (in seconds) to simulate for a steady-state simulation.
 
     In order to reach near-steady-state conditions, we need the simulation to run for
@@ -43,9 +43,9 @@ def select_simulation_time_for_steady_state(
         The amount of time (in seconds) to simulate.
     """
     if time_to_steady_state is None:
-        min_speed_of_sound = min([m.vp for m in materials.values()])
+        min_speed_of_sound = min(cast(list[float], [m.vp for m in materials.values()]))
         assert grid.space is not None
-        diagonal_length = np.linalg.norm(grid.space.size)
+        diagonal_length = cast(float, np.linalg.norm(grid.space.size))
         time_to_steady_state = (2 * diagonal_length) / min_speed_of_sound
 
     period = 1.0 / freq_hz
@@ -58,7 +58,7 @@ def select_simulation_time_for_pulsed(
     grid: stride.Grid,
     materials: Mapping[str, Struct],
     delay: float,
-):
+ ) -> float:
     """Determine how much time (in seconds) to simulate for a pulsed simulation.
 
     For pulsed simulations, we usually want to simulate enough time for the wave to
@@ -76,9 +76,9 @@ def select_simulation_time_for_pulsed(
     Returns:
         The amount of time (in seconds) to simulate.
     """
-    min_speed_of_sound = min([m.vp for m in materials.values()])
+    min_speed_of_sound = min(cast(list[float], [m.vp for m in materials.values()]))
     assert grid.space is not None
-    diagonal_length = np.linalg.norm(grid.space.size)
+    diagonal_length = cast(float, np.linalg.norm(grid.space.size))
     return delay + diagonal_length / min_speed_of_sound
 
 
