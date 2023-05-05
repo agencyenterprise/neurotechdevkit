@@ -83,7 +83,7 @@ markers = [
 ]
 
 [tool.pyright]
-include = ["src", "tests"]
+include = ["src"]
 
 # [tool.flake8]
 # flake8 does not support config in pyproject.toml, see .flake8

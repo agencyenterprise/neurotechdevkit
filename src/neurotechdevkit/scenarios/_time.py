@@ -58,7 +58,7 @@ def select_simulation_time_for_pulsed(
     grid: stride.Grid,
     materials: Mapping[str, Struct],
     delay: float,
- ) -> float:
+) -> float:
     """Determine how much time (in seconds) to simulate for a pulsed simulation.
 
     For pulsed simulations, we usually want to simulate enough time for the wave to

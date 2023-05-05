@@ -1,4 +1,6 @@
 """Functions for rendering a layout plot of a scenario."""
+from typing import cast
+
 import matplotlib.axes
 import matplotlib.colors
 import matplotlib.figure
@@ -6,8 +8,6 @@ import matplotlib.lines
 import matplotlib.pyplot as plt
 import numpy as np
 import numpy.typing as npt
-
-from typing import cast
 
 from ._formatting import (
     configure_axis_labels,

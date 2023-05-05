@@ -3,7 +3,7 @@ from __future__ import annotations
 import abc
 import asyncio
 from dataclasses import dataclass
-from stride.problem import StructuredData
+from types import SimpleNamespace
 from typing import Mapping, cast
 
 import nest_asyncio
@@ -12,6 +12,7 @@ import numpy.typing as npt
 import stride
 from frozenlist import FrozenList
 from mosaic.types import Struct
+from stride.problem import StructuredData
 
 from .. import rendering, scenarios
 from ..sources import Source
@@ -441,7 +442,7 @@ class Scenario(abc.ABC):
             wavefield_slice=self._wavefield_slice(),
             n_jobs=n_jobs,
         )
-        assert isinstance(pde.wavefield, StructuredData)
+        assert isinstance(pde.wavefield, (StructuredData, SimpleNamespace))
         assert sub_problem.shot is not None
 
         # put the time axis last and remove the empty last frame
@@ -598,7 +599,7 @@ class Scenario(abc.ABC):
             wavefield_slice=self._wavefield_slice(slice_axis, slice_position),
             n_jobs=n_jobs,
         )
-        assert isinstance(pde.wavefield, StructuredData)
+        assert isinstance(pde.wavefield, (StructuredData, SimpleNamespace))
         assert sub_problem.shot is not None
 
         # put the time axis last and remove the empty last frame
@@ -849,22 +850,25 @@ class Scenario(abc.ABC):
             devito_args = dict(nthreads=n_jobs)
         assert sub_problem.shot is not None
         loop = asyncio.get_event_loop()
-        return cast(stride.Traces, loop.run_until_complete(
-            pde(
-                wavelets=sub_problem.shot.wavelets,
-                vp=problem.medium.fields["vp"],
-                rho=problem.medium.fields["rho"],
-                alpha=problem.medium.fields["alpha"],
-                problem=sub_problem,
-                boundary_type="complex_frequency_shift_PML_2",
-                diff_source=True,
-                save_wavefield=True,
-                save_bounds=save_bounds,
-                save_undersampling=save_undersampling,
-                wavefield_slice=wavefield_slice,
-                devito_args=devito_args,
-            )
-        ))
+        return cast(
+            stride.Traces,
+            loop.run_until_complete(
+                pde(
+                    wavelets=sub_problem.shot.wavelets,
+                    vp=problem.medium.fields["vp"],
+                    rho=problem.medium.fields["rho"],
+                    alpha=problem.medium.fields["alpha"],
+                    problem=sub_problem,
+                    boundary_type="complex_frequency_shift_PML_2",
+                    diff_source=True,
+                    save_wavefield=True,
+                    save_bounds=save_bounds,
+                    save_undersampling=save_undersampling,
+                    wavefield_slice=wavefield_slice,
+                    devito_args=devito_args,
+                )
+            ),
+        )
 
     @abc.abstractmethod
     def render_material_property(
@@ -911,9 +915,10 @@ class Scenario2D(Scenario):
             show_material_outlines: whether or not to display a thin white outline of
                 the transition between different materials.
         """
-        color_sequence = cast(list[str], [
-            self.materials[name].render_color for name in self.ordered_layers
-        ])
+        color_sequence = cast(
+            list[str],
+            [self.materials[name].render_color for name in self.ordered_layers],
+        )
         field = self.get_field_data("layer").astype(int)
         fig, ax = rendering.create_layout_fig(
             self.extent, self.origin, color_sequence, field
@@ -1095,9 +1100,10 @@ class Scenario3D(Scenario):
         if slice_position is None:
             slice_position = self.get_default_slice_position(slice_axis)
 
-        color_sequence = cast(list[str], [
-            self.materials[name].render_color for name in self.ordered_layers
-        ])
+        color_sequence = cast(
+            list[str],
+            [self.materials[name].render_color for name in self.ordered_layers],
+        )
         field = self.get_field_data("layer").astype(int)
         field = slice_field(field, self, slice_axis, slice_position)
         extent = drop_element(self.extent, slice_axis)

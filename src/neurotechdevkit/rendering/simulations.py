@@ -1,16 +1,16 @@
 """Simulation rendering functions."""
 from __future__ import annotations
 
+from typing import cast
+
 import matplotlib as mpl
 import matplotlib.axes
 import matplotlib.figure
 import matplotlib.pyplot as plt
 import numpy as np
 import numpy.typing as npt
-from matplotlib import cm
 from matplotlib.colors import LinearSegmentedColormap
 
-from typing import cast
 from ._formatting import (
     configure_axis_labels,
     configure_axis_ticks,
@@ -231,7 +231,7 @@ def _create_centered_bidirectional_cmap(
     """
     ratio = np.abs(vmin / vmax)
     n_points = 128
-    cmap = mpl.colormaps['viridis']
+    cmap = mpl.colormaps["viridis"]
     colors1 = cmap(np.linspace(0, 1, int(n_points * ratio)))
     colors2 = cmap(np.linspace(0.0, 1, n_points))
 
