@@ -42,7 +42,7 @@ jobs:
         run: poetry run pip install git+https://github.com/trustimaging/stride
 
       - name: Install napari
-        run: poetry run pip install "napari[all]"
+        run: poetry run pip install napari
 
       - name: Run linting
         run: |
