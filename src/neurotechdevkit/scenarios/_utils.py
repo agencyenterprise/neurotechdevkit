@@ -15,7 +15,7 @@ def make_grid(
     extra: int | Iterable[int] = 50,
     absorbing: int | Iterable[int] = 40,
 ) -> stride.Grid:
-    """Creates a stride Grid.
+    """Create a stride Grid.
 
     Note that the time component of the grid is not defined here. That is created
     at simulation time because it depends on simulation parameters.
@@ -63,14 +63,13 @@ def add_material_fields_to_problem(
     layer_ids: Mapping[str, int],
     masks: Mapping[str, npt.NDArray[np.bool_]],
 ) -> stride.Problem:
-    """Adds material fields as media to the problem.
+    """Add material fields as media to the problem.
 
     Included fields are:
     * the speed of sound (in m/s)
     * density (in kg/m^3)
     * absorption (in dB/cm)
     """
-
     grid = problem.grid
 
     vp = stride.ScalarField(name="vp", grid=grid)  # [m/s]
@@ -99,7 +98,7 @@ def add_material_fields_to_problem(
 
 
 def choose_wavelet_for_mode(simulation_mode: str) -> str:
-    """Returns the appropriate wavelet name for a given simulation mode.
+    """Return the appropriate wavelet name for a given simulation mode.
 
     Args:
         simulation_mode: the type of simulation which will be run.
@@ -124,7 +123,7 @@ def wavelet_helper(
     freq_hz: float = 5.0e5,
     pressure: float = 6.0e4,
 ) -> npt.NDArray[np.float_]:
-    """Creates an array corresponding to the requested wavelet.
+    """Create an array corresponding to the requested wavelet.
 
     The wavelet returned from this function is intended to be applied to stride point
     sources. It should be scaled and delayed as needed in order to simulate a source
@@ -169,7 +168,7 @@ def wavelet_helper(
 def slice_field(
     field: npt.NDArray, scenario, slice_axis: int, slice_position: float
 ) -> npt.NDArray:
-    """Returns a slice of a field at a desired position along an axis.
+    """Return a slice of a field at a desired position along an axis.
 
     If `slice_position` does not align exactly with the scenario grid, the closest
     gridpoint will be used. If `slice_position` is outside of the bounds of the grid,
@@ -196,7 +195,7 @@ def slice_field(
 
 
 def drop_element(arr: npt.NDArray, drop_idx: int) -> npt.NDArray:
-    """Drops the element of a vector which corresponds to slice_axis.
+    """Drop the element of a vector which corresponds to slice_axis.
 
     Args:
         arr: a 1D numpy array containing the vector to be sliced.
@@ -211,7 +210,7 @@ def drop_element(arr: npt.NDArray, drop_idx: int) -> npt.NDArray:
 
 
 def drop_column(arr: npt.NDArray, drop_idx: int) -> npt.NDArray:
-    """Drops the column of a 2D array which corresponds to slice_axis.
+    """Drop the column of a 2D array which corresponds to slice_axis.
 
     Args:
         arr: a 2D numpy array containing the data to be sliced.
@@ -232,7 +231,7 @@ def create_grid_elliptical_mask(
     a: float,
     b: float,
 ) -> npt.NDArray[np.bool_]:
-    """Returns a 2D mask array for an ellipse with the specified parameters.
+    """Return a 2D mask array for an ellipse with the specified parameters.
 
     Array elements are True for the gridpoints within the ellipse and False otherwise.
 
@@ -256,7 +255,7 @@ def create_grid_circular_mask(
     center: npt.NDArray[np.float_],
     radius: float,
 ) -> npt.NDArray[np.bool_]:
-    """Returns a 2D mask array for a circle with the specified parameters.
+    """Return a 2D mask array for a circle with the specified parameters.
 
     Array elements are True for the gridpoints within the circle and False otherwise.
 
@@ -279,7 +278,7 @@ def create_grid_spherical_mask(
     center: npt.NDArray[np.float_],
     radius: float,
 ) -> npt.NDArray[np.bool_]:
-    """Returns a 3D mask array for a sphere with the specified parameters.
+    """Return a 3D mask array for a sphere with the specified parameters.
 
     Array elements are True for the gridpoints within the sphere and False otherwise.
 
@@ -302,7 +301,7 @@ def _create_nd_ellipse_mask(
     center: npt.NDArray[np.float_],
     radii: npt.NDArray[np.float_],
 ) -> npt.NDArray[np.bool_]:
-    """Returns a mask array for an N-D ellipse with the specified parameters.
+    """Return a mask array for an N-D ellipse with the specified parameters.
 
     If the grid is 2D, then a 2D ellipse will be returned. If the grid is 3D, then a 3D
     ellipsoid will be returned.

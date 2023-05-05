@@ -1,3 +1,4 @@
+"""Main package for the neurotechdevkit."""
 from __future__ import annotations
 
 from . import scenarios
@@ -12,13 +13,14 @@ __all__ = [
 
 
 class ScenarioNotFoundError(Exception):
+    """Exception raised when a scenario is not found."""
+
     pass
 
 
-def make(scenario_id, complexity="fast"):
+def make(scenario_id: str, complexity="fast"):
     """
-    Initialize a scenario. This will return an object which represents
-    the simulation.
+    Initialize a scenario and return an object which represents the simulation.
 
     Args:
         scenario_id (str): the id of the scenario to load. Supported
@@ -42,7 +44,6 @@ def make(scenario_id, complexity="fast"):
     Returns:
         scenarios.Scenario: an object representing the simulation.
     """
-
     if scenario_id not in _scenario_map:
         raise ScenarioNotFoundError(
             f"Scenario '{scenario_id}' does not exist. Please refer to documentation"

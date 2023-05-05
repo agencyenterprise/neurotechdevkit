@@ -6,7 +6,7 @@ from .font import AXIS_LABEL_FONT_PROPS, AXIS_TICK_FONT_PROPS, TITLE_FONT_PROPS
 
 
 def configure_title(fig: plt.Figure, title: str, x_pos: float = 0.5) -> None:
-    """Configures the title of the plot.
+    """Configure the title of the plot.
 
     Note: we might expect that 0.5 in figure coordinates would place the text centered
     above the plot, but this does not seem to always be the case. The `x_pos` parameter
@@ -30,7 +30,7 @@ def configure_title(fig: plt.Figure, title: str, x_pos: float = 0.5) -> None:
 def configure_axis_labels(
     ax: plt.Axes, horizontal_label: str, vertical_label: str
 ) -> None:
-    """Configures the labels for the X and Y axes.
+    """Configure the labels for the X and Y axes.
 
     Args:
         ax: The axes containing the labels to be configured.
@@ -50,7 +50,7 @@ def configure_axis_labels(
 
 
 def configure_axis_ticks(ax: plt.Axes) -> None:
-    """Configures the ticks and tick labels for the X and Y axes.
+    """Configure the ticks and tick labels for the X and Y axes.
 
     Args:
         ax: The axes containing the ticks to be configured.
@@ -61,7 +61,7 @@ def configure_axis_ticks(ax: plt.Axes) -> None:
 
 
 def configure_grid(ax: plt.Axes) -> None:
-    """Configures the grid for the plot.
+    """Configure the grid for the plot.
 
     Args:
         ax: The axes containing the grid to be configured.
