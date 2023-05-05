@@ -791,7 +791,7 @@ class PulsedResult3D(PulsedResult):
 
         Args:
             slice_axis: the axis along which to slice the 3D field to be recorded. If
-                None, then the complete field wil be recorded.
+                None, then the complete field will be recorded.
             slice_position: the position (in meters) along the slice axis at
                 which the slice of the 3D field should be made.
 
