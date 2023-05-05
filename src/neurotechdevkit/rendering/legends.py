@@ -1,4 +1,6 @@
 """Legends module."""
+from typing import Optional
+
 import matplotlib.artist
 import matplotlib.legend
 import matplotlib.legend_handler
@@ -22,7 +24,7 @@ class LegendConfig:
         self,
         label: str,
         handle: object,
-        custom_handler: matplotlib.legend_handler.HandlerBase = None,
+        custom_handler: Optional[matplotlib.legend_handler.HandlerBase] = None,
     ) -> None:
         """Add a new legend item to the config.
 
@@ -150,7 +152,7 @@ class SourceHandler:
         orig_handle: TargetHandle,
         fontsize: float,
         handlebox: matplotlib.offsetbox.DrawingArea,
-    ) -> tuple[matplotlib.artist.Artist, ...]:
+    ) -> matplotlib.artist.Artist:
         """Return the artist that draws the source in the legend.
 
         Args:

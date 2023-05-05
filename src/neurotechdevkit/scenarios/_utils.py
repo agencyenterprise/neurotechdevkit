@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Iterable, Mapping
+from typing import Iterable, Mapping, cast
 
 import numpy as np
 import numpy.typing as npt
@@ -318,6 +318,7 @@ def _create_nd_ellipse_mask(
     Returns:
         The 2D or 3D boolean mask where gridpoints within the ellipse are True.
     """
+    assert grid.space is not None
     shape = grid.space.shape
     spacing = grid.space.spacing
 
@@ -331,4 +332,4 @@ def _create_nd_ellipse_mask(
     )
     in_ellipse = distance_from_center_sq <= 1
 
-    return in_ellipse
+    return cast(npt.NDArray[np.bool_], in_ellipse)

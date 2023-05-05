@@ -44,6 +44,7 @@ def select_simulation_time_for_steady_state(
     """
     if time_to_steady_state is None:
         min_speed_of_sound = min([m.vp for m in materials.values()])
+        assert grid.space is not None
         diagonal_length = np.linalg.norm(grid.space.size)
         time_to_steady_state = (2 * diagonal_length) / min_speed_of_sound
 
@@ -76,6 +77,7 @@ def select_simulation_time_for_pulsed(
         The amount of time (in seconds) to simulate.
     """
     min_speed_of_sound = min([m.vp for m in materials.values()])
+    assert grid.space is not None
     diagonal_length = np.linalg.norm(grid.space.size)
     return delay + diagonal_length / min_speed_of_sound
 

@@ -101,6 +101,7 @@ class Scenario(abc.ABC):
     @property
     def extent(self) -> npt.NDArray[np.float_]:
         """The extent of the spatial grid (in meters)."""
+        assert self.problem.space is not None
         return np.array(self.problem.space.size, dtype=float)
 
     @property
@@ -111,6 +112,7 @@ class Scenario(abc.ABC):
     @property
     def shape(self) -> npt.NDArray[np.int_]:
         """The shape of the spatial grid (in number of grid points)."""
+        assert self.problem.space is not None
         return np.array(self.problem.space.shape, dtype=int)
 
     @property
@@ -119,6 +121,7 @@ class Scenario(abc.ABC):
 
         Spacing is the same in each spatial direction.
         """
+        assert self.problem.space is not None
         return self.problem.space.spacing[0]
 
     @property
@@ -440,7 +443,7 @@ class Scenario(abc.ABC):
 
         # put the time axis last and remove the empty last frame
         wavefield = np.moveaxis(pde.wavefield.data[:-1], 0, -1)
-
+        assert sub_problem.shot is not None
         return scenarios.create_steady_state_result(
             scenario=self,
             center_frequency=center_frequency,
@@ -691,7 +694,7 @@ class Scenario(abc.ABC):
             A tuple of slices defining the region of the grid to record.
         """
         space = self.problem.space
-
+        assert space is not None
         standard_slice = tuple(
             [
                 # save all time points
@@ -793,6 +796,7 @@ class Scenario(abc.ABC):
         """
         n_frames = ppp * n_cycles
         time = self.problem.time
+        assert time is not None
         return (time.num - n_frames, time.num - 1)
 
     def _get_pulsed_recording_time_bounds(self) -> tuple[int, int]:
@@ -805,6 +809,7 @@ class Scenario(abc.ABC):
                 be recorded for a pulsed simulation.
         """
         time = self.problem.time
+        assert time is not None
         return (0, time.num - 1)
 
     def _execute_pde(
@@ -837,6 +842,7 @@ class Scenario(abc.ABC):
         devito_args = {}
         if n_jobs is not None:
             devito_args = dict(nthreads=n_jobs)
+        assert sub_problem.shot is not None
         loop = asyncio.get_event_loop()
         return loop.run_until_complete(
             pde(

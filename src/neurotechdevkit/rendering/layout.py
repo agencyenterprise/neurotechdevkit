@@ -63,7 +63,6 @@ def create_layout_fig(
     cmap = matplotlib.colors.ListedColormap(color_sequence)
     clim = (-0.5, len(color_sequence) - 0.5)
     ax.imshow(field, cmap=cmap, extent=imshow_extent, clim=clim)
-
     return fig, ax
 
 
