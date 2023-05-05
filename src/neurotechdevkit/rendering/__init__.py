@@ -1,3 +1,4 @@
+"""Rendering module."""
 from ._animations import (
     configure_matplotlib_for_embedded_animation,
     display_video_file,

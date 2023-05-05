@@ -12,7 +12,7 @@ ARTIST_NAME = "NDK Research"
 
 
 def display_video_file(file_name: str) -> Video:
-    """Renders a video file in a Ipython environment.
+    """Render a video file in a Ipython environment.
 
     Args:
         file_name: the file name containing the animation to display.
@@ -24,7 +24,7 @@ def display_video_file(file_name: str) -> Video:
 
 
 def video_only_output(func: Callable) -> Callable:
-    """A decorator to create the context for video creation.
+    """Create the context for video creation (decorator).
 
     It deactivates the interactive environment while the animation is being created.
     It re-activates the interactive environment after the animation was created.
@@ -76,7 +76,7 @@ def make_animation(
     wavefield: npt.NDArray[np.float_],
     n_frames_undersampling: int,
 ) -> FuncAnimation:
-    """Creates an animation of a time evolution of `wavefield`.
+    """Create an animation of a time evolution of `wavefield`.
 
     Args:
         fig: matplotlib figure that would act as template for the animation.
@@ -88,7 +88,6 @@ def make_animation(
     Returns:
         An animation object.
     """
-
     if wavefield.ndim != 3:
         raise ValueError("Animations only supported for 2D scenarios/slices only.")
 
@@ -135,7 +134,7 @@ def save_animation(
     bitrate: int = 2500,
 ) -> None:
     """
-    Saves an animation object to a file in disk.
+    Save an animation object to a file in disk.
 
     `ffmpeg` is required to create the animation.
     Currently only mp4 format is supported.
