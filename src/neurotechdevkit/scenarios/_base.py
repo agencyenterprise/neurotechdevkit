@@ -546,8 +546,8 @@ class Scenario(abc.ABC):
             n_jobs: The number of threads to be used for the computation. Use None to
                 leverage Devito automatic tuning.
             slice_axis: the axis along which to slice the 3D field to be recorded. If
-                None, then the complete field wil be recorded. Use 0 for X axis, 1 for Y
-                axis and 2 for Z axis. Only valid if `slice_position` is not None.
+                None, then the complete field will be recorded. Use 0 for X axis, 1 for
+                Y axis and 2 for Z axis. Only valid if `slice_position` is not None.
             slice_position: the position (in meters) along the slice axis at
                 which the slice of the 3D field should be made. Only valid if
                 `slice_axis` is not None.
@@ -686,8 +686,8 @@ class Scenario(abc.ABC):
 
         Args:
             slice_axis: the axis along which to slice the 3D field to be recorded. If
-                None, then the complete field wil be recorded. Use 0 for X axis, 1 for Y
-                axis and 2 for Z axis.
+                None, then the complete field will be recorded. Use 0 for X axis, 1 for
+                Y axis and 2 for Z axis.
             slice_position: the position (in meters) along the slice axis at
                 which the slice of the 3D field should be made.
 
@@ -741,8 +741,8 @@ class Scenario(abc.ABC):
 
         Args:
             slice_axis: the axis along which to slice the 3D field to be recorded. If
-                None, then the complete field wil be recorded. Use 0 for X axis, 1 for Y
-                axis and 2 for Z axis.
+                None, then the complete field will be recorded. Use 0 for X axis, 1
+                for Y axis and 2 for Z axis.
             slice_position: the position (in meters) along the slice axis at
                 which the slice of the 3D field should be made.
 
@@ -1024,8 +1024,8 @@ class Scenario3D(Scenario):
             n_jobs: The number of threads to be used for the computation. Use None to
                 leverage Devito automatic tuning.
             slice_axis: the axis along which to slice the 3D field to be recorded. If
-                None, then the complete field wil be recorded. Use 0 for X axis, 1 for Y
-                axis and 2 for Z axis. Only valid if `slice_position` is not None.
+                None, then the complete field will be recorded. Use 0 for X axis, 1 for
+                Y axis and 2 for Z axis. Only valid if `slice_position` is not None.
             slice_position: the position (in meters) along the slice axis at
                 which the slice of the 3D field should be made. Only valid if
                 `slice_axis` is not None.

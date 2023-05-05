@@ -563,6 +563,24 @@ pytools = ">=2015.1.2"
 six = "*"
 
 [[package]]
+name = "codespell"
+version = "2.2.4"
+description = "Codespell"
+category = "dev"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "codespell-2.2.4-py3-none-any.whl", hash = "sha256:7d984b8130108e6f82524b7d09f8b7bf2fb1e398c5d4b37d9e2bd310145b3e29"},
+    {file = "codespell-2.2.4.tar.gz", hash = "sha256:0b4620473c257d9cde1ff8998b26b2bb209a35c2b7489f5dc3436024298ce83a"},
+]
+
+[package.extras]
+dev = ["Pygments", "build", "chardet", "flake8", "flake8-pyproject", "pytest", "pytest-cov", "pytest-dependency", "tomli"]
+hard-encoding-detection = ["chardet"]
+toml = ["tomli"]
+types = ["chardet (>=5.1.0)", "mypy", "pytest", "pytest-cov", "pytest-dependency"]
+
+[[package]]
 name = "colorama"
 version = "0.4.6"
 description = "Cross-platform colored terminal text."
@@ -4138,4 +4156,4 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<3.11"
-content-hash = "4057c5c78346f4f421580da855b3b2bbc8474b42e0d97eb6a5ec5939c28e1695"
+content-hash = "9384a07b55da8e3426fe314e1fe72b8406195630986c85130295e031b59d6829"

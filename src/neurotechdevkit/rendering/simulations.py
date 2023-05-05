@@ -82,7 +82,7 @@ def create_pulsed_figure(
             the field along each axis.
         origin: An array of shape (2,) which contains the spatial coordinates (in
             meters) of the field element with indices (0, 0).
-        wavefield: An array in 2 spacial dimensions and one temporal dimension with the
+        wavefield: An array in 2 spatial dimensions and one temporal dimension with the
             recorded pressures during the simulation. The temporal dimension should
             be the last one.
         norm: The normalization method used to scale scalar data to the [0, 1]
