@@ -9,6 +9,7 @@ import numpy.typing as npt
 from matplotlib import cm
 from matplotlib.colors import LinearSegmentedColormap
 
+from typing import cast
 from ._formatting import (
     configure_axis_labels,
     configure_axis_ticks,
@@ -59,7 +60,7 @@ def create_steady_state_figure(
     )
 
     ax.imshow(amplitudes, cmap="viridis", extent=imshow_extent)
-    return fig, ax
+    return cast(tuple[matplotlib.figure.Figure, matplotlib.axes.Axes], (fig, ax))
 
 
 def create_pulsed_figure(
@@ -107,7 +108,7 @@ def create_pulsed_figure(
     # reference image, it would be replaced when creating the animation.
     mid_point = wavefield.shape[-1] // 2
     ax.imshow(wavefield[:, :, mid_point], cmap=cmap, norm=norm, extent=imshow_extent)
-    return fig, ax
+    return cast(tuple[matplotlib.figure.Figure, matplotlib.axes.Axes], (fig, ax))
 
 
 def configure_result_plot(

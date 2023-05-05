@@ -81,7 +81,7 @@ class TargetHandle:
     pass
 
 
-class TargetHandler:
+class TargetHandler(matplotlib.legend_handler.HandlerBase):
     """A legend handler to draw the target symbol in a legend.
 
     This class implements the required `legend_artist` . See
@@ -138,7 +138,7 @@ class SourceHandle:
     pass
 
 
-class SourceHandler:
+class SourceHandler(matplotlib.legend_handler.HandlerBase):
     """A legend handler to draw the source symbol in a legend.
 
     This class implements the required `legend_artist` . See

@@ -7,6 +7,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import numpy.typing as npt
 
+from typing import cast
+
 from ._formatting import (
     configure_axis_labels,
     configure_axis_ticks,
@@ -63,7 +65,7 @@ def create_layout_fig(
     cmap = matplotlib.colors.ListedColormap(color_sequence)
     clim = (-0.5, len(color_sequence) - 0.5)
     ax.imshow(field, cmap=cmap, extent=imshow_extent, clim=clim)
-    return fig, ax
+    return cast(tuple[matplotlib.figure.Figure, matplotlib.axes.Axes], (fig, ax))
 
 
 def configure_layout_plot(
