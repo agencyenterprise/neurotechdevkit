@@ -1,3 +1,4 @@
+"""Sources module."""
 from __future__ import annotations
 
 import abc
@@ -43,6 +44,7 @@ class Source(abc.ABC):
         num_points: int,
         delay: float = 0.0,
     ) -> None:
+        """Initialize a new Source object."""
         self._validate_delay(delay)
 
         self._position = position
@@ -55,7 +57,7 @@ class Source(abc.ABC):
 
     @property
     def coordinates(self) -> npt.NDArray[np.float_]:
-        """A 2D array containing the coordinates (in meters) of the source points.
+        """A 2D array containing the `coordinates` (in meters) of the source points.
 
         The length of this array along the first dimension is equal to `num_points`.
         """
@@ -63,7 +65,7 @@ class Source(abc.ABC):
 
     @property
     def position(self) -> npt.NDArray[np.float_]:
-        """A numpy float array indicating the position (in meters) of the source.
+        """A numpy float array indicating the `position` (in meters) of the source.
 
         The position of the source is defined as the coordinates of the point at the
         center of symmetry of the source.
@@ -97,7 +99,7 @@ class Source(abc.ABC):
 
     @property
     def delay(self) -> float:
-        """The delay (in seconds) for the source as a whole.
+        """The `delay` (in seconds) for the source as a whole.
 
         `delay` should be non-negative.
         """
@@ -148,11 +150,6 @@ class Source(abc.ABC):
         Returns:
             The scale factor to apply to the waveform.
         """
-        pass
-
-    def waveform(self, foo, bar, baz):
-        # TODO: make it the responsibility of the source
-        # to calculate its own waveform
         pass
 
 
@@ -327,8 +324,7 @@ class FocusedSource3D(Source):
 
     @staticmethod
     def _calculate_threshold(aperture: float, radius: float) -> float:
-        """Calculate the threshold value to pass to Stride's
-        `geometries.ellipsoidal` utility function.
+        """Calculate the threshold value to pass to Stride's.
 
         The `threshold` is used by Stride function `geometries.ellipsoidal` and is a
         number in the range [0.0, 1.0] (inclusive) which corresponds to the percent of
@@ -354,8 +350,7 @@ class FocusedSource3D(Source):
     def _calculate_rotation_parameters(
         unit_direction: npt.NDArray[np.float_],
     ) -> tuple[npt.NDArray[np.float_], float]:
-        """Calculate the rotational parameters to pass to Stride's
-        `geometries.ellipsoidal` utility function.
+        """Calculate the rotational parameters for Stride `geometries.ellipsoidal` func.
 
         The bowl is originally created with the axis of symmetry along the z-axis, and
         then it is rotated by `theta` radians around `axis` to align the source along
@@ -413,6 +408,7 @@ class UnfocusedMixin:
         num_points: int,
         delay: float = 0.0,
     ) -> None:
+        """Initialize a new unfocused source."""
         super().__init__(
             position=position,
             direction=direction,
@@ -591,6 +587,7 @@ class _PhasedArrayMixinProtocol(Protocol):
 
 class PhasedArrayMixin:
     """A mixin class for phased array sources.
+
     Args:
         position (npt.NDArray[np.float_]): a numpy float array indicating
             the coordinates (in meters) of the point at the center of the
@@ -635,7 +632,7 @@ class PhasedArrayMixin:
         delay: float = 0.0,
         element_delays: npt.NDArray[np.float_] | None = None,
     ) -> None:
-
+        """Initialize a new phased array source."""
         self._validate_input_configuration(
             tilt_angle=tilt_angle,
             focal_length=focal_length,
@@ -672,7 +669,7 @@ class PhasedArrayMixin:
 
     @property
     def pitch(self) -> float:
-        """The pitch (in meters) of the source."""
+        """The `pitch` (in meters) of the source."""
         return self._pitch
 
     @property
@@ -716,7 +713,7 @@ class PhasedArrayMixin:
 
     @property
     def element_positions(self: _PhasedArrayMixinProtocol) -> npt.NDArray[np.float_]:
-        """An array with the position of the center of each element of the array"""
+        """An array with the position of the center of each element of the array."""
         positions = np.zeros(shape=(self.num_elements, len(self.position)))
         point_mapping = self.point_mapping
         coords = self.coordinates
@@ -1182,7 +1179,7 @@ class PhasedArraySource3D(PhasedArrayMixin, Source):
         delay: float = 0.0,
         element_delays: npt.NDArray[np.float_] | None = None,
     ) -> None:
-
+        """Initialize a new phased array source."""
         self._height = height
         self._unit_center_line = self._validate_center_line(center_line, direction)
 
@@ -1201,7 +1198,7 @@ class PhasedArraySource3D(PhasedArrayMixin, Source):
 
     @property
     def height(self) -> float:
-        """The height (in meters) of the elements of the source."""
+        """The `height` (in meters) of the elements of the source."""
         return self._height
 
     @property
@@ -1477,6 +1474,7 @@ class PhasedArraySource3D(PhasedArrayMixin, Source):
 
 def _rotate_2d(coords: npt.NDArray[np.float_], theta: float) -> npt.NDArray[np.float_]:
     """Rotates `coords` around the origin an angle `theta` around the origin (0, 0).
+
     Rotation is in 2D.
 
     Args:

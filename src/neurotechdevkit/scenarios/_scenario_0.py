@@ -14,6 +14,8 @@ from ._utils import (
 
 
 class Scenario0(Scenario2D):
+    """Scenario 0."""
+
     _SCENARIO_ID = "scenario-0-v0"
     _TARGET_OPTIONS = {
         "target_1": Target(
@@ -25,6 +27,7 @@ class Scenario0(Scenario2D):
     }
 
     def __init__(self, complexity="fast"):
+        """Create a new instance of scenario 0."""
         self._target_id = "target_1"
 
         super().__init__(
@@ -35,6 +38,7 @@ class Scenario0(Scenario2D):
     def render_material_property(
         self, name, show_orientation=True, show_sources=True, show_target=True
     ):
+        """Render the material property of the scenario."""
         raise NotImplementedError()
 
     @property
@@ -84,6 +88,7 @@ class Scenario0(Scenario2D):
         return problem
 
     def get_default_source(self):
+        """Return the default source for the scenario."""
         return FocusedSource2D(
             position=np.array([0.01, 0.0]),
             direction=np.array([1.0, 0.0]),
