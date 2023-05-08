@@ -15,7 +15,7 @@ jobs:
       - id: release
         uses: rymndhng/release-on-push-action@master
         with:
-          bump_version_scheme: patch
+          bump_version_scheme: norelease
 
       - name: Checkout repo
         uses: actions/checkout@v3
