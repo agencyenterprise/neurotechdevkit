@@ -72,6 +72,7 @@ You can run `NDK` inside a docker container with a couple of steps:
 
 The output of the command above contains the URL of a jupyter notebook server, you can open the URL in your browser or connect to it using your IDE.
 
+
 ## Usage
 
 ```python
@@ -83,6 +84,30 @@ result.render_steady_state_amplitudes(show_material_outlines=False)
 ```
 
 ![Simulation](https://raw.githubusercontent.com/agencyenterprise/neurotechdevkit/main/docs/images/simulation_steady_state.png)
+
+### Troubleshooting
+
+#### `Error: Process completed with exit code 1.` when installing Stride on Windows
+
+  Unfortunately Stride can't be installed on a Windows platform, therefore NDK is also unsupported.
+
+#### Getting error `codepy.CompileError: module compilation failed`
+
+  This error occurs when the compiler wasn't able to perform the compilation, it can be caused by a environment configuration problem. Check the `DEVITO_ARCH` environment variable, it should be set with the compiler devito will use to compile the code.
+
+  You can find further information in the [Devito](https://github.com/devitocodes/devito/wiki/) documentation.
+
+#### Getting error `ModuleNotFoundError: No module named 'neurotechdevkit'`
+
+  This error is shown when `neurotechdevkit` is not installed, if you installed it using a virtual environment like poetry you must run the script with `poetry run` or activate the environment.
+
+#### Getting error `AttributeError: module 'napari' has no attribute 'Viewer'` when calling `render_layout_3d`
+
+  This error is shown when napari is not installed, make sure to run
+
+  `poetry run pip install "napari[all]"`
+
+  and try again.
 
 ### Acknowledgements
 
