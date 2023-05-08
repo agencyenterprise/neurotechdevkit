@@ -1,3 +1,4 @@
+"""Legends module."""
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
@@ -10,6 +11,7 @@ class LegendConfig:
     """A utility class for keeping track of the components needed for a legend."""
 
     def __init__(self):
+        """Initialize a new LegendConfig."""
         self._labels = []
         self._handles = []
         self._custom_handlers = {}
