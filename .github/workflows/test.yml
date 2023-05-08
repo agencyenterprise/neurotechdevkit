@@ -60,3 +60,7 @@ jobs:
       - name: Run tests
         run: |
           make test
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v3
+        if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.9'
