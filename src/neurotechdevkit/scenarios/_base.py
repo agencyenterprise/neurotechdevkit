@@ -62,7 +62,7 @@ class Scenario(abc.ABC):
         origin: npt.NDArray[np.float_],
         complexity: str = "fast",
     ):
-        """Initialize the scenario"""
+        """Initialize the scenario."""
         self._complexity = complexity
         if self._complexity != "fast":
             raise ValueError("the only complexity currently supported is 'fast'")
@@ -123,6 +123,7 @@ class Scenario(abc.ABC):
 
     @property
     def ppw(self) -> float:
+        """The number of points per wavelength."""
         # maybe choose lowest speed of sound?
         raise NotImplementedError()
 
@@ -164,6 +165,7 @@ class Scenario(abc.ABC):
 
     @property
     def ppp(self) -> float:
+        """The number of points per period."""
         raise NotImplementedError()
 
     @property
@@ -173,6 +175,7 @@ class Scenario(abc.ABC):
 
     @current_target_id.setter
     def current_target_id(self, target_id: str) -> None:
+        """Set the id of the currently selected target."""
         if target_id not in self._TARGET_OPTIONS:
             raise ValueError(
                 f"{target_id} is not a valid target id."
@@ -231,14 +234,9 @@ class Scenario(abc.ABC):
         pass
 
     @property
-    def material_properties(self):
-        raise NotImplementedError()
-
-    @property
     @abc.abstractmethod
     def _material_outline_upsample_factor(self) -> int:
-        """The value of upsample_factor to use for this scenario when drawing material
-        outlines.
+        """Upsample_factor to use for this scenario when drawing material outlines.
 
         This parameter is internal to ndk, is not intended to be used directly.
         """
@@ -865,13 +863,17 @@ class Scenario(abc.ABC):
         show_sources: bool = True,
         show_target: bool = True,
     ) -> None:
+        """Render a material property for the scenario."""
         # speed of sound, density, and absorption
         # maybe split these out into 3 separate functions?
         pass
 
 
 class Scenario2D(Scenario):
+    """A 2D scenario."""
+
     def get_target_mask(self) -> npt.NDArray[np.bool_]:
+        """Return the mask for the target region."""
         target_mask = create_grid_circular_mask(
             grid=self.problem.grid,
             origin=self.origin,
@@ -942,6 +944,8 @@ class Scenario2D(Scenario):
 
 
 class Scenario3D(Scenario):
+    """A 3D scenario."""
+
     @abc.abstractmethod
     def get_default_slice_axis(self) -> int:
         """Return the default slice_axis for this scenario.
@@ -976,12 +980,14 @@ class Scenario3D(Scenario):
         pass
 
     def get_target_mask(self) -> npt.NDArray[np.bool_]:
+        """Return the mask for the target region."""
         target_mask = create_grid_spherical_mask(
             grid=self.problem.grid,
             origin=self.origin,
             center=self.target_center,
             radius=self.target_radius,
         )
+        """Return the mask for the target region."""
         return target_mask
 
     def simulate_pulse(

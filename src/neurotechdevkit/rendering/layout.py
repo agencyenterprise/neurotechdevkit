@@ -1,3 +1,4 @@
+"""Functions for rendering a layout plot of a scenario."""
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np

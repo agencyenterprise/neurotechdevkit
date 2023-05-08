@@ -23,8 +23,7 @@ def draw_source(ax: plt.Axes, source: SourceDrawingParams) -> None:
 def draw_target(
     ax: plt.Axes, target_loc: npt.NDArray[np.float_], target_radius: float
 ) -> None:
-    """
-    Draw a layer showing the scenario target on top of a figure.
+    """Draw a layer showing the scenario target on top of a figure.
 
     This layer can be added to any scenario figure in 2D.
 

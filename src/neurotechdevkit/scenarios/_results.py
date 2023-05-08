@@ -1052,9 +1052,6 @@ class PulsedResult3D(PulsedResult):
         )
         return animation
 
-    def render_pulsed_simulation_animation_3d(self):
-        raise NotImplementedError("Currently not supported.")
-
 
 def create_steady_state_result(
     scenario: scenarios.Scenario,

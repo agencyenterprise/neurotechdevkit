@@ -50,6 +50,7 @@ def make_grid(
 
 
 def compute_shape(extent: npt.NDArray[np.float_], dx: float) -> tuple[int, ...]:
+    """Compute the shape of the grid for a given extent and dx."""
     # TODO: verify that extent is a multiple of dx
     # but using modulus doesn't work due to floating point
     # numerical error
