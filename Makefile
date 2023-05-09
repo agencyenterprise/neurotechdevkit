@@ -1,4 +1,4 @@
-.PHONY:help lint lint-check test test-unit test-integration docs
+.PHONY:help lint lint-check test test-coverage test-unit test-integration docs
 
 help:
 	@echo "Available commands are: \n*lint, lint-check, test, test-unit, test-integration docs"
@@ -16,7 +16,10 @@ lint-check:
 	poetry run mypy src
 
 test:
-	poetry run pytest --cov tests
+	poetry run pytest tests
+
+test-coverage:
+	poetry run pytest . --color=yes --ignore=experiments --ignore=BKP -m "not jitter" --cov=src/neural_data_simulator --cov-report=term-missing:skip-covered --junitxml=pytest.xml --cov-report=xml 2>&1 | tee pytest-coverage.txt
 
 test-unit:
 	poetry run pytest tests -m "not integration"
