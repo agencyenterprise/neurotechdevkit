@@ -16,7 +16,8 @@ jobs:
       - id: release
         uses: rymndhng/release-on-push-action@master
         with:
-          bump_version_scheme: norelease
+          bump_version_scheme: patch
+          dry_run: True
 
   check-release-data:
     runs-on: ubuntu-latest
