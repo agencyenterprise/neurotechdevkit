@@ -16,7 +16,7 @@ lint-check:
 	poetry run mypy src
 
 test:
-	poetry run pytest tests
+	poetry run pytest --cov tests
 
 test-unit:
 	poetry run pytest tests -m "not integration"
