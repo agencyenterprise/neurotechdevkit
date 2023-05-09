@@ -7,13 +7,10 @@ on:
 jobs:
   generate-release:
     runs-on: ubuntu-latest
-
     env:
       GITHUB_TOKEN: ${{ secrets.TAG_CREATOR_API_TOKEN }}
-
     outputs:
       version: ${{ steps.release.outputs.version }}
-
     steps:
       - id: release
         uses: rymndhng/release-on-push-action@master
