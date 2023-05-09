@@ -218,8 +218,10 @@ def calculate_i_ta_target(result: results.SteadyStateResult) -> float:
 
 
 def calculate_i_ta_off_target(result: results.SteadyStateResult) -> float:
-    """Calculate the time-averaged intensity within the brain but outside of the target
-    region.
+    """Calculate the time-averaged intensity.
+
+    The time-averaged intensity is calculated within the brain but outside of the
+    target region.
 
     The time-averaged intensity is equal to the integral (over time) of the pressure
     amplitude times 1/(rho*vp).
@@ -265,8 +267,10 @@ def calculate_i_pa_target(result: results.SteadyStateResult) -> float:
 
 
 def calculate_i_pa_off_target(result: results.SteadyStateResult) -> float:
-    """Calculate the pulse-averaged intensity within the brain but outside of the target
-    region.
+    """Calculate the pulse-averaged intensity.
+
+    The pulse-averaged intensity is calculated within the brain but outside of the
+    target region.
 
     For steady-state results, the pulse-averaged intensity is equal to the time-average
     intensity.

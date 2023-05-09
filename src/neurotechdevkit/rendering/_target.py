@@ -14,7 +14,7 @@ def create_target_drawing_artist(
     target_radius: float,
     transform: Transform,
 ) -> plt.Artist:
-    """Creates the matplotlib artist for the target symbol.
+    """Create the matplotlib artist for the target symbol.
 
     The caller is expected to provide the transform that takes the coordinates for the
     center and radius and map them into display coordinates. Eg. for placing the marker
@@ -50,7 +50,7 @@ def create_target_legend_artist(
     target_radius: float,
     transform: Transform,
 ) -> plt.Artist:
-    """Creates the matplotlib artist for the target symbol.
+    """Create the matplotlib artist for the target symbol.
 
     The caller is expected to provide the transform that takes the coordinates for the
     center and radius and map them into display coordinates. Eg. for placing the marker
@@ -81,7 +81,7 @@ def create_target_legend_artist(
 
 
 def _load_target(version: str) -> npt.NDArray[np.int_]:
-    """Loads a png of the target and returns it as a numpy array.
+    """Load a png of the target and returns it as a numpy array.
 
     The array is returned in RGBA channel order.
 

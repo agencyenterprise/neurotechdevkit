@@ -1,3 +1,4 @@
+"""Colormaps available in neurotechdevkit."""
 # New matplotlib colormaps by Nathaniel J. Smith, Stefan van der Walt,
 # and (in the case of viridis) Eric Firing.
 #

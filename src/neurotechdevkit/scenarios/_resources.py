@@ -7,7 +7,7 @@ import psutil
 
 
 def get_available_ram_memory() -> float:
-    """Returns the available RAM memory in GB.
+    """Return the available RAM memory in GB.
 
     Returns:
         The available RAM memory in GB.
@@ -17,7 +17,7 @@ def get_available_ram_memory() -> float:
 
 
 def get_available_cpus() -> int:
-    """Returns the available CPUs.
+    """Return the available CPUs.
 
     Returns:
         The available number of CPUs.
@@ -34,7 +34,7 @@ def estimate_memory_required(
     n_cycles_steady_state: int,
     time_steps: int,
 ) -> int:
-    """Estimates the RAM memory required in GB to run a steady state simulation.
+    """Estimate the RAM memory required in GB to run a steady state simulation.
 
     A linear model is used to estimate the memory required. The coefficients of the
     model were determined by least squares regression on benchmark simulations.
@@ -51,7 +51,6 @@ def estimate_memory_required(
     Returns:
         The estimate of RAM (in GB) required to run the simulation.
     """
-
     intercept = 7.400
     coefs = np.array([1.49829208e-10, -3.29276854e00, 1.38685890e00])
     vals = np.array(
@@ -68,7 +67,7 @@ def estimate_running_time(
     time_steps: int,
     n_threads: int,
 ) -> float:
-    """Estimates the time (in seconds) to complete the simulation.
+    """Estimate the time (in seconds) to complete the simulation.
 
     Computation time is estimated from a linear model. Which linear model to select
     is determined by the number of CPU/threads available. In the case that number of
@@ -122,7 +121,7 @@ def budget_time_and_memory_resources(
     ram_available_gb: float = get_available_ram_memory(),
 ) -> None:
     """
-    Informs the user of the time and memory resources needed to complete the simulation.
+    Inform the user of the time and memory resources needed to complete the simulation.
 
     The default value for n_threads assumes that all CPUs in the computer are used.
     The default value for ram_available_gb assumes that all RAM memory in the computer
@@ -143,7 +142,6 @@ def budget_time_and_memory_resources(
         ram_available_gb: the RAM memory available for the simulation (default is all
             available RAM memory).
     """
-
     n_points = int(np.prod(grid_shape))
 
     # Memory estimation

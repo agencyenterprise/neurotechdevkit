@@ -17,7 +17,7 @@ def select_simulation_time_for_steady_state(
     n_cycles_steady_state: int,
     delay: float,
 ) -> stride.Time:
-    """Determines how much time (in seconds) to simulate for a steady-state simulation.
+    """Determine how much time (in seconds) to simulate for a steady-state simulation.
 
     In order to reach near-steady-state conditions, we need the simulation to run for
     enough time for the waves to fully propagate to all edges of the simulation and
@@ -58,7 +58,7 @@ def select_simulation_time_for_pulsed(
     materials: Mapping[str, Struct],
     delay: float,
 ):
-    """Determines how much time (in seconds) to simulate for a pulsed simulation.
+    """Determine how much time (in seconds) to simulate for a pulsed simulation.
 
     For pulsed simulations, we usually want to simulate enough time for the wave to
     fully propagate to the edges of the scenario, but we don't need to worry about
@@ -101,7 +101,7 @@ def create_time_grid(*, freq_hz: float, ppp: int, sim_time: float) -> stride.Tim
 
 
 def find_largest_delay_in_sources(sources: FrozenList) -> float:
-    """Finds the largest delay (in seconds) among all sources
+    """Find the largest delay (in seconds) among all sources.
 
     Args:
         sources: a list with all sources in a scenario.

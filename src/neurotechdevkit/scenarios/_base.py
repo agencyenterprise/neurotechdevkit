@@ -52,7 +52,7 @@ class Target:
 
 
 class Scenario(abc.ABC):
-    """The base scenario"""
+    """The base scenario."""
 
     _SCENARIO_ID: str
     _TARGET_OPTIONS: dict[str, Target]
@@ -62,7 +62,7 @@ class Scenario(abc.ABC):
         origin: npt.NDArray[np.float_],
         complexity: str = "fast",
     ):
-        """Initializes the scenario"""
+        """Initialize the scenario."""
         self._complexity = complexity
         if self._complexity != "fast":
             raise ValueError("the only complexity currently supported is 'fast'")
@@ -123,6 +123,7 @@ class Scenario(abc.ABC):
 
     @property
     def ppw(self) -> float:
+        """The number of points per wavelength."""
         # maybe choose lowest speed of sound?
         raise NotImplementedError()
 
@@ -164,6 +165,7 @@ class Scenario(abc.ABC):
 
     @property
     def ppp(self) -> float:
+        """The number of points per period."""
         raise NotImplementedError()
 
     @property
@@ -173,6 +175,7 @@ class Scenario(abc.ABC):
 
     @current_target_id.setter
     def current_target_id(self, target_id: str) -> None:
+        """Set the id of the currently selected target."""
         if target_id not in self._TARGET_OPTIONS:
             raise ValueError(
                 f"{target_id} is not a valid target id."
@@ -231,14 +234,9 @@ class Scenario(abc.ABC):
         pass
 
     @property
-    def material_properties(self):
-        raise NotImplementedError()
-
-    @property
     @abc.abstractmethod
     def _material_outline_upsample_factor(self) -> int:
-        """The value of upsample_factor to use for this scenario when drawing material
-        outlines.
+        """Upsample_factor to use for this scenario when drawing material outlines.
 
         This parameter is internal to ndk, is not intended to be used directly.
         """
@@ -264,7 +262,7 @@ class Scenario(abc.ABC):
             self._sources.freeze()
 
     def get_layer_mask(self, layer_name: str) -> npt.NDArray[np.bool_]:
-        """Returns the mask for the desired layer.
+        """Return the mask for the desired layer.
 
         The mask is `True` at each gridpoint where the requested layer exists,
         and False elsewhere.
@@ -288,7 +286,7 @@ class Scenario(abc.ABC):
 
     @abc.abstractmethod
     def get_target_mask(self) -> npt.NDArray[np.bool_]:
-        """Returns the mask for the target region.
+        """Return the mask for the target region.
 
         Returns:
             A boolean array indicating which gridpoints correspond to the target region.
@@ -296,7 +294,7 @@ class Scenario(abc.ABC):
         pass
 
     def get_field_data(self, field: str) -> npt.NDArray[np.float_]:
-        """Returns the array of field values across the scenario for a particular field.
+        """Return the array of field values across the scenario for a particular field.
 
         Common fields include:
 
@@ -318,11 +316,11 @@ class Scenario(abc.ABC):
         pass
 
     def reset(self) -> None:
-        """resets the scenario to initial state"""
+        """Reset the scenario to initial state."""
         raise NotImplementedError()
 
     def add_source(self, source: Source) -> None:
-        """Adds the specified source to the scenario.
+        """Add the specified source to the scenario.
 
         Sources can also added or removed by modifying the Scenario.sources list.
 
@@ -335,7 +333,7 @@ class Scenario(abc.ABC):
 
     @abc.abstractmethod
     def get_default_source(self) -> Source:
-        """Creates and returns a default source for this scenario.
+        """Create and returns a default source for this scenario.
 
         Returns:
             The default source.
@@ -343,7 +341,7 @@ class Scenario(abc.ABC):
         pass
 
     def _ensure_source(self) -> None:
-        """Ensures the scenario includes at least one source.
+        """Ensure the scenario includes at least one source.
 
         If no source is pre-defined, the default source is included.
         """
@@ -400,7 +398,6 @@ class Scenario(abc.ABC):
         Returns:
             An object containing the result of the steady-state simulation.
         """
-
         if center_frequency != 5.0e5:
             raise NotImplementedError(
                 "500kHz is the only currently supported center frequency. Support for"
@@ -546,8 +543,8 @@ class Scenario(abc.ABC):
             n_jobs: The number of threads to be used for the computation. Use None to
                 leverage Devito automatic tuning.
             slice_axis: the axis along which to slice the 3D field to be recorded. If
-                None, then the complete field wil be recorded. Use 0 for X axis, 1 for Y
-                axis and 2 for Z axis. Only valid if `slice_position` is not None.
+                None, then the complete field will be recorded. Use 0 for X axis, 1 for
+                Y axis and 2 for Z axis. Only valid if `slice_position` is not None.
             slice_position: the position (in meters) along the slice axis at
                 which the slice of the 3D field should be made. Only valid if
                 `slice_axis` is not None.
@@ -558,7 +555,6 @@ class Scenario(abc.ABC):
         Returns:
             An object containing the result of the pulsed simulation.
         """
-
         if center_frequency != 5.0e5:
             raise NotImplementedError(
                 "500kHz is the only currently supported center frequency. Support for"
@@ -615,7 +611,7 @@ class Scenario(abc.ABC):
     def _setup_sub_problem(
         self, center_frequency: float, simulation_mode: str
     ) -> stride.SubProblem:
-        """Sets up a stride `SubProblem` for the simulation.
+        """Set up a stride `SubProblem` for the simulation.
 
         A SubProblem requires at least one source transducer. If no source is defined, a
         default source is used.
@@ -638,7 +634,7 @@ class Scenario(abc.ABC):
     def _setup_shot(
         self, sources: list[Source], freq_hz: float, simulation_mode: str
     ) -> stride.Shot:
-        """Creates the stride `Shot` for the simulation.
+        """Create the stride `Shot` for the simulation.
 
         Args:
             sources: the source transducers to use within the shot.
@@ -657,7 +653,7 @@ class Scenario(abc.ABC):
         return create_shot(problem, sources, self.origin, wavelet, self.dx)
 
     def _create_pde(self) -> stride.Operator:
-        """Instantiates the stride `Operator` representing the PDE for the scenario.
+        """Instantiate the stride `Operator` representing the PDE for the scenario.
 
         All existing scenarios use the `IsoAcousticDevito` operator.
 
@@ -674,7 +670,7 @@ class Scenario(abc.ABC):
     def _wavefield_slice(
         self, slice_axis: int | None = None, slice_position: float | None = None
     ) -> tuple[slice, ...]:
-        """Defines the region of of the grid that should be recorded.
+        """Define the region of of the grid that should be recorded.
 
         The first element of the tuple is for time, while all remaining elements are for
         space and should match the dimensionality of space.
@@ -686,8 +682,8 @@ class Scenario(abc.ABC):
 
         Args:
             slice_axis: the axis along which to slice the 3D field to be recorded. If
-                None, then the complete field wil be recorded. Use 0 for X axis, 1 for Y
-                axis and 2 for Z axis.
+                None, then the complete field will be recorded. Use 0 for X axis, 1 for
+                Y axis and 2 for Z axis.
             slice_position: the position (in meters) along the slice axis at
                 which the slice of the 3D field should be made.
 
@@ -734,15 +730,15 @@ class Scenario(abc.ABC):
     def _validate_slice_args(
         self, slice_axis: int | None, slice_position: float | None
     ) -> None:
-        """Validates that slicing axis and position are within scenario range.
+        """Validate that slicing axis and position are within scenario range.
 
         `slice_axis` should be either 0, 1, or 2 (for X, Y, Z).
         `slice_position` must be within boundaries for `slice_axis` extent.
 
         Args:
             slice_axis: the axis along which to slice the 3D field to be recorded. If
-                None, then the complete field wil be recorded. Use 0 for X axis, 1 for Y
-                axis and 2 for Z axis.
+                None, then the complete field will be recorded. Use 0 for X axis, 1
+                for Y axis and 2 for Z axis.
             slice_position: the position (in meters) along the slice axis at
                 which the slice of the 3D field should be made.
 
@@ -780,7 +776,7 @@ class Scenario(abc.ABC):
     def _get_steady_state_recording_time_bounds(
         self, ppp: int, n_cycles: int
     ) -> tuple[int, int]:
-        """Defines the indices bounding the period of time to be recorded.
+        """Define the indices bounding the period of time to be recorded.
 
         For steady-state simulations, we only want to keep the last few cycles of the
         simulation.
@@ -800,7 +796,7 @@ class Scenario(abc.ABC):
         return (time.num - n_frames, time.num - 1)
 
     def _get_pulsed_recording_time_bounds(self) -> tuple[int, int]:
-        """Defines the indices bounding the period of time to be recorded.
+        """Define the indices bounding the period of time to be recorded.
 
         For pulsed simulations, we want to keep the data from all timesteps.
 
@@ -820,7 +816,7 @@ class Scenario(abc.ABC):
         wavefield_slice: tuple[slice, ...],
         n_jobs: int | None = None,
     ) -> stride.Traces:
-        """Executes the PDE for the simulation.
+        """Execute the PDE for the simulation.
 
         Args:
             pde: The `Operator` containing the PDE to execute.
@@ -867,13 +863,17 @@ class Scenario(abc.ABC):
         show_sources: bool = True,
         show_target: bool = True,
     ) -> None:
+        """Render a material property for the scenario."""
         # speed of sound, density, and absorption
         # maybe split these out into 3 separate functions?
         pass
 
 
 class Scenario2D(Scenario):
+    """A 2D scenario."""
+
     def get_target_mask(self) -> npt.NDArray[np.bool_]:
+        """Return the mask for the target region."""
         target_mask = create_grid_circular_mask(
             grid=self.problem.grid,
             origin=self.origin,
@@ -888,7 +888,7 @@ class Scenario2D(Scenario):
         show_target: bool = True,
         show_material_outlines: bool = False,
     ) -> None:
-        """Creates a matplotlib figure showing the 2D scenario layout.
+        """Create a matplotlib figure showing the 2D scenario layout.
 
         The grid can be turned on via:
 
@@ -944,9 +944,11 @@ class Scenario2D(Scenario):
 
 
 class Scenario3D(Scenario):
+    """A 3D scenario."""
+
     @abc.abstractmethod
     def get_default_slice_axis(self) -> int:
-        """Returns the default slice_axis for this scenario.
+        """Return the default slice_axis for this scenario.
 
         This field is used if the slice_axis is not specified when plotting 3D data in
         2D.
@@ -958,7 +960,7 @@ class Scenario3D(Scenario):
 
     @abc.abstractmethod
     def get_default_slice_position(self, axis: int) -> float:
-        """Returns the default slice_position (in meters) for this scenario.
+        """Return the default slice_position (in meters) for this scenario.
 
         This field is used if the slice_position is not specified when plotting 3D data
         in 2D.
@@ -978,12 +980,14 @@ class Scenario3D(Scenario):
         pass
 
     def get_target_mask(self) -> npt.NDArray[np.bool_]:
+        """Return the mask for the target region."""
         target_mask = create_grid_spherical_mask(
             grid=self.problem.grid,
             origin=self.origin,
             center=self.target_center,
             radius=self.target_radius,
         )
+        """Return the mask for the target region."""
         return target_mask
 
     def simulate_pulse(
@@ -1024,8 +1028,8 @@ class Scenario3D(Scenario):
             n_jobs: The number of threads to be used for the computation. Use None to
                 leverage Devito automatic tuning.
             slice_axis: the axis along which to slice the 3D field to be recorded. If
-                None, then the complete field wil be recorded. Use 0 for X axis, 1 for Y
-                axis and 2 for Z axis. Only valid if `slice_position` is not None.
+                None, then the complete field will be recorded. Use 0 for X axis, 1 for
+                Y axis and 2 for Z axis. Only valid if `slice_position` is not None.
             slice_position: the position (in meters) along the slice axis at
                 which the slice of the 3D field should be made. Only valid if
                 `slice_axis` is not None.
@@ -1054,7 +1058,7 @@ class Scenario3D(Scenario):
         show_target: bool = True,
         show_material_outlines: bool = False,
     ) -> None:
-        """Creates a matplotlib figure showing a 2D slice of the scenario layout.
+        """Create a matplotlib figure showing a 2D slice of the scenario layout.
 
         In order to visualize the 3D scenario in a 2D plot, a slice through the scenario
         needs to be specified via `slice_axis` and `slice_position`. Eg. to take a slice

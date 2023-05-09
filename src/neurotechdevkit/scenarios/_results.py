@@ -47,7 +47,7 @@ class Result(abc.ABC):
     traces: stride.Traces
 
     def save_to_disk(self, filepath: str | pathlib.Path) -> None:
-        """Saves the result to disk to a gzip compressed file.
+        """Save the result to disk to a gzip compressed file.
 
         The gzip compressed file is a pickle object.
 
@@ -74,7 +74,7 @@ class Result(abc.ABC):
 
     @abc.abstractmethod
     def _generate_save_data(self) -> dict:
-        """Collects objects to be saved to disk for simulation results.
+        """Collect objects to be saved to disk for simulation results.
 
         The result data saved to disk will depend on the type of simulation. Currently
         `PulsedResults` and `SteadyStateResults` results.
@@ -112,7 +112,7 @@ class SteadyStateResult(Result):
     def _extract_steady_state(
         self, by_slice: bool | None = None
     ) -> npt.NDArray[np.float_]:
-        """Extracts the steady state results from the simulation wavefield.
+        """Extract the steady state results from the simulation wavefield.
 
         Args:
             by_slice: If False, the fft is executed over the entire wavefield array at
@@ -137,7 +137,7 @@ class SteadyStateResult(Result):
         )
 
     def get_steady_state(self) -> npt.NDArray[np.float_]:
-        """Returns the steady-state array and while computing it if necessary.
+        """Return the steady-state array and while computing it if necessary.
 
         Returns:
             An array containing steady-state pressure wave amplitudes (in pascals).
@@ -160,7 +160,7 @@ class SteadyStateResult(Result):
         return metrics.calculate_all_metrics(self)
 
     def _generate_save_data(self) -> dict:
-        """Collects objects to be saved to disk for steady-state simulation results.
+        """Collect objects to be saved to disk for steady-state simulation results.
 
         Returns:
             A dictionary with the objects to be saved to disk.
@@ -391,7 +391,7 @@ class SteadyStateResult3D(SteadyStateResult):
 def _extract_steady_state_amplitude(
     data: npt.NDArray[np.float_], freq_hz: float, dt: float, by_slice: bool
 ) -> npt.NDArray[np.float_]:
-    """Extracts the amplitude of steady-state waves using an FFT.
+    """Extract the amplitude of steady-state waves using an FFT.
 
     Note: in order to get the best results, dt should fit evenly into one cycle and we
     need to integrate over integer number of cycles.
@@ -408,7 +408,6 @@ def _extract_steady_state_amplitude(
     Returns:
         The steady-state wave amplitudes over the spatial dimensions (in pascals).
     """
-
     freqs = np.fft.fftfreq(data.shape[-1], d=dt)
     freq_idx = np.argwhere(np.abs(freqs - freq_hz) < 1e-5).item()
     scaling = data.shape[-1] / 2
@@ -455,7 +454,7 @@ class PulsedResult(Result):
     recorded_slice: tuple[int, float] | None = None
 
     def _recording_times(self) -> npt.NDArray[np.float_]:
-        """Computes the time (in seconds) for each recorded frame in the wavefield.
+        """Compute the time (in seconds) for each recorded frame in the wavefield.
 
         Returns:
             A 1D array with the time in seconds for each step.
@@ -468,7 +467,7 @@ class PulsedResult(Result):
         return times
 
     def _validate_time_lim(self, time_lim: tuple[np.float_, np.float_]) -> None:
-        """Validates the input time limit for the animation.
+        """Validate the input time limit for the animation.
 
         Args:
             time_lim: the input time limit tuple to validate. The expected format is
@@ -487,7 +486,7 @@ class PulsedResult(Result):
 
     @staticmethod
     def _check_ffmpeg_is_installed() -> None:
-        """Checks that ffmpeg command is available.
+        """Check that ffmpeg command is available.
 
         It is required to save the animations to disk.
 
@@ -528,7 +527,7 @@ class PulsedResult(Result):
             )
 
     def _generate_save_data(self) -> dict:
-        """Collects objects to be saved to disk for pulsed simulation results.
+        """Collect objects to be saved to disk for pulsed simulation results.
 
         Returns:
             A dictionary with the objects to be saved to disk.
@@ -573,7 +572,7 @@ class PulsedResult2D(PulsedResult):
         time_lim: tuple[np.float_, np.float_] | None = None,
         norm: str = "linear",
     ) -> FuncAnimation:
-        """Creates a matplotlib animation with the time evolution of the wavefield.
+        """Create a matplotlib animation with the time evolution of the wavefield.
 
         The created animation will be displayed as an interactive widget in a IPython or
         Jupyter Notebook environment.
@@ -621,7 +620,7 @@ class PulsedResult2D(PulsedResult):
         bitrate: int = 2500,
         overwrite: bool = False,
     ) -> None:
-        """Saves a `mp4` animation file to disk with the results of the simulation.
+        """Save a `mp4` animation file to disk with the results of the simulation.
 
         Currently only mp4 format supported.
         `ffmpeg` command line tools needs to be installed.
@@ -695,7 +694,6 @@ class PulsedResult2D(PulsedResult):
         Returns:
             A matplotlib animation object.
         """
-
         extent = self.scenario.extent
         origin = self.scenario.origin
         wavefield = self.wavefield
@@ -783,7 +781,7 @@ class PulsedResult3D(PulsedResult):
     def _validate_slicing_options(
         self, slice_axis: int | None, slice_position: float | None
     ) -> None:
-        """Checks that the slicing arguments are consistent with the recorded field.
+        """Check that the slicing arguments are consistent with the recorded field.
 
         Only one slicing of the field is permitted, either at recording time or at
         rendering time. If the user recorded only a slice of the 3D field, slicing
@@ -791,7 +789,7 @@ class PulsedResult3D(PulsedResult):
 
         Args:
             slice_axis: the axis along which to slice the 3D field to be recorded. If
-                None, then the complete field wil be recorded.
+                None, then the complete field will be recorded.
             slice_position: the position (in meters) along the slice axis at
                 which the slice of the 3D field should be made.
 
@@ -818,7 +816,7 @@ class PulsedResult3D(PulsedResult):
         time_lim: tuple[np.float_, np.float_] | None = None,
         norm: str = "linear",
     ) -> FuncAnimation:
-        """Creates a matplotlib animation with the time evolution of the wavefield.
+        """Create a matplotlib animation with the time evolution of the wavefield.
 
         The created animation will be displayed as an interactive widget in a IPython or
         Jupyter Notebook environment.
@@ -846,7 +844,6 @@ class PulsedResult3D(PulsedResult):
         Returns:
             An matplotlib animation object.
         """
-
         animation = self._build_animation(
             show_sources=show_sources,
             show_target=show_target,
@@ -876,7 +873,7 @@ class PulsedResult3D(PulsedResult):
         bitrate: int = 2500,
         overwrite: bool = False,
     ) -> None:
-        """Saves a `mp4` animation file to disk with the results of the simulation.
+        """Save a `mp4` animation file to disk with the results of the simulation.
 
         Currently only mp4 format supported.
         `ffmpeg` command line tools needs to be installed.
@@ -1055,9 +1052,6 @@ class PulsedResult3D(PulsedResult):
         )
         return animation
 
-    def render_pulsed_simulation_animation_3d(self):
-        raise NotImplementedError("Currently not supported.")
-
 
 def create_steady_state_result(
     scenario: scenarios.Scenario,
@@ -1068,7 +1062,7 @@ def create_steady_state_result(
     wavefield: npt.NDArray[np.float_],
     traces: stride.Traces,
 ) -> SteadyStateResult:
-    """Utility function for creating a steady state result.
+    """Create a steady state result.
 
     Creates a SteadyStateResult2D or SteadyStateResult3D depending on the number of
     wavefield spatial dimensions. If the ndim of the wavefield is N, then the wavefield
@@ -1129,7 +1123,7 @@ def create_pulsed_result(
     traces: stride.Traces,
     recorded_slice: tuple[int, float] | None = None,
 ) -> PulsedResult:
-    """Utility function for creating results from pulsed simulations.
+    """Create results from pulsed simulations.
 
     Creates a PulsedResult2D or PulsedResult3D depending on the number of wavefield
     spatial dimensions. If the ndim of the wavefield is N, then the wavefield has N-1
@@ -1181,7 +1175,7 @@ def create_pulsed_result(
 
 
 def load_result_from_disk(filepath: str | pathlib.Path) -> Result:
-    """Loads a result from disk from a gzip compressed pickle file.
+    """Load a result from disk from a gzip compressed pickle file.
 
     !!! warning
         This functionality is experimental, so do do not be surprised if you

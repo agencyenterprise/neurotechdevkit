@@ -1,3 +1,4 @@
+"""Layers for rendering scenario figures."""
 import matplotlib.pyplot as plt
 import numpy as np
 import numpy.typing as npt
@@ -31,8 +32,8 @@ def draw_target(
         target_loc: An array of shape (2,) indicating the location (in meters) of the
             target within the scenario.
         target_radius: The radius (in meters) of the target.
-    """
 
+    """
     target_artist = create_target_drawing_artist(
         target_loc, target_radius, transform=ax.transData
     )
@@ -96,7 +97,7 @@ def _upsample_field(
 
 
 def _get_outline_mask(field: npt.NDArray[np.int_]) -> npt.NDArray[np.bool_]:
-    """Returns a mask indicating where there is a transition between materials.
+    """Return a mask indicating where there is a transition between materials.
 
     Transitions are detected by comparing the input field by itself but shifted
     one pixel horizontally or vertically. Detected horizontal and vertical transitions
