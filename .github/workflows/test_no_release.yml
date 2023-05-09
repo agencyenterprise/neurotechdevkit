@@ -21,5 +21,6 @@ jobs:
     steps:
       - run: echo EMPTY VERSION && exit 1
         if: needs.test-norelease.outputs.version == ''
+
       - run: echo NOT EMPTY VERSION
         if: needs.test-norelease.outputs.version != ''
