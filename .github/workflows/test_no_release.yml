@@ -1,0 +1,25 @@
+name: Test norelease label
+on:
+  pull_request:
+    types: [opened, labeled, unlabeled, synchronize]
+
+jobs:
+  test-norelease:
+    runs-on: ubuntu-latest
+
+    outputs:
+      version: ${{ steps.release.outputs.version }}
+    steps:
+      - id: release
+        uses: rymndhng/release-on-push-action@master
+        with:
+          bump_version_scheme: norelease
+
+  check-release-data:
+    runs-on: ubuntu-latest
+    needs: test-norelease
+    steps:
+      - run: echo EMPTY VERSION && exit 1
+        if: needs.test-norelease.outputs.version == ''
+      - run: echo NOT EMPTY VERSION
+        if: needs.test-norelease.outputs.version != ''
