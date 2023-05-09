@@ -1,3 +1,4 @@
+"""Materials for the neurotechdevkit scenarios."""
 from mosaic.types import Struct
 
 # TODO: encapsulate mosaic struct behind an NDK materials type
