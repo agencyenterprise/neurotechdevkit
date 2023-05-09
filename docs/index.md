@@ -97,6 +97,13 @@ result.render_steady_state_amplitudes(show_material_outlines=False)
 
   You can find further information in the [Devito](https://github.com/devitocodes/devito/wiki/) documentation.
 
+#### Getting error `codepy.CompileError: module compilation failed` with `fatal error: 'omp.h' file not found`
+
+  This error occurs when the `libomp` is not installed or can not be found by the compiler.
+
+  Make sure to install it and export the environment variable `CPATH` with the path to the folder containing libomp headers.
+
+
 #### Getting error `ModuleNotFoundError: No module named 'neurotechdevkit'`
 
   This error is shown when `neurotechdevkit` is not installed, if you installed it using a virtual environment like poetry you must run the script with `poetry run` or activate the environment.
