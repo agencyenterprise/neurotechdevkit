@@ -427,7 +427,7 @@ class Scenario(abc.ABC):
             grid_shape=self.shape,
             recording_time_undersampling=recording_time_undersampling,
             n_cycles_steady_state=n_cycles_steady_state,
-            time_steps=problem.grid.time.grid.shape[0],  # type: ignore
+            time_steps=problem.grid.time.grid.shape[0],
         )
 
         sub_problem = self._setup_sub_problem(center_frequency, "steady-state")
@@ -864,7 +864,7 @@ class Scenario(abc.ABC):
                 save_undersampling=save_undersampling,
                 wavefield_slice=wavefield_slice,
                 devito_args=devito_args,
-            )  # type: ignore
+            )
         )
 
     @abc.abstractmethod
@@ -917,7 +917,7 @@ class Scenario2D(Scenario):
         ]
         field = self.get_field_data("layer").astype(int)
         fig, ax = rendering.create_layout_fig(
-            self.extent, self.origin, color_sequence, field  # type: ignore
+            self.extent, self.origin, color_sequence, field
         )
 
         # add layers
@@ -946,7 +946,7 @@ class Scenario2D(Scenario):
         rendering.configure_layout_plot(
             fig=fig,
             ax=ax,
-            color_sequence=color_sequence,  # type: ignore
+            color_sequence=color_sequence,
             layer_labels=self.ordered_layers,
             show_sources=show_sources,
             show_target=show_target,
@@ -1103,9 +1103,7 @@ class Scenario3D(Scenario):
         field = slice_field(field, self, slice_axis, slice_position)
         extent = drop_element(self.extent, slice_axis)
         origin = drop_element(self.origin, slice_axis)
-        fig, ax = rendering.create_layout_fig(
-            extent, origin, color_sequence, field  # type: ignore
-        )
+        fig, ax = rendering.create_layout_fig(extent, origin, color_sequence, field)
 
         # add layers
         if show_material_outlines:
@@ -1137,7 +1135,7 @@ class Scenario3D(Scenario):
         rendering.configure_layout_plot(
             fig=fig,
             ax=ax,
-            color_sequence=color_sequence,  # type: ignore
+            color_sequence=color_sequence,
             layer_labels=self.ordered_layers,
             show_sources=show_sources,
             show_target=show_target,

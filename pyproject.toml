@@ -84,6 +84,6 @@ markers = [
 
 [tool.pyright]
 include = ["src"]
-
+reportGeneralTypeIssues = "none"
 # [tool.flake8]
 # flake8 does not support config in pyproject.toml, see .flake8

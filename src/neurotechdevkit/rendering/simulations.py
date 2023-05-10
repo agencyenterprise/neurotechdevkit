@@ -59,7 +59,7 @@ def create_steady_state_figure(
     )
 
     ax.imshow(amplitudes, cmap="viridis", extent=imshow_extent)
-    return fig, ax  # type: ignore
+    return fig, ax
 
 
 def create_pulsed_figure(
@@ -107,7 +107,7 @@ def create_pulsed_figure(
     # reference image, it would be replaced when creating the animation.
     mid_point = wavefield.shape[-1] // 2
     ax.imshow(wavefield[:, :, mid_point], cmap=cmap, norm=norm, extent=imshow_extent)
-    return fig, ax  # type: ignore
+    return fig, ax
 
 
 def configure_result_plot(

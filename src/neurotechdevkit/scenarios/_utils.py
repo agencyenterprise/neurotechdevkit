@@ -332,4 +332,4 @@ def _create_nd_ellipse_mask(
     )
     in_ellipse = distance_from_center_sq <= 1
 
-    return in_ellipse  # type: ignore
+    return in_ellipse

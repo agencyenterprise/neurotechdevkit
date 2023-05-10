@@ -576,9 +576,9 @@ class PhasedArraySource(Source):
             focal_length=focal_length,
             num_points=num_points,
             delay=delay,
-        )  # type: ignore[call-arg]
+        )
 
-        self._element_delays = self._set_element_delays(element_delays)  # type: ignore
+        self._element_delays = self._set_element_delays(element_delays)
 
     @abc.abstractproperty
     def focal_point(self) -> npt.NDArray[np.float_]:
