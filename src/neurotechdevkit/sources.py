@@ -241,8 +241,8 @@ class FocusedSource3D(Source):
     taking a section of a spherical shell and distributing source points over the
     surface. Points are distributed according to Fibonacci spirals.
 
-    See https://en.wikipedia.org/wiki/Spherical_cap for relevant geometrical
-    calculations.
+    See [Spherical cap](https://en.wikipedia.org/wiki/Spherical_cap) for relevant
+    geometrical calculations.
     """
 
     def _calculate_coordinates(self) -> npt.NDArray[np.float_]:
@@ -943,7 +943,8 @@ class PhasedArraySource2D(PhasedArraySource):
     If the number of points can not be evenly distributed in the number of elements, the
     remainder number of points from the even division will be discarded.
 
-    See https://en.wikipedia.org/wiki/Phased_array_ultrasonics for detailed explanation.
+    See [Phased array ultrasonics](https://en.wikipedia.org/wiki/Phased_array_ultrasonics)
+    for detailed explanation.
     """
 
     @property
@@ -1043,7 +1044,8 @@ class PhasedArraySource3D(PhasedArraySource):
     If the number of points can not be evenly distributed in the number of elements, the
     remainder number of points from the even division will be discarded.
 
-    See https://en.wikipedia.org/wiki/Phased_array_ultrasonics for detailed explanation.
+    See [Phased array ultrasonics](https://en.wikipedia.org/wiki/Phased_array_ultrasonics)
+    for detailed explanation.
 
     Args:
         position (npt.NDArray[np.float_]): a numpy float array in 3D indicating the
