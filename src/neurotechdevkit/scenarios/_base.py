@@ -83,7 +83,8 @@ class Scenario(abc.ABC):
     def complexity(self) -> str:
         """The complexity level to use when simulating this scenario.
 
-        Note: the only currently supported complexity is `fast`.
+        !!! note
+            The only currently supported complexity is `fast`.
 
         Options are:
 
@@ -527,8 +528,9 @@ class Scenario(abc.ABC):
         In this simulation, the sources will emit a pulse containing a few cycles of
         oscillation and then let the pulse propagate out to all edges of the scenario.
 
-        Note: the only supported frequency currently supported is 500kHz. Any other
-        value will raise a NotImplementedError.
+        !!! note
+            The only supported frequency currently supported is 500kHz. Any other
+            value will raise a NotImplementedError.
 
         Warning: A poor choice of arguments to this function can lead to a failed
         simulation. Make sure you understand the impact of supplying parameter values
