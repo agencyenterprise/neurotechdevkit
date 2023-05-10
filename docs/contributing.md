@@ -36,6 +36,8 @@ If you don't want to install NDK's dependencies on your machine, you can run it 
 
 * Run the container, which will start a jupyter notebook server:
    ```
+   git clone https://github.com/agencyenterprise/neurotechdevkit.git
+   cd neurotechdevkit
    docker compose up
    ```
 
@@ -61,6 +63,35 @@ Install stride with
 ```bash
 $ poetry run pip install git+https://github.com/trustimaging/stride
 ```
+
+`devito`, a dependency of `neurotechdevkit`, requires `libomp`. On MacOS it can be installed with:
+
+```
+brew install libomp
+```
+
+the output of the command above will look like this:
+
+```
+For compilers to find libomp you may need to set:
+export LDFLAGS="-L/usr/local/opt/libomp/lib"
+export CPPFLAGS="-I/usr/local/opt/libomp/include"
+```
+
+`devito` requires the directory with `libomp` headers to be accessible during the runtime compilation, you can make it accessible by exporting a new environment variable `CPATH` with the path for libomp headers, like so:
+
+```
+export CPATH="/usr/local/opt/libomp/include"
+```
+
+You will also have to set an environment variable that defines what compiler `devito` will use, like so:
+
+```
+export DEVITO_ARCH=gcc
+```
+
+the supported values for `DEVITO_ARCH` are: `'custom', 'gnu', 'gcc', 'clang', 'aomp', 'pgcc', 'pgi', 'nvc', 'nvc++', 'nvidia', 'cuda', 'osx', 'intel', 'icpc', 'icc', 'intel-knl', 'knl', 'dpcpp', 'gcc-4.9', 'gcc-5', 'gcc-6', 'gcc-7', 'gcc-8', 'gcc-9', 'gcc-10', 'gcc-11'`
+
 
 ### Using the environment
 
@@ -91,17 +122,9 @@ Before opening a pull request, please make sure that all of the following requir
    ```
    make lint
    ```
-1. spelling is checked:
-   ```
-   make spellcheck
-   ```
-1. the documentation builds without warnings:
-   ```
-   make docs
-   ```
 1. type hinting is used on all function and method parameters and return values, excluding tests
 1. docstring usage conforms to the following:
       1. all docstrings should follow [PEP257 Docstring Conventions](https://peps.python.org/pep-0257/)
-      1. all public API classes, functions, methods, and properties have docstrings and follow the [Google Python Style Guide](https://github.com/google/styleguide/blob/gh-pages/pyguide.md#38-comments-and-docstrings)
-      1. docstrings on private objects are not required, but are encouraged where they would significantly aid understanding
+      2. all public API classes, functions, methods, and properties have docstrings and follow the [Google Python Style Guide](https://github.com/google/styleguide/blob/gh-pages/pyguide.md#38-comments-and-docstrings)
+      3. docstrings on private objects are not required, but are encouraged where they would significantly aid understanding
 1. testing is done using the pytest library, and test coverage should not unnecessarily decrease.

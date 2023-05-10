@@ -5,22 +5,28 @@ on:
       - main
 
 jobs:
-  release-on-push:
+  generate-release:
     runs-on: ubuntu-latest
-
     env:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
+      GITHUB_TOKEN: ${{ secrets.TAG_CREATOR_API_TOKEN }}
+    outputs:
+      version: ${{ steps.release.outputs.version }}
     steps:
       - id: release
         uses: rymndhng/release-on-push-action@master
         with:
-          bump_version_scheme: patch
+          bump_version_scheme: norelease
 
+  push-release:
+    if: needs.generate-release.outputs.version != ''
+    runs-on: ubuntu-latest
+    needs: generate-release
+    steps:
       - name: Checkout repo
         uses: actions/checkout@v3
         with:
           ref: ${{ github.ref }}
+          token: ${{ secrets.TAG_CREATOR_API_TOKEN }}
 
       - name: Setup python
         uses: actions/setup-python@v4
@@ -32,7 +38,7 @@ jobs:
 
       - name: Update poetry version
         run: |
-          poetry version ${{ steps.release.outputs.version }}
+          poetry version ${{ needs.generate-release.outputs.version }}
 
       - name: Commit poetry version
         uses: stefanzweifel/git-auto-commit-action@v4
@@ -58,5 +64,5 @@ jobs:
 
       - name: Build the neurotechdevkit docker image
         run: |
-          docker build . --tag ghcr.io/agencyenterprise/neurotechdevkit:latest --tag ghcr.io/agencyenterprise/neurotechdevkit:${{ steps.release.outputs.version }}
+          docker build . --tag ghcr.io/agencyenterprise/neurotechdevkit:latest --tag ghcr.io/agencyenterprise/neurotechdevkit:${{ needs.generate-release.outputs.version }}
           docker push --all-tags ghcr.io/agencyenterprise/neurotechdevkit

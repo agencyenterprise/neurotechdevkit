@@ -1,3 +1,4 @@
+"""Sources module."""
 from __future__ import annotations
 
 import abc
@@ -43,6 +44,7 @@ class Source(abc.ABC):
         num_points: int,
         delay: float = 0.0,
     ) -> None:
+        """Initialize a new Source object."""
         self._validate_delay(delay)
 
         self._position = position
@@ -55,7 +57,7 @@ class Source(abc.ABC):
 
     @property
     def coordinates(self) -> npt.NDArray[np.float_]:
-        """A 2D array containing the coordinates (in meters) of the source points.
+        """A 2D array containing the `coordinates` (in meters) of the source points.
 
         The length of this array along the first dimension is equal to `num_points`.
         """
@@ -63,7 +65,7 @@ class Source(abc.ABC):
 
     @property
     def position(self) -> npt.NDArray[np.float_]:
-        """A numpy float array indicating the position (in meters) of the source.
+        """A numpy float array indicating the `position` (in meters) of the source.
 
         The position of the source is defined as the coordinates of the point at the
         center of symmetry of the source.
@@ -97,8 +99,9 @@ class Source(abc.ABC):
 
     @property
     def delay(self) -> float:
-        """The delay (in seconds) for the source as a whole. `delay` should be
-        non-negative.
+        """The `delay` (in seconds) for the source as a whole.
+
+        `delay` should be non-negative.
         """
         return self._delay
 
@@ -108,7 +111,7 @@ class Source(abc.ABC):
         return np.full(shape=(self.num_points,), fill_value=self.delay)
 
     def _validate_delay(self, delay: float) -> None:
-        """Validates that `delay` is non-negative`
+        """Validate that `delay` is non-negative.
 
         Args:
             delay (float, optional): the delay (in seconds) that the source needs
@@ -122,7 +125,7 @@ class Source(abc.ABC):
 
     @abc.abstractmethod
     def _calculate_coordinates(self) -> npt.NDArray[np.float_]:
-        """Calculates the coordinates of the point source cloud for the source.
+        """Calculate the coordinates of the point source cloud for the source.
 
         This method must be implemented by all concrete Source classes.
 
@@ -134,7 +137,7 @@ class Source(abc.ABC):
 
     @abc.abstractmethod
     def calculate_waveform_scale(self, dx: float) -> float:
-        """Calculates the scale factor to apply to waveforms from this source.
+        """Calculate the scale factor to apply to waveforms from this source.
 
         The scale depends on the relative density of source points vs grid points.
 
@@ -147,11 +150,6 @@ class Source(abc.ABC):
         Returns:
             The scale factor to apply to the waveform.
         """
-        pass
-
-    def waveform(self, foo, bar, baz):
-        # TODO: make it the responsibility of the source
-        # to calculate its own waveform
         pass
 
 
@@ -187,7 +185,7 @@ class FocusedSource2D(Source):
         return 2 * np.arcsin(self.aperture / (2 * self.focal_length))
 
     def _calculate_coordinates(self) -> npt.NDArray[np.float_]:
-        """Calculates the coordinates of the point source cloud for the source.
+        """Calculate the coordinates of the point source cloud for the source.
 
         This method works by calculating points uniformly spread along an arc of a
         circle.
@@ -220,7 +218,7 @@ class FocusedSource2D(Source):
         return coords
 
     def calculate_waveform_scale(self, dx: float) -> float:
-        """Calculates the scale factor to apply to waveforms from this source.
+        """Calculate the scale factor to apply to waveforms from this source.
 
         The scale is equal to the ratio between the density of grid points along a line
         and the density of source points along the arc.
@@ -249,7 +247,7 @@ class FocusedSource3D(Source):
     """
 
     def _calculate_coordinates(self) -> npt.NDArray[np.float_]:
-        """Calculates the coordinates of the point source cloud for the source.
+        """Calculate the coordinates of the point source cloud for the source.
 
         This method works by calculating points along a section of a spherical shell.
         It is built on top of the stride function `geometries.ellipsoidal` but uses
@@ -284,7 +282,7 @@ class FocusedSource3D(Source):
         )
 
     def calculate_waveform_scale(self, dx: float) -> float:
-        """Calculates the scale factor to apply to waveforms from this source.
+        """Calculate the scale factor to apply to waveforms from this source.
 
         The scale is equal to the ratio between the density of grid points in a plane
         and the density of source points along the bowl surface.
@@ -306,7 +304,7 @@ class FocusedSource3D(Source):
     def _calculate_source_density(
         aperture: float, radius: float, num_points: int
     ) -> float:
-        """Calculates the source point density (in points / meter^2).
+        """Calculate the source point density (in points / meter^2).
 
         The density is considered based on the number of source points divided by the
         surface area of the bowl.
@@ -326,8 +324,7 @@ class FocusedSource3D(Source):
 
     @staticmethod
     def _calculate_threshold(aperture: float, radius: float) -> float:
-        """Calculates the threshold value to pass to Stride's
-        `geometries.ellipsoidal` utility function.
+        """Calculate the threshold value to pass to Stride's.
 
         The `threshold` is used by Stride function `geometries.ellipsoidal` and is a
         number in the range [0.0, 1.0] (inclusive) which corresponds to the percent of
@@ -353,8 +350,7 @@ class FocusedSource3D(Source):
     def _calculate_rotation_parameters(
         unit_direction: npt.NDArray[np.float_],
     ) -> tuple[npt.NDArray[np.float_], float]:
-        """Calculates the rotational parameters to pass to Stride's
-        `geometries.ellipsoidal` utility function.
+        """Calculate the rotational parameters for Stride `geometries.ellipsoidal` func.
 
         The bowl is originally created with the axis of symmetry along the z-axis, and
         then it is rotated by `theta` radians around `axis` to align the source along
@@ -412,6 +408,7 @@ class UnfocusedMixin:
         num_points: int,
         delay: float = 0.0,
     ) -> None:
+        """Initialize a new unfocused source."""
         super().__init__(
             position=position,
             direction=direction,
@@ -430,7 +427,7 @@ class PlanarSource2D(UnfocusedMixin, Source):
     """
 
     def _calculate_coordinates(self) -> npt.NDArray[np.float_]:
-        """Calculates the coordinates of the point source cloud for the source.
+        """Calculate the coordinates of the point source cloud for the source.
 
         This method works by calculating points uniformly spread along the line
         segment.
@@ -446,7 +443,7 @@ class PlanarSource2D(UnfocusedMixin, Source):
         return self.position + unit_line * np.expand_dims(line_parametrization, 1)
 
     def calculate_waveform_scale(self, dx: float) -> float:
-        """Calculates the scale factor to apply to waveforms from this source.
+        """Calculate the scale factor to apply to waveforms from this source.
 
         The scale is equal to the ratio between the density of grid points along a line
         and the density of source points along the line segment source.
@@ -471,7 +468,7 @@ class PlanarSource3D(UnfocusedMixin, Source):
     """
 
     def _calculate_coordinates(self) -> npt.NDArray[np.float_]:
-        """Calculates the coordinates of the point source cloud for the source.
+        """Calculate the coordinates of the point source cloud for the source.
 
         This method works by calculating points along a disk. It is built on top of the
         stride function `geometries.disk`, which returns points distributed along a
@@ -490,7 +487,7 @@ class PlanarSource3D(UnfocusedMixin, Source):
         )
 
     def calculate_waveform_scale(self, dx: float) -> float:
-        """Calculates the scale factor to apply to waveforms from this source.
+        """Calculate the scale factor to apply to waveforms from this source.
 
         The scale is equal to the ratio between the density of grid points along a
         plane and the density of source points along the disk source.
@@ -508,7 +505,7 @@ class PlanarSource3D(UnfocusedMixin, Source):
 
 
 class _PhasedArrayMixinProtocol(Protocol):
-    """Provide type-hinting for PhasedMixin"""
+    """Provide type-hinting for PhasedMixin."""
 
     _element_delays: npt.NDArray[np.float_]
 
@@ -590,6 +587,7 @@ class _PhasedArrayMixinProtocol(Protocol):
 
 class PhasedArrayMixin:
     """A mixin class for phased array sources.
+
     Args:
         position (npt.NDArray[np.float_]): a numpy float array indicating
             the coordinates (in meters) of the point at the center of the
@@ -634,7 +632,7 @@ class PhasedArrayMixin:
         delay: float = 0.0,
         element_delays: npt.NDArray[np.float_] | None = None,
     ) -> None:
-
+        """Initialize a new phased array source."""
         self._validate_input_configuration(
             tilt_angle=tilt_angle,
             focal_length=focal_length,
@@ -671,7 +669,7 @@ class PhasedArrayMixin:
 
     @property
     def pitch(self) -> float:
-        """The pitch (in meters) of the source."""
+        """The `pitch` (in meters) of the source."""
         return self._pitch
 
     @property
@@ -715,8 +713,7 @@ class PhasedArrayMixin:
 
     @property
     def element_positions(self: _PhasedArrayMixinProtocol) -> npt.NDArray[np.float_]:
-        """An array with the position of the  center of each element of the array"""
-
+        """An array with the position of the center of each element of the array."""
         positions = np.zeros(shape=(self.num_elements, len(self.position)))
         point_mapping = self.point_mapping
         coords = self.coordinates
@@ -760,7 +757,7 @@ class PhasedArrayMixin:
 
     @staticmethod
     def _validate_num_elements(num_elements: int) -> None:
-        """Ensures that the number of elements is positive, greater than 1.
+        """Ensure that the number of elements is positive, greater than 1.
 
         Currently phased arrays with one element are not supported.
 
@@ -777,7 +774,7 @@ class PhasedArrayMixin:
 
     @staticmethod
     def _validate_element_delays(element_delays, num_elements) -> None:
-        """Checks that the input value for `element_delays` meets the requirements.
+        """Check that the input value for `element_delays` meets the requirements.
 
         If `element_delays` is None, no check is performed
         If `element_delays` is not None, it must be a 1D array with length equal to
@@ -792,7 +789,6 @@ class PhasedArrayMixin:
         Raises:
             ValueError if `element_delays` is invalid.
         """
-
         if element_delays is None:
             return
         element_delays = np.array(element_delays)
@@ -831,7 +827,7 @@ class PhasedArrayMixin:
         self,
     ) -> tuple[npt.NDArray[np.float_], npt.NDArray[np.float_]]:
         """
-        Calculates the start and end of each line element in 1D.
+        Calculate the start and end of each line element in 1D.
 
         Returns:
             A tuple with two arrays for the minimum and maximum position.
@@ -849,7 +845,7 @@ class PhasedArrayMixin:
         num_elements: int, num_points: int
     ) -> tuple[slice, ...]:
         """
-        Distributes `num_points` evenly among a specified number of elements.
+        Distribute `num_points` evenly among a specified number of elements.
 
         Computes an array indicating the start and end indices of points assigned to
         each element.
@@ -879,7 +875,7 @@ class PhasedArrayMixin:
         coords: npt.NDArray[np.float_], position: npt.NDArray[np.float_]
     ) -> npt.NDArray[np.float_]:
         """
-        Translates the source to place the center at `position`.
+        Translate the source to place the center at `position`.
 
         Args:
             coords: array with the coordinates to translate.
@@ -897,7 +893,7 @@ class PhasedArrayMixin:
     def _broadcast_delays(
         self: _PhasedArrayMixinProtocol, delays: npt.NDArray[np.float_]
     ) -> npt.NDArray[np.float_]:
-        """Translates the delays per element into delays per source point.
+        """Translate the delays per element into delays per source point.
 
         All source points within one element have the same delay.
 
@@ -919,7 +915,7 @@ class PhasedArrayMixin:
         speed: float = 1500,  # m/s speed of sound in water
     ) -> float:
         """
-        Computes the delay (in seconds) required to tilt the wavefront.
+        Compute the delay (in seconds) required to tilt the wavefront.
 
         The delays from element n to element n+1 to achieve a wavefront with
         `tilt_angle` respect to the normal. Positive angles lead to counter-clockwise
@@ -967,7 +963,6 @@ class PhasedArrayMixin:
         Returns:
             An array with the negative delay (in seconds) per array element.
         """
-
         delays = np.zeros(shape=(self.num_elements,))
         distances = np.array(
             [np.linalg.norm(ec - self.focal_point) for ec in self.element_positions],
@@ -1072,7 +1067,7 @@ class PhasedArraySource2D(PhasedArrayMixin, Source):
         return r_coords
 
     def _calculate_coordinates(self) -> npt.NDArray[np.float_]:
-        """Calculates the coordinates of the point source cloud for the source.
+        """Calculate the coordinates of the point source cloud for the source.
 
         This method works by calculating points uniformly spread along the line
         of each segment. When `num_points` can not be evenly distributed in
@@ -1098,7 +1093,7 @@ class PhasedArraySource2D(PhasedArrayMixin, Source):
         return coords
 
     def calculate_waveform_scale(self, dx: float) -> float:
-        """Calculates the scale factor to apply to waveforms from this source.
+        """Calculate the scale factor to apply to waveforms from this source.
 
         The scale is equal to the ratio between the density of grid points along a line
         and the density of source points along the line segment source.
@@ -1184,7 +1179,7 @@ class PhasedArraySource3D(PhasedArrayMixin, Source):
         delay: float = 0.0,
         element_delays: npt.NDArray[np.float_] | None = None,
     ) -> None:
-
+        """Initialize a new phased array source."""
         self._height = height
         self._unit_center_line = self._validate_center_line(center_line, direction)
 
@@ -1203,7 +1198,7 @@ class PhasedArraySource3D(PhasedArrayMixin, Source):
 
     @property
     def height(self) -> float:
-        """The height (in meters) of the elements of the source."""
+        """The `height` (in meters) of the elements of the source."""
         return self._height
 
     @property
@@ -1232,7 +1227,7 @@ class PhasedArraySource3D(PhasedArrayMixin, Source):
     def _validate_center_line(
         center_line: npt.NDArray[np.float_], direction: npt.NDArray[np.float_]
     ) -> npt.NDArray[np.float_]:
-        """Ensures that the center line input parameter is a valid one.
+        """Ensure that the center line input parameter is a valid one.
 
         Center line must not be parallel to the direction.
         Center line must be perpendicular to the direction.
@@ -1305,7 +1300,6 @@ class PhasedArraySource3D(PhasedArrayMixin, Source):
         along the diagonal and anti-diagonal axes of the rectangle are generated and
         added to the existing grid of points.
         """
-
         # Calculate the number of rows and columns in the grid
         n_rows = int(np.sqrt(n_points))
         n_cols = int(np.floor(n_points / n_rows))
@@ -1434,7 +1428,7 @@ class PhasedArraySource3D(PhasedArrayMixin, Source):
         return oriented_coords
 
     def _calculate_coordinates(self) -> npt.NDArray[np.float_]:
-        """Calculates the coordinates of the point source cloud for the source.
+        """Calculate the coordinates of the point source cloud for the source.
 
         Returns:
             An array containing the coordinates (in meters) of the point sources that
@@ -1461,7 +1455,7 @@ class PhasedArraySource3D(PhasedArrayMixin, Source):
         return coords
 
     def calculate_waveform_scale(self, dx: float) -> float:
-        """Calculates the scale factor to apply to waveforms from this source.
+        """Calculate the scale factor to apply to waveforms from this source.
 
         The scale is equal to the ratio between the density of grid points along a
         plane and the density of source points along the planar source.
@@ -1480,6 +1474,7 @@ class PhasedArraySource3D(PhasedArrayMixin, Source):
 
 def _rotate_2d(coords: npt.NDArray[np.float_], theta: float) -> npt.NDArray[np.float_]:
     """Rotates `coords` around the origin an angle `theta` around the origin (0, 0).
+
     Rotation is in 2D.
 
     Args:
@@ -1527,7 +1522,7 @@ def _rotate_3d(
 
 
 def _unit_vector(vector: npt.NDArray[np.float_]) -> npt.NDArray[np.float_]:
-    """Returns the unit vector that is parallel to the input vector.
+    """Return the unit vector that is parallel to the input vector.
 
     Args:
         vector: a 1D numpy array.

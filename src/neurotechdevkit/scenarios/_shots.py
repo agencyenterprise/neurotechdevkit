@@ -15,7 +15,7 @@ def create_shot(
     wavelet: npt.NDArray[np.float_],
     dx: float,
 ) -> stride.Shot:
-    """Compiles and returns a shot for a problem.
+    """Compile and return a shot for a problem.
 
     This function will add the point sources for each source to the problem geometry,
     build the shot object, build the wavelet array for the shot, and then add the
@@ -61,7 +61,7 @@ def _add_sources_to_geometry(
     sources: list[sources.Source],
     origin: npt.NDArray[np.float_],
 ) -> list[TransducerLocation]:
-    """Adds and returns source transducers at locations specified by all sources.
+    """Add and return source transducers at locations specified by all sources.
 
     Every point sources from all sources is added to the problem geometry.
 
@@ -90,7 +90,7 @@ def _add_sources_to_geometry(
 def _add_points_for_source_to_geometry(
     problem: stride.Problem, coords: npt.NDArray[np.float_]
 ) -> list[TransducerLocation]:
-    """Adds and returns source transducers at locations specified by coords.
+    """Add and return source transducers at locations specified by coords.
 
     Each point source in a source is added to the stride problem geometry, and then the
     TransducerLocation for each point source is returned so that it can be added to the
@@ -124,7 +124,7 @@ def _build_shot_wavelets_array(
     dx: float,
     dt: float,
 ) -> npt.NDArray[np.float_]:
-    """Returns the scaled and delayed wavelet array for all sources.
+    """Return the scaled and delayed wavelet array for all sources.
 
     The scaling and delays are determined by each individual source.
 
@@ -153,7 +153,7 @@ def _build_shot_wavelets_array(
 def _get_wavelets_for_source(
     wavelet: npt.NDArray[np.float_], source: sources.Source, dx: float, dt: float
 ) -> npt.NDArray[np.float_]:
-    """Returns the scaled and delayed wavelet array for a single source.
+    """Return the scaled and delayed wavelet array for a single source.
 
     Args:
         wavelet: a 1D array with shape (num_time_steps,) containing the pressure
@@ -177,7 +177,7 @@ def _create_delayed_source_wavelets(
     wavelet: npt.NDArray[np.float_], delays: npt.NDArray[np.float_], dt: float
 ) -> npt.NDArray[np.float_]:
     """
-    Applies time delays to a provided source wavelet for each point source.
+    Apply time delays to a provided source wavelet for each point source.
 
     Args:
         wavelet: a 1D array with shape (num_time_steps,) containing the pressure

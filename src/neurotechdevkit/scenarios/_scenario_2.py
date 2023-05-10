@@ -16,7 +16,7 @@ from ._utils import add_material_fields_to_problem, make_grid
 
 
 class _Scenario2MixinProtocol(Protocol):
-    """Provide type-hinting for Scenario 2 members used by mixins"""
+    """Provide type-hinting for Scenario 2 members used by mixins."""
 
     @property
     def scenario_id(self) -> str:
@@ -138,6 +138,7 @@ class Scenario2_2D(_Scenario2Mixin, Scenario2D):
     }
 
     def __init__(self, complexity="fast"):
+        """Create a new instance of scenario 2."""
         self._target_id = "primary-visual-cortex"
 
         super().__init__(
@@ -148,6 +149,7 @@ class Scenario2_2D(_Scenario2Mixin, Scenario2D):
     def render_material_property(
         self, name, show_orientation=True, show_sources=True, show_target=True
     ):
+        """Render the material property of the scenario."""
         raise NotImplementedError()
 
     def _compile_problem(self) -> stride.Problem:
@@ -161,6 +163,7 @@ class Scenario2_2D(_Scenario2Mixin, Scenario2D):
         }
 
     def get_default_source(self) -> sources.Source:
+        """Get the default source for the scenario."""
         return sources.FocusedSource2D(
             position=np.array([0.0, 0.0]),
             direction=np.array([1.0, 0.0]),
@@ -244,6 +247,7 @@ class Scenario2_3D(_Scenario2Mixin, Scenario3D):
     }
 
     def __init__(self, complexity="fast"):
+        """Create a new instance of scenario 2 3D."""
         self._target_id = "primary-visual-cortex"
 
         super().__init__(
@@ -253,6 +257,7 @@ class Scenario2_3D(_Scenario2Mixin, Scenario3D):
 
     @property
     def viewer_config_3d(self) -> rendering.ViewerConfig3D:
+        """Get the default viewer configuration for the scenario."""
         return rendering.ViewerConfig3D(
             init_angles=(90, 10, -60),
             init_zoom=2.0,
@@ -269,15 +274,18 @@ class Scenario2_3D(_Scenario2Mixin, Scenario3D):
         )
 
     def get_default_slice_axis(self) -> int:
+        """Get the default slice axis for the scenario."""
         return 2
 
     def get_default_slice_position(self, axis: int) -> float:
+        """Get the default slice position for the scenario."""
         default_positions = np.array([0.1, 0.0, 0.0])
         return default_positions[axis]
 
     def render_material_property(
         self, name, show_orientation=True, show_sources=True, show_target=True
     ):
+        """Render the material property of the scenario."""
         raise NotImplementedError()
 
     def _compile_problem(self) -> stride.Problem:
@@ -291,6 +299,7 @@ class Scenario2_3D(_Scenario2Mixin, Scenario3D):
         }
 
     def get_default_source(self):
+        """Get the default source for the scenario."""
         return sources.FocusedSource3D(
             position=np.array([0.0, 0.0, 0.0]),
             direction=np.array([1.0, 0.0, 0.0]),

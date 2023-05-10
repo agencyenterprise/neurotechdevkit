@@ -1,3 +1,4 @@
+"""All scenarios and results."""
 from . import materials
 from ._base import Scenario, Scenario2D, Scenario3D
 from ._results import (
