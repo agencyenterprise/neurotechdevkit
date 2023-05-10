@@ -505,6 +505,7 @@ class PlanarSource3D(UnfocusedSource):
 
 class PhasedArraySource(Source):
     """A base class for phased array sources.
+
     Args:
         position (npt.NDArray[np.float_]): a numpy float array indicating
             the coordinates (in meters) of the point at the center of the
@@ -581,6 +582,7 @@ class PhasedArraySource(Source):
 
     @abc.abstractproperty
     def focal_point(self) -> npt.NDArray[np.float_]:
+        """Get or set the coordinates (in meters) of the focal point of the source."""
         ...
 
     @property

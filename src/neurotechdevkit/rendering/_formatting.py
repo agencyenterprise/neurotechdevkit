@@ -59,7 +59,7 @@ def configure_axis_ticks(ax: matplotlib.axes.Axes) -> None:
         ax: The axes containing the ticks to be configured.
     """
     ax.tick_params(axis="x", rotation=45)
-    for label in chain(ax.get_xticklabels(), ax.get_yticklabels()):
+    for label in chain(ax.get_xticklabels(), ax.get_yticklabels()):  # type: ignore
         label.set_font_properties(AXIS_TICK_FONT_PROPS)
 
 
