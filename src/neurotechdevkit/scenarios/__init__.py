@@ -1,4 +1,5 @@
-"""All scenarios and results."""
+# noqa: D104
+# preventing package docstring to be rendered in documentation
 from . import materials
 from ._base import Scenario, Scenario2D, Scenario3D
 from ._results import (
