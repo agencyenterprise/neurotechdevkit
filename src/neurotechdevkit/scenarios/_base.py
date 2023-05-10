@@ -86,12 +86,13 @@ class Scenario(abc.ABC):
         Note: the only currently supported complexity is `fast`.
 
         Options are:
-        * `fast`: uses a small grid size (large grid spacing) so that simulations are
-            fast.
-        * `accurate`: uses a large grid size (small grid spacing) so that simulation
-            results are accurate.
-        * `balanced`: a grid size and grid spacing balanced between `fast` and
-            `accurate`.
+
+        - `fast`: uses a small grid size (large grid spacing) so that simulations are
+        fast.
+        - `accurate`: uses a large grid size (small grid spacing) so that simulation
+        results are accurate.
+        - `balanced`: a grid size and grid spacing balanced between `fast` and
+        `accurate`.
         """
         return self._complexity
 
@@ -215,11 +216,11 @@ class Scenario(abc.ABC):
     def materials(self) -> Mapping[str, Struct]:
         """A map between material name and material properties.
 
-        vp: the speed of sound (in m/s).
-        rho: the mass density (in kg/m³).
-        alpha: the absorption (in dB/cm).
-        render_color: the color used when rendering this material in the scenario layout
-            plot.
+        - vp: the speed of sound (in m/s).
+        - rho: the mass density (in kg/m³).
+        - alpha: the absorption (in dB/cm).
+        - render_color: the color used when rendering this material in the
+        scenario layout plot.
         """
         return {name: material for name, material in self._material_layers}
 
@@ -230,7 +231,7 @@ class Scenario(abc.ABC):
 
     @property
     def ordered_layers(self) -> list[str]:
-        """An list of material names in order of their layer id."""
+        """A list of material names in order of their layer id."""
         return [name for name, _ in self._material_layers]
 
     @property
@@ -270,7 +271,7 @@ class Scenario(abc.ABC):
         """Return the mask for the desired layer.
 
         The mask is `True` at each gridpoint where the requested layer exists,
-        and False elsewhere.
+        and `False` elsewhere.
 
         Args:
             layer_name: The name of the desired layer.
