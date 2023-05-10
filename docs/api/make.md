@@ -1,6 +1,5 @@
 # NDK Interface
 
-::: neurotechdevkit
+::: neurotechdevkit.make
     options:
-      members:
-        - make
+      show_root_heading: true
