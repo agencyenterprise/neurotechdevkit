@@ -13,9 +13,10 @@ def calculate_all_metrics(
 
     The keys for the dictionary are the names of the metrics. The value for each metric
     is another dictionary containing the following:
-        value: The value of the metric.
-        unit-of-measurement: The unit of measurement for the metric.
-        description: A text description of the metric.
+
+    - value: The value of the metric.
+    - unit-of-measurement: The unit of measurement for the metric.
+    - description: A text description of the metric.
 
     Args:
         result: the object containing the steady-state simulation results.

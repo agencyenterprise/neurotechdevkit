@@ -69,4 +69,3 @@ plugins:
         python:
           options:
             show_source: false
-            heading_level: 1
