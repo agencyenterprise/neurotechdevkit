@@ -68,4 +68,7 @@ plugins:
       handlers:
         python:
           options:
+            docstring_options:
+              ignore_init_summary: false
             show_source: false
+            # merge_init_into_class: false
