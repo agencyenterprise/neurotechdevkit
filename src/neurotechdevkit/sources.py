@@ -1,4 +1,5 @@
-"""Sources module."""
+# noqa: D100
+# preventing package docstring to be rendered in documentation
 from __future__ import annotations
 
 import abc
