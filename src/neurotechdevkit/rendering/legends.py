@@ -1,3 +1,4 @@
+"""Legends module."""
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import numpy as np
@@ -10,6 +11,7 @@ class LegendConfig:
     """A utility class for keeping track of the components needed for a legend."""
 
     def __init__(self):
+        """Initialize a new LegendConfig."""
         self._labels = []
         self._handles = []
         self._custom_handlers = {}
@@ -35,7 +37,7 @@ class LegendConfig:
             self._custom_handlers[type(handle)] = custom_handler
 
     def get_labels(self, title_case: bool = True) -> list[str]:
-        """Returns the list of configured labels.
+        """Return the list of configured labels.
 
         Args:
             title_case: If True, all labels will be converted to title case. If False,
@@ -49,7 +51,7 @@ class LegendConfig:
         return self._labels.copy()
 
     def get_handles(self) -> list[object]:
-        """Returns the list of configured legend handles.
+        """Return the list of configured legend handles.
 
         Returns:
             The list of configured legend handles.
@@ -57,7 +59,7 @@ class LegendConfig:
         return self._handles.copy()
 
     def get_custom_handlers(self) -> dict[type, mpl.legend_handler.HandlerBase]:
-        """Returns a map containing custom legend handlers.
+        """Return a map containing custom legend handlers.
 
         Returns:
             A map from handle type to legend handler instance.
@@ -90,7 +92,7 @@ class TargetHandler:
         fontsize: float,
         handlebox: mpl.offsetbox.OffsetBox,
     ) -> plt.Artist:
-        """Returns the artist that draws the target in the legend.
+        """Return the artist that draws the target in the legend.
 
         Args:
             legend: The legend for which these legend artists are being created.
@@ -148,7 +150,7 @@ class SourceHandler:
         fontsize: float,
         handlebox: mpl.offsetbox.OffsetBox,
     ) -> tuple[plt.Artist, ...]:
-        """Returns the artist that draws the source in the legend.
+        """Return the artist that draws the source in the legend.
 
         Args:
             legend: The legend for which these legend artists are being created.

@@ -1,3 +1,4 @@
+"""Font definitions for the neurotechdevkit."""
 import pathlib
 
 from matplotlib import font_manager

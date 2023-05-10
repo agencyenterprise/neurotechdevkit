@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "neurotechdevkit"
-version = "v0.0.21"
+version = "v0.0.29"
 description = "A repository for the development of the Neurotech Development Kit (NDK) project"
 authors = ["AE Studio <bci@ae.studio>"]
 maintainers = ["AE Studio <bci@ae.studio>"]
@@ -46,6 +46,8 @@ pytest-asyncio = "^0.20.2"
 mkdocs-material = "^9.1.6"
 mkdocs-gallery = "^0.7.6"
 mkdocstrings = {extras = ["python"], version = "^0.21.2"}
+codespell = "^2.2.4"
+pydocstyle = "^6.3.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
