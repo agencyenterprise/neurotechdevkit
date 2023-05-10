@@ -158,8 +158,8 @@ class FocusedSource2D(Source):
     This source is shaped like an arc and has a circular focus. It is created by
     taking an arc of a circle and distributing point sources evenly along that arc.
 
-    See https://en.wikipedia.org/wiki/Circular_arc for relevant geometrical
-    calculations.
+    See [Circular arc](https://en.wikipedia.org/wiki/Circular_arc) for relevant
+    geometrical calculations.
     """
 
     @property
