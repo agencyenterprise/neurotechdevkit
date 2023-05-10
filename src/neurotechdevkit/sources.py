@@ -943,7 +943,7 @@ class PhasedArraySource2D(PhasedArraySource):
     If the number of points can not be evenly distributed in the number of elements, the
     remainder number of points from the even division will be discarded.
 
-    See [Phased array ultrasonics](https://en.wikipedia.org/wiki/Phased_array_ultrasonics)
+    See [Phased array ultras...](https://en.wikipedia.org/wiki/Phased_array_ultrasonics)
     for detailed explanation.
     """
 
@@ -1044,7 +1044,7 @@ class PhasedArraySource3D(PhasedArraySource):
     If the number of points can not be evenly distributed in the number of elements, the
     remainder number of points from the even division will be discarded.
 
-    See [Phased array ultrasonics](https://en.wikipedia.org/wiki/Phased_array_ultrasonics)
+    See [Phased array ultras...](https://en.wikipedia.org/wiki/Phased_array_ultrasonics)
     for detailed explanation.
 
     Args:
