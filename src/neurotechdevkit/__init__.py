@@ -26,7 +26,7 @@ class ScenarioNotFoundError(Exception):
     pass
 
 
-def make(scenario_id, complexity="fast"):
+def make(scenario_id, complexity="fast") -> scenarios.Scenario:
     """
     Initialize a scenario and return an object which represents the simulation.
 
@@ -50,7 +50,7 @@ def make(scenario_id, complexity="fast"):
         ScenarioNotFoundError: Raised when the scenario id is not found.
 
     Returns:
-        scenarios.Scenario: an object representing the simulation.
+        An object representing the simulation.
     """
     if scenario_id not in _scenario_map:
         raise ScenarioNotFoundError(
