@@ -26,16 +26,16 @@ class Result(abc.ABC):
     This class should not be instantiated, use SteadyStateResult2D, SteadyStateResult3D,
     PulsedResult2D, or PulsedResult3D.
 
-    Attributes:
-        scenario: The scenario from which this result came.
-        center_frequency: the center frequency (in hertz) of the sources.
-        effective_dt: the effective time step (in seconds) along the time axis of the
+    Args:
+        scenario (scenarios.Scenario): The scenario from which this result came.
+        center_frequency (float): the center frequency (in hertz) of the sources.
+        effective_dt (float): the effective time step (in seconds) along the time axis of the
             wavefield. This can differ from the simulation dt if the recording
             undersampling factor is larger than 1.
-        pde: the stride Operator that was executed to run the simulation.
-        shot: the stride Shot which was used for the simulation.
-        wavefield: an array containing the resulting simulation data.
-        traces: the stride Traces object returned from executing the pde.
+        pde (stride.Operator): the stride Operator that was executed to run the simulation.
+        shot (stride.Shot): the stride Shot which was used for the simulation.
+        wavefield (npt.NDArray[np.float_]): an array containing the resulting simulation data.
+        traces (stride.Traces): the stride Traces object returned from executing the pde.
     """
 
     scenario: scenarios.Scenario
@@ -95,16 +95,16 @@ class SteadyStateResult(Result):
     This class should not be instantiated, use SteadyStateResult2D or
     SteadyStateResult3D.
 
-    Attributes:
-        scenario: The scenario from which this result came.
-        center_frequency: the center frequency (in hertz) of the sources.
-        effective_dt: the effective time step (in seconds) along the time axis of the
+    Args:
+        scenario (scenario.Scenario): The scenario from which this result came.
+        center_frequency (float): the center frequency (in hertz) of the sources.
+        effective_dt (float): the effective time step (in seconds) along the time axis of the
             wavefield. This can differ from the simulation dt if the recording
             undersampling factor is larger than 1.
-        pde: the stride Operator that was executed to run the simulation.
-        shot: the stride Shot which was used for the simulation.
-        wavefield: an array containing the resulting simulation data.
-        traces: the stride Traces object returned from executing the pde.
+        pde (stride.Operator): the stride Operator that was executed to run the simulation.
+        shot (stride.Shot): the stride Shot which was used for the simulation.
+        wavefield (npt.NDArray[np.float_]): an array containing the resulting simulation data.
+        traces (stride.Traces): the stride Traces object returned from executing the pde.
     """
 
     steady_state: npt.NDArray[np.float_] | None = None
@@ -181,19 +181,18 @@ class SteadyStateResult(Result):
 class SteadyStateResult2D(SteadyStateResult):
     """A container for holding the results of a 2D steady-state simulation.
 
-    Attributes:
-        scenario: The 2D scenario from which this result came.
-        center_frequency: the center frequency (in hertz) of the sources.
-        effective_dt: the effective time step (in seconds) along the time axis of the
+    Args:
+        scenario (scenarios.Scenario2D): The 2D scenario from which this result came.
+        center_frequency (float): the center frequency (in hertz) of the sources.
+        effective_dt (float): the effective time step (in seconds) along the time axis of the
             wavefield. This can differ from the simulation dt if the recording
             downsampling factor is larger than 1.
-        pde: the stride Operator that was executed to run the simulation.
-        shot: the stride Shot which was used for the simulation.
-        wavefield: a 3 dimensional array (two axes for space and one for time)
+        pde (stride.Operator): the stride Operator that was executed to run the simulation.
+        shot (stride.Shot): the stride Shot which was used for the simulation.
+        wavefield (npt.NDArray[np.float_]): a 3 dimensional array (two axes for space and one for time)
             containing the resulting simulation data.
-        traces: the stride Traces object returned from executing the pde.
+        traces (stride.Traces): the stride Traces object returned from executing the pde.
     """
-
     scenario: scenarios.Scenario2D
 
     def render_steady_state_amplitudes(
@@ -263,17 +262,17 @@ class SteadyStateResult2D(SteadyStateResult):
 class SteadyStateResult3D(SteadyStateResult):
     """A container for holding the results of a 3D steady-state simulation.
 
-    Attributes:
-        scenario: The 3D scenario from which this result came.
-        center_frequency: the center frequency (in hertz) of the sources.
-        effective_dt: the effective time step (in seconds) along the time axis of the
+    Args:
+        scenario (scenarios.Scenario3D): The 3D scenario from which this result came.
+        center_frequency (float): the center frequency (in hertz) of the sources.
+        effective_dt (float): the effective time step (in seconds) along the time axis of the
             wavefield. This can differ from the simulation dt if the recording
             downsampling factor is larger than 1.
-        pde: the stride Operator that was executed to run the simulation.
-        shot: the stride Shot which was used for the simulation.
-        wavefield: a 4 dimensional array (three axes for space and one for time)
+        pde (stride.Operator): the stride Operator that was executed to run the simulation.
+        shot (stride.Shot): the stride Shot which was used for the simulation.
+        wavefield (npt.NDArray[np.float_]): a 4 dimensional array (three axes for space and one for time)
             containing the resulting simulation data.
-        traces: the stride Traces object returned from executing the pde.
+        traces (stride.Traces): the stride Traces object returned from executing the pde.
     """
 
     scenario: scenarios.Scenario3D
@@ -439,16 +438,16 @@ class PulsedResult(Result):
 
     This class should not be instantiated, use PulsedResult2D or PulsedResult3D.
 
-    Attributes:
-        scenario: The scenario from which this result came.
-        center_frequency: the center frequency (in hertz) of the sources.
-        effective_dt: the effective time step (in seconds) along the time axis of the
+    Args:
+        scenario (scenario.Scenario): The scenario from which this result came.
+        center_frequency (float): the center frequency (in hertz) of the sources.
+        effective_dt (float): the effective time step (in seconds) along the time axis of the
             wavefield. This can differ from the simulation dt if the recording
             undersampling factor is larger than 1.
-        pde: the stride Operator that was executed to run the simulation.
-        shot: the stride Shot which was used for the simulation.
-        wavefield: an array containing the resulting simulation data.
-        traces: the stride Traces object returned from executing the pde.
+        pde (stride.Operator): the stride Operator that was executed to run the simulation.
+        shot (stride.Shot): the stride Shot which was used for the simulation.
+        wavefield (npt.NDArray[np.float_]): an array containing the resulting simulation data.
+        traces (stride.Traces): the stride Traces object returned from executing the pde.
     """
 
     recorded_slice: tuple[int, float] | None = None
@@ -548,17 +547,17 @@ class PulsedResult(Result):
 class PulsedResult2D(PulsedResult):
     """A container for holding the results of a 2D pulsed simulation.
 
-    Attributes:
-        scenario: The 2D scenario from which this result came.
-        center_frequency: the center frequency (in hertz) of the sources.
-        effective_dt: the effective time step (in seconds) along the time axis of the
+    Args:
+        scenario (scenarios.Scenario2D): The 2D scenario from which this result came.
+        center_frequency (float): the center frequency (in hertz) of the sources.
+        effective_dt (float): the effective time step (in seconds) along the time axis of the
             wavefield. This can differ from the simulation dt if the recording
             downsampling factor is larger than 1.
-        pde: the stride Operator that was executed to run the simulation.
-        shot: the stride Shot which was used for the simulation.
-        wavefield: a 3 dimensional array (two axes for space and one for time)
+        pde (stride.Operator): the stride Operator that was executed to run the simulation.
+        shot (stride.Shot): the stride Shot which was used for the simulation.
+        wavefield (npt.NDArray[np.float_]): a 3 dimensional array (two axes for space and one for time)
             containing the resulting simulation data.
-        traces: the stride Traces object returned from executing the pde.
+        traces (stride.Traces): the stride Traces object returned from executing the pde.
     """
 
     scenario: scenarios.Scenario2D
@@ -763,17 +762,17 @@ class PulsedResult2D(PulsedResult):
 class PulsedResult3D(PulsedResult):
     """A container for holding the results of a 3D pulsed simulation.
 
-    Attributes:
-        scenario: The 3D scenario from which this result came.
-        center_frequency: the center frequency (in hertz) of the sources.
-        effective_dt: the effective time step (in seconds) along the time axis of the
+    Args:
+        scenario (scenarios.Scenario3D): The 3D scenario from which this result came.
+        center_frequency (float): the center frequency (in hertz) of the sources.
+        effective_dt (float): the effective time step (in seconds) along the time axis of the
             wavefield. This can differ from the simulation dt if the recording
             downsampling factor is larger than 1.
-        pde: the stride Operator that was executed to run the simulation.
-        shot: the stride Shot which was used for the simulation.
-        wavefield: a 4 dimensional array (three axes for space and one for time)
+        pde (stride.Operator): the stride Operator that was executed to run the simulation.
+        shot (stride.Shot): the stride Shot which was used for the simulation.
+        wavefield (npt.NDArray[np.float_]): a 4 dimensional array (three axes for space and one for time)
             containing the resulting simulation data.
-        traces: the stride Traces object returned from executing the pde.
+        traces (stride.Traces): the stride Traces object returned from executing the pde.
     """
 
     scenario: scenarios.Scenario3D
@@ -1070,14 +1069,14 @@ def create_steady_state_result(
 
     Args:
         scenario: The scenario from which this result came.
-        center_frequency: the center frequency (in hertz) of the sources.
-        effective_dt: the effective time step (in seconds) along the time axis of the
+        center_frequency (float): the center frequency (in hertz) of the sources.
+        effective_dt (float): the effective time step (in seconds) along the time axis of the
             wavefield. This can differ from the simulation dt if the recording
             downsampling factor is larger than 1.
-        pde: the stride Operator that was executed to run the simulation.
-        shot: the stride Shot which was used for the simulation.
-        wavefield: an array containing the resulting simulation data.
-        traces: the stride Traces object returned from executing the pde.
+        pde (stride.Operator): the stride Operator that was executed to run the simulation.
+        shot (stride.Shot): the stride Shot which was used for the simulation.
+        wavefield (npt.NDArray[np.float_]): an array containing the resulting simulation data.
+        traces (stride.Traces): the stride Traces object returned from executing the pde.
 
     Raises:
         ValueError: if the ndim of the wavefield is less than 3 or more than 4.
@@ -1131,14 +1130,14 @@ def create_pulsed_result(
 
     Args:
         scenario: The scenario from which this result came.
-        center_frequency: the center frequency (in hertz) of the sources.
-        effective_dt: the effective time step (in seconds) along the time axis of the
+        center_frequency (float): the center frequency (in hertz) of the sources.
+        effective_dt (float): the effective time step (in seconds) along the time axis of the
             wavefield. This can differ from the simulation dt if the recording
             downsampling factor is larger than 1.
-        pde: the stride Operator that was executed to run the simulation.
-        shot: the stride Shot which was used for the simulation.
-        wavefield: an array containing the resulting simulation data.
-        traces: the stride Traces object returned from executing the pde.
+        pde (stride.Operator): the stride Operator that was executed to run the simulation.
+        shot (stride.Shot): the stride Shot which was used for the simulation.
+        wavefield (npt.NDArray[np.float_]): an array containing the resulting simulation data.
+        traces (stride.Traces): the stride Traces object returned from executing the pde.
 
     Raises:
         ValueError: if the ndim of the wavefield is less than 3 or more than 4.
