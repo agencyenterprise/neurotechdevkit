@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Iterable, Mapping, cast
+from typing import Iterable, Mapping
 
 import numpy as np
 import numpy.typing as npt
@@ -332,4 +332,4 @@ def _create_nd_ellipse_mask(
     )
     in_ellipse = distance_from_center_sq <= 1
 
-    return cast(npt.NDArray[np.bool_], in_ellipse)
+    return in_ellipse  # type: ignore

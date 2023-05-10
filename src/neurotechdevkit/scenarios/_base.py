@@ -4,7 +4,7 @@ import abc
 import asyncio
 from dataclasses import dataclass
 from types import SimpleNamespace
-from typing import Mapping, cast
+from typing import Mapping
 
 import nest_asyncio
 import numpy as np
@@ -427,7 +427,7 @@ class Scenario(abc.ABC):
             grid_shape=self.shape,
             recording_time_undersampling=recording_time_undersampling,
             n_cycles_steady_state=n_cycles_steady_state,
-            time_steps=cast(np.ndarray, problem.grid.time.grid).shape[0],
+            time_steps=problem.grid.time.grid.shape[0],  # type: ignore
         )
 
         sub_problem = self._setup_sub_problem(center_frequency, "steady-state")
@@ -850,24 +850,21 @@ class Scenario(abc.ABC):
             devito_args = dict(nthreads=n_jobs)
         assert sub_problem.shot is not None
         loop = asyncio.get_event_loop()
-        return cast(
-            stride.Traces,
-            loop.run_until_complete(
-                pde(
-                    wavelets=sub_problem.shot.wavelets,
-                    vp=problem.medium.fields["vp"],
-                    rho=problem.medium.fields["rho"],
-                    alpha=problem.medium.fields["alpha"],
-                    problem=sub_problem,
-                    boundary_type="complex_frequency_shift_PML_2",
-                    diff_source=True,
-                    save_wavefield=True,
-                    save_bounds=save_bounds,
-                    save_undersampling=save_undersampling,
-                    wavefield_slice=wavefield_slice,
-                    devito_args=devito_args,
-                )
-            ),
+        return loop.run_until_complete(
+            pde(
+                wavelets=sub_problem.shot.wavelets,
+                vp=problem.medium.fields["vp"],
+                rho=problem.medium.fields["rho"],
+                alpha=problem.medium.fields["alpha"],
+                problem=sub_problem,
+                boundary_type="complex_frequency_shift_PML_2",
+                diff_source=True,
+                save_wavefield=True,
+                save_bounds=save_bounds,
+                save_undersampling=save_undersampling,
+                wavefield_slice=wavefield_slice,
+                devito_args=devito_args,
+            )  # type: ignore
         )
 
     @abc.abstractmethod
@@ -915,13 +912,12 @@ class Scenario2D(Scenario):
             show_material_outlines: whether or not to display a thin white outline of
                 the transition between different materials.
         """
-        color_sequence = cast(
-            list[str],
-            [self.materials[name].render_color for name in self.ordered_layers],
-        )
+        color_sequence = [
+            self.materials[name].render_color for name in self.ordered_layers
+        ]
         field = self.get_field_data("layer").astype(int)
         fig, ax = rendering.create_layout_fig(
-            self.extent, self.origin, color_sequence, field
+            self.extent, self.origin, color_sequence, field  # type: ignore
         )
 
         # add layers
@@ -950,7 +946,7 @@ class Scenario2D(Scenario):
         rendering.configure_layout_plot(
             fig=fig,
             ax=ax,
-            color_sequence=color_sequence,
+            color_sequence=color_sequence,  # type: ignore
             layer_labels=self.ordered_layers,
             show_sources=show_sources,
             show_target=show_target,
@@ -1100,15 +1096,16 @@ class Scenario3D(Scenario):
         if slice_position is None:
             slice_position = self.get_default_slice_position(slice_axis)
 
-        color_sequence = cast(
-            list[str],
-            [self.materials[name].render_color for name in self.ordered_layers],
-        )
+        color_sequence = [
+            self.materials[name].render_color for name in self.ordered_layers
+        ]
         field = self.get_field_data("layer").astype(int)
         field = slice_field(field, self, slice_axis, slice_position)
         extent = drop_element(self.extent, slice_axis)
         origin = drop_element(self.origin, slice_axis)
-        fig, ax = rendering.create_layout_fig(extent, origin, color_sequence, field)
+        fig, ax = rendering.create_layout_fig(
+            extent, origin, color_sequence, field  # type: ignore
+        )
 
         # add layers
         if show_material_outlines:
@@ -1140,7 +1137,7 @@ class Scenario3D(Scenario):
         rendering.configure_layout_plot(
             fig=fig,
             ax=ax,
-            color_sequence=color_sequence,
+            color_sequence=color_sequence,  # type: ignore
             layer_labels=self.ordered_layers,
             show_sources=show_sources,
             show_target=show_target,

@@ -1,6 +1,4 @@
 """Functions for rendering a layout plot of a scenario."""
-from typing import cast
-
 import matplotlib.axes
 import matplotlib.colors
 import matplotlib.figure
@@ -65,7 +63,7 @@ def create_layout_fig(
     cmap = matplotlib.colors.ListedColormap(color_sequence)
     clim = (-0.5, len(color_sequence) - 0.5)
     ax.imshow(field, cmap=cmap, extent=imshow_extent, clim=clim)
-    return cast(tuple[matplotlib.figure.Figure, matplotlib.axes.Axes], (fig, ax))
+    return fig, ax  # type: ignore
 
 
 def configure_layout_plot(
