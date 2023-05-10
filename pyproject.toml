@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "neurotechdevkit"
-version = "v0.0.29"
-description = "A repository for the development of the Neurotech Development Kit (NDK) project"
+version = "v0.0.30"
+description = "Neurotech Development Kit: an open-source software library designed to enhance accessibility to cutting-edge neurotechnology"
 authors = ["AE Studio <bci@ae.studio>"]
 maintainers = ["AE Studio <bci@ae.studio>"]
 packages = [{include = "neurotechdevkit", from = "src" }]
