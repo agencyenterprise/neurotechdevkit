@@ -74,6 +74,7 @@ You can run `NDK` inside a docker container with a couple of steps:
 
 The output of the command above contains the URL of a jupyter notebook server, you can open the URL in your browser or connect to it using your IDE.
 
+
 ## Usage
 
 ```python
@@ -86,6 +87,6 @@ result.render_steady_state_amplitudes(show_material_outlines=False)
 
 ![Simulation](https://raw.githubusercontent.com/agencyenterprise/neurotechdevkit/main/docs/images/simulation_steady_state.png)
 
-### Acknowledgements
+## Acknowledgements
 
 Thanks to Fred Ehrsam for supporting this project, Quintin Frerichs and Milan Cvitkovic for providing direction, and to Sumner Norman for his ultrasound and neuroscience expertise. Thanks to [Stride](https://www.stride.codes/) for facilitating ultrasound simulations and providing an MIT license for usage within NDK, [Devito](https://www.devitoproject.org/) for providing the backend solver, [Napari](https://napari.org/stable/) for great 3D visualization, and to [Jean-Francois Aubry, et al.](https://doi.org/10.1121/10.0013426) for the basis of the simulation scenarios.
