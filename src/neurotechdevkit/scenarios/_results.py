@@ -213,9 +213,7 @@ class SteadyStateResult2D(SteadyStateResult):
     ) -> None:
         """Create a matplotlib figure with the steady-state pressure wave amplitude.
 
-        The grid can be turned on via:
-
-        `plt.grid(True)`
+        The grid can be turned on via: `plt.grid(True)`
 
         Args:
             show_sources: whether or not to show the source transducer layer.
@@ -304,9 +302,7 @@ class SteadyStateResult3D(SteadyStateResult):
         needs to be specified via `slice_axis` and `slice_position`. Eg. to take a slice
         at z=0.01 m, use `slice_axis=2` and `slice_position=0.01`.
 
-        The grid can be turned on via:
-
-        `plt.grid(True)`
+        The grid can be turned on via: `plt.grid(True)`
 
         Args:
             slice_axis: the axis along which to slice. If None, then the value returned
@@ -1163,7 +1159,7 @@ def create_pulsed_result(
             simulation.
         shot (stride.Shot): the stride Shot which was used for the simulation.
         wavefield (npt.NDArray[np.float_]): an array containing the resulting
-        simulation data.
+            simulation data.
         traces (stride.Traces): the stride Traces object returned from executing
             the pde.
 
@@ -1208,7 +1204,7 @@ def load_result_from_disk(filepath: str | pathlib.Path) -> Result:
         This functionality is experimental, so do do not be surprised if you
         encounter issues calling this function.
 
-    Load a file that was saved to disk via Result.save_to_disk.
+    Load a file that was saved to disk via `Result.save_to_disk`.
 
     If the object saved in `filepath` is the result from a steady-state simulation
     the results will contain only the steady-state amplitudes. Instead, for pulsed
