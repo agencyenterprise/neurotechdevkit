@@ -903,9 +903,7 @@ class Scenario2D(Scenario):
     ) -> None:
         """Create a matplotlib figure showing the 2D scenario layout.
 
-        The grid can be turned on via:
-
-        `plt.grid(True)`
+        The grid can be turned on via: `plt.grid(True)`
 
         Args:
             show_sources: whether or not to show the source transducer layer.
@@ -1000,7 +998,6 @@ class Scenario3D(Scenario):
             center=self.target_center,
             radius=self.target_radius,
         )
-        """Return the mask for the target region."""
         return target_mask
 
     def simulate_pulse(
@@ -1018,12 +1015,14 @@ class Scenario3D(Scenario):
         In this simulation, the sources will emit a pulse containing a few cycles of
         oscillation and then let the pulse propagate out to all edges of the scenario.
 
-        Note: the only supported frequency currently supported is 500kHz. Any other
-        value will raise a NotImplementedError.
+        !!! note
+            The only supported frequency currently supported is 500kHz. Any
+            other value will raise a NotImplementedError.
 
-        Warning: A poor choice of arguments to this function can lead to a failed
-        simulation. Make sure you understand the impact of supplying parameter values
-        other than the default if you chose to do so.
+        !!! warning
+            A poor choice of arguments to this function can lead to a failed
+            simulation. Make sure you understand the impact of supplying parameter
+            values other than the default if you chose to do so.
 
         Args:
             center_frequency: The center frequency (in hertz) to use for the
@@ -1077,9 +1076,7 @@ class Scenario3D(Scenario):
         needs to be specified via `slice_axis` and `slice_position`. Eg. to take a slice
         at z=0.01 m, use `slice_axis=2` and `slice_position=0.01`.
 
-        The grid can be turned on via:
-
-        `plt.grid(True)`
+        The grid can be turned on via: `plt.grid(True)`
 
         Args:
             slice_axis: the axis along which to slice. If None, then the value returned
@@ -1164,6 +1161,6 @@ class Scenario3D(Scenario):
         from different angles, zoom in our out, and turn layers on or off.
 
         See napari documentation for more information on the GUI:
-        https://napari.org/stable/tutorials/fundamentals/viewer.html
+        [documentation](https://napari.org/stable/tutorials/fundamentals/viewer.html)
         """
         rendering.render_layout_3d_with_napari(self)
