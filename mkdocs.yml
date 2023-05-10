@@ -32,6 +32,7 @@ nav:
       - Sources: usage/defining_sources.md
       - Simulation: usage/running_simulation.md
       - 3D Visualization: usage/3d.md
+      - Troubleshooting: usage/troubleshooting.md
   - API:
       - Make: api/make.md
       - Scenarios: api/scenarios.md
