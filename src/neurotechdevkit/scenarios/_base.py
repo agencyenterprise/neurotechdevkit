@@ -124,8 +124,7 @@ class Scenario(abc.ABC):
         Spacing is the same in each spatial direction.
         """
         assert self.problem.space is not None
-        result: float = self.problem.space.spacing[0]
-        return result
+        return self.problem.space.spacing[0]
 
     @property
     def ppw(self) -> float:
@@ -143,8 +142,7 @@ class Scenario(abc.ABC):
             raise ValueError(
                 "t_min is not defined until the simulation frequency is defined."
             )
-        result: float = self.problem.time.start
-        return result
+        return self.problem.time.start
 
     @property
     def t_max(self) -> float:
@@ -156,8 +154,7 @@ class Scenario(abc.ABC):
             raise ValueError(
                 "t_max is not defined until the simulation frequency is defined."
             )
-        result: float = self.problem.time.stop
-        return result
+        return self.problem.time.stop
 
     @property
     def dt(self) -> float:
@@ -169,8 +166,7 @@ class Scenario(abc.ABC):
             raise ValueError(
                 "dt is not defined until the simulation frequency is defined."
             )
-        result: float = self.problem.time.step
-        return result
+        return self.problem.time.step
 
     @property
     def ppp(self) -> float:
@@ -291,8 +287,7 @@ class Scenario(abc.ABC):
             raise ValueError(f"Layer '{layer_name}' does not exist.")
         layer = self.layer_ids[layer_name]
         layers_field = self.get_field_data("layer")
-        result: npt.NDArray[np.bool_] = layers_field == layer
-        return result
+        return layers_field == layer
 
     @abc.abstractmethod
     def get_target_mask(self) -> npt.NDArray[np.bool_]:
@@ -319,8 +314,7 @@ class Scenario(abc.ABC):
         Returns:
             An array containing the field data.
         """
-        result: npt.NDArray[np.float_] = self.problem.medium.fields[field].data
-        return result
+        return self.problem.medium.fields[field].data
 
     @abc.abstractmethod
     def _compile_problem(self) -> stride.Problem:

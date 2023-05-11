@@ -1,7 +1,7 @@
 """Napari module."""
 from __future__ import annotations
 
-from typing import NamedTuple, Optional, Protocol
+from typing import NamedTuple, Protocol
 
 import numpy as np
 import numpy.typing as npt
@@ -22,39 +22,39 @@ class _NapariViewer(Protocol):
 
     def add_image(  # type: ignore [no-untyped-def]
         self,
-        data: Optional[npt.NDArray[np.float_]] = None,
+        data=None,
         *,
-        name: Optional[str] = None,
-        rendering: str = "mip",
-        iso_threshold: float = 0.5,
-        colormap: Optional[str] = None,
-        opacity: float = 1.0,
+        name=None,
+        rendering="mip",
+        iso_threshold=0.5,
+        colormap=None,
+        opacity=1.0,
     ):
         pass
 
     def add_shapes(  # type: ignore [no-untyped-def]
         self,
-        data: Optional[npt.NDArray[np.float_]] = None,
+        data=None,
         *,
-        name: Optional[str] = None,
-        shape_type: str = "rectangle",
-        edge_color: str = "#777777",
-        face_color: str = "#white",
-        edge_width: float = 1.0,
-        opacity: float = 0.7,
+        name=None,
+        shape_type="rectangle",
+        edge_color="#777777",
+        face_color="#white",
+        edge_width=1.0,
+        opacity=0.7,
     ):
         pass
 
     def add_points(  # type: ignore [no-untyped-def]
         self,
-        data: Optional[npt.NDArray[np.float_]] = None,
+        data=None,
         *,
-        name: Optional[str] = None,
-        symbol: str = "o",
-        size: float = 10.0,
-        face_color: str = "white",
-        edge_color: str = "dimgray",
-        opacity: float = 1.0,
+        name=None,
+        symbol="o",
+        size=10.0,
+        face_color="white",
+        edge_color="dimgray",
+        opacity=1.0,
     ):
         pass
 
@@ -217,9 +217,9 @@ def add_target(viewer: _NapariViewer, scenario: "scenarios.Scenario3D") -> None:
     )
 
     ellipse_0 = np.array([-dx - dy, -dx + dy, dx + dy, dx - dy])
-    ellipse_1: npt.NDArray[np.float_] = target_pos + np.matmul(ellipse_0, R1)
-    ellipse_2: npt.NDArray[np.float_] = target_pos + np.matmul(ellipse_0, R2)
-    ellipse_3: npt.NDArray[np.float_] = np.array(
+    ellipse_1 = target_pos + np.matmul(ellipse_0, R1)
+    ellipse_2 = target_pos + np.matmul(ellipse_0, R2)
+    ellipse_3 = np.array(
         [
             target_pos + (-dx - dz),
             target_pos + (-dx + dz),
@@ -230,7 +230,7 @@ def add_target(viewer: _NapariViewer, scenario: "scenarios.Scenario3D") -> None:
 
     viewer.add_shapes(
         name="target",
-        data=[ellipse_1, ellipse_2, ellipse_3],  # type: ignore [arg-type]
+        data=[ellipse_1, ellipse_2, ellipse_3],
         shape_type="ellipse",
         edge_color="#2F2F2F",
         face_color="#999999",

@@ -82,8 +82,7 @@ def select_simulation_time_for_pulsed(
     min_speed_of_sound = min([m.vp for m in materials.values()])
     assert grid.space is not None
     diagonal_length = np.linalg.norm(grid.space.size)
-    result: float = delay + diagonal_length / min_speed_of_sound
-    return result
+    return delay + diagonal_length / min_speed_of_sound
 
 
 def create_time_grid(*, freq_hz: float, ppp: int, sim_time: float) -> stride.Time:
@@ -118,5 +117,4 @@ def find_largest_delay_in_sources(sources: FrozenList[Source]) -> float:
     if len(sources) == 0:
         return 0.0
 
-    result: float = np.max([s.point_source_delays.max() for s in sources])
-    return result
+    return np.max([s.point_source_delays.max() for s in sources])

@@ -12,7 +12,7 @@ def get_available_ram_memory() -> float:
     Returns:
         The available RAM memory in GB.
     """
-    avail_ram: float = psutil.virtual_memory().total / 10**9
+    avail_ram = psutil.virtual_memory().total / 10**9
     return avail_ram
 
 
@@ -58,8 +58,8 @@ def estimate_memory_required(
     )
 
     predicted_memory = int(intercept + np.dot(coefs, vals))
-    result: int = np.clip(predicted_memory, 4, None)
-    return result
+
+    return np.clip(predicted_memory, 4, None)
 
 
 def estimate_running_time(
@@ -109,8 +109,7 @@ def estimate_running_time(
     lr = models[threads_avail[closest]]
     vals = np.array([n_points, time_steps])
     coefs = np.array(lr["coefs"])
-    result: float = lr["intercept"] + np.dot(coefs, vals)
-    return result
+    return lr["intercept"] + np.dot(coefs, vals)
 
 
 def budget_time_and_memory_resources(
