@@ -217,7 +217,8 @@ class Scenario1_3D(_Scenario1Mixin, Scenario3D):
     def get_default_slice_position(self, axis: int) -> float:
         """Return the default slice position for the scenario."""
         default_positions = np.array([0.064, 0.0, 0.0], dtype=np.float_)
-        return default_positions[axis]
+        result: float = default_positions[axis]
+        return result
 
     def render_material_property(
         self,

@@ -1226,7 +1226,8 @@ def load_result_from_disk(filepath: str | pathlib.Path) -> Result:
         if save_data.get("steady_state") is not None:
             fields_kwargs.update(steady_state=save_data["steady_state"])
 
-        return result_type(**fields_kwargs)
+        result: Result = result_type(**fields_kwargs)
+        return result
 
     except Exception as e:
         raise Exception("Unable to load result artifact from disk.") from e

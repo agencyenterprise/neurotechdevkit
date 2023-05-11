@@ -142,7 +142,8 @@ def calculate_mechanical_index(
         result.get_steady_state(), mask=~mask
     )
     peak_neg_pressure = np.max(ss_amp_in_brain)
-    return peak_neg_pressure / np.sqrt(result.center_frequency)
+    mechanical_index: float = peak_neg_pressure / np.sqrt(result.center_frequency)
+    return mechanical_index
 
 
 def calculate_focal_gain(result: results.SteadyStateResult) -> float:
@@ -168,7 +169,8 @@ def calculate_focal_gain(result: results.SteadyStateResult) -> float:
         result.get_steady_state(), mask=(~brain_mask | target_mask)
     )
     amp_ratio = np.mean(ss_in_target) / np.mean(ss_brain_excl_target)
-    return 10 * np.log10(amp_ratio)
+    gain: float = 10 * np.log10(amp_ratio)
+    return gain
 
 
 def calculate_i_ta(result: results.SteadyStateResult) -> npt.NDArray[np.float_]:

@@ -174,7 +174,8 @@ class FocusedSource2D(Source):
         `_center_angle` points from the focus to the transducer, so they are
         opposite.
         """
-        return np.arctan2(-self.unit_direction[1], -self.unit_direction[0])
+        result: float = np.arctan2(-self.unit_direction[1], -self.unit_direction[0])
+        return result
 
     @property
     def _angle_range(self) -> float:
@@ -182,7 +183,8 @@ class FocusedSource2D(Source):
 
         The that the arc source subtends viewed from the focal point.
         """
-        return 2 * np.arcsin(self.aperture / (2 * self.focal_length))
+        result: float = 2 * np.arcsin(self.aperture / (2 * self.focal_length))
+        return result
 
     def _calculate_coordinates(self) -> npt.NDArray[np.float_]:
         """Calculate the coordinates of the point source cloud for the source.
@@ -272,7 +274,7 @@ class FocusedSource3D(Source):
         threshold = self._calculate_threshold(self.aperture, radius)
         axis, theta = self._calculate_rotation_parameters(self.unit_direction)
 
-        return geometries.ellipsoidal(
+        result: npt.NDArray[np.float_] = geometries.ellipsoidal(
             num=self.num_points,
             radius=(radius, radius, radius),
             centre=sphere_center,
@@ -280,6 +282,7 @@ class FocusedSource3D(Source):
             axis=tuple(axis),  # stride requires this to not be an array
             theta=theta,
         )
+        return result
 
     def calculate_waveform_scale(self, dx: float) -> float:
         """Calculate the scale factor to apply to waveforms from this source.
@@ -320,7 +323,8 @@ class FocusedSource3D(Source):
         aperture_ratio = aperture / (2 * radius)
         bowl_height = radius * (1 - np.sqrt(1 - aperture_ratio**2))
         bowl_surface_area = 2 * np.pi * radius * bowl_height
-        return num_points / bowl_surface_area
+        result: float = num_points / bowl_surface_area
+        return result
 
     @staticmethod
     def _calculate_threshold(aperture: float, radius: float) -> float:
@@ -344,7 +348,8 @@ class FocusedSource3D(Source):
                 `aperture` and `radius`.
         """
         ratio_to_diameter = aperture / (2 * radius)
-        return 0.5 * (1 + np.sqrt(1 - ratio_to_diameter**2))
+        result: float = 0.5 * (1 + np.sqrt(1 - ratio_to_diameter**2))
+        return result
 
     @staticmethod
     def _calculate_rotation_parameters(
@@ -479,12 +484,13 @@ class PlanarSource3D(UnfocusedSource):
             An array containing the coordinates (in meters) of the point sources that
                 make up the source.
         """
-        return geometries.disk(
+        result: npt.NDArray[np.float_] = geometries.disk(
             num=self.num_points,
             radius=self.aperture / 2.0,
             centre=self.position,
             orientation=self.unit_direction,
         )
+        return result
 
     def calculate_waveform_scale(self, dx: float) -> float:
         """Calculate the scale factor to apply to waveforms from this source.
@@ -858,9 +864,8 @@ class PhasedArraySource(Source):
             the delay (in seconds) between two consecutive elements.
         """
         tilt_radians = np.radians(tilt_angle)
-        phase_time = pitch * np.cos(np.pi / 2 - tilt_radians)
+        phase_time: float = pitch * np.cos(np.pi / 2 - tilt_radians)
         phase_time = phase_time / speed
-
         return phase_time
 
     def _calculate_tilt_element_delays(self) -> npt.NDArray[np.float_]:
@@ -1441,7 +1446,7 @@ def _rotate_3d(
     if norm == 0:
         raise ValueError("The norm of `axis` must be nonzero.")
     rot_mat = expm(np.cross(np.eye(3), axis / norm * theta))
-    rotated = ((rot_mat @ coords.T).T).squeeze()
+    rotated: npt.NDArray[np.float_] = ((rot_mat @ coords.T).T).squeeze()
     return rotated
 
 

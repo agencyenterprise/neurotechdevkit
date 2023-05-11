@@ -102,4 +102,7 @@ def _load_target(version: str) -> npt.NDArray[np.float_]:
             f"Target version '{version}' not found. Options are: {version_options}"
         )
 
-    return plt.imread(_COMPONENT_DIR / f"target-{version}.png")
+    result: npt.NDArray[np.float_] = plt.imread(
+        _COMPONENT_DIR / f"target-{version}.png"
+    )
+    return result

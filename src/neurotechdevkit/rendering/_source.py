@@ -158,7 +158,8 @@ def _load_most_similar_source_image(
         new_img[new_img.shape[0] - src_img.shape[0] :] = src_img
         src_img = new_img
 
-    return src_img
+    result: npt.NDArray[np.float_] = src_img
+    return result
 
 
 def source_should_be_flat(source: Source) -> bool:
@@ -257,4 +258,5 @@ def _translate_and_rotate(
         padded_img, angle=rotation, reshape=False, mode="constant", cval=0
     )
 
-    return np.clip(transformed_img, 0.0, 1.0)
+    result: npt.NDArray[np.float_] = np.clip(transformed_img, 0.0, 1.0)
+    return result

@@ -166,7 +166,8 @@ def wavelet_helper(
         wavelet = wavelets.continuous_wave(freq_hz, n_samples=time.num, dt=time.step)
     else:
         raise ValueError(f"wavelet {name} unknown")
-    return pressure * wavelet
+    result: npt.NDArray[np.float_] = pressure * wavelet
+    return result
 
 
 def slice_field(
@@ -198,7 +199,8 @@ def slice_field(
     slice_idx = np.clip(slice_idx, 0, scenario.shape[slice_axis] - 1)
     slices_init = np.array([np.s_[slice_idx], np.s_[:], np.s_[:]])
     array_slice = tuple(np.roll(slices_init, slice_axis))
-    return field[array_slice]
+    result: npt.NDArray[np.float_] = field[array_slice]
+    return result
 
 
 def drop_element(arr: npt.NDArray[np.float_], drop_idx: int) -> npt.NDArray[np.float_]:
@@ -213,7 +215,8 @@ def drop_element(arr: npt.NDArray[np.float_], drop_idx: int) -> npt.NDArray[np.f
     """
     mask = np.ones(arr.shape[0], dtype=bool)
     mask[drop_idx] = False
-    return arr[mask]
+    result: npt.NDArray[np.float_] = arr[mask]
+    return result
 
 
 def drop_column(arr: npt.NDArray[np.float_], drop_idx: int) -> npt.NDArray[np.float_]:
@@ -336,6 +339,5 @@ def _create_nd_ellipse_mask(
     distance_from_center_sq = sum(
         ((X_i - x_i) / R_i) ** 2 for X_i, x_i, R_i in zip(X, center, radii)
     )
-    in_ellipse = distance_from_center_sq <= 1
-
+    in_ellipse: npt.NDArray[np.bool_] = distance_from_center_sq <= 1
     return in_ellipse

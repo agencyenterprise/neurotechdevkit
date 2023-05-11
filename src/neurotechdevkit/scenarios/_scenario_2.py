@@ -283,8 +283,9 @@ class Scenario2_3D(_Scenario2Mixin, Scenario3D):
 
     def get_default_slice_position(self, axis: int) -> float:
         """Get the default slice position for the scenario."""
-        default_positions = np.array([0.1, 0.0, 0.0])
-        return default_positions[axis]
+        default_positions = np.array([0.1, 0.0, 0.0], dtype=float)
+        result: float = default_positions[axis]
+        return result
 
     def render_material_property(
         self,
@@ -343,5 +344,5 @@ def _create_scenario_2_mask(
     if convert_2d:
         mask = mask[:, :, 185]
         # slice through the center of the transducer
-
-    return mask
+    result: npt.NDArray[np.bool_] = mask
+    return result
