@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Iterable, Mapping
+from typing import TYPE_CHECKING, Iterable, Mapping, TypeVar
 
 import numpy as np
 import numpy.typing as npt
@@ -10,6 +10,8 @@ from stride.utils import wavelets
 
 if TYPE_CHECKING:
     from ..scenarios import Scenario
+
+T = TypeVar("T", bound=np.generic, covariant=True)
 
 
 def make_grid(
@@ -170,11 +172,11 @@ def wavelet_helper(
 
 
 def slice_field(
-    field: npt.NDArray[np.float_],
+    field: npt.NDArray[T],
     scenario: Scenario,
     slice_axis: int,
     slice_position: float,
-) -> npt.NDArray[np.float_]:
+) -> npt.NDArray[T]:
     """Return a slice of a field at a desired position along an axis.
 
     If `slice_position` does not align exactly with the scenario grid, the closest

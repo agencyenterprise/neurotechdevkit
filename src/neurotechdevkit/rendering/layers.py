@@ -42,7 +42,7 @@ def draw_target(
 
 def draw_material_outlines(
     ax: matplotlib.axes.Axes,
-    material_field: npt.NDArray[np.float_],
+    material_field: npt.NDArray[np.int_],
     dx: float,
     origin: npt.NDArray[np.float_],
     upsample_factor: int = 1,
@@ -85,8 +85,8 @@ def draw_material_outlines(
 
 
 def _upsample_field(
-    field: npt.NDArray[np.float_], upsample_factor: int
-) -> npt.NDArray[np.float_]:
+    field: npt.NDArray[np.int_], upsample_factor: int
+) -> npt.NDArray[np.int_]:
     """Upsample a 2D array using closest interpolation.
 
     Returns:
@@ -96,7 +96,7 @@ def _upsample_field(
     return np.kron(field, upsample_kernel).astype(field.dtype)
 
 
-def _get_outline_mask(field: npt.NDArray[np.float_]) -> npt.NDArray[np.bool_]:
+def _get_outline_mask(field: npt.NDArray[np.int_]) -> npt.NDArray[np.bool_]:
     """Return a mask indicating where there is a transition between materials.
 
     Transitions are detected by comparing the input field by itself but shifted
