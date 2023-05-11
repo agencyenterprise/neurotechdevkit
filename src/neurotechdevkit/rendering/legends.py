@@ -99,11 +99,11 @@ class TargetHandler(matplotlib.legend_handler.HandlerBase):
         """Return the artist that draws the target in the legend.
 
         Args:
-            legend: The legend for which these legend artists are being created.
-            orig_handle: The object for which these legend artists are being created.
-            fontsize: The fontsize in pixels. The artists being created should be scaled
+            legend: the legend for which these legend artists are being created.
+            orig_handle: the object for which these legend artists are being created.
+            fontsize: the fontsize in pixels. The artists being created should be scaled
                 according to the given fontsize.
-            handlebox: The box which has been created to hold this legend entry's
+            handlebox: the box which has been created to hold this legend entry's
                 artists. Artists created in the legend_artist method must be added to
                 this handlebox inside this method.
 
@@ -156,11 +156,11 @@ class SourceHandler(matplotlib.legend_handler.HandlerBase):
         """Return the artist that draws the source in the legend.
 
         Args:
-            legend: The legend for which these legend artists are being created.
-            orig_handle: The object for which these legend artists are being created.
-            fontsize: The fontsize in pixels. The artists being created should be scaled
+            legend: the legend for which these legend artists are being created.
+            orig_handle: the object for which these legend artists are being created.
+            fontsize: the fontsize in pixels. The artists being created should be scaled
                 according to the given fontsize.
-            handlebox: The box which has been created to hold this legend entry's
+            handlebox: the box which has been created to hold this legend entry's
                 artists. Artists created in the legend_artist method must be added to
                 this handlebox inside this method.
 

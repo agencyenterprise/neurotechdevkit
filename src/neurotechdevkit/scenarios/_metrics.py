@@ -14,8 +14,8 @@ def calculate_all_metrics(
     The keys for the dictionary are the names of the metrics. The value for each metric
     is another dictionary containing the following:
 
-    - value: The value of the metric.
-    - unit-of-measurement: The unit of measurement for the metric.
+    - value: the value of the metric.
+    - unit-of-measurement: the unit of measurement for the metric.
     - description: A text description of the metric.
 
     Args:
@@ -127,8 +127,8 @@ def calculate_mechanical_index(
     center frequency.
 
     Args:
-        result: The Result object containing the simulation results.
-        layer: The layer within which to calculate the mechanical index. If None, the
+        result: the Result object containing the simulation results.
+        layer: the layer within which to calculate the mechanical index. If None, the
             default, the mechanical index is calculated over the entire simulation
             space.
 
@@ -154,7 +154,7 @@ def calculate_focal_gain(result: results.SteadyStateResult) -> float:
     brain, presented in Decibels.
 
     Args:
-        result: The Result object containing the simulation results.
+        result: the Result object containing the simulation results.
 
     Returns:
         The focal gain (in dB)
@@ -183,7 +183,7 @@ def calculate_i_ta(result: results.SteadyStateResult) -> npt.NDArray[np.float_]:
     is the center frequency.
 
     Args:
-        result: The Result object containing the simulation results.
+        result: the Result object containing the simulation results.
 
     Returns:
         the time-averaged intensity at each point in space (in W/m^2).
@@ -205,7 +205,7 @@ def calculate_i_ta_target(result: results.SteadyStateResult) -> float:
     is the center frequency.
 
     Args:
-        result: The Result object containing the simulation results.
+        result: the Result object containing the simulation results.
 
     Returns:
         the time-averaged intensity averaged over the target region (in W/m^2).
@@ -234,7 +234,7 @@ def calculate_i_ta_off_target(result: results.SteadyStateResult) -> float:
     The intensity is averaged over the brain region excluding the target region.
 
     Args:
-        result: The Result object containing the simulation results.
+        result: the Result object containing the simulation results.
 
     Returns:
         the time-averaged intensity averaged over the brain but outside of the target
@@ -259,7 +259,7 @@ def calculate_i_pa_target(result: results.SteadyStateResult) -> float:
     See `calculate_i_ta_target` for more information about how the metric is calculated.
 
     Args:
-        result: The Result object containing the simulation results.
+        result: the Result object containing the simulation results.
 
     Returns:
         the pulse-averaged intensity averaged over the target region (in W/m^2).
@@ -280,7 +280,7 @@ def calculate_i_pa_off_target(result: results.SteadyStateResult) -> float:
     calculated.
 
     Args:
-        result: The Result object containing the simulation results.
+        result: the Result object containing the simulation results.
 
     Returns:
         the pulse-averaged intensity averaged over the brain but outside of the target
@@ -312,7 +312,7 @@ class Conversions:
         Args:
             from_uom: A string containing unit-of-measurement from which to convert.
             to_uom: A string containing unit-of-measurement to which to convert.
-            value: The value to be converted.
+            value: the value to be converted.
 
         Raises:
             ValueError: If an unsupported conversion is requested.
