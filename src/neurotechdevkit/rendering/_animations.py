@@ -25,7 +25,7 @@ def display_video_file(file_name: str) -> Video:
     return Video(file_name)
 
 
-def video_only_output(func: Callable) -> Callable:
+def video_only_output(func: Callable) -> Callable:  # type: ignore [type-arg]
     """Create the context for video creation (decorator).
 
     It deactivates the interactive environment while the animation is being created.
@@ -43,7 +43,7 @@ def video_only_output(func: Callable) -> Callable:
     """
 
     @wraps(func)
-    def inner(*args, **kwargs):
+    def inner(*args, **kwargs):  # type: ignore [no-untyped-def]
         embed_limit = matplotlib.rcParams.get("animation.embed_limit", None)
         interactive = plt.isinteractive()
         plt.ioff()

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Iterable, Mapping
+from typing import TYPE_CHECKING, Iterable, Mapping
 
 import numpy as np
 import numpy.typing as npt
@@ -8,7 +8,8 @@ import stride
 from mosaic.types import Struct
 from stride.utils import wavelets
 
-from ..scenarios import Scenario
+if TYPE_CHECKING:
+    from ..scenarios import Scenario
 
 
 def make_grid(

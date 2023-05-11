@@ -49,7 +49,7 @@ def make(scenario_id: str, complexity: str = "fast") -> scenarios.Scenario:
             f"Scenario '{scenario_id}' does not exist. Please refer to documentation"
             " for the list of provided scenarios."
         )
-    return _scenario_map[scenario_id](complexity=complexity)
+    return _scenario_map[scenario_id](complexity=complexity)  # type: ignore [abstract]
 
 
 _scenario_map = {

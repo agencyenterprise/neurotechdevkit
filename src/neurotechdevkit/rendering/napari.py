@@ -20,7 +20,7 @@ class _NapariViewer(Protocol):
     so that we don't need to import napari at the module level.
     """
 
-    def add_image(
+    def add_image(  # type: ignore [no-untyped-def]
         self,
         data=None,
         *,
@@ -32,7 +32,7 @@ class _NapariViewer(Protocol):
     ):
         pass
 
-    def add_shapes(
+    def add_shapes(  # type: ignore [no-untyped-def]
         self,
         data=None,
         *,
@@ -45,7 +45,7 @@ class _NapariViewer(Protocol):
     ):
         pass
 
-    def add_points(
+    def add_points(  # type: ignore [no-untyped-def]
         self,
         data=None,
         *,

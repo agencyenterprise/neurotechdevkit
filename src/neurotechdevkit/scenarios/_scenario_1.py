@@ -247,6 +247,7 @@ class Scenario1_3D(_Scenario1Mixin, Scenario3D):
 def _create_scenario_1_mask(material: str, grid: stride.Grid) -> npt.NDArray[np.bool_]:
 
     # layers are defined by X position
+    assert grid.space is not None
     dx = grid.space.spacing[0]
 
     layers_m = np.array(
@@ -261,6 +262,7 @@ def _create_scenario_1_mask(material: str, grid: stride.Grid) -> npt.NDArray[np.
     )
     interfaces = np.cumsum(layers_m)
 
+    assert grid.space is not None
     mask = np.zeros(grid.space.shape, dtype=bool)
 
     if material == "water":
