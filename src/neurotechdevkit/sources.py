@@ -735,7 +735,7 @@ class PhasedArraySource(Source):
             num_points, the number of points that the user requested.
 
         Returns:
-            the number of points that can distributed evenly in `num_elements`.
+            The number of points that can distributed evenly in `num_elements`.
         """
         quotient, remainder = divmod(num_points, self.num_elements)
         if remainder > 0:
@@ -825,7 +825,7 @@ class PhasedArraySource(Source):
             delays: the delays (in seconds) for each element of the array.
 
         Returns:
-            the delays (in seconds) per each source point of the array.
+            The delays (in seconds) per each source point of the array.
         """
         point_source_delays = np.zeros(self.num_points)
         for i, slc in enumerate(self.point_mapping):
@@ -853,7 +853,7 @@ class PhasedArraySource(Source):
                    the source is placed.
 
         Returns:
-            the delay (in seconds) between two consecutive elements.
+            The delay (in seconds) between two consecutive elements.
         """
         tilt_radians = np.radians(tilt_angle)
         phase_time = pitch * np.cos(np.pi / 2 - tilt_radians)
@@ -936,7 +936,7 @@ class PhasedArraySource(Source):
 class PhasedArraySource2D(PhasedArraySource):
     """A phased array source in 2D.
 
-    This source is shaped like a multiple segments in a line. Each segment can emit
+    This source is shaped like multiple segments in a line. Each segment can emit
     waves independently. It has no focus currently. A focused implementation will be
     supported in the future. This source is composed of `num_points` point sources.
     Distributed evenly in `num_elements`.
@@ -1037,7 +1037,7 @@ class PhasedArraySource2D(PhasedArraySource):
 class PhasedArraySource3D(PhasedArraySource):
     """A linear phased array source in 3D.
 
-    This source is shaped like a multiple rectangular segments in a line. Each segment
+    This source is shaped like multiple rectangular segments in a line. Each segment
     can emit waves independently. It has no focus currently. A focused implementation
     will be supported in the future. This source is composed of `num_points` point
     sources distributed evenly in `num_elements`.

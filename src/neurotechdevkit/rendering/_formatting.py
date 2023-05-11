@@ -18,9 +18,9 @@ def configure_title(
     and axes dimensions for reproducibility.
 
     Args:
-        fig: The figure where the title should be configured.
-        title: The text for the title to give the plot.
-        x_pos: The x position in figure coordinates to pass into `fig.suptitle`.
+        fig: the figure where the title should be configured.
+        title: the text for the title to give the plot.
+        x_pos: the x position in figure coordinates to pass into `fig.suptitle`.
     """
     fig.suptitle(
         title,
@@ -36,9 +36,9 @@ def configure_axis_labels(
     """Configure the labels for the X and Y axes.
 
     Args:
-        ax: The axes containing the labels to be configured.
-        vertical_label: The label to apply to the vertical axis.
-        horizontal_label: The label to apply to the horizontal axis.
+        ax: the axes containing the labels to be configured.
+        vertical_label: the label to apply to the vertical axis.
+        horizontal_label: the label to apply to the horizontal axis.
     """
     ax.set_xlabel(
         f"{horizontal_label} (m)",
@@ -56,7 +56,7 @@ def configure_axis_ticks(ax: matplotlib.axes.Axes) -> None:
     """Configure the ticks and tick labels for the X and Y axes.
 
     Args:
-        ax: The axes containing the ticks to be configured.
+        ax: the axes containing the ticks to be configured.
     """
     ax.tick_params(axis="x", rotation=45)
     for label in chain(ax.get_xticklabels(), ax.get_yticklabels()):
@@ -67,7 +67,7 @@ def configure_grid(ax: matplotlib.axes.Axes) -> None:
     """Configure the grid for the plot.
 
     Args:
-        ax: The axes containing the grid to be configured.
+        ax: the axes containing the grid to be configured.
     """
     ax.grid(
         color="#E7E7E7",

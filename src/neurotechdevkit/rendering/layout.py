@@ -42,14 +42,14 @@ def create_layout_fig(
             the field along each axis.
         origin: An array of shape (2,) which contains the spatial coordinates (in
             meters) of the field element with indices (0, 0).
-        color_sequence: The list of colors which correspond to each material in the
+        color_sequence: the list of colors which correspond to each material in the
             field.
         field: A 2D integer array indicating which material is located at each point on
             the grid.
 
     Returns:
-        fig: The new matplotlib figure.
-        ax: The axes containing the plotted data.
+        fig: the new matplotlib figure.
+        ax: the axes containing the plotted data.
     """
     assert len(extent) == 2, "The rendering only supports 2D fields."
 
@@ -82,9 +82,9 @@ def configure_layout_plot(
     """Configure a layout plot figure including axes, title, and legend.
 
     Args:
-        fig: The layout plot figure to configure.
-        ax: The axes which contains the layout plot.
-        color_sequence: The list of colors which correspond to each material in the
+        fig: the layout plot figure to configure.
+        ax: the axes which contains the layout plot.
+        color_sequence: the list of colors which correspond to each material in the
             field.
         layer_labels: A list of labels to apply to the material layers in the plot.
         show_sources: Whether or not to include the source transducer layer in the
@@ -94,9 +94,9 @@ def configure_layout_plot(
             the field along each axis.
         origin: An array of shape (2,) which contains the spatial coordinates (in
             meters) of the field element with indices (0, 0).
-        vertical_label: The label to apply to the vertical axis.
-        horizontal_label: The label to apply to the horizontal axis.
-        title: The title to give the figure.
+        vertical_label: the label to apply to the vertical axis.
+        horizontal_label: the label to apply to the horizontal axis.
+        title: the title to give the figure.
     """
     configure_title(fig, title)
     _configure_legend(ax, layer_labels, color_sequence, show_target, show_sources)
@@ -120,7 +120,7 @@ def _configure_legend(
     """Configure the legend for the figure.
 
     Args:
-        axes: The axes containing the legend to be configured.
+        axes: the axes containing the legend to be configured.
         layer_labels: A list of labels to give the material layers.
         color_sequence: A list of colors to give the material layers.
         show_target: Whether or not to show the target marker.

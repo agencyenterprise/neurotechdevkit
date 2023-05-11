@@ -54,7 +54,7 @@ def create_source_drawing_artist(
     coordinates.
 
     Args:
-        source_params: The SourceDrawingParams that describe the source.
+        source_params: the SourceDrawingParams that describe the source.
         transform: A Transform function which maps from plot data coordinates into
             display coordinates.
 
@@ -98,9 +98,9 @@ def create_source_legend_artist(
     come from the offsetbox passed to a legend handler.
 
     Args:
-        loc: The location (in legend canvas coordinates) of the center of the canvas for
+        loc: the location (in legend canvas coordinates) of the center of the canvas for
             this icon.
-        width: The width (in legend canvas coordinates) of the canvas for this icon.
+        width: the width (in legend canvas coordinates) of the canvas for this icon.
         transform: A Transformation object that will translate from the legend handlebox
             to display coordinates. This should come from the handlebox passed to the
             legend handler.
@@ -137,8 +137,8 @@ def _load_most_similar_source_image(
     """Load the source image which best matches the specified aperture and focus.
 
     Args:
-        aperture: The aperture of the source (in meters).
-        focal_length: The focal length of the source (in meters). For planar sources,
+        aperture: the aperture of the source (in meters).
+        focal_length: the focal length of the source (in meters). For planar sources,
             this value should equal np.inf.
         source_is_flat: A boolean indicating that the source should be represented flat.
 
@@ -187,8 +187,8 @@ def _select_image_file(
     planar transducers, there is only one option.
 
     Args:
-        aperture: The aperture of the source (in meters).
-        focal_length: The focal length of the source (in meters). For planar sources,
+        aperture: the aperture of the source (in meters).
+        focal_length: the focal length of the source (in meters). For planar sources,
             this value should equal np.inf.
         source_is_flat: A boolean indicating if a source should be represented flat.
 
@@ -209,8 +209,8 @@ def _choose_nearest(desired: float, options: list[int]) -> int:
     """Return the closest option to a desired value from a list of options.
 
     Args:
-        desired: The value for which we want the closest match.
-        options: The list of options to chose from.
+        desired: the value for which we want the closest match.
+        options: the list of options to chose from.
 
     Returns:
         The selected closest value.
@@ -233,7 +233,7 @@ def _translate_and_rotate(
         direction.
 
     Args:
-        raw_img: The array containing the raw image data loaded from disk.
+        raw_img: the array containing the raw image data loaded from disk.
         direction: A vector indicating the direction that the transducer is aimed.
 
     Returns:
