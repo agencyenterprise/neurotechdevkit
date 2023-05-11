@@ -137,7 +137,7 @@ class Scenario2_2D(_Scenario2Mixin, Scenario2D):
         ),
     }
 
-    def __init__(self, complexity="fast"):
+    def __init__(self, complexity: str = "fast"):
         """Create a new instance of scenario 2."""
         self._target_id = "primary-visual-cortex"
 
@@ -147,8 +147,12 @@ class Scenario2_2D(_Scenario2Mixin, Scenario2D):
         )
 
     def render_material_property(
-        self, name, show_orientation=True, show_sources=True, show_target=True
-    ):
+        self,
+        name: str,
+        show_orientation: bool = True,
+        show_sources: bool = True,
+        show_target: bool = True,
+    ) -> None:
         """Render the material property of the scenario."""
         raise NotImplementedError()
 
@@ -246,7 +250,7 @@ class Scenario2_3D(_Scenario2Mixin, Scenario3D):
         ),
     }
 
-    def __init__(self, complexity="fast"):
+    def __init__(self, complexity: str = "fast"):
         """Create a new instance of scenario 2 3D."""
         self._target_id = "primary-visual-cortex"
 
@@ -283,8 +287,12 @@ class Scenario2_3D(_Scenario2Mixin, Scenario3D):
         return default_positions[axis]
 
     def render_material_property(
-        self, name, show_orientation=True, show_sources=True, show_target=True
-    ):
+        self,
+        name: str,
+        show_orientation: bool = True,
+        show_sources: bool = True,
+        show_target: bool = True,
+    ) -> None:
         """Render the material property of the scenario."""
         raise NotImplementedError()
 
@@ -292,13 +300,13 @@ class Scenario2_3D(_Scenario2Mixin, Scenario3D):
         extent = np.array([0.225, 0.170, 0.190])  # m
         return self._compile_scenario_2_problem(extent)
 
-    def _get_material_masks(self):
+    def _get_material_masks(self) -> Mapping[str, npt.NDArray[np.bool_]]:
         return {
             name: _create_scenario_2_mask(name, convert_2d=False)
             for name in self.materials.keys()
         }
 
-    def get_default_source(self):
+    def get_default_source(self) -> sources.FocusedSource3D:
         """Get the default source for the scenario."""
         return sources.FocusedSource3D(
             position=np.array([0.0, 0.0, 0.0]),
@@ -309,7 +317,9 @@ class Scenario2_3D(_Scenario2Mixin, Scenario3D):
         )
 
 
-def _create_scenario_2_mask(material, convert_2d=False) -> npt.NDArray[np.bool_]:
+def _create_scenario_2_mask(
+    material: str, convert_2d: bool = False
+) -> npt.NDArray[np.bool_]:
 
     cur_dir = pathlib.Path(__file__).parent
     data_file = cur_dir / "data" / "skull_mask_bm8_dx_0.5mm.mat"

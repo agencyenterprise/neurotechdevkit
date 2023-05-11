@@ -107,10 +107,10 @@ def make_animation(
     wavefield = wavefield[:, :, 1:]
     n_frames = wavefield.shape[-1]
 
-    def init():
+    def init() -> list[matplotlib.axes.Image]:
         return [im]
 
-    def animate(i):
+    def animate(i: int) -> list[matplotlib.axes.Image]:
         data = wavefield[:, :, i]
         im.set_array(data)
         return [im]

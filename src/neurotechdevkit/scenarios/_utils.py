@@ -8,6 +8,8 @@ import stride
 from mosaic.types import Struct
 from stride.utils import wavelets
 
+from ..scenarios import Scenario
+
 
 def make_grid(
     extent: npt.NDArray[np.float_],
@@ -167,8 +169,11 @@ def wavelet_helper(
 
 
 def slice_field(
-    field: npt.NDArray, scenario, slice_axis: int, slice_position: float
-) -> npt.NDArray:
+    field: npt.NDArray[np.float_],
+    scenario: Scenario,
+    slice_axis: int,
+    slice_position: float,
+) -> npt.NDArray[np.float_]:
     """Return a slice of a field at a desired position along an axis.
 
     If `slice_position` does not align exactly with the scenario grid, the closest
@@ -195,7 +200,7 @@ def slice_field(
     return field[array_slice]
 
 
-def drop_element(arr: npt.NDArray, drop_idx: int) -> npt.NDArray:
+def drop_element(arr: npt.NDArray[np.float_], drop_idx: int) -> npt.NDArray[np.float_]:
     """Drop the element of a vector which corresponds to slice_axis.
 
     Args:
@@ -210,7 +215,7 @@ def drop_element(arr: npt.NDArray, drop_idx: int) -> npt.NDArray:
     return arr[mask]
 
 
-def drop_column(arr: npt.NDArray, drop_idx: int) -> npt.NDArray:
+def drop_column(arr: npt.NDArray[np.float_], drop_idx: int) -> npt.NDArray[np.float_]:
     """Drop the column of a 2D array which corresponds to slice_axis.
 
     Args:

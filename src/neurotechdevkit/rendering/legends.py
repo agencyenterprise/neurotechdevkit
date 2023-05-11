@@ -1,5 +1,5 @@
 """Legends module."""
-from typing import Optional
+from typing import Dict, List, Optional
 
 import matplotlib.artist
 import matplotlib.legend
@@ -14,11 +14,11 @@ from ._target import create_target_legend_artist
 class LegendConfig:
     """A utility class for keeping track of the components needed for a legend."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         """Initialize a new LegendConfig."""
-        self._labels = []
-        self._handles = []
-        self._custom_handlers = {}
+        self._labels: List[str] = []
+        self._handles: List[object] = []
+        self._custom_handlers: Dict[type, matplotlib.legend_handler.HandlerBase] = {}
 
     def append_item(
         self,

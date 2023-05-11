@@ -18,7 +18,7 @@ class ScenarioNotFoundError(Exception):
     pass
 
 
-def make(scenario_id, complexity="fast"):
+def make(scenario_id: str, complexity: str = "fast") -> scenarios.Scenario:
     """
     Initialize a scenario and return an object which represents the simulation.
 

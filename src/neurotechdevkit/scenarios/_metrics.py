@@ -292,7 +292,7 @@ class Conversions:
     """A set of unit-of-measurement conversion tools."""
 
     @staticmethod
-    def convert(from_uom, to_uom, value):
+    def convert(from_uom: str, to_uom: str, value: float) -> float:
         """Convert a value from one unit-of-measurement to another.
 
         Conversions are requested using specific strings for the starting and desired

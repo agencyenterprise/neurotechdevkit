@@ -27,7 +27,7 @@ def create_layout_fig(
     extent: npt.NDArray[np.float_],
     origin: npt.NDArray[np.float_],
     color_sequence: list[str],
-    field: npt.NDArray[np.int_],
+    field: npt.NDArray[np.float_],
 ) -> tuple[matplotlib.figure.Figure, matplotlib.axes.Axes]:
     """Create an unformatted figure showing the layout of a scenario.
 
