@@ -22,9 +22,9 @@ def create_target_drawing_artist(
     on the plot, that can be `ax.transData`.
 
     Args:
-        target_loc: The location of the center of the target (in meters) in scenario
+        target_loc: the location of the center of the target (in meters) in scenario
             coordinates.
-        target_radius: The radius of the target (in meters).
+        target_radius: the radius of the target (in meters).
         transform: A Transform function which maps from plot data coordinates into
             display coordinates.
 
@@ -58,9 +58,9 @@ def create_target_legend_artist(
     on the plot, that can be `ax.transData`.
 
     Args:
-        center_loc: The location of the center of the legend canvas (in canvas
+        center_loc: the location of the center of the legend canvas (in canvas
             coordinates).
-        target_radius: The radius of the target (in canvas coordinates).
+        target_radius: the radius of the target (in canvas coordinates).
         transform: A Transform function which maps from canvas coordinates into
             display coordinates.
 
@@ -87,7 +87,7 @@ def _load_target(version: str) -> npt.NDArray:
     The array is returned in RGBA channel order.
 
     Args:
-        version: The version of the target symbol to load. Options are 'dark' or
+        version: the version of the target symbol to load. Options are 'dark' or
             'light'.
 
     Raises:

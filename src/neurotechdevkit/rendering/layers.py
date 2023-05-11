@@ -13,8 +13,8 @@ def draw_source(ax: matplotlib.axes.Axes, source: SourceDrawingParams) -> None:
     This layer can be added to any scenario figure in 2D.
 
     Args:
-        ax: The axes to draw the sources on.
-        source: The Source object to be drawn.
+        ax: the axes to draw the sources on.
+        source: the Source object to be drawn.
     """
     source_artist = create_source_drawing_artist(source, transform=ax.transData)
     ax.add_artist(source_artist)
@@ -28,10 +28,10 @@ def draw_target(
     This layer can be added to any scenario figure in 2D.
 
     Args:
-        ax: The axes to draw the target on.
+        ax: the axes to draw the target on.
         target_loc: An array of shape (2,) indicating the location (in meters) of the
             target within the scenario.
-        target_radius: The radius (in meters) of the target.
+        target_radius: the radius (in meters) of the target.
 
     """
     target_artist = create_target_drawing_artist(
@@ -59,12 +59,12 @@ def draw_material_outlines(
     ideally there are no gaps between pixels.
 
     Args:
-        ax: The axes to draw the target on.
+        ax: the axes to draw the target on.
         material_field: A 2D array with the material id of the material at each
             gridpoint.
-        dx: The spacing (in meters) between gridpoints in the scenario.
-        origin: The 2D origin (in meters) of the scenario slice to be drawn.
-        upsample_factor: The factor to use when upsampling the material field before
+        dx: the spacing (in meters) between gridpoints in the scenario.
+        origin: the 2D origin (in meters) of the scenario slice to be drawn.
+        upsample_factor: the factor to use when upsampling the material field before
             detecting transitions between materials. If the factor is N, then each pixel
             will be split into N^2 pixels. Defaults to 1 (no resampling).
     """
@@ -104,7 +104,7 @@ def _get_outline_mask(field: npt.NDArray[np.int_]) -> npt.NDArray[np.bool_]:
     are superimposed to determine where to return white pixels.
 
     Args:
-        field: The input field from which outlines should be detected.
+        field: the input field from which outlines should be detected.
 
     Returns:
         A boolean mask marking the transition between materials in the input field.

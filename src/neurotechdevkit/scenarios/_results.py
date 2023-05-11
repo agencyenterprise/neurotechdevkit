@@ -27,7 +27,7 @@ class Result(abc.ABC):
     PulsedResult2D, or PulsedResult3D.
 
     Args:
-        scenario (scenarios.Scenario): The scenario from which this result came.
+        scenario (scenarios.Scenario): the scenario from which this result came.
         center_frequency (float): the center frequency (in hertz) of the sources.
         effective_dt (float): the effective time step (in seconds) along the time axis
             of the wavefield. This can differ from the simulation dt if the recording
@@ -63,7 +63,7 @@ class Result(abc.ABC):
         in 3D.
 
         Args:
-            filepath: The path to the file where the results should be exported. Usually
+            filepath: the path to the file where the results should be exported. Usually
                 a .pkl.gz file.
         """
         try:
@@ -99,7 +99,7 @@ class SteadyStateResult(Result):
     SteadyStateResult3D.
 
     Args:
-        scenario (scenario.Scenario): The scenario from which this result came.
+        scenario (scenario.Scenario): the scenario from which this result came.
         center_frequency (float): the center frequency (in hertz) of the sources.
         effective_dt (float): the effective time step (in seconds) along the time axis
             of the wavefield. This can differ from the simulation dt if the recording
@@ -159,8 +159,8 @@ class SteadyStateResult(Result):
         The keys for the dictionary are the names of the metrics. The value for each
         metric is another dictionary containing the following:
 
-        - value: The value of the metric.
-        - unit-of-measurement: The unit of measurement for the metric.
+        - value: the value of the metric.
+        - unit-of-measurement: the unit of measurement for the metric.
         - description: A text description of the metric.
         """
         self.get_steady_state()
@@ -189,7 +189,7 @@ class SteadyStateResult2D(SteadyStateResult):
     """A container for holding the results of a 2D steady-state simulation.
 
     Args:
-        scenario (scenarios.Scenario2D): The 2D scenario from which this result
+        scenario (scenarios.Scenario2D): the 2D scenario from which this result
             came.
         center_frequency (float): the center frequency (in hertz) of the sources.
         effective_dt (float): the effective time step (in seconds) along the
@@ -272,7 +272,7 @@ class SteadyStateResult3D(SteadyStateResult):
     """A container for holding the results of a 3D steady-state simulation.
 
     Args:
-        scenario (scenarios.Scenario3D): The 3D scenario from which this result
+        scenario (scenarios.Scenario3D): the 3D scenario from which this result
             came.
         center_frequency (float): the center frequency (in hertz) of the sources.
         effective_dt (float): the effective time step (in seconds) along the
@@ -406,10 +406,10 @@ def _extract_steady_state_amplitude(
     need to integrate over integer number of cycles.
 
     Args:
-        data: The wave data to process. The array should contain 2 or 3 space dimensions
+        data: the wave data to process. The array should contain 2 or 3 space dimensions
             followed by the time dimension.
-        freq_hz: The frequency (in hertz) to extract from the FFT.
-        dt: The time axis spacing (in seconds).
+        freq_hz: the frequency (in hertz) to extract from the FFT.
+        dt: the time axis spacing (in seconds).
         by_slice: If False, the fft is executed over the entire data array at once,
             which is faster but memory intensive. If True, the fft is executed over the
             data slice by slice, which is slower but uses less memory.
@@ -449,7 +449,7 @@ class PulsedResult(Result):
     This class should not be instantiated, use PulsedResult2D or PulsedResult3D.
 
     Args:
-        scenario (scenario.Scenario): The scenario from which this result came.
+        scenario (scenario.Scenario): the scenario from which this result came.
         center_frequency (float): the center frequency (in hertz) of the sources.
         effective_dt (float): the effective time step (in seconds) along the
             time axis of the wavefield. This can differ from the simulation dt
@@ -561,7 +561,7 @@ class PulsedResult2D(PulsedResult):
     """A container for holding the results of a 2D pulsed simulation.
 
     Args:
-        scenario (scenarios.Scenario2D): The 2D scenario from which this
+        scenario (scenarios.Scenario2D): the 2D scenario from which this
             result came.
         center_frequency (float): the center frequency (in hertz) of the sources.
         effective_dt (float): the effective time step (in seconds) along the
@@ -603,7 +603,7 @@ class PulsedResult2D(PulsedResult):
                 the animation.
             time_lim: the input time limit tuple to validate. The expected format is
                 (minimum_time, maximum_time).
-            norm: The normalization method used to scale scalar data to the [0, 1]
+            norm: the normalization method used to scale scalar data to the [0, 1]
                 range before mapping to colors using cmap. For a list
                 of available scales, call `matplotlib.scale.get_scale_names()`.
 
@@ -651,7 +651,7 @@ class PulsedResult2D(PulsedResult):
                 the animation.
             time_lim: the input time limit tuple to validate. The expected format is
                 (minimum_time, maximum_time).
-            norm: The normalization method used to scale scalar data to the [0, 1]
+            norm: the normalization method used to scale scalar data to the [0, 1]
                 range before mapping to colors using cmap. For a list of available
                 scales, call `matplotlib.scale.get_scale_names()`.
             fps: the frames per second in the animation.
@@ -702,7 +702,7 @@ class PulsedResult2D(PulsedResult):
             show_target: whether or not to show the target layer.
             show_material_outlines: whether or not to display a thin white outline of
                 the transition between different materials.
-            norm: The normalization method used to scale scalar data to the [0, 1]
+            norm: the normalization method used to scale scalar data to the [0, 1]
                 range before mapping to colors using cmap. For a list of available
                 scales, call `matplotlib.scale.get_scale_names()`.
 
@@ -779,7 +779,7 @@ class PulsedResult3D(PulsedResult):
     """A container for holding the results of a 3D pulsed simulation.
 
     Args:
-        scenario (scenarios.Scenario3D): The 3D scenario from which this result
+        scenario (scenarios.Scenario3D): the 3D scenario from which this result
             came.
         center_frequency (float): the center frequency (in hertz) of the sources.
         effective_dt (float): the effective time step (in seconds) along the
@@ -855,7 +855,7 @@ class PulsedResult3D(PulsedResult):
                 `scenario.get_default_slice_position()` is used.
             time_lim: the input time limit tuple to validate. The expected format is
                 (minimum_time, maximum_time).
-            norm: The normalization method used to scale scalar data to the [0, 1]
+            norm: the normalization method used to scale scalar data to the [0, 1]
                 range before mapping to colors using cmap. For a list
                 of available scales, call `matplotlib.scale.get_scale_names()`.
 
@@ -912,7 +912,7 @@ class PulsedResult3D(PulsedResult):
                 `scenario.get_default_slice_position()` is used.
             time_lim: the input time limit tuple to validate. The expected format is
                 (minimum_time, maximum_time).
-            norm: The normalization method used to scale scalar data to the [0, 1]
+            norm: the normalization method used to scale scalar data to the [0, 1]
                 range before mapping to colors using cmap. For a list of available
                 scales, call `matplotlib.scale.get_scale_names()`.
             fps: the frames per second in the animation.
@@ -976,7 +976,7 @@ class PulsedResult3D(PulsedResult):
             show_target: whether or not to show the target layer.
             show_material_outlines: whether or not to display a thin white outline of
                 the transition between different materials.
-            norm: The normalization method used to scale scalar data to the [0, 1]
+            norm: the normalization method used to scale scalar data to the [0, 1]
                 range before mapping to colors using cmap. For a list of available
                 scales, call `matplotlib.scale.get_scale_names()`.
 
@@ -1087,7 +1087,7 @@ def create_steady_state_result(
     has N-1 spatial dimensions and 1 time dimension.
 
     Args:
-        scenario: The scenario from which this result came.
+        scenario: the scenario from which this result came.
         center_frequency (float): the center frequency (in hertz) of the sources.
         effective_dt (float): the effective time step (in seconds) along the
             time axis of the wavefield. This can differ from the simulation dt if
@@ -1151,7 +1151,7 @@ def create_pulsed_result(
     spatial dimensions and 1 time dimension.
 
     Args:
-        scenario: The scenario from which this result came.
+        scenario: the scenario from which this result came.
         center_frequency (float): the center frequency (in hertz) of the sources.
         effective_dt (float): the effective time step (in seconds) along the
             time axis of the wavefield. This can differ from the simulation dt if
@@ -1216,7 +1216,7 @@ def load_result_from_disk(filepath: str | pathlib.Path) -> Result:
     in 3D.
 
     Args:
-        filepath: The path to an existing result file previously saved via
+        filepath: the path to an existing result file previously saved via
             Result.save_to_disk.
 
     Returns:

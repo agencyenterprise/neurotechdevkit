@@ -275,7 +275,7 @@ class Scenario(abc.ABC):
         and `False` elsewhere.
 
         Args:
-            layer_name: The name of the desired layer.
+            layer_name: the name of the desired layer.
 
         Raises:
             ValueError: if `layer_name` does not match the name of one of the existing
@@ -329,7 +329,7 @@ class Scenario(abc.ABC):
     def add_source(self, source: Source) -> None:
         """Add the specified source to the scenario.
 
-        Sources can also added or removed by modifying the Scenario.sources list.
+        Sources can also be added or removed by modifying the Scenario.sources list.
 
         Changes can only be made to sources before a simulation has started.
 
@@ -381,22 +381,22 @@ class Scenario(abc.ABC):
             values other than the default if you chose to do so.
 
         Args:
-            center_frequency: The center frequency (in hertz) to use for the
+            center_frequency: the center frequency (in hertz) to use for the
                 continuous-wave source output. No other value besides 500kHz (the
                 default) is currently supported.
-            points_per_period: The number of points in time to simulate for each cycle
+            points_per_period: the number of points in time to simulate for each cycle
                 of the wave.
-            n_cycles_steady_state: The number of complete cycles to use when calculating
+            n_cycles_steady_state: the number of complete cycles to use when calculating
                 the steady-state wave amplitudes.
-            time_to_steady_state: The amount of time (in seconds) the simulation should
+            time_to_steady_state: the amount of time (in seconds) the simulation should
                 run before measuring the steady-state amplitude. If the value is None,
                 this time will automatically be set to the amount of time it would take
                 to propagate from one corner to the opposite and back in the medium with
                 the slowest speed of sound in the scenario.
-            recording_time_undersampling: The undersampling factor to apply to the time
+            recording_time_undersampling: the undersampling factor to apply to the time
                 axis when recording simulation results. One out of every this many
                 consecutive time points will be recorded and all others will be dropped.
-            n_jobs: The number of threads to be used for the computation. Use None to
+            n_jobs: the number of threads to be used for the computation. Use None to
                 leverage Devito automatic tuning.
 
         Raises:
@@ -482,19 +482,19 @@ class Scenario(abc.ABC):
             values other than the default if you chose to do so.
 
         Args:
-            center_frequency: The center frequency (in hertz) to use for the
+            center_frequency: the center frequency (in hertz) to use for the
                 continuous-wave source output. No other value besides
                 500kHz (the default) is currently supported.
-            points_per_period: The number of points in time to simulate for each cycle
+            points_per_period: the number of points in time to simulate for each cycle
                 of the wave.
-            simulation_time: The amount of time (in seconds) the simulation should run.
+            simulation_time: the amount of time (in seconds) the simulation should run.
                 If the value is None, this time will automatically be set to the amount
                 of time it would take to propagate from one corner to the opposite in
                 the medium with the slowest speed of sound in the scenario.
-            recording_time_undersampling: The undersampling factor to apply to the time
+            recording_time_undersampling: the undersampling factor to apply to the time
                 axis when recording simulation results. One out of every this many
                 consecutive time points will be recorded and all others will be dropped.
-            n_jobs: The number of threads to be used for the computation. Use None to
+            n_jobs: the number of threads to be used for the computation. Use None to
                 leverage Devito automatic tuning.
 
         Raises:
@@ -537,19 +537,19 @@ class Scenario(abc.ABC):
         other than the default if you chose to do so.
 
         Args:
-            center_frequency: The center frequency (in hertz) to use for the
+            center_frequency: the center frequency (in hertz) to use for the
                 continuous-wave source output. No other value besides
                 500kHz (the default) is currently supported.
-            points_per_period: The number of points in time to simulate for each cycle
+            points_per_period: the number of points in time to simulate for each cycle
                 of the wave.
-            simulation_time: The amount of time (in seconds) the simulation should run.
+            simulation_time: the amount of time (in seconds) the simulation should run.
                 If the value is None, this time will automatically be set to the amount
                 of time it would take to propagate from one corner to the opposite in
                 the medium with the slowest speed of sound in the scenario.
-            recording_time_undersampling: The undersampling factor to apply to the time
+            recording_time_undersampling: the undersampling factor to apply to the time
                 axis when recording simulation results. One out of every this many
                 consecutive time points will be recorded and all others will be dropped.
-            n_jobs: The number of threads to be used for the computation. Use None to
+            n_jobs: the number of threads to be used for the computation. Use None to
                 leverage Devito automatic tuning.
             slice_axis: the axis along which to slice the 3D field to be recorded. If
                 None, then the complete field will be recorded. Use 0 for X axis, 1 for
@@ -632,7 +632,7 @@ class Scenario(abc.ABC):
             simulation_mode: the type of simulation which will be run.
 
         Returns:
-            the `SubProblem` to use for the simulation.
+            The `SubProblem` to use for the simulation.
         """
         self._ensure_source()
         self._freeze_sources()
@@ -653,7 +653,7 @@ class Scenario(abc.ABC):
             simulation_mode: the type of simulation which will be run.
 
         Returns:
-            the `Shot` to use for the simulation.
+            The `Shot` to use for the simulation.
         """
         problem = self.problem
         assert problem.grid.time is not None
@@ -794,9 +794,9 @@ class Scenario(abc.ABC):
         simulation.
 
         Args:
-            ppp: The number of points in time per phase to simulate for each cycle of
+            ppp: the number of points in time per phase to simulate for each cycle of
                 the wave.
-            n_cycles: The number of complete cycles to record at the end of the
+            n_cycles: the number of complete cycles to record at the end of the
                 simulation.
 
         Returns:
@@ -833,15 +833,15 @@ class Scenario(abc.ABC):
         """Execute the PDE for the simulation.
 
         Args:
-            pde: The `Operator` containing the PDE to execute.
-            sub_problem: The `SubProblem` containing details of the source and waveform
+            pde: the `Operator` containing the PDE to execute.
+            sub_problem: the `SubProblem` containing details of the source and waveform
                 for the simulation.
-            save_bounds: The time indices bounding the period of time to be recorded.
-            save_undersampling: The undersampling factor to apply to the time axis when
+            save_bounds: the time indices bounding the period of time to be recorded.
+            save_undersampling: the undersampling factor to apply to the time axis when
                 recording simulation results.
             wavefield_slice: A tuple of slices defining the region of the grid to
                 record.
-            n_jobs: The number of threads to be used for the computation. Use None to
+            n_jobs: the number of threads to be used for the computation. Use None to
                 leverage Devito automatic tuning.
         Returns:
             The `Traces` which are produced by the simulation.
@@ -1027,19 +1027,19 @@ class Scenario3D(Scenario):
             values other than the default if you chose to do so.
 
         Args:
-            center_frequency: The center frequency (in hertz) to use for the
+            center_frequency: the center frequency (in hertz) to use for the
                 continuous-wave source output. No other value besides
                 500kHz (the default) is currently supported.
-            points_per_period: The number of points in time to simulate for each cycle
+            points_per_period: the number of points in time to simulate for each cycle
                 of the wave.
-            simulation_time: The amount of time (in seconds) the simulation should run.
+            simulation_time: the amount of time (in seconds) the simulation should run.
                 If the value is None, this time will automatically be set to the amount
                 of time it would take to propagate from one corner to the opposite in
                 the medium with the slowest speed of sound in the scenario.
-            recording_time_undersampling: The undersampling factor to apply to the time
+            recording_time_undersampling: the undersampling factor to apply to the time
                 axis when recording simulation results. One out of every this many
                 consecutive time points will be recorded and all others will be dropped.
-            n_jobs: The number of threads to be used for the computation. Use None to
+            n_jobs: the number of threads to be used for the computation. Use None to
                 leverage Devito automatic tuning.
             slice_axis: the axis along which to slice the 3D field to be recorded. If
                 None, then the complete field will be recorded. Use 0 for X axis, 1 for
