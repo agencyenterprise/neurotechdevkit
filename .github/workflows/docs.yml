@@ -37,6 +37,6 @@ jobs:
         run: poetry install --no-interaction
 
       - name: Install stride
-        run: poetry run pip install git+https://github.com/trustimaging/stride
+        run: poetry run pip install git+https://github.com/agencyenterprise/stride@removing_uvloop
 
       - run: poetry run mkdocs gh-deploy --force
