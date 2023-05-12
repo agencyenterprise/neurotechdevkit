@@ -39,7 +39,7 @@ jobs:
         run: poetry install --no-interaction
 
       - name: Install stride
-        run: poetry run pip install git+https://github.com/agencyenterprise/stride@removing_uvloop
+        run: poetry run pip install git+https://github.com/NewtonSander/stride
 
       - name: Install napari
         run: poetry run pip install napari

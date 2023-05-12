@@ -8,7 +8,7 @@ ENV POETRY_VIRTUALENVS_CREATE=false
 COPY . ./
 
 RUN /venv/bin/poetry install && \
-    /venv/bin/pip install git+https://github.com/agencyenterprise/stride@removing_uvloop
+    /venv/bin/pip install git+https://github.com/NewtonSander/stride
 
 FROM python:3.10.0-slim
 
