@@ -128,3 +128,47 @@ Before opening a pull request, please make sure that all of the following requir
       2. all public API classes, functions, methods, and properties have docstrings and follow the [Google Python Style Guide](https://github.com/google/styleguide/blob/gh-pages/pyguide.md#38-comments-and-docstrings)
       3. docstrings on private objects are not required, but are encouraged where they would significantly aid understanding
 1. testing is done using the pytest library, and test coverage should not unnecessarily decrease.
+
+
+## Process
+
+### Versioning
+
+NDK uses [semantic versioning](https://en.wikipedia.org/wiki/Software_versioning#Semantic_versioning) to identify its releases.
+
+We use the [release on push](https://github.com/rymndhng/release-on-push-action/tree/master/) github action to generate the new version for each release. This github action generates the version based on a pull request label assigned before merge. The supported labels are:
+
+- `release-patch`
+- `release-minor`
+- `release-major`
+- `norelease`
+
+### Automatic release
+
+Merged pull requests with one of the labels `release-patch`, `release-minor` or `release-major` will trigger a release job on CI.
+
+The release job will:
+
+1. generate a new package version using semantic versioning provided by [release on push](https://github.com/rymndhng/release-on-push-action/tree/master/)
+1. update the `pyproject.toml` version using `poetry`
+1. commit the updated `pyproject.toml` file using the [git-auto-commit action](https://github.com/stefanzweifel/git-auto-commit-action/tree/v4/)
+1. push the package to pypi using [poetry publish](JRubics/poetry-publish@v1.16)
+1. build a new docker image and tag it with the previously generated semantic version
+
+Pull requests merged with the tag `norelease` will not trigger any of the actions listed above.
+
+### Checking NDK documentation on CI
+
+All pull requests trigger a CI job that builds the documentation and makes the built files available.
+
+To check the generated documentation in a pull request:
+
+1. Scroll to the bottom of the page and click on the `Show all checks` link.
+1. Click on the details link of the `ci/circleci: build_docs` job.
+      <figure markdown>
+            ![Circle-ci-check](images/circle-ci-check.png)
+      </figure>
+1. In the opened Circle CI page click on the `Artifacts` tab and then on the `index.html` link to load the documentation root page.
+      <figure markdown>
+            ![Circle-ci-artifacts](images/circle-ci-artifacts.png)
+      </figure>
