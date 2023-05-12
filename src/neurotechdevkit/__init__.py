@@ -1,6 +1,8 @@
 """Main package for the neurotechdevkit."""
 from __future__ import annotations
 
+import os
+
 from . import scenarios
 from .scenarios import load_result_from_disk
 
@@ -10,6 +12,12 @@ __all__ = [
     "ScenarioNotFoundError",
     "load_result_from_disk",
 ]
+
+if "DEVITO_ARCH" not in os.environ:
+    print(
+        "WARNING: DEVITO_ARCH environment variable not set."
+        "Compilation errors might occur"
+    )
 
 
 class ScenarioNotFoundError(Exception):
