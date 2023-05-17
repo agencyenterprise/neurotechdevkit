@@ -1,6 +1,6 @@
 #### Labels
 
-Assign of these labels to the PR:
+Assign one of these labels to the PR:
 - norelease
 - release:patch
 - release:minor
