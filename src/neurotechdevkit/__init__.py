@@ -15,8 +15,8 @@ __all__ = [
 
 if "DEVITO_ARCH" not in os.environ:
     print(
-        "WARNING: DEVITO_ARCH environment variable not set."
-        "Compilation errors might occur"
+        "WARNING: DEVITO_ARCH environment variable not set "
+        "and might cause compilation errors. See NDK documentation for help."
     )
 
 
