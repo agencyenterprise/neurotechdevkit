@@ -3,7 +3,7 @@ from __future__ import annotations
 import numpy as np
 import numpy.typing as npt
 
-from ..results import _results as results
+from . import _results as results
 
 
 def calculate_all_metrics(
