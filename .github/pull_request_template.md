@@ -1,3 +1,11 @@
+#### Labels
+
+Assign of these labels to the PR:
+- norelease
+- release:patch
+- release:minor
+- release:major
+
 #### Introduction
 
 In the introduction, please describe the type of change introduced by the pull request and its purpose and link the GitHub issue that this pull request addresses if possible, or add any reference that would provide more context to the reviewer.
