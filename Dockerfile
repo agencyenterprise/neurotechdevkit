@@ -23,6 +23,7 @@ COPY . /app
 RUN rm -rf /app/.git
 
 ENV PATH "/venv/bin:$PATH"
+ENV DEVITO_ARCH "gcc"
 
 LABEL org.opencontainers.image.source="https://github.com/agencyenterprise/neurotechdevkit"
 
