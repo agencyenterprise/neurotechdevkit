@@ -1,8 +1,11 @@
 name: Docs artifacts redirector
 on: [status]
+permissions: read-all
 jobs:
   circleci_artifacts_redirector_job:
     if: "${{ startsWith(github.event.context, 'ci/circleci: build_docs') }}"
+    permissions:
+      statuses: write
     runs-on: ubuntu-20.04
     name: Run CircleCI artifacts redirector
     steps:
