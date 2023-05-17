@@ -3,13 +3,14 @@
 ::: neurotechdevkit.scenarios.Scenario
     options:
       show_root_heading: true
-      members:
-        - __init__
-        - get_layer_mask
-        - get_field_data
-        - add_source
-        - simulate_steady_state
-        - simulate_pulse
+
+::: neurotechdevkit.scenarios.Scenario2D
+    options:
+      show_root_heading: true
+
+::: neurotechdevkit.scenarios.Scenario3D
+    options:
+      show_root_heading: true
 
 ::: neurotechdevkit.scenarios.Scenario0
     options:

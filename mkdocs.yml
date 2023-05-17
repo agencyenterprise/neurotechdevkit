@@ -10,6 +10,7 @@ theme:
     - content.tabs.link
     - content.code.annotation
     - content.code.copy
+
   language: en
   palette:
     - scheme: default
@@ -41,6 +42,9 @@ nav:
   - Examples: generated/gallery
   - Contributing: contributing.md
 
+extra_css:
+- css/mkdocstrings.css
+
 markdown_extensions:
   - pymdownx.highlight:
       anchor_linenums: true
@@ -69,3 +73,6 @@ plugins:
         python:
           options:
             show_source: false
+            docstring_options:
+              ignore_init_summary: true
+            merge_init_into_class: true

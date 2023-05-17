@@ -3,10 +3,11 @@ from __future__ import annotations
 
 import os
 
-from . import scenarios
-from .scenarios import load_result_from_disk
+from . import results, scenarios
+from .results import load_result_from_disk
 
 __all__ = [
+    "results",
     "scenarios",
     "make",
     "ScenarioNotFoundError",
@@ -26,7 +27,7 @@ class ScenarioNotFoundError(Exception):
     pass
 
 
-def make(scenario_id, complexity="fast"):
+def make(scenario_id: str, complexity: str = "fast") -> scenarios.Scenario:
     """
     Initialize a scenario and return an object which represents the simulation.
 
@@ -50,14 +51,14 @@ def make(scenario_id, complexity="fast"):
         ScenarioNotFoundError: Raised when the scenario id is not found.
 
     Returns:
-        scenarios.Scenario: an object representing the simulation.
+        An object representing the simulation.
     """
     if scenario_id not in _scenario_map:
         raise ScenarioNotFoundError(
             f"Scenario '{scenario_id}' does not exist. Please refer to documentation"
             " for the list of provided scenarios."
         )
-    return _scenario_map[scenario_id](complexity=complexity)
+    return _scenario_map[scenario_id](complexity=complexity)  # type: ignore
 
 
 _scenario_map = {

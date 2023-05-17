@@ -21,12 +21,12 @@ def make_grid(
     at simulation time because it depends on simulation parameters.
 
     Args:
-        extent: A 2-tuple or 3-tuple containing the dimensions (in meters) of the
+        extent: a 2-tuple or 3-tuple containing the dimensions (in meters) of the
             simulation.
-        dx: A float describing the distance (in meters) between grid points.
-        extra: The number of gridpoints to add as boundary layers on each side of the
+        dx: a float describing the distance (in meters) between grid points.
+        extra: the number of gridpoints to add as boundary layers on each side of the
             grid. extras are added both before and after the grid on each axis.
-        absorbing: The number of gridpoints within the boundary layers that are
+        absorbing: the number of gridpoints within the boundary layers that are
             absorbing.
 
     Returns:
@@ -237,11 +237,11 @@ def create_grid_elliptical_mask(
     Array elements are True for the gridpoints within the ellipse and False otherwise.
 
     Args:
-        grid: The simulation grid.
-        origin: The coordinates (in meters) of the grid element (0, 0).
-        center: The coordinates (in meters) of the center of the ellipse.
-        a: The radius (in meters) of the ellipse along the X-axis.
-        b: The radius (in meters) of the ellipse along the Y-axis.
+        grid: the simulation grid.
+        origin: the coordinates (in meters) of the grid element (0, 0).
+        center: the coordinates (in meters) of the center of the ellipse.
+        a: the radius (in meters) of the ellipse along the X-axis.
+        b: the radius (in meters) of the ellipse along the Y-axis.
 
     Returns:
         The 2D boolean mask where gridpoints within the ellipse are True.
@@ -261,10 +261,10 @@ def create_grid_circular_mask(
     Array elements are True for the gridpoints within the circle and False otherwise.
 
     Args:
-        grid: The simulation grid.
-        origin: The coordinates (in meters) of the grid element (0, 0).
-        center: The coordinates (in meters) of the center of the circle.
-        a: The radius (in meters) of the circle.
+        grid: the simulation grid.
+        origin: the coordinates (in meters) of the grid element (0, 0).
+        center: the coordinates (in meters) of the center of the circle.
+        a: the radius (in meters) of the circle.
 
     Returns:
         The 2D boolean mask where gridpoints within the circle are True.
@@ -284,10 +284,10 @@ def create_grid_spherical_mask(
     Array elements are True for the gridpoints within the sphere and False otherwise.
 
     Args:
-        grid: The simulation grid.
-        origin: The coordinates (in meters) of the grid element (0, 0, 0).
-        center: The coordinates (in meters) of the center of the circle.
-        a: The radius (in meters) of the circle.
+        grid: the simulation grid.
+        origin: the coordinates (in meters) of the grid element (0, 0, 0).
+        center: the coordinates (in meters) of the center of the circle.
+        a: the radius (in meters) of the circle.
 
     Returns:
         The 3D boolean mask where gridpoints within the circle are True.
@@ -310,10 +310,10 @@ def _create_nd_ellipse_mask(
     Array elements are True for the gridpoints within the ellipse and False otherwise.
 
     Args:
-        grid: The simulation grid.
-        origin: The coordinates (in meters) of the grid element (0, 0, ...).
-        center: The coordinates (in meters) of the center of the ellipse.
-        radii: The radius (in meters) along each axis of the ellipse.
+        grid: the simulation grid.
+        origin: the coordinates (in meters) of the grid element (0, 0, ...).
+        center: the coordinates (in meters) of the center of the ellipse.
+        radii: the radius (in meters) along each axis of the ellipse.
 
     Returns:
         The 2D or 3D boolean mask where gridpoints within the ellipse are True.

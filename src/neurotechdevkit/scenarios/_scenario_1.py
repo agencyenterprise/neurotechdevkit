@@ -43,11 +43,12 @@ class _Scenario1Mixin:
 
     Scenario 1 is based on benchmark 4 of the following paper:
 
-    Jean-Francois Aubry, Oscar Bates, Christian Boehm, et al., "Benchmark problems for
-    transcranial ultrasound simulation: Intercomparison of compressional wave models",
-    The Journal of the Acoustical Society of America 152, 1003 (2022);
-    doi: 10.1121/10.0013426
-    https://asa.scitation.org/doi/pdf/10.1121/10.0013426
+        Jean-Francois Aubry, Oscar Bates, Christian Boehm, et al., "Benchmark problems
+        for transcranial ultrasound simulation: Intercomparison of compressional wave
+        models",
+        The Journal of the Acoustical Society of America 152, 1003 (2022);
+        doi: 10.1121/10.0013426
+        https://asa.scitation.org/doi/pdf/10.1121/10.0013426
     """
 
     @property
@@ -103,11 +104,12 @@ class Scenario1_2D(_Scenario1Mixin, Scenario2D):
 
     Scenario 1 is based on benchmark 4 of the following paper:
 
-    Jean-Francois Aubry, Oscar Bates, Christian Boehm, et al., "Benchmark problems for
-    transcranial ultrasound simulation: Intercomparison of compressional wave models",
-    The Journal of the Acoustical Society of America 152, 1003 (2022);
-    doi: 10.1121/10.0013426
-    https://asa.scitation.org/doi/pdf/10.1121/10.0013426
+        Jean-Francois Aubry, Oscar Bates, Christian Boehm, et al., "Benchmark problems
+        for transcranial ultrasound simulation: Intercomparison of compressional wave
+        models",
+        The Journal of the Acoustical Society of America 152, 1003 (2022);
+        doi: 10.1121/10.0013426
+        https://asa.scitation.org/doi/pdf/10.1121/10.0013426
     """
 
     _SCENARIO_ID = "scenario-1-2d-v0"
@@ -150,11 +152,12 @@ class Scenario1_3D(_Scenario1Mixin, Scenario3D):
 
     Scenario 1 is based on benchmark 4 of the following paper:
 
-    Jean-Francois Aubry, Oscar Bates, Christian Boehm, et al., "Benchmark problems for
-    transcranial ultrasound simulation: Intercomparison of compressional wave models",
-    The Journal of the Acoustical Society of America 152, 1003 (2022);
-    doi: 10.1121/10.0013426
-    https://asa.scitation.org/doi/pdf/10.1121/10.0013426
+        Jean-Francois Aubry, Oscar Bates, Christian Boehm, et al., "Benchmark problems
+        for transcranial ultrasound simulation: Intercomparison of compressional wave
+        models",
+        The Journal of the Acoustical Society of America 152, 1003 (2022);
+        doi: 10.1121/10.0013426
+        https://asa.scitation.org/doi/pdf/10.1121/10.0013426
     """
 
     _SCENARIO_ID = "scenario-1-3d-v0"
