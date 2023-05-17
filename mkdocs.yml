@@ -37,6 +37,7 @@ nav:
   - API:
       - Make: api/make.md
       - Scenarios: api/scenarios.md
+      - Utils: api/utils.md
       - Sources: api/sources.md
       - Results: api/results.md
   - Examples: generated/gallery
