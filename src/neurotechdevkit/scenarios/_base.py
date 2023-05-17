@@ -14,7 +14,7 @@ from frozenlist import FrozenList
 from mosaic.types import Struct
 from stride.problem import StructuredData
 
-from .. import rendering, scenarios
+from .. import rendering, results
 from ..sources import Source
 from ._resources import budget_time_and_memory_resources
 from ._shots import create_shot
@@ -83,15 +83,17 @@ class Scenario(abc.ABC):
     def complexity(self) -> str:
         """The complexity level to use when simulating this scenario.
 
-        Note: the only currently supported complexity is `fast`.
+        !!! note
+            The only currently supported complexity is `fast`.
 
         Options are:
-        * `fast`: uses a small grid size (large grid spacing) so that simulations are
-            fast.
-        * `accurate`: uses a large grid size (small grid spacing) so that simulation
-            results are accurate.
-        * `balanced`: a grid size and grid spacing balanced between `fast` and
-            `accurate`.
+
+        - `fast`: uses a small grid size (large grid spacing) so that simulations are
+        fast.
+        - `accurate`: uses a large grid size (small grid spacing) so that simulation
+        results are accurate.
+        - `balanced`: a grid size and grid spacing balanced between `fast` and
+        `accurate`.
         """
         return self._complexity
 
@@ -215,11 +217,11 @@ class Scenario(abc.ABC):
     def materials(self) -> Mapping[str, Struct]:
         """A map between material name and material properties.
 
-        vp: the speed of sound (in m/s).
-        rho: the mass density (in kg/m³).
-        alpha: the absorption (in dB/cm).
-        render_color: the color used when rendering this material in the scenario layout
-            plot.
+        - vp: the speed of sound (in m/s).
+        - rho: the mass density (in kg/m³).
+        - alpha: the absorption (in dB/cm).
+        - render_color: the color used when rendering this material in the
+        scenario layout plot.
         """
         return {name: material for name, material in self._material_layers}
 
@@ -230,7 +232,7 @@ class Scenario(abc.ABC):
 
     @property
     def ordered_layers(self) -> list[str]:
-        """An list of material names in order of their layer id."""
+        """A list of material names in order of their layer id."""
         return [name for name, _ in self._material_layers]
 
     @property
@@ -270,10 +272,10 @@ class Scenario(abc.ABC):
         """Return the mask for the desired layer.
 
         The mask is `True` at each gridpoint where the requested layer exists,
-        and False elsewhere.
+        and `False` elsewhere.
 
         Args:
-            layer_name: The name of the desired layer.
+            layer_name: the name of the desired layer.
 
         Raises:
             ValueError: if `layer_name` does not match the name of one of the existing
@@ -327,7 +329,7 @@ class Scenario(abc.ABC):
     def add_source(self, source: Source) -> None:
         """Add the specified source to the scenario.
 
-        Sources can also added or removed by modifying the Scenario.sources list.
+        Sources can also be added or removed by modifying the Scenario.sources list.
 
         Changes can only be made to sources before a simulation has started.
 
@@ -361,7 +363,7 @@ class Scenario(abc.ABC):
         time_to_steady_state: float | None = None,
         recording_time_undersampling: int = 4,
         n_jobs: int | None = None,
-    ) -> scenarios.SteadyStateResult:
+    ) -> results.SteadyStateResult:
         """Execute a steady-state simulation.
 
         In this simulation, the sources will emit pressure waves with a continuous
@@ -379,22 +381,22 @@ class Scenario(abc.ABC):
             values other than the default if you chose to do so.
 
         Args:
-            center_frequency: The center frequency (in hertz) to use for the
+            center_frequency: the center frequency (in hertz) to use for the
                 continuous-wave source output. No other value besides 500kHz (the
                 default) is currently supported.
-            points_per_period: The number of points in time to simulate for each cycle
+            points_per_period: the number of points in time to simulate for each cycle
                 of the wave.
-            n_cycles_steady_state: The number of complete cycles to use when calculating
+            n_cycles_steady_state: the number of complete cycles to use when calculating
                 the steady-state wave amplitudes.
-            time_to_steady_state: The amount of time (in seconds) the simulation should
+            time_to_steady_state: the amount of time (in seconds) the simulation should
                 run before measuring the steady-state amplitude. If the value is None,
                 this time will automatically be set to the amount of time it would take
                 to propagate from one corner to the opposite and back in the medium with
                 the slowest speed of sound in the scenario.
-            recording_time_undersampling: The undersampling factor to apply to the time
+            recording_time_undersampling: the undersampling factor to apply to the time
                 axis when recording simulation results. One out of every this many
                 consecutive time points will be recorded and all others will be dropped.
-            n_jobs: The number of threads to be used for the computation. Use None to
+            n_jobs: the number of threads to be used for the computation. Use None to
                 leverage Devito automatic tuning.
 
         Raises:
@@ -447,7 +449,8 @@ class Scenario(abc.ABC):
 
         # put the time axis last and remove the empty last frame
         wavefield = np.moveaxis(pde.wavefield.data[:-1], 0, -1)
-        return scenarios.create_steady_state_result(
+
+        return results.create_steady_state_result(
             scenario=self,
             center_frequency=center_frequency,
             effective_dt=self.dt * recording_time_undersampling,
@@ -464,7 +467,7 @@ class Scenario(abc.ABC):
         simulation_time: float | None = None,
         recording_time_undersampling: int = 4,
         n_jobs: int | None = None,
-    ) -> scenarios.PulsedResult:
+    ) -> results.PulsedResult:
         """Execute a pulsed simulation in 2D.
 
         In this simulation, the sources will emit a pulse containing a few cycles of
@@ -480,19 +483,19 @@ class Scenario(abc.ABC):
             values other than the default if you chose to do so.
 
         Args:
-            center_frequency: The center frequency (in hertz) to use for the
+            center_frequency: the center frequency (in hertz) to use for the
                 continuous-wave source output. No other value besides
                 500kHz (the default) is currently supported.
-            points_per_period: The number of points in time to simulate for each cycle
+            points_per_period: the number of points in time to simulate for each cycle
                 of the wave.
-            simulation_time: The amount of time (in seconds) the simulation should run.
+            simulation_time: the amount of time (in seconds) the simulation should run.
                 If the value is None, this time will automatically be set to the amount
                 of time it would take to propagate from one corner to the opposite in
                 the medium with the slowest speed of sound in the scenario.
-            recording_time_undersampling: The undersampling factor to apply to the time
+            recording_time_undersampling: the undersampling factor to apply to the time
                 axis when recording simulation results. One out of every this many
                 consecutive time points will be recorded and all others will be dropped.
-            n_jobs: The number of threads to be used for the computation. Use None to
+            n_jobs: the number of threads to be used for the computation. Use None to
                 leverage Devito automatic tuning.
 
         Raises:
@@ -520,33 +523,34 @@ class Scenario(abc.ABC):
         n_jobs: int | None = None,
         slice_axis: int | None = None,
         slice_position: float | None = None,
-    ) -> scenarios.PulsedResult:
+    ) -> results.PulsedResult:
         """Execute a pulsed simulation.
 
         In this simulation, the sources will emit a pulse containing a few cycles of
         oscillation and then let the pulse propagate out to all edges of the scenario.
 
-        Note: the only supported frequency currently supported is 500kHz. Any other
-        value will raise a NotImplementedError.
+        !!! note
+            The only supported frequency currently supported is 500kHz. Any other
+            value will raise a NotImplementedError.
 
         Warning: A poor choice of arguments to this function can lead to a failed
         simulation. Make sure you understand the impact of supplying parameter values
         other than the default if you chose to do so.
 
         Args:
-            center_frequency: The center frequency (in hertz) to use for the
+            center_frequency: the center frequency (in hertz) to use for the
                 continuous-wave source output. No other value besides
                 500kHz (the default) is currently supported.
-            points_per_period: The number of points in time to simulate for each cycle
+            points_per_period: the number of points in time to simulate for each cycle
                 of the wave.
-            simulation_time: The amount of time (in seconds) the simulation should run.
+            simulation_time: the amount of time (in seconds) the simulation should run.
                 If the value is None, this time will automatically be set to the amount
                 of time it would take to propagate from one corner to the opposite in
                 the medium with the slowest speed of sound in the scenario.
-            recording_time_undersampling: The undersampling factor to apply to the time
+            recording_time_undersampling: the undersampling factor to apply to the time
                 axis when recording simulation results. One out of every this many
                 consecutive time points will be recorded and all others will be dropped.
-            n_jobs: The number of threads to be used for the computation. Use None to
+            n_jobs: the number of threads to be used for the computation. Use None to
                 leverage Devito automatic tuning.
             slice_axis: the axis along which to slice the 3D field to be recorded. If
                 None, then the complete field will be recorded. Use 0 for X axis, 1 for
@@ -605,7 +609,7 @@ class Scenario(abc.ABC):
         # put the time axis last and remove the empty last frame
         wavefield = np.moveaxis(pde.wavefield.data[:-1], 0, -1)
 
-        return scenarios.create_pulsed_result(
+        return results.create_pulsed_result(
             scenario=self,
             center_frequency=center_frequency,
             effective_dt=self.dt * recording_time_undersampling,
@@ -629,7 +633,7 @@ class Scenario(abc.ABC):
             simulation_mode: the type of simulation which will be run.
 
         Returns:
-            the `SubProblem` to use for the simulation.
+            The `SubProblem` to use for the simulation.
         """
         self._ensure_source()
         self._freeze_sources()
@@ -650,7 +654,7 @@ class Scenario(abc.ABC):
             simulation_mode: the type of simulation which will be run.
 
         Returns:
-            the `Shot` to use for the simulation.
+            The `Shot` to use for the simulation.
         """
         problem = self.problem
         assert problem.grid.time is not None
@@ -791,9 +795,9 @@ class Scenario(abc.ABC):
         simulation.
 
         Args:
-            ppp: The number of points in time per phase to simulate for each cycle of
+            ppp: the number of points in time per phase to simulate for each cycle of
                 the wave.
-            n_cycles: The number of complete cycles to record at the end of the
+            n_cycles: the number of complete cycles to record at the end of the
                 simulation.
 
         Returns:
@@ -830,15 +834,15 @@ class Scenario(abc.ABC):
         """Execute the PDE for the simulation.
 
         Args:
-            pde: The `Operator` containing the PDE to execute.
-            sub_problem: The `SubProblem` containing details of the source and waveform
+            pde: the `Operator` containing the PDE to execute.
+            sub_problem: the `SubProblem` containing details of the source and waveform
                 for the simulation.
-            save_bounds: The time indices bounding the period of time to be recorded.
-            save_undersampling: The undersampling factor to apply to the time axis when
+            save_bounds: the time indices bounding the period of time to be recorded.
+            save_undersampling: the undersampling factor to apply to the time axis when
                 recording simulation results.
             wavefield_slice: A tuple of slices defining the region of the grid to
                 record.
-            n_jobs: The number of threads to be used for the computation. Use None to
+            n_jobs: the number of threads to be used for the computation. Use None to
                 leverage Devito automatic tuning.
         Returns:
             The `Traces` which are produced by the simulation.
@@ -902,9 +906,7 @@ class Scenario2D(Scenario):
     ) -> None:
         """Create a matplotlib figure showing the 2D scenario layout.
 
-        The grid can be turned on via:
-
-        `plt.grid(True)`
+        The grid can be turned on via: `plt.grid(True)`
 
         Args:
             show_sources: whether or not to show the source transducer layer.
@@ -999,7 +1001,6 @@ class Scenario3D(Scenario):
             center=self.target_center,
             radius=self.target_radius,
         )
-        """Return the mask for the target region."""
         return target_mask
 
     def simulate_pulse(
@@ -1011,33 +1012,35 @@ class Scenario3D(Scenario):
         n_jobs: int | None = None,
         slice_axis: int | None = None,
         slice_position: float | None = None,
-    ) -> scenarios.PulsedResult:
+    ) -> results.PulsedResult:
         """Execute a pulsed simulation in 3D.
 
         In this simulation, the sources will emit a pulse containing a few cycles of
         oscillation and then let the pulse propagate out to all edges of the scenario.
 
-        Note: the only supported frequency currently supported is 500kHz. Any other
-        value will raise a NotImplementedError.
+        !!! note
+            The only supported frequency currently supported is 500kHz. Any
+            other value will raise a NotImplementedError.
 
-        Warning: A poor choice of arguments to this function can lead to a failed
-        simulation. Make sure you understand the impact of supplying parameter values
-        other than the default if you chose to do so.
+        !!! warning
+            A poor choice of arguments to this function can lead to a failed
+            simulation. Make sure you understand the impact of supplying parameter
+            values other than the default if you chose to do so.
 
         Args:
-            center_frequency: The center frequency (in hertz) to use for the
+            center_frequency: the center frequency (in hertz) to use for the
                 continuous-wave source output. No other value besides
                 500kHz (the default) is currently supported.
-            points_per_period: The number of points in time to simulate for each cycle
+            points_per_period: the number of points in time to simulate for each cycle
                 of the wave.
-            simulation_time: The amount of time (in seconds) the simulation should run.
+            simulation_time: the amount of time (in seconds) the simulation should run.
                 If the value is None, this time will automatically be set to the amount
                 of time it would take to propagate from one corner to the opposite in
                 the medium with the slowest speed of sound in the scenario.
-            recording_time_undersampling: The undersampling factor to apply to the time
+            recording_time_undersampling: the undersampling factor to apply to the time
                 axis when recording simulation results. One out of every this many
                 consecutive time points will be recorded and all others will be dropped.
-            n_jobs: The number of threads to be used for the computation. Use None to
+            n_jobs: the number of threads to be used for the computation. Use None to
                 leverage Devito automatic tuning.
             slice_axis: the axis along which to slice the 3D field to be recorded. If
                 None, then the complete field will be recorded. Use 0 for X axis, 1 for
@@ -1076,9 +1079,7 @@ class Scenario3D(Scenario):
         needs to be specified via `slice_axis` and `slice_position`. Eg. to take a slice
         at z=0.01 m, use `slice_axis=2` and `slice_position=0.01`.
 
-        The grid can be turned on via:
-
-        `plt.grid(True)`
+        The grid can be turned on via: `plt.grid(True)`
 
         Args:
             slice_axis: the axis along which to slice. If None, then the value returned
@@ -1163,6 +1164,6 @@ class Scenario3D(Scenario):
         from different angles, zoom in our out, and turn layers on or off.
 
         See napari documentation for more information on the GUI:
-        https://napari.org/stable/tutorials/fundamentals/viewer.html
+        [documentation](https://napari.org/stable/tutorials/fundamentals/viewer.html)
         """
         rendering.render_layout_3d_with_napari(self)

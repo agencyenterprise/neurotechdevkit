@@ -87,7 +87,7 @@ def create_pulsed_figure(
         wavefield: An array in 2 spatial dimensions and one temporal dimension with the
             recorded pressures during the simulation. The temporal dimension should
             be the last one.
-        norm: The normalization method used to scale scalar data to the [0, 1]
+        norm: the normalization method used to scale scalar data to the [0, 1]
             range before mapping to colors using cmap. For a list of available scales,
             call `matplotlib.scale.get_scale_names()`.
 
@@ -127,8 +127,8 @@ def configure_result_plot(
       Configuration includes: axes, title, colorbar, and legend.
 
     Args:
-        fig: The layout plot figure to configure.
-        ax: The axes which contains the layout plot.
+        fig: the layout plot figure to configure.
+        ax: the axes which contains the layout plot.
         show_sources: Whether or not to include the source transducer layer in the
         legend.
         show_target: Whether or not to include the the target layer in the legend.
@@ -136,9 +136,9 @@ def configure_result_plot(
             the field along each axis.
         origin: An array of shape (2,) which contains the spatial coordinates (in
             meters) of the field element with indices (0, 0).
-        vertical_label: The label to apply to the vertical axis.
-        horizontal_label: The label to apply to the horizontal axis.
-        title: The title to give the figure.
+        vertical_label: the label to apply to the vertical axis.
+        horizontal_label: the label to apply to the horizontal axis.
+        title: the title to give the figure.
         clim: A tuple with (min, max) values for the limits for the colorbar.
     """
     configure_title(fig, title, x_pos=0.63)
@@ -166,8 +166,8 @@ def _configure_colorbar(
     """Configure the colorbar for the steady-state amplitude plot.
 
     Args:
-        fig: The figure containing the plot to be configured.
-        ax: The axes containing the plot to be configured.
+        fig: the figure containing the plot to be configured.
+        ax: the axes containing the plot to be configured.
         clim: A tuple with (min, max) values for the limits for the colorbar.
     """
     im = ax.get_images()[0]
@@ -186,7 +186,7 @@ def _configure_legend(
     """Configure the legend for the steady-state amplitude plot.
 
     Args:
-        ax: The axes containing the legend to be configured.
+        ax: the axes containing the legend to be configured.
         show_target: Whether or not to show the target marker.
         show_sources: Whether or not to show the source markers.
     """

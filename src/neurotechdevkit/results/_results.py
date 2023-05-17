@@ -15,8 +15,8 @@ import stride
 from matplotlib.animation import FuncAnimation
 
 from .. import rendering, scenarios
-from . import _metrics as metrics
-from ._utils import drop_element, slice_field
+from ..scenarios import _metrics as metrics
+from ..scenarios._utils import drop_element, slice_field
 
 
 @dataclass
@@ -26,16 +26,19 @@ class Result(abc.ABC):
     This class should not be instantiated, use SteadyStateResult2D, SteadyStateResult3D,
     PulsedResult2D, or PulsedResult3D.
 
-    Attributes:
-        scenario: The scenario from which this result came.
-        center_frequency: the center frequency (in hertz) of the sources.
-        effective_dt: the effective time step (in seconds) along the time axis of the
-            wavefield. This can differ from the simulation dt if the recording
+    Args:
+        scenario (scenarios.Scenario): the scenario from which this result came.
+        center_frequency (float): the center frequency (in hertz) of the sources.
+        effective_dt (float): the effective time step (in seconds) along the time axis
+            of the wavefield. This can differ from the simulation dt if the recording
             undersampling factor is larger than 1.
-        pde: the stride Operator that was executed to run the simulation.
-        shot: the stride Shot which was used for the simulation.
-        wavefield: an array containing the resulting simulation data.
-        traces: the stride Traces object returned from executing the pde.
+        pde (stride.Operator): the stride Operator that was executed to run the
+            simulation.
+        shot (stride.Shot): the stride Shot which was used for the simulation.
+        wavefield (npt.NDArray[np.float_]): an array containing the resulting simulation
+            data.
+        traces (stride.Traces): the stride Traces object returned from executing the
+            pde.
     """
 
     scenario: scenarios.Scenario
@@ -60,7 +63,7 @@ class Result(abc.ABC):
         in 3D.
 
         Args:
-            filepath: The path to the file where the results should be exported. Usually
+            filepath: the path to the file where the results should be exported. Usually
                 a .pkl.gz file.
         """
         try:
@@ -95,16 +98,19 @@ class SteadyStateResult(Result):
     This class should not be instantiated, use SteadyStateResult2D or
     SteadyStateResult3D.
 
-    Attributes:
-        scenario: The scenario from which this result came.
-        center_frequency: the center frequency (in hertz) of the sources.
-        effective_dt: the effective time step (in seconds) along the time axis of the
-            wavefield. This can differ from the simulation dt if the recording
+    Args:
+        scenario (scenario.Scenario): the scenario from which this result came.
+        center_frequency (float): the center frequency (in hertz) of the sources.
+        effective_dt (float): the effective time step (in seconds) along the time axis
+            of the wavefield. This can differ from the simulation dt if the recording
             undersampling factor is larger than 1.
-        pde: the stride Operator that was executed to run the simulation.
-        shot: the stride Shot which was used for the simulation.
-        wavefield: an array containing the resulting simulation data.
-        traces: the stride Traces object returned from executing the pde.
+        pde (stride.Operator): the stride Operator that was executed to run the
+            simulation.
+        shot (stride.Shot): the stride Shot which was used for the simulation.
+        wavefield (npt.NDArray[np.float_]): an array containing the resulting
+            simulation data.
+        traces (stride.Traces): the stride Traces object returned from executing
+            the pde.
     """
 
     steady_state: npt.NDArray[np.float_] | None = None
@@ -152,9 +158,10 @@ class SteadyStateResult(Result):
 
         The keys for the dictionary are the names of the metrics. The value for each
         metric is another dictionary containing the following:
-            value: The value of the metric.
-            unit-of-measurement: The unit of measurement for the metric.
-            description: A text description of the metric.
+
+        - value: the value of the metric.
+        - unit-of-measurement: the unit of measurement for the metric.
+        - description: A text description of the metric.
         """
         self.get_steady_state()
         return metrics.calculate_all_metrics(self)
@@ -181,17 +188,20 @@ class SteadyStateResult(Result):
 class SteadyStateResult2D(SteadyStateResult):
     """A container for holding the results of a 2D steady-state simulation.
 
-    Attributes:
-        scenario: The 2D scenario from which this result came.
-        center_frequency: the center frequency (in hertz) of the sources.
-        effective_dt: the effective time step (in seconds) along the time axis of the
-            wavefield. This can differ from the simulation dt if the recording
-            downsampling factor is larger than 1.
-        pde: the stride Operator that was executed to run the simulation.
-        shot: the stride Shot which was used for the simulation.
-        wavefield: a 3 dimensional array (two axes for space and one for time)
-            containing the resulting simulation data.
-        traces: the stride Traces object returned from executing the pde.
+    Args:
+        scenario (scenarios.Scenario2D): the 2D scenario from which this result
+            came.
+        center_frequency (float): the center frequency (in hertz) of the sources.
+        effective_dt (float): the effective time step (in seconds) along the
+            time axis of the wavefield. This can differ from the simulation dt
+            if the recording downsampling factor is larger than 1.
+        pde (stride.Operator): the stride Operator that was executed to run
+            the simulation.
+        shot (stride.Shot): the stride Shot which was used for the simulation.
+        wavefield (npt.NDArray[np.float_]): a 3 dimensional array (two axes for
+            space and one for time) containing the resulting simulation data.
+        traces (stride.Traces): the stride Traces object returned from executing
+            the pde.
     """
 
     scenario: scenarios.Scenario2D
@@ -204,9 +214,7 @@ class SteadyStateResult2D(SteadyStateResult):
     ) -> None:
         """Create a matplotlib figure with the steady-state pressure wave amplitude.
 
-        The grid can be turned on via:
-
-        `plt.grid(True)`
+        The grid can be turned on via: `plt.grid(True)`
 
         Args:
             show_sources: whether or not to show the source transducer layer.
@@ -263,17 +271,20 @@ class SteadyStateResult2D(SteadyStateResult):
 class SteadyStateResult3D(SteadyStateResult):
     """A container for holding the results of a 3D steady-state simulation.
 
-    Attributes:
-        scenario: The 3D scenario from which this result came.
-        center_frequency: the center frequency (in hertz) of the sources.
-        effective_dt: the effective time step (in seconds) along the time axis of the
-            wavefield. This can differ from the simulation dt if the recording
-            downsampling factor is larger than 1.
-        pde: the stride Operator that was executed to run the simulation.
-        shot: the stride Shot which was used for the simulation.
-        wavefield: a 4 dimensional array (three axes for space and one for time)
-            containing the resulting simulation data.
-        traces: the stride Traces object returned from executing the pde.
+    Args:
+        scenario (scenarios.Scenario3D): the 3D scenario from which this result
+            came.
+        center_frequency (float): the center frequency (in hertz) of the sources.
+        effective_dt (float): the effective time step (in seconds) along the
+            time axis of the wavefield. This can differ from the simulation dt
+            if the recording downsampling factor is larger than 1.
+        pde (stride.Operator): the stride Operator that was executed to run the
+            simulation.
+        shot (stride.Shot): the stride Shot which was used for the simulation.
+        wavefield (npt.NDArray[np.float_]): a 4 dimensional array (three axes for
+            space and one for time) containing the resulting simulation data.
+        traces (stride.Traces): the stride Traces object returned from executing
+            the pde.
     """
 
     scenario: scenarios.Scenario3D
@@ -292,9 +303,7 @@ class SteadyStateResult3D(SteadyStateResult):
         needs to be specified via `slice_axis` and `slice_position`. Eg. to take a slice
         at z=0.01 m, use `slice_axis=2` and `slice_position=0.01`.
 
-        The grid can be turned on via:
-
-        `plt.grid(True)`
+        The grid can be turned on via: `plt.grid(True)`
 
         Args:
             slice_axis: the axis along which to slice. If None, then the value returned
@@ -397,10 +406,10 @@ def _extract_steady_state_amplitude(
     need to integrate over integer number of cycles.
 
     Args:
-        data: The wave data to process. The array should contain 2 or 3 space dimensions
+        data: the wave data to process. The array should contain 2 or 3 space dimensions
             followed by the time dimension.
-        freq_hz: The frequency (in hertz) to extract from the FFT.
-        dt: The time axis spacing (in seconds).
+        freq_hz: the frequency (in hertz) to extract from the FFT.
+        dt: the time axis spacing (in seconds).
         by_slice: If False, the fft is executed over the entire data array at once,
             which is faster but memory intensive. If True, the fft is executed over the
             data slice by slice, which is slower but uses less memory.
@@ -439,16 +448,19 @@ class PulsedResult(Result):
 
     This class should not be instantiated, use PulsedResult2D or PulsedResult3D.
 
-    Attributes:
-        scenario: The scenario from which this result came.
-        center_frequency: the center frequency (in hertz) of the sources.
-        effective_dt: the effective time step (in seconds) along the time axis of the
-            wavefield. This can differ from the simulation dt if the recording
-            undersampling factor is larger than 1.
-        pde: the stride Operator that was executed to run the simulation.
-        shot: the stride Shot which was used for the simulation.
-        wavefield: an array containing the resulting simulation data.
-        traces: the stride Traces object returned from executing the pde.
+    Args:
+        scenario (scenario.Scenario): the scenario from which this result came.
+        center_frequency (float): the center frequency (in hertz) of the sources.
+        effective_dt (float): the effective time step (in seconds) along the
+            time axis of the wavefield. This can differ from the simulation dt
+            if the recording undersampling factor is larger than 1.
+        pde (stride.Operator): the stride Operator that was executed to run
+            the simulation.
+        shot (stride.Shot): the stride Shot which was used for the simulation.
+        wavefield (npt.NDArray[np.float_]): an array containing the resulting
+            simulation data.
+        traces (stride.Traces): the stride Traces object returned from executing
+            the pde.
     """
 
     recorded_slice: tuple[int, float] | None = None
@@ -548,17 +560,20 @@ class PulsedResult(Result):
 class PulsedResult2D(PulsedResult):
     """A container for holding the results of a 2D pulsed simulation.
 
-    Attributes:
-        scenario: The 2D scenario from which this result came.
-        center_frequency: the center frequency (in hertz) of the sources.
-        effective_dt: the effective time step (in seconds) along the time axis of the
-            wavefield. This can differ from the simulation dt if the recording
-            downsampling factor is larger than 1.
-        pde: the stride Operator that was executed to run the simulation.
-        shot: the stride Shot which was used for the simulation.
-        wavefield: a 3 dimensional array (two axes for space and one for time)
-            containing the resulting simulation data.
-        traces: the stride Traces object returned from executing the pde.
+    Args:
+        scenario (scenarios.Scenario2D): the 2D scenario from which this
+            result came.
+        center_frequency (float): the center frequency (in hertz) of the sources.
+        effective_dt (float): the effective time step (in seconds) along the
+            time axis of the wavefield. This can differ from the simulation dt
+            if the recording downsampling factor is larger than 1.
+        pde (stride.Operator): the stride Operator that was executed to run the
+            simulation.
+        shot (stride.Shot): the stride Shot which was used for the simulation.
+        wavefield (npt.NDArray[np.float_]): a 3 dimensional array (two axes for
+            space and one for time) containing the resulting simulation data.
+        traces (stride.Traces): the stride Traces object returned from executing
+            the pde.
     """
 
     scenario: scenarios.Scenario2D
@@ -588,7 +603,7 @@ class PulsedResult2D(PulsedResult):
                 the animation.
             time_lim: the input time limit tuple to validate. The expected format is
                 (minimum_time, maximum_time).
-            norm: The normalization method used to scale scalar data to the [0, 1]
+            norm: the normalization method used to scale scalar data to the [0, 1]
                 range before mapping to colors using cmap. For a list
                 of available scales, call `matplotlib.scale.get_scale_names()`.
 
@@ -636,7 +651,7 @@ class PulsedResult2D(PulsedResult):
                 the animation.
             time_lim: the input time limit tuple to validate. The expected format is
                 (minimum_time, maximum_time).
-            norm: The normalization method used to scale scalar data to the [0, 1]
+            norm: the normalization method used to scale scalar data to the [0, 1]
                 range before mapping to colors using cmap. For a list of available
                 scales, call `matplotlib.scale.get_scale_names()`.
             fps: the frames per second in the animation.
@@ -687,7 +702,7 @@ class PulsedResult2D(PulsedResult):
             show_target: whether or not to show the target layer.
             show_material_outlines: whether or not to display a thin white outline of
                 the transition between different materials.
-            norm: The normalization method used to scale scalar data to the [0, 1]
+            norm: the normalization method used to scale scalar data to the [0, 1]
                 range before mapping to colors using cmap. For a list of available
                 scales, call `matplotlib.scale.get_scale_names()`.
 
@@ -763,17 +778,20 @@ class PulsedResult2D(PulsedResult):
 class PulsedResult3D(PulsedResult):
     """A container for holding the results of a 3D pulsed simulation.
 
-    Attributes:
-        scenario: The 3D scenario from which this result came.
-        center_frequency: the center frequency (in hertz) of the sources.
-        effective_dt: the effective time step (in seconds) along the time axis of the
-            wavefield. This can differ from the simulation dt if the recording
-            downsampling factor is larger than 1.
-        pde: the stride Operator that was executed to run the simulation.
-        shot: the stride Shot which was used for the simulation.
-        wavefield: a 4 dimensional array (three axes for space and one for time)
-            containing the resulting simulation data.
-        traces: the stride Traces object returned from executing the pde.
+    Args:
+        scenario (scenarios.Scenario3D): the 3D scenario from which this result
+            came.
+        center_frequency (float): the center frequency (in hertz) of the sources.
+        effective_dt (float): the effective time step (in seconds) along the
+            time axis of the wavefield. This can differ from the simulation dt
+            if the recording downsampling factor is larger than 1.
+        pde (stride.Operator): the stride Operator that was executed to run the
+            simulation.
+        shot (stride.Shot): the stride Shot which was used for the simulation.
+        wavefield (npt.NDArray[np.float_]): a 4 dimensional array (three axes for
+            space and one for time) containing the resulting simulation data.
+        traces (stride.Traces): the stride Traces object returned from executing
+            the pde.
     """
 
     scenario: scenarios.Scenario3D
@@ -837,7 +855,7 @@ class PulsedResult3D(PulsedResult):
                 `scenario.get_default_slice_position()` is used.
             time_lim: the input time limit tuple to validate. The expected format is
                 (minimum_time, maximum_time).
-            norm: The normalization method used to scale scalar data to the [0, 1]
+            norm: the normalization method used to scale scalar data to the [0, 1]
                 range before mapping to colors using cmap. For a list
                 of available scales, call `matplotlib.scale.get_scale_names()`.
 
@@ -894,7 +912,7 @@ class PulsedResult3D(PulsedResult):
                 `scenario.get_default_slice_position()` is used.
             time_lim: the input time limit tuple to validate. The expected format is
                 (minimum_time, maximum_time).
-            norm: The normalization method used to scale scalar data to the [0, 1]
+            norm: the normalization method used to scale scalar data to the [0, 1]
                 range before mapping to colors using cmap. For a list of available
                 scales, call `matplotlib.scale.get_scale_names()`.
             fps: the frames per second in the animation.
@@ -958,7 +976,7 @@ class PulsedResult3D(PulsedResult):
             show_target: whether or not to show the target layer.
             show_material_outlines: whether or not to display a thin white outline of
                 the transition between different materials.
-            norm: The normalization method used to scale scalar data to the [0, 1]
+            norm: the normalization method used to scale scalar data to the [0, 1]
                 range before mapping to colors using cmap. For a list of available
                 scales, call `matplotlib.scale.get_scale_names()`.
 
@@ -1069,15 +1087,18 @@ def create_steady_state_result(
     has N-1 spatial dimensions and 1 time dimension.
 
     Args:
-        scenario: The scenario from which this result came.
-        center_frequency: the center frequency (in hertz) of the sources.
-        effective_dt: the effective time step (in seconds) along the time axis of the
-            wavefield. This can differ from the simulation dt if the recording
-            downsampling factor is larger than 1.
-        pde: the stride Operator that was executed to run the simulation.
-        shot: the stride Shot which was used for the simulation.
-        wavefield: an array containing the resulting simulation data.
-        traces: the stride Traces object returned from executing the pde.
+        scenario: the scenario from which this result came.
+        center_frequency (float): the center frequency (in hertz) of the sources.
+        effective_dt (float): the effective time step (in seconds) along the
+            time axis of the wavefield. This can differ from the simulation dt if
+            the recording downsampling factor is larger than 1.
+        pde (stride.Operator): the stride Operator that was executed to run
+            the simulation.
+        shot (stride.Shot): the stride Shot which was used for the simulation.
+        wavefield (npt.NDArray[np.float_]): an array containing the resulting
+            simulation data.
+        traces (stride.Traces): the stride Traces object returned from executing
+            the pde.
 
     Raises:
         ValueError: if the ndim of the wavefield is less than 3 or more than 4.
@@ -1130,15 +1151,18 @@ def create_pulsed_result(
     spatial dimensions and 1 time dimension.
 
     Args:
-        scenario: The scenario from which this result came.
-        center_frequency: the center frequency (in hertz) of the sources.
-        effective_dt: the effective time step (in seconds) along the time axis of the
-            wavefield. This can differ from the simulation dt if the recording
-            downsampling factor is larger than 1.
-        pde: the stride Operator that was executed to run the simulation.
-        shot: the stride Shot which was used for the simulation.
-        wavefield: an array containing the resulting simulation data.
-        traces: the stride Traces object returned from executing the pde.
+        scenario: the scenario from which this result came.
+        center_frequency (float): the center frequency (in hertz) of the sources.
+        effective_dt (float): the effective time step (in seconds) along the
+            time axis of the wavefield. This can differ from the simulation dt if
+            the recording downsampling factor is larger than 1.
+        pde (stride.Operator): the stride Operator that was executed to run the
+            simulation.
+        shot (stride.Shot): the stride Shot which was used for the simulation.
+        wavefield (npt.NDArray[np.float_]): an array containing the resulting
+            simulation data.
+        traces (stride.Traces): the stride Traces object returned from executing
+            the pde.
 
     Raises:
         ValueError: if the ndim of the wavefield is less than 3 or more than 4.
@@ -1181,7 +1205,7 @@ def load_result_from_disk(filepath: str | pathlib.Path) -> Result:
         This functionality is experimental, so do do not be surprised if you
         encounter issues calling this function.
 
-    Load a file that was saved to disk via Result.save_to_disk.
+    Load a file that was saved to disk via `Result.save_to_disk`.
 
     If the object saved in `filepath` is the result from a steady-state simulation
     the results will contain only the steady-state amplitudes. Instead, for pulsed
@@ -1192,7 +1216,7 @@ def load_result_from_disk(filepath: str | pathlib.Path) -> Result:
     in 3D.
 
     Args:
-        filepath: The path to an existing result file previously saved via
+        filepath: the path to an existing result file previously saved via
             Result.save_to_disk.
 
     Returns:
@@ -1211,7 +1235,7 @@ def load_result_from_disk(filepath: str | pathlib.Path) -> Result:
             scenario.add_source(source)
 
         scenario.current_target_id = save_data["target_id"]
-        result_type = getattr(ndk.scenarios, save_data["result_type"])
+        result_type = getattr(ndk.results, save_data["result_type"])
 
         fields_kwargs = dict(
             scenario=scenario,

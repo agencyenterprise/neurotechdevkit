@@ -21,7 +21,8 @@ def create_shot(
     build the shot object, build the wavelet array for the shot, and then add the
     shot to the acquisitions for the problem.
 
-    Note: support for receivers in a shot is not currently implemented in ndk.
+    !!! note
+        Support for receivers in a shot is not currently implemented in ndk.
 
     Args:
         problem: the problem to which the shot will be be added.

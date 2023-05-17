@@ -35,7 +35,7 @@ def select_simulation_time_for_steady_state(
             None, this time will automatically be set to the amount of time it would
             take to propagate from one corner to the opposite and back in the medium
             with the slowest speed of sound in the scenario.
-        n_cycles_steady_state: The number of complete cycles to use when calculating
+        n_cycles_steady_state: the number of complete cycles to use when calculating
             the steady-state wave amplitudes.
         delay: the maximum delay (in seconds) in the sources to account for.
 
