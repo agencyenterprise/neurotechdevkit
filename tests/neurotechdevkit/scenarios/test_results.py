@@ -3,8 +3,7 @@ import pytest
 
 import neurotechdevkit as ndk
 from neurotechdevkit import scenarios, sources
-from neurotechdevkit.scenarios import _metrics as metrics
-from neurotechdevkit.scenarios._results import (
+from neurotechdevkit.results import (
     PulsedResult2D,
     PulsedResult3D,
     SteadyStateResult2D,
@@ -12,6 +11,7 @@ from neurotechdevkit.scenarios._results import (
     create_pulsed_result,
     create_steady_state_result,
 )
+from neurotechdevkit.scenarios import _metrics as metrics
 
 
 @pytest.fixture

@@ -14,7 +14,7 @@ from frozenlist import FrozenList
 from mosaic.types import Struct
 from stride.problem import StructuredData
 
-from .. import rendering, scenarios
+from .. import rendering, results
 from ..sources import Source
 from ._resources import budget_time_and_memory_resources
 from ._shots import create_shot
@@ -363,7 +363,7 @@ class Scenario(abc.ABC):
         time_to_steady_state: float | None = None,
         recording_time_undersampling: int = 4,
         n_jobs: int | None = None,
-    ) -> scenarios.SteadyStateResult:
+    ) -> results.SteadyStateResult:
         """Execute a steady-state simulation.
 
         In this simulation, the sources will emit pressure waves with a continuous
@@ -449,7 +449,8 @@ class Scenario(abc.ABC):
 
         # put the time axis last and remove the empty last frame
         wavefield = np.moveaxis(pde.wavefield.data[:-1], 0, -1)
-        return scenarios.create_steady_state_result(
+
+        return results.create_steady_state_result(
             scenario=self,
             center_frequency=center_frequency,
             effective_dt=self.dt * recording_time_undersampling,
@@ -466,7 +467,7 @@ class Scenario(abc.ABC):
         simulation_time: float | None = None,
         recording_time_undersampling: int = 4,
         n_jobs: int | None = None,
-    ) -> scenarios.PulsedResult:
+    ) -> results.PulsedResult:
         """Execute a pulsed simulation in 2D.
 
         In this simulation, the sources will emit a pulse containing a few cycles of
@@ -522,7 +523,7 @@ class Scenario(abc.ABC):
         n_jobs: int | None = None,
         slice_axis: int | None = None,
         slice_position: float | None = None,
-    ) -> scenarios.PulsedResult:
+    ) -> results.PulsedResult:
         """Execute a pulsed simulation.
 
         In this simulation, the sources will emit a pulse containing a few cycles of
@@ -608,7 +609,7 @@ class Scenario(abc.ABC):
         # put the time axis last and remove the empty last frame
         wavefield = np.moveaxis(pde.wavefield.data[:-1], 0, -1)
 
-        return scenarios.create_pulsed_result(
+        return results.create_pulsed_result(
             scenario=self,
             center_frequency=center_frequency,
             effective_dt=self.dt * recording_time_undersampling,
@@ -1011,7 +1012,7 @@ class Scenario3D(Scenario):
         n_jobs: int | None = None,
         slice_axis: int | None = None,
         slice_position: float | None = None,
-    ) -> scenarios.PulsedResult:
+    ) -> results.PulsedResult:
         """Execute a pulsed simulation in 3D.
 
         In this simulation, the sources will emit a pulse containing a few cycles of

@@ -15,8 +15,8 @@ import stride
 from matplotlib.animation import FuncAnimation
 
 from .. import rendering, scenarios
-from . import _metrics as metrics
-from ._utils import drop_element, slice_field
+from ..scenarios import _metrics as metrics
+from ..scenarios._utils import drop_element, slice_field
 
 
 @dataclass
@@ -1235,7 +1235,7 @@ def load_result_from_disk(filepath: str | pathlib.Path) -> Result:
             scenario.add_source(source)
 
         scenario.current_target_id = save_data["target_id"]
-        result_type = getattr(ndk.scenarios, save_data["result_type"])
+        result_type = getattr(ndk.results, save_data["result_type"])
 
         fields_kwargs = dict(
             scenario=scenario,

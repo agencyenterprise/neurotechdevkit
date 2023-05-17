@@ -3,10 +3,11 @@ from __future__ import annotations
 
 import os
 
-from . import scenarios
-from .scenarios import load_result_from_disk
+from . import results, scenarios
+from .results import load_result_from_disk
 
 __all__ = [
+    "results",
     "scenarios",
     "make",
     "ScenarioNotFoundError",

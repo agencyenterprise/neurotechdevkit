@@ -3,6 +3,7 @@ from types import SimpleNamespace
 import numpy as np
 import pytest
 
+from neurotechdevkit.results._results import SteadyStateResult2D
 from neurotechdevkit.scenarios._metrics import (
     Conversions,
     calculate_all_metrics,
@@ -13,7 +14,6 @@ from neurotechdevkit.scenarios._metrics import (
     calculate_i_ta_target,
     calculate_mechanical_index,
 )
-from neurotechdevkit.scenarios._results import SteadyStateResult2D
 
 CENTER_FREQUENCY = 1.5e6
 AMBIENT_PRESSURE = 2.5e6
