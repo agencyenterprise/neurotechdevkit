@@ -48,6 +48,7 @@ mkdocs-gallery = "^0.7.6"
 mkdocstrings = {extras = ["python"], version = "^0.21.2"}
 codespell = "^2.2.4"
 pydocstyle = "^6.3.0"
+pyright = "^1.1.306"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
@@ -81,5 +82,8 @@ markers = [
     "integration: marks tests that are integration tests."
 ]
 
+[tool.pyright]
+include = ["src"]
+reportGeneralTypeIssues = "none"
 # [tool.flake8]
 # flake8 does not support config in pyproject.toml, see .flake8

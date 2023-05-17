@@ -3,6 +3,7 @@ from __future__ import annotations
 import abc
 import asyncio
 from dataclasses import dataclass
+from types import SimpleNamespace
 from typing import Mapping
 
 import nest_asyncio
@@ -11,6 +12,7 @@ import numpy.typing as npt
 import stride
 from frozenlist import FrozenList
 from mosaic.types import Struct
+from stride.problem import StructuredData
 
 from .. import rendering, scenarios
 from ..sources import Source
@@ -101,6 +103,7 @@ class Scenario(abc.ABC):
     @property
     def extent(self) -> npt.NDArray[np.float_]:
         """The extent of the spatial grid (in meters)."""
+        assert self.problem.space is not None
         return np.array(self.problem.space.size, dtype=float)
 
     @property
@@ -111,6 +114,7 @@ class Scenario(abc.ABC):
     @property
     def shape(self) -> npt.NDArray[np.int_]:
         """The shape of the spatial grid (in number of grid points)."""
+        assert self.problem.space is not None
         return np.array(self.problem.space.shape, dtype=int)
 
     @property
@@ -119,6 +123,7 @@ class Scenario(abc.ABC):
 
         Spacing is the same in each spatial direction.
         """
+        assert self.problem.space is not None
         return self.problem.space.spacing[0]
 
     @property
@@ -437,10 +442,11 @@ class Scenario(abc.ABC):
             wavefield_slice=self._wavefield_slice(),
             n_jobs=n_jobs,
         )
+        assert isinstance(pde.wavefield, (StructuredData, SimpleNamespace))
+        assert sub_problem.shot is not None
 
         # put the time axis last and remove the empty last frame
         wavefield = np.moveaxis(pde.wavefield.data[:-1], 0, -1)
-
         return scenarios.create_steady_state_result(
             scenario=self,
             center_frequency=center_frequency,
@@ -593,6 +599,8 @@ class Scenario(abc.ABC):
             wavefield_slice=self._wavefield_slice(slice_axis, slice_position),
             n_jobs=n_jobs,
         )
+        assert isinstance(pde.wavefield, (StructuredData, SimpleNamespace))
+        assert sub_problem.shot is not None
 
         # put the time axis last and remove the empty last frame
         wavefield = np.moveaxis(pde.wavefield.data[:-1], 0, -1)
@@ -645,6 +653,7 @@ class Scenario(abc.ABC):
             the `Shot` to use for the simulation.
         """
         problem = self.problem
+        assert problem.grid.time is not None
 
         wavelet_name = choose_wavelet_for_mode(simulation_mode)
         wavelet = wavelet_helper(
@@ -652,7 +661,7 @@ class Scenario(abc.ABC):
         )
         return create_shot(problem, sources, self.origin, wavelet, self.dx)
 
-    def _create_pde(self) -> stride.Operator:
+    def _create_pde(self) -> stride.IsoAcousticDevito:
         """Instantiate the stride `Operator` representing the PDE for the scenario.
 
         All existing scenarios use the `IsoAcousticDevito` operator.
@@ -691,7 +700,7 @@ class Scenario(abc.ABC):
             A tuple of slices defining the region of the grid to record.
         """
         space = self.problem.space
-
+        assert space is not None
         standard_slice = tuple(
             [
                 # save all time points
@@ -793,6 +802,7 @@ class Scenario(abc.ABC):
         """
         n_frames = ppp * n_cycles
         time = self.problem.time
+        assert time is not None
         return (time.num - n_frames, time.num - 1)
 
     def _get_pulsed_recording_time_bounds(self) -> tuple[int, int]:
@@ -805,6 +815,7 @@ class Scenario(abc.ABC):
                 be recorded for a pulsed simulation.
         """
         time = self.problem.time
+        assert time is not None
         return (0, time.num - 1)
 
     def _execute_pde(
@@ -837,6 +848,7 @@ class Scenario(abc.ABC):
         devito_args = {}
         if n_jobs is not None:
             devito_args = dict(nthreads=n_jobs)
+        assert sub_problem.shot is not None
         loop = asyncio.get_event_loop()
         return loop.run_until_complete(
             pde(

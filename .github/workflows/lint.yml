@@ -41,6 +41,9 @@ jobs:
       - name: Install stride
         run: poetry run pip install git+https://github.com/trustimaging/stride
 
+      - name: Install napari
+        run: poetry run pip install napari
+
       - name: Run linting
         run: |
           make lint-check

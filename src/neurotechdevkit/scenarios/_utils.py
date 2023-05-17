@@ -318,6 +318,7 @@ def _create_nd_ellipse_mask(
     Returns:
         The 2D or 3D boolean mask where gridpoints within the ellipse are True.
     """
+    assert grid.space is not None
     shape = grid.space.shape
     spacing = grid.space.spacing
 
