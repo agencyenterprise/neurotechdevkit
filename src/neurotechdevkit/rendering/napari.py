@@ -10,7 +10,7 @@ import numpy.typing as npt
 # scenario during module import. This affects type-hinting in particular,
 # so forward references (in quotes) need to be used.
 # This should be fixed in the future.
-from .. import scenarios, sources
+from .. import results, scenarios, sources
 
 
 class _NapariViewer(Protocol):
@@ -89,7 +89,7 @@ def render_layout_3d_with_napari(scenario: "scenarios.Scenario3D") -> None:
     _create_napari_3d(scenario=scenario, amplitudes=None)
 
 
-def render_amplitudes_3d_with_napari(result: "scenarios.SteadyStateResult3D") -> None:
+def render_amplitudes_3d_with_napari(result: "results.SteadyStateResult3D") -> None:
     """Render the scenario layout in 3D using napari.
 
     Args:
