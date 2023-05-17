@@ -1,11 +1,14 @@
 from itertools import chain
 
-import matplotlib.pyplot as plt
+import matplotlib.axes
+import matplotlib.figure
 
 from .font import AXIS_LABEL_FONT_PROPS, AXIS_TICK_FONT_PROPS, TITLE_FONT_PROPS
 
 
-def configure_title(fig: plt.Figure, title: str, x_pos: float = 0.5) -> None:
+def configure_title(
+    fig: matplotlib.figure.Figure, title: str, x_pos: float = 0.5
+) -> None:
     """Configure the title of the plot.
 
     Note: we might expect that 0.5 in figure coordinates would place the text centered
@@ -28,7 +31,7 @@ def configure_title(fig: plt.Figure, title: str, x_pos: float = 0.5) -> None:
 
 
 def configure_axis_labels(
-    ax: plt.Axes, horizontal_label: str, vertical_label: str
+    ax: matplotlib.axes.Axes, horizontal_label: str, vertical_label: str
 ) -> None:
     """Configure the labels for the X and Y axes.
 
@@ -49,7 +52,7 @@ def configure_axis_labels(
     )
 
 
-def configure_axis_ticks(ax: plt.Axes) -> None:
+def configure_axis_ticks(ax: matplotlib.axes.Axes) -> None:
     """Configure the ticks and tick labels for the X and Y axes.
 
     Args:
@@ -60,7 +63,7 @@ def configure_axis_ticks(ax: plt.Axes) -> None:
         label.set_font_properties(AXIS_TICK_FONT_PROPS)
 
 
-def configure_grid(ax: plt.Axes) -> None:
+def configure_grid(ax: matplotlib.axes.Axes) -> None:
     """Configure the grid for the plot.
 
     Args:

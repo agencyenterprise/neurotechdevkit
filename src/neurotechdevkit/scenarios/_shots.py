@@ -44,7 +44,8 @@ def create_shot(
         receivers=[],
         geometry=problem.geometry,
     )
-
+    assert shot.wavelets is not None
+    assert problem.time is not None
     shot.wavelets.data[:] = _build_shot_wavelets_array(
         wavelet=wavelet,
         sources=sources,

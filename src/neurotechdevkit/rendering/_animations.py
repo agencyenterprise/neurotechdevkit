@@ -2,10 +2,12 @@ from functools import wraps
 from typing import Callable
 
 import matplotlib
+import matplotlib.axes
+import matplotlib.figure
 import matplotlib.pyplot as plt
 import numpy as np
 import numpy.typing as npt
-from IPython.display import Video
+from IPython.core.display import Video
 from matplotlib.animation import FFMpegWriter, FuncAnimation
 
 ARTIST_NAME = "NDK Research"
@@ -66,13 +68,13 @@ def configure_matplotlib_for_embedded_animation() -> None:
     Changing `animation.embed_limit` is required to have larger animations embedded in
     the notebook without the need of writing to disk.
     """
-    plt.rcParams["animation.embed_limit"] = 2**100
-    plt.rcParams["animation.html"] = "jshtml"
+    matplotlib.rcParams["animation.embed_limit"] = 2**100
+    matplotlib.rcParams["animation.html"] = "jshtml"
 
 
 def make_animation(
-    fig: plt.Figure,
-    ax: plt.Axes,
+    fig: matplotlib.figure.Figure,
+    ax: matplotlib.axes.Axes,
     wavefield: npt.NDArray[np.float_],
     n_frames_undersampling: int,
 ) -> FuncAnimation:
