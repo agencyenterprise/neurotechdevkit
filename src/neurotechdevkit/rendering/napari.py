@@ -28,7 +28,7 @@ class _NapariViewer(Protocol):
         rendering="mip",
         iso_threshold=0.5,
         colormap=None,
-        opacity=1,
+        opacity=1.0,
     ):
         pass
 
@@ -40,7 +40,7 @@ class _NapariViewer(Protocol):
         shape_type="rectangle",
         edge_color="#777777",
         face_color="#white",
-        edge_width=1,
+        edge_width=1.0,
         opacity=0.7,
     ):
         pass
@@ -51,10 +51,10 @@ class _NapariViewer(Protocol):
         *,
         name=None,
         symbol="o",
-        size=10,
+        size=10.0,
         face_color="white",
         edge_color="dimgray",
-        opacity=1,
+        opacity=1.0,
     ):
         pass
 

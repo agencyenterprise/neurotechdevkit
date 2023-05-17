@@ -10,6 +10,7 @@ lint:
 	poetry run mypy src
 	poetry run codespell src
 	poetry run pydocstyle src
+	poetry run pyright
 
 lint-check:
 	poetry run isort --check  src tests
@@ -18,6 +19,7 @@ lint-check:
 	poetry run mypy src
 	poetry run codespell src
 	poetry run pydocstyle src
+	poetry run pyright --warnings
 
 test:
 	poetry run pytest tests

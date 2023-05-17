@@ -1,5 +1,5 @@
 """Layers for rendering scenario figures."""
-import matplotlib.pyplot as plt
+import matplotlib.axes
 import numpy as np
 import numpy.typing as npt
 
@@ -7,7 +7,7 @@ from ._source import SourceDrawingParams, create_source_drawing_artist
 from ._target import create_target_drawing_artist
 
 
-def draw_source(ax: plt.Axes, source: SourceDrawingParams) -> None:
+def draw_source(ax: matplotlib.axes.Axes, source: SourceDrawingParams) -> None:
     """Draw a layer showing the scenario sources on top of a figure.
 
     This layer can be added to any scenario figure in 2D.
@@ -21,7 +21,7 @@ def draw_source(ax: plt.Axes, source: SourceDrawingParams) -> None:
 
 
 def draw_target(
-    ax: plt.Axes, target_loc: npt.NDArray[np.float_], target_radius: float
+    ax: matplotlib.axes.Axes, target_loc: npt.NDArray[np.float_], target_radius: float
 ) -> None:
     """Draw a layer showing the scenario target on top of a figure.
 
@@ -41,7 +41,7 @@ def draw_target(
 
 
 def draw_material_outlines(
-    ax: plt.Axes,
+    ax: matplotlib.axes.Axes,
     material_field: npt.NDArray[np.int_],
     dx: float,
     origin: npt.NDArray[np.float_],

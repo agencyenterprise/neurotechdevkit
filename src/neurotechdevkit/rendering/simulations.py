@@ -1,10 +1,12 @@
 """Simulation rendering functions."""
 from __future__ import annotations
 
+import matplotlib as mpl
+import matplotlib.axes
+import matplotlib.figure
 import matplotlib.pyplot as plt
 import numpy as np
 import numpy.typing as npt
-from matplotlib import cm
 from matplotlib.colors import LinearSegmentedColormap
 
 from ._formatting import (
@@ -27,7 +29,7 @@ def create_steady_state_figure(
     extent: npt.NDArray[np.float_],
     origin: npt.NDArray[np.float_],
     amplitudes: npt.NDArray[np.float_],
-) -> tuple[plt.Figure, plt.Axes]:
+) -> tuple[matplotlib.figure.Figure, matplotlib.axes.Axes]:
     """Create an unformatted figure containing the steady-state pressure amplitude.
 
     Unformatted means that the data has been plotted, but things like axes ticks and
@@ -65,7 +67,7 @@ def create_pulsed_figure(
     extent: npt.NDArray[np.float_],
     wavefield: npt.NDArray[np.float_],
     norm: str = "linear",
-) -> tuple[plt.Figure, plt.Axes]:
+) -> tuple[matplotlib.figure.Figure, matplotlib.axes.Axes]:
     """Create a base figure containing the pulsed wavefield pressures.
 
     The figure is used as a template to created frames for an animation. The colorbar
@@ -109,8 +111,8 @@ def create_pulsed_figure(
 
 
 def configure_result_plot(
-    fig: plt.Figure,
-    ax: plt.Axes,
+    fig: matplotlib.figure.Figure,
+    ax: matplotlib.axes.Axes,
     show_sources: bool,
     show_target: bool,
     extent: npt.NDArray[np.float_],
@@ -157,7 +159,9 @@ def configure_result_plot(
 
 
 def _configure_colorbar(
-    fig: plt.Figure, ax: plt.Axes, clim: tuple[float, float] | None = None
+    fig: matplotlib.figure.Figure,
+    ax: matplotlib.axes.Axes,
+    clim: tuple[float, float] | None = None,
 ) -> None:
     """Configure the colorbar for the steady-state amplitude plot.
 
@@ -176,7 +180,9 @@ def _configure_colorbar(
         label.set_font_properties(AXIS_TICK_FONT_PROPS)
 
 
-def _configure_legend(ax: plt.Axes, show_sources: bool, show_target: bool) -> None:
+def _configure_legend(
+    ax: matplotlib.axes.Axes, show_sources: bool, show_target: bool
+) -> None:
     """Configure the legend for the steady-state amplitude plot.
 
     Args:
@@ -223,8 +229,9 @@ def _create_centered_bidirectional_cmap(
     """
     ratio = np.abs(vmin / vmax)
     n_points = 128
-    colors1 = cm.viridis(np.linspace(0, 1, int(n_points * ratio)))
-    colors2 = cm.viridis(np.linspace(0.0, 1, n_points))
+    cmap = mpl.colormaps["viridis"]
+    colors1 = cmap(np.linspace(0, 1, int(n_points * ratio)))
+    colors2 = cmap(np.linspace(0.0, 1, n_points))
 
     def modify_viridis(color, it, delta_color=1 / int(n_points * ratio)):
         """Gradually modifies the color of the original color map."""
