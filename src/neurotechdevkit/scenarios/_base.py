@@ -870,7 +870,7 @@ class Scenario(abc.ABC):
     @abc.abstractmethod
     def render_material_property(
         self,
-        name,
+        name: str,
         show_orientation: bool = True,
         show_sources: bool = True,
         show_target: bool = True,

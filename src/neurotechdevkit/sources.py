@@ -4,6 +4,7 @@ from __future__ import annotations
 import abc
 import math
 import warnings
+from typing import Optional
 
 import numpy as np
 import numpy.typing as npt
@@ -696,7 +697,9 @@ class PhasedArraySource(Source):
             )
 
     @staticmethod
-    def _validate_element_delays(element_delays, num_elements) -> None:
+    def _validate_element_delays(
+        element_delays: Optional[npt.NDArray[np.float_]], num_elements: int
+    ) -> None:
         """Check that the input value for `element_delays` meets the requirements.
 
         If `element_delays` is None, no check is performed
@@ -872,7 +875,7 @@ class PhasedArraySource(Source):
         return delays
 
     def _calculate_focus_tilt_element_delays(
-        self, speed=1500.0  # m/s speed of sound in water
+        self, speed: float = 1500.0  # m/s speed of sound in water
     ) -> npt.NDArray[np.float_]:
         """
         Calculate delays (in seconds) per array element to focus the source.

@@ -1,6 +1,8 @@
 """Simulation rendering functions."""
 from __future__ import annotations
 
+from typing import Tuple
+
 import matplotlib as mpl
 import matplotlib.axes
 import matplotlib.figure
@@ -233,7 +235,11 @@ def _create_centered_bidirectional_cmap(
     colors1 = cmap(np.linspace(0, 1, int(n_points * ratio)))
     colors2 = cmap(np.linspace(0.0, 1, n_points))
 
-    def modify_viridis(color, it, delta_color=1 / int(n_points * ratio)):
+    def modify_viridis(
+        color: Tuple[float, float, float, float],
+        it: int,
+        delta_color: float = 1 / int(n_points * ratio),
+    ) -> Tuple[float, float, float, float]:
         """Gradually modifies the color of the original color map."""
         R, G, B, opacity = color
         B = min(1, B + it * delta_color)

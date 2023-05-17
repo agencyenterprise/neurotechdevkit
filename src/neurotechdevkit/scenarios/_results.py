@@ -7,7 +7,7 @@ import pathlib
 import pickle
 import shutil
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Dict
 
 import numpy as np
 import numpy.typing as npt
@@ -73,7 +73,7 @@ class Result(abc.ABC):
             raise Exception("Unable to save result artifact to disk.") from e
 
     @abc.abstractmethod
-    def _generate_save_data(self) -> dict:
+    def _generate_save_data(self) -> Dict[str, Any]:
         """Collect objects to be saved to disk for simulation results.
 
         The result data saved to disk will depend on the type of simulation. Currently
@@ -159,7 +159,7 @@ class SteadyStateResult(Result):
         self.get_steady_state()
         return metrics.calculate_all_metrics(self)
 
-    def _generate_save_data(self) -> dict:
+    def _generate_save_data(self) -> Dict[str, Any]:
         """Collect objects to be saved to disk for steady-state simulation results.
 
         Returns:
@@ -503,7 +503,7 @@ class PulsedResult(Result):
             )
 
     @staticmethod
-    def _validate_file_name(file_name, overwrite) -> None:
+    def _validate_file_name(file_name: str, overwrite: bool) -> None:
         """Verify that a valid `file_name` is passed.
 
         Only mp4 format is supported. `file_name` must have mp4 extension.
@@ -526,7 +526,7 @@ class PulsedResult(Result):
                 "or change the value for `fname`",
             )
 
-    def _generate_save_data(self) -> dict:
+    def _generate_save_data(self) -> Dict[str, Any]:
         """Collect objects to be saved to disk for pulsed simulation results.
 
         Returns:

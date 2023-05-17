@@ -1,12 +1,17 @@
 from __future__ import annotations
 
-from typing import Iterable, Mapping
+from typing import TYPE_CHECKING, Iterable, Mapping, TypeVar
 
 import numpy as np
 import numpy.typing as npt
 import stride
 from mosaic.types import Struct
 from stride.utils import wavelets
+
+if TYPE_CHECKING:
+    from ..scenarios import Scenario
+
+T = TypeVar("T", bound=np.generic, covariant=True)
 
 
 def make_grid(
@@ -167,8 +172,11 @@ def wavelet_helper(
 
 
 def slice_field(
-    field: npt.NDArray, scenario, slice_axis: int, slice_position: float
-) -> npt.NDArray:
+    field: npt.NDArray[T],
+    scenario: Scenario,
+    slice_axis: int,
+    slice_position: float,
+) -> npt.NDArray[T]:
     """Return a slice of a field at a desired position along an axis.
 
     If `slice_position` does not align exactly with the scenario grid, the closest
@@ -195,7 +203,7 @@ def slice_field(
     return field[array_slice]
 
 
-def drop_element(arr: npt.NDArray, drop_idx: int) -> npt.NDArray:
+def drop_element(arr: npt.NDArray[np.float_], drop_idx: int) -> npt.NDArray[np.float_]:
     """Drop the element of a vector which corresponds to slice_axis.
 
     Args:
@@ -210,7 +218,7 @@ def drop_element(arr: npt.NDArray, drop_idx: int) -> npt.NDArray:
     return arr[mask]
 
 
-def drop_column(arr: npt.NDArray, drop_idx: int) -> npt.NDArray:
+def drop_column(arr: npt.NDArray[np.float_], drop_idx: int) -> npt.NDArray[np.float_]:
     """Drop the column of a 2D array which corresponds to slice_axis.
 
     Args:

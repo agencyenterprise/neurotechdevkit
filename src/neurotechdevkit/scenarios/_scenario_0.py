@@ -1,4 +1,7 @@
+from typing import Dict
+
 import numpy as np
+import numpy.typing as npt
 import stride
 from mosaic.types import Struct
 
@@ -26,7 +29,7 @@ class Scenario0(Scenario2D):
         ),
     }
 
-    def __init__(self, complexity="fast"):
+    def __init__(self, complexity: str = "fast"):
         """Create a new instance of scenario 0."""
         self._target_id = "target_1"
 
@@ -36,8 +39,12 @@ class Scenario0(Scenario2D):
         )
 
     def render_material_property(
-        self, name, show_orientation=True, show_sources=True, show_target=True
-    ):
+        self,
+        name: str,
+        show_orientation: bool = True,
+        show_sources: bool = True,
+        show_target: bool = True,
+    ) -> None:
         """Render the material property of the scenario."""
         raise NotImplementedError()
 
@@ -54,7 +61,9 @@ class Scenario0(Scenario2D):
     def _material_outline_upsample_factor(self) -> int:
         return 16
 
-    def _get_material_masks(self, problem):
+    def _get_material_masks(
+        self, problem: stride.Problem
+    ) -> Dict[str, npt.NDArray[np.bool_]]:
         return {
             name: _create_scenario_0_mask(name, problem.grid, self._origin)
             for name in self.materials.keys()
@@ -87,7 +96,7 @@ class Scenario0(Scenario2D):
         )
         return problem
 
-    def get_default_source(self):
+    def get_default_source(self) -> FocusedSource2D:
         """Return the default source for the scenario."""
         return FocusedSource2D(
             position=np.array([0.01, 0.0]),
@@ -98,7 +107,9 @@ class Scenario0(Scenario2D):
         )
 
 
-def _create_scenario_0_mask(material, grid, origin):
+def _create_scenario_0_mask(
+    material: str, grid: stride.Grid, origin: npt.NDArray[np.float_]
+) -> npt.NDArray[np.bool_]:
     if material == "water":
         outer_skull_mask = _create_skull_interface_mask(grid, origin)
         water_mask = ~outer_skull_mask
@@ -124,7 +135,9 @@ def _create_scenario_0_mask(material, grid, origin):
         raise ValueError(material)
 
 
-def _create_skull_interface_mask(grid, origin):
+def _create_skull_interface_mask(
+    grid: stride.Grid, origin: npt.NDArray[np.float_]
+) -> npt.NDArray[np.bool_]:
     skull_outer_radii = np.array([0.01275, 0.01])
     skull_center = np.array([0.025, 0.0])
 
@@ -137,7 +150,9 @@ def _create_skull_interface_mask(grid, origin):
     return outer_skull_mask
 
 
-def _create_brain_interface_mask(grid, origin):
+def _create_brain_interface_mask(
+    grid: stride.Grid, origin: npt.NDArray[np.float_]
+) -> npt.NDArray[np.bool_]:
     skull_outer_radii = np.array([0.01275, 0.01])
     skull_thickness = 0.001
     skull_center = np.array([0.025, 0.0])
@@ -154,7 +169,9 @@ def _create_brain_interface_mask(grid, origin):
     return outer_brain_mask
 
 
-def _create_tumor_mask(grid, origin):
+def _create_tumor_mask(
+    grid: stride.Grid, origin: npt.NDArray[np.float_]
+) -> npt.NDArray[np.bool_]:
     tumor_radius = 0.0013
     tumor_center = np.array([0.0285, 0.0025])
     tumor_mask = create_grid_circular_mask(grid, origin, tumor_center, tumor_radius)

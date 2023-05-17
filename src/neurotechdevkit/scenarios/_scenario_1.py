@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Mapping, Protocol
+from typing import Mapping, Optional, Protocol
 
 import numpy as np
 import numpy.typing as npt
@@ -115,7 +115,7 @@ class Scenario1_2D(_Scenario1Mixin, Scenario2D):
         "target_1": Target("target_1", np.array([0.064, 0.0]), 0.004, ""),
     }
 
-    def __init__(self, complexity="fast"):
+    def __init__(self, complexity: str = "fast"):
         """Instantiate a new scenario 1 2D."""
         self._target_id = "target_1"
 
@@ -125,8 +125,12 @@ class Scenario1_2D(_Scenario1Mixin, Scenario2D):
         )
 
     def render_material_property(
-        self, name, show_orientation=True, show_sources=True, show_target=True
-    ):
+        self,
+        name: str,
+        show_orientation: bool = True,
+        show_sources: bool = True,
+        show_target: bool = True,
+    ) -> None:
         """Render a material property for the scenario."""
         raise NotImplementedError()
 
@@ -175,7 +179,7 @@ class Scenario1_3D(_Scenario1Mixin, Scenario3D):
         ),
     }
 
-    def __init__(self, complexity="fast"):
+    def __init__(self, complexity: str = "fast"):
         """Instantiate a new scenario 1 3D."""
         self._target_id = "target_1"
 
@@ -216,8 +220,12 @@ class Scenario1_3D(_Scenario1Mixin, Scenario3D):
         return default_positions[axis]
 
     def render_material_property(
-        self, name, show_orientation=True, show_sources=True, show_target=True
-    ):
+        self,
+        name: str,
+        show_orientation: bool = True,
+        show_sources: bool = True,
+        show_target: bool = True,
+    ) -> None:
         """Render a material property for the scenario."""
         raise NotImplementedError()
 
@@ -236,9 +244,10 @@ class Scenario1_3D(_Scenario1Mixin, Scenario3D):
         )
 
 
-def _create_scenario_1_mask(material, grid):
+def _create_scenario_1_mask(material: str, grid: stride.Grid) -> npt.NDArray[np.bool_]:
 
     # layers are defined by X position
+    assert grid.space is not None
     dx = grid.space.spacing[0]
 
     layers_m = np.array(
@@ -253,6 +262,7 @@ def _create_scenario_1_mask(material, grid):
     )
     interfaces = np.cumsum(layers_m)
 
+    assert grid.space is not None
     mask = np.zeros(grid.space.shape, dtype=bool)
 
     if material == "water":
@@ -277,7 +287,9 @@ def _create_scenario_1_mask(material, grid):
     return mask
 
 
-def _fill_mask(mask, start, end, dx):
+def _fill_mask(
+    mask: npt.NDArray[np.bool_], start: int, end: Optional[int], dx: float
+) -> None:
     # fill linearly along the x axis
     if end is None:
         n = int(start / dx)

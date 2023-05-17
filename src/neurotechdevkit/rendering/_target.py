@@ -81,7 +81,7 @@ def create_target_legend_artist(
     return img_box
 
 
-def _load_target(version: str) -> npt.NDArray:
+def _load_target(version: str) -> npt.NDArray[np.float_]:
     """Load a png of the target and returns it as a numpy array.
 
     The array is returned in RGBA channel order.

@@ -115,3 +115,11 @@ def _get_outline_mask(field: npt.NDArray[np.int_]) -> npt.NDArray[np.bool_]:
     v_edges = np.pad(v_diff, [(0, 1), (0, 0)])
 
     return h_edges | v_edges
+
+
+__all__ = [
+    "draw_material_outlines",
+    "draw_source",
+    "draw_target",
+    "SourceDrawingParams",
+]
