@@ -168,7 +168,7 @@ To check the generated documentation in a pull request:
       <figure markdown>
             ![Circle-ci-check](images/circle-ci-check.png)
       </figure>
-1. In the opened Circle CI page click on the `Artifacts` tab and then on the `index.html` link to load the documentation root page.
+1. In the opened Circle CI page click on the `Artifacts` tab and then choose the page you'd like to see (e.g. `index.html` to load the documentation root page). Note that each page has to be opened individually from the `Artifacts` folder, as redirects between pages do not work in this setup.
       <figure markdown>
             ![Circle-ci-artifacts](images/circle-ci-artifacts.png)
       </figure>
