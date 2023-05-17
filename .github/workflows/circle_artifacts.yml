@@ -1,5 +1,7 @@
 name: Docs artifacts redirector
+
 on: [status]
+
 permissions: read-all
 jobs:
   circleci_artifacts_redirector_job:
