@@ -7,7 +7,8 @@ import stride
 from frozenlist import FrozenList
 from mosaic.types import Struct
 
-from neurotechdevkit.scenarios import PulsedResult, SteadyStateResult, materials
+from neurotechdevkit.results import PulsedResult, SteadyStateResult
+from neurotechdevkit.scenarios import materials
 from neurotechdevkit.scenarios._base import Scenario, Target
 from neurotechdevkit.scenarios._utils import make_grid, wavelet_helper
 from neurotechdevkit.sources import FocusedSource3D, PlanarSource3D, Source

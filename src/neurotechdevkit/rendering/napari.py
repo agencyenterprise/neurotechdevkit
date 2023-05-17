@@ -10,7 +10,7 @@ import numpy.typing as npt
 # scenario during module import. This affects type-hinting in particular,
 # so forward references (in quotes) need to be used.
 # This should be fixed in the future.
-from .. import scenarios, sources
+from .. import results, scenarios, sources
 
 
 class _NapariViewer(Protocol):
@@ -63,8 +63,8 @@ class ViewerConfig3D(NamedTuple):
     """Configuration parameters for 3D visualization of scenarios.
 
     Attributes:
-        init_angles: The viewing angle to set on startup.
-        init_zoom: The zoom to set at startup.
+        init_angles: the viewing angle to set on startup.
+        init_zoom: the zoom to set at startup.
         colormaps: A map from layer names to the name of the colormap which should
             be used to display the layer.
         opacities: A map from layer names to the opacity that should be used for the
@@ -81,7 +81,7 @@ def render_layout_3d_with_napari(scenario: "scenarios.Scenario3D") -> None:
     """Render the scenario layout in 3D using napari.
 
     Args:
-        scenario: The 3D scenario to be rendered.
+        scenario: the 3D scenario to be rendered.
 
     Raises:
         ImportError: If napari is not found.
@@ -89,11 +89,11 @@ def render_layout_3d_with_napari(scenario: "scenarios.Scenario3D") -> None:
     _create_napari_3d(scenario=scenario, amplitudes=None)
 
 
-def render_amplitudes_3d_with_napari(result: "scenarios.SteadyStateResult3D") -> None:
+def render_amplitudes_3d_with_napari(result: "results.SteadyStateResult3D") -> None:
     """Render the scenario layout in 3D using napari.
 
     Args:
-        scenario: The 3D scenario to be rendered.
+        scenario: the 3D scenario to be rendered.
 
     Raises:
         ImportError: If napari is not found.
@@ -148,9 +148,9 @@ def add_material_layers(
     """Add the individual material layers as images to a napari Viewer.
 
     Args:
-        viewer: The napari Viewer to which the layers should be added.
-        scenario: The 3D scenario which is being visualized.
-        viewer_config: The configuration parameters for the 3d visualization.
+        viewer: the napari Viewer to which the layers should be added.
+        scenario: the 3D scenario which is being visualized.
+        viewer_config: the configuration parameters for the 3d visualization.
     """
     colormaps = viewer_config.colormaps
     opacities = viewer_config.opacities
@@ -173,7 +173,7 @@ def add_steady_state_amplitudes(
     """Add the steady-state amplitudes as an image layer to a napari Viewer.
 
     Args:
-        viewer: The napari Viewer to which the target should be added.
+        viewer: the napari Viewer to which the target should be added.
         amplitudes: A 3D numpy array containing the steady-state amplitudes.
     """
     viewer.add_image(
@@ -188,8 +188,8 @@ def add_target(viewer: _NapariViewer, scenario: "scenarios.Scenario3D") -> None:
     """Add the target as a shapes layer to a napari Viewer.
 
     Args:
-        viewer: The napari Viewer to which the target should be added.
-        scenario: The 3D scenario which is being visualized.
+        viewer: the napari Viewer to which the target should be added.
+        scenario: the 3D scenario which is being visualized.
     """
     target_pos = ((scenario.target_center - scenario.origin) / scenario.dx).astype(int)
     target_rad = int(scenario.target_radius / scenario.dx)
@@ -247,9 +247,9 @@ def add_source(
     Each individual point source is plotted as a point.
 
     Args:
-        viewer: The napari Viewer to which the target should be added.
-        scenario: The 3D scenario which is being visualized.
-        source: The source to be drawn.
+        viewer: the napari Viewer to which the target should be added.
+        scenario: the 3D scenario which is being visualized.
+        source: the source to be drawn.
     """
     source_coords = ((source.coordinates - scenario.origin) / scenario.dx).astype(int)
     viewer.add_points(
