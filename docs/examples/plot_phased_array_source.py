@@ -13,7 +13,7 @@ They are becoming increasingly popular in the field of transcranial ultrasound s
 
 These features allow the stimulation to be tailored to suit to more specific requirements. With ongoing research and development, they have the potential to revolutionize the field of brain stimulation and offer new treatment options for a range of neurological and psychiatric disorders.
 
-This notebook will show how to define a phased array within NDK and experiment with some of the available features. For a more details checkout the [NDK documentation](https://agencyenterprise.github.io/neurotechdevkit/).
+This notebook will show how to define a phased array within NDK and experiment with some of the available features. For more details, checkout the [NDK documentation](https://agencyenterprise.github.io/neurotechdevkit/).
 
 ## Phased Arrays Components
 
