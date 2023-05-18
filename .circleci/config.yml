@@ -27,7 +27,7 @@ jobs:
       - run:
           name: Build HTML
           command: |
-            make docs
+            OFFLINE=true make docs
 
       - store_artifacts:
           path: site/

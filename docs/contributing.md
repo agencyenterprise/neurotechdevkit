@@ -164,11 +164,17 @@ All pull requests trigger a CI job that builds the documentation and makes the b
 To check the generated documentation in a pull request:
 
 1. Scroll to the bottom of the page and click on the `Show all checks` link.
-1. Click on the details link of the `ci/circleci: build_docs` job.
+1. Click on the details link of the `Check the rendered docs here!` job.
       <figure markdown>
-            ![Circle-ci-check](images/circle-ci-check.png)
+            ![circle-ci-rendered-docs](images/circle-ci-rendered-docs.png){ width="800" }
       </figure>
-1. In the opened Circle CI page click on the `Artifacts` tab and then choose the page you'd like to see (e.g. `index.html` to load the documentation root page). Note that each page has to be opened individually from the `Artifacts` folder, as redirects between pages do not work in this setup.
+
+!!! note
+      The `Examples` section is not properly rendered when the documentation is built
+      on CI. The links of the thumbnails in `gallery/index.html` point to broken paths,
+      in order to check one of the examples you will have to click on the left panel,
+      as shown in the image below:
       <figure markdown>
-            ![Circle-ci-artifacts](images/circle-ci-artifacts.png)
+            ![gallery-link](images/gallery-link.png){ width="500" }
       </figure>
+      Within each example, the outputs of cells are also not properly displayed.
