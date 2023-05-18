@@ -166,5 +166,15 @@ To check the generated documentation in a pull request:
 1. Scroll to the bottom of the page and click on the `Show all checks` link.
 1. Click on the details link of the `Check the rendered docs here!` job.
       <figure markdown>
-            ![circle-ci-rendered-docs](images/circle-ci-rendered-docs.png)
+            ![circle-ci-rendered-docs](images/circle-ci-rendered-docs.png){ width="800" }
       </figure>
+
+!!! note
+      The `Examples` section is not properly rendered when the documentation is built
+      on CI. The links of the thumbnails in `gallery/index.html` point to broken paths,
+      in order to check one of the examples you will have to click on the left panel,
+      as shown in the image below:
+      <figure markdown>
+            ![gallery-link](images/gallery-link.png){ width="500" }
+      </figure>
+      Within each example, the outputs of cells are also not properly displayed.
