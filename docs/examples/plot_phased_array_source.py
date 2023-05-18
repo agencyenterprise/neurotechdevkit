@@ -7,13 +7,13 @@ Phased arrays consist of multiple individual transducer elements arranged in a s
 
 They are becoming increasingly popular in the field of transcranial ultrasound stimulation as they offer several advantages over traditional ultrasound transducers -- among others are precise targeting and better control over steering and shaping:
 
-Precise targeting: as individual transducer elements can be individually controlled, it allows for the generation of a focused ultrasound beam with high spatial accuracy. This enables the stimulation of specific brain regions without affecting the surrounding healthy tissue and minimizes the risk of potential side effects.
+* **Precise targeting:** as individual transducer elements can be individually controlled, it allows for the generation of a focused ultrasound beam with high spatial accuracy. This enables the stimulation of specific brain regions without affecting the surrounding healthy tissue and minimizes the risk of potential side effects.
 
-Steering and shaping: The phased array technology allows the ultrasound beam to be electronically steered and shaped in real-time without mechanically moving the transducers. This enables targeting of different brain regions or adjusting the stimulation pattern as needed during a session, making the procedure more versatile and adaptable.
+* **Steering and shaping:** The phased array technology allows the ultrasound beam to be electronically steered and shaped in real-time without mechanically moving the transducers. This enables targeting of different brain regions or adjusting the stimulation pattern as needed during a session, making the procedure more versatile and adaptable.
 
 These features allow the stimulation to be tailored to suit to more specific requirements. With ongoing research and development, they have the potential to revolutionize the field of brain stimulation and offer new treatment options for a range of neurological and psychiatric disorders.
 
-This notebook will show how to define a phased array within NDK and experiment with some of the available features. For a more detailed description of all the functionalities, check out the API walkthrough notebook or the NDK documentation.
+This notebook will show how to define a phased array within NDK and experiment with some of the available features. For a more details checkout the [NDK documentation](https://agencyenterprise.github.io/neurotechdevkit/).
 
 ## Phased Arrays Components
 
