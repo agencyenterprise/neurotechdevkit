@@ -67,6 +67,11 @@ plugins:
 
   - search
 
+  # The following plugin allows us to navigate through the documentation
+  # from the built docs, as mkdocs will not generate full path URLs by default.
+  - offline:
+      enabled: !ENV [OFFLINE, false]
+
   - mkdocstrings:
       default_handler: python
       handlers:
