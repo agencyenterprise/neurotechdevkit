@@ -34,14 +34,14 @@ The image above shows a schematic representation of a phased array.
 The image above shows the axis definition and the look of a phased array in the real world. Image source [link](https://www.biomecardio.com/MUST/functions/html/txdelay_doc.html).
 
 
-## Phased Array NDK API
-
 Below we will go through some examples of how to use the NDK to API to simulate Phased Arrays in the most common settings. Examples we wil cover:
 
 * Setting up a tilted wavefront
 * Focusing phased arrays
 * Setting up custom delays per element
 * Phased arrays in 3D
+
+## Phased Array NDK API
 
 A PhasedArraySource receives the following parameters:
 
@@ -76,7 +76,7 @@ A PhasedArraySource receives the following parameters:
 """
 
 # %%
-# ## Phased Arrays: Tilting the Wavefront
+# ## Tilting the Wavefront
 # Tilting the wavefront can be achieved simply by setting the `tilt_angle`
 # argument different than zero. Positive angles result in counter-clockwise rotations.
 
@@ -101,7 +101,7 @@ result = scenario.simulate_steady_state()
 result.render_steady_state_amplitudes()
 
 # %%
-# ## Phased Arrays: Focusing
+# ## Focusing
 # Similarly, a phased array can be focused by applying delays in a specific way. Such delays are automatically computed when `focal_length` is defined. Let's explore how the API looks like:
 
 scenario = ndk.make('scenario-1-2d-v0')
@@ -129,7 +129,7 @@ result.render_steady_state_amplitudes()
 
 
 # %%
-# ## Phased Arrays: Custom Wavefront Shapes
+# ## Custom Wavefront Shapes
 # In the examples shown so far we specified high level arguments and the required delays were
 # automatically computed. The NDK API offers also the possibility to specify delays directly
 # to create arbitrary wavefront shapes.
