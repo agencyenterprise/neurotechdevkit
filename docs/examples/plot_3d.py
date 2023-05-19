@@ -3,29 +3,37 @@
 Running a 3D simulation
 ====================================
 
-This example demonstrates how to execute a steady state
-simulation for a 3D source.
+This example demonstrates how to render a steady state simulation for a 3D source.
 
-Running such simulations is computationally expensive and
-can take a long time to complete. For this reason, we
-recommend running this example on an external machine, store
-the results in a file and then load them on your local machine
-for visualization.
+Running such simulations is computationally expensive and can take a long time to
+complete. For this reason, we recommend running this example on an external machine, store
+the results in a file and then load them on your local machine for visualization.
 
 Check the gallery example
 [Save and load results](./plot_store_results.md) to learn how
 to save and load results.
 """
 # %%
-# The following step is computationally expensive:
+# The following step downloads and loads a simulation executed on an external machine.
+import pooch
 import neurotechdevkit as ndk
 
-scenario = ndk.make('scenario-1-3d-v0')
-result = scenario.simulate_steady_state()
+URL = 'https://ndk-research-example-files.s3.us-west-2.amazonaws.com/results-scenario-2-3d-v1.pkl'
+known_hash = "da8d2ab42508cd99794844ce06534fcd36dd85ed9df488565bcb570e02947eb5"
+downloaded_file_path = pooch.retrieve(
+    url=URL, known_hash=known_hash
+)
+result = ndk.load_result_from_disk(downloaded_file_path)
 
 # %%
 # In order to render the 3D results you will need to install
-# napari with: `pip install "napari[all]"`.
+# Install `napari` via pip:
+#
+# ```
+# poetry run pip install "napari[all]"
+# ```
+#
+# or by following the `napari` [installation instructions](https://napari.org/stable/tutorials/fundamentals/installation.html).
 
 try:
     import napari
@@ -34,6 +42,11 @@ except ImportError:
     print("napari has not been installed. Please install it with: pip install napari[all]")
 
 # %%
-# If you have napari installed you should have been able to
-# see an image like the following:
+# If you have napari installed you should see an output like the following:
+
+"""
+Opening the napari viewer. The window might not show up on top of your notebook; look through your open applications if it does not.
+"""
+
+# If you have napari installed you should have been able to see an image like the following:
 # ![3d-visualization](../../images/3d_visualization.gif)
