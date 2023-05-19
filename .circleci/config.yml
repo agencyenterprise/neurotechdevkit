@@ -33,15 +33,6 @@ jobs:
           path: site/
           destination: html
 
-      - run:
-          name: Build gallery
-          command: |
-            make docs
-
-      - store_artifacts:
-          path: site/generated/gallery
-          destination: html/generated/gallery
-
 workflows:
   version: 2
 
