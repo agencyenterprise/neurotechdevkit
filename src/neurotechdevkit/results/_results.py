@@ -2,11 +2,14 @@ from __future__ import annotations
 
 import abc
 import gzip
+import importlib.metadata as importlib_metadata
 import os
 import pathlib
 import pickle
 import shutil
+import tarfile
 from dataclasses import dataclass
+from io import BytesIO
 from typing import Any
 
 import numpy as np
@@ -14,9 +17,18 @@ import numpy.typing as npt
 import stride
 from matplotlib.animation import FuncAnimation
 
+import neurotechdevkit
+
 from .. import rendering, scenarios
 from ..scenarios import _metrics as metrics
 from ..scenarios._utils import drop_element, slice_field
+
+
+def _get_ndk_version() -> str:
+    return importlib_metadata.version(neurotechdevkit.__package__)
+
+
+DATA_FILENAME = "data.gz"
 
 
 @dataclass
@@ -50,9 +62,12 @@ class Result(abc.ABC):
     traces: stride.Traces
 
     def save_to_disk(self, filepath: str | pathlib.Path) -> None:
-        """Save the result to disk to a gzip compressed file.
+        """Save the result to a tarball containing the data as a gzip compressed file.
 
-        The gzip compressed file is a pickle object.
+        The resulting tarball will contain two files:
+
+        - `data.gz`: gzip compressed file which is a pickle object.
+        - `VERSION`: a text file containing the `neurotechdevkit` version.
 
         !!! warning
             This functionality is experimental, so do do not be surprised if you
@@ -63,17 +78,25 @@ class Result(abc.ABC):
         in 3D.
 
         Args:
-            filepath: the path to the file where the results should be exported. Usually
-                a .pkl.gz file.
+            filepath: the path to the file where the results should be exported.
         """
         try:
-            save_data = self._generate_save_data()
-            with gzip.open(filepath, "wb") as f:
-                pickle.dump(save_data, f, protocol=pickle.HIGHEST_PROTOCOL)
+            with tarfile.open(filepath, "w") as tar_file:
+                save_data = self._generate_save_data()
+                with gzip.open(DATA_FILENAME, "wb") as f:
+                    pickle.dump(save_data, f, protocol=pickle.HIGHEST_PROTOCOL)
+                tar_file.add(DATA_FILENAME)
+
+                package_version = f"{_get_ndk_version()}\n".encode("utf-8")
+                version_tar_info = tarfile.TarInfo("VERSION")
+                version_tar_info.size = len(package_version)
+                tar_file.addfile(version_tar_info, BytesIO(package_version))
 
             print(f"A result artifact has been saved to {filepath}.")
         except Exception as e:
             raise Exception("Unable to save result artifact to disk.") from e
+        finally:
+            shutil.rmtree(DATA_FILENAME, ignore_errors=True)
 
     @abc.abstractmethod
     def _generate_save_data(self) -> dict:
@@ -1198,8 +1221,18 @@ def create_pulsed_result(
         )
 
 
+def _assert_stored_with_same_version(stored_version_filename: str):
+    with open(stored_version_filename, "r") as f:
+        stored_version = f.read().strip()
+        installed_version = _get_ndk_version()
+        assert stored_version == installed_version, (
+            f"Results were stored with neurotechdevkit=={stored_version}"
+            f"and might be incompatible with installed version {installed_version}"
+        )
+
+
 def load_result_from_disk(filepath: str | pathlib.Path) -> Result:
-    """Load a result from disk from a gzip compressed pickle file.
+    """Load a result from the tarball file stored on disk.
 
     !!! warning
         This functionality is experimental, so do do not be surprised if you
@@ -1223,7 +1256,9 @@ def load_result_from_disk(filepath: str | pathlib.Path) -> Result:
         A Results object (SteadyStateResult or PulsedResult)
     """
     try:
-        with gzip.open(filepath, "rb") as f:
+        with tarfile.open(filepath, "r") as tf:
+            tf.extractall(path="./extraction_dir")
+        with gzip.open(f"./extraction_dir/{DATA_FILENAME}", "rb") as f:
             save_data = pickle.load(f)
 
         import neurotechdevkit as ndk
@@ -1253,4 +1288,7 @@ def load_result_from_disk(filepath: str | pathlib.Path) -> Result:
         return result_type(**fields_kwargs)
 
     except Exception as e:
+        _assert_stored_with_same_version("./extraction_dir/VERSION")
         raise Exception("Unable to load result artifact from disk.") from e
+    finally:
+        shutil.rmtree("./extraction_dir", ignore_errors=True)
