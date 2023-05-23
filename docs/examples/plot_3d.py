@@ -18,10 +18,10 @@ to save and load results.
 import pooch
 import neurotechdevkit as ndk
 
-URL = 'https://ndk-research-example-files.s3.us-west-2.amazonaws.com/results-scenario-2-3d-v1.pkl'
-known_hash = "da8d2ab42508cd99794844ce06534fcd36dd85ed9df488565bcb570e02947eb5"
+URL = 'https://neurotechdevkit.s3.us-west-2.amazonaws.com/result-scenario-2-3d.tz'
+known_hash = None
 downloaded_file_path = pooch.retrieve(
-    url=URL, known_hash=known_hash
+    url=URL, known_hash=known_hash, progressbar=True
 )
 result = ndk.load_result_from_disk(downloaded_file_path)
 
