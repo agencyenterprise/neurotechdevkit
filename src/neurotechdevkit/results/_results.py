@@ -1226,7 +1226,7 @@ def _assert_stored_with_same_version(stored_version_filename: str):
         stored_version = f.read().strip()
         installed_version = _get_ndk_version()
         assert stored_version == installed_version, (
-            f"Results were stored with neurotechdevkit=={stored_version}"
+            f"Results were stored with neurotechdevkit=={stored_version} "
             f"and might be incompatible with installed version {installed_version}"
         )
 
@@ -1286,7 +1286,8 @@ def load_result_from_disk(filepath: str | pathlib.Path) -> Result:
             fields_kwargs.update(steady_state=save_data["steady_state"])
 
         return result_type(**fields_kwargs)
-
+    except FileNotFoundError:
+        raise
     except Exception as e:
         _assert_stored_with_same_version("./extraction_dir/VERSION")
         raise Exception("Unable to load result artifact from disk.") from e

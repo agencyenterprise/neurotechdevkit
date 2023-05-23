@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import numpy as np
 import pytest
 
@@ -342,6 +344,27 @@ def test_save_round_trip_pulsed_3D(tmp_path, a_test_scenario_3d):
     assert result.center_frequency == expected.center_frequency
     assert result.effective_dt == expected.effective_dt
     assert_scenario_match(result.scenario, expected.scenario)
+
+
+def test_load_failure_file_not_found():
+    """Assert failure when loading an invalid path."""
+
+    with pytest.raises(FileNotFoundError):
+        ndk.load_result_from_disk("file_does_not_exist.tz")
+
+
+def test_load_failure_stored_with_different_ndk_version():
+    """This test loads a tarball containing a broken gz file.
+
+    It should generate an assertion error as the version file from
+    the tarball is different from the current package version.
+    """
+    with pytest.raises(AssertionError) as e:
+        ndk.load_result_from_disk(Path(__file__).parent / "test_data/broken_tarball.tz")
+    assert str(e.value) == (
+        "Results were stored with neurotechdevkit==0.0.1 and might "
+        "be incompatible with installed version 0.0.32"
+    )
 
 
 def test_create_pulsed_result_with_2d_wavefield(result_args):
