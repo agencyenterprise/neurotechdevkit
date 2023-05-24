@@ -95,3 +95,14 @@ You can tell devito to use the correct gcc compiler doing the following:
     ```
     export DEVITO_ARCH="gcc-11"
     ```
+
+## Linux
+
+In order to install `neurotechdevkit` you must first install `g++` and the `python-dev` package for your python version.
+
+Both packages can be installed with:
+```
+apt-get install -y g++ python3.10-dev
+```
+
+you must replace `3.10` with your python version.
