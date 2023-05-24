@@ -30,7 +30,7 @@ The output of the command above contains the URL of a jupyter notebook server, y
 
 ### Local installation
 
-To install and run **neurotechdevkit** locally check the [local installation](usage/local_installation.md) page.
+To install and run **neurotechdevkit** locally check the [local installation](usage/installation.md) page.
 
 ## Usage
 
