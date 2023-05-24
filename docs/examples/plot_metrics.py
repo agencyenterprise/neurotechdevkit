@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 """
-!!! note NDK and its examples are under constant development, more information and content will be added to this example soon!
 
 Reading simulation metrics
 ====================================
+
+!!! note
+    NDK and its examples are under constant development, more information and content will be added to this example soon!
 
 This example demonstrates how to display the metrics collected from the simulation.
 """
