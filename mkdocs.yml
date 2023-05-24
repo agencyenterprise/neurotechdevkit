@@ -29,6 +29,7 @@ theme:
 nav:
   - Home: index.md
   - Usage:
+      - Local installation: usage/local_installation.md
       - Scenarios: usage/loading_scenarios.md
       - Sources: usage/defining_sources.md
       - Simulation: usage/running_simulation.md
