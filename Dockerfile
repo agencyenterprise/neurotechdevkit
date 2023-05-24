@@ -5,7 +5,9 @@ WORKDIR /ndk
 COPY pyproject.toml ./pyproject.toml
 COPY poetry.lock ./poetry.lock
 COPY README.md ./README.md
+COPY Makefile ./Makefile
 COPY src ./src
+COPY tests ./tests
 COPY docs ./docs
 COPY mkdocs.yml ./mkdocs.yml
 COPY run_jupyter_server.sh ./run_jupyter_server.sh
@@ -28,7 +30,7 @@ WORKDIR /ndk
 
 RUN ./venv/bin/pip install --upgrade pip
 
-RUN apt-get update && apt-get install -y unzip g++ jq
+RUN apt-get update && apt-get install -y unzip g++ jq make
 
 RUN unzip ./docs/generated/gallery/gallery_jupyter.zip -d default_notebooks
 
