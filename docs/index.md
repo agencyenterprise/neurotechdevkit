@@ -116,15 +116,29 @@ You can tell devito to use the correct gcc compiler doing the following:
     export DEVITO_ARCH="gcc-11"
     ```
 
+After installing `neurotechdevkit` you can run a script to download example [Jupyter notebooks](https://docs.jupyter.org/en/latest/start/index.html) showing how to use the package:
+
+```
+download_notebooks --destination-path the_path_where_files_should_be_downloaded
+```
+
 ### Docker
 
 You can run `NDK` inside a docker container with a couple of steps:
 
 1. Install [docker](https://docs.docker.com/engine/install/#desktop)
 
-1. Execute `docker run -p 8888:8888 ghcr.io/agencyenterprise/neurotechdevkit:latest`
+1. Execute `docker run -p 8888:8888 -v $(pwd)/notebooks:/ndk/notebooks -it ghcr.io/agencyenterprise/neurotechdevkit:latest`
 
-The output of the command above contains the URL of a jupyter notebook server, you can open the URL in your browser or connect to it using your IDE.
+  The command above will create a folder `notebooks` in your current directory where you can put your [Jupyter notebooks](https://docs.jupyter.org/en/latest/start/index.html) and start using `neurotechdevkit`.
+
+  The output of the command above contains the URL of a jupyter notebook server, you can open the URL in your browser or connect to it using your IDE.
+
+!!! note
+    The neurotechdevkit docker image contains a list of notebook examples, you can make them available into your local `notebooks` folder by running the following command:
+    ```
+    docker run -v $(pwd)/notebooks:/ndk/notebooks ghcr.io/agencyenterprise/neurotechdevkit:latest cp -r /ndk/default_notebooks /ndk/notebooks
+    ```
 
 
 ## Usage
