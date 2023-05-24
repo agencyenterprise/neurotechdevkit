@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 """
+!!! note NDK and its examples are under constant development, more information and content will be added to this example soon!
+
 Custom source
 ====================================
 
-This example demonstrates how to add a custom source to the simulation.
+This example demonstrates how to add a source to the simulation.
 """
 # %%
 # A Source receives the following parameters:
