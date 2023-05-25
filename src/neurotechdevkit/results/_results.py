@@ -27,7 +27,11 @@ DATA_FILENAME = "data.gz"
 
 
 def _get_ndk_version() -> str:
-    """Get the version of the neurotechdevkit package."""
+    """Get the version of the neurotechdevkit package.
+
+    Returns:
+        str: version of the neurotechdevkit package.
+    """
     return importlib_metadata.version(neurotechdevkit.__package__)
 
 
@@ -1225,9 +1229,14 @@ def create_pulsed_result(
 
 def _assert_stored_with_same_version(stored_version_filename: str):
     """Assert that the stored version is the same as this version of neurotechdevkit.
-
-    Raises an assertion error if the stored version and the current version of
-    neurotechdevkit differ.
+    
+    Args:
+        stored_version_filename (str): the path to the file containing 
+            the result stored version.
+    
+    Raises:
+        AssertionError: if the result stored version and the current version of
+            neurotechdevkit differ.
     """
     with open(stored_version_filename, "r") as f:
         stored_version = f.read().strip()
