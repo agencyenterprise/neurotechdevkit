@@ -1229,11 +1229,11 @@ def create_pulsed_result(
 
 def _assert_stored_with_same_version(stored_version_filename: str):
     """Assert that the stored version is the same as this version of neurotechdevkit.
-    
+
     Args:
-        stored_version_filename (str): the path to the file containing 
+        stored_version_filename (str): the path to the file containing
             the result stored version.
-    
+
     Raises:
         AssertionError: if the result stored version and the current version of
             neurotechdevkit differ.
