@@ -37,7 +37,7 @@ jobs:
         id: cached-poetry-dependencies
         uses: actions/cache@v3
         with:
-          path: .cache/pypoetry
+          path: .venv
           key: venv-${{ runner.os }}-${{ hashFiles('poetry.lock') }}
           restore-keys: |
             venv-${{ runner.os }}
@@ -62,6 +62,6 @@ jobs:
 
       - name: Clean cache leftovers
         run: |
-          rm -f docs/generated/gallery/_*
+          rm -f /home/runner/work/neurotechdevkit/neurotechdevkit/docs/generated/gallery/_*
 
       - run: poetry run mkdocs gh-deploy --force
