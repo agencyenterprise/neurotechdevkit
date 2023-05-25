@@ -25,10 +25,21 @@ jobs:
           command: |
             poetry run pip install git+https://github.com/trustimaging/stride
 
+      - restore_cache:
+          name: Restore docs cache
+          keys:
+            - docs-{{ epoch }}
+            - docs-
+
       - run:
           name: Build HTML
           command: |
             OFFLINE=true make docs
+
+      - save_cache:
+          key: docs-{{ epoch }}
+          paths:
+            - docs/generated
 
       - store_artifacts:
           path: site/
