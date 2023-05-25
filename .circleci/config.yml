@@ -38,7 +38,7 @@ jobs:
       - save_cache:
           key: docs
           paths:
-            - site
+            - docs/generated
 
       - store_artifacts:
           path: site/
