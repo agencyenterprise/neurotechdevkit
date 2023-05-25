@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
 """
-Combine sources
+Adding multiple sources
 ====================================
 
-Combining multiple sources for transcranial ultrasound stimulation enables
+!!! note
+    NDK and its examples are under constant development, more information and content will be added to this example soon!
+
+Adding multiple sources for transcranial ultrasound stimulation enables
 greater precision and control in targeting specific areas of the brain.
 
 By choosing the phase of ultrasound waves for each source, a combined beam
