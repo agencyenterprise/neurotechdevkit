@@ -32,14 +32,14 @@ jobs:
         uses: snok/install-poetry@v1.3.0
         with:
           virtualenvs-create: true
-          virtualenvs-in-project: false
+          virtualenvs-in-project: true
           installer-parallel: true
 
       - name: Load cached poetry dependencies
         id: cached-poetry-dependencies
         uses: actions/cache@v3
         with:
-          path: .cache/pypoetry
+          path: .venv
           key: venv-${{ runner.os }}-${{ hashFiles('poetry.lock') }}
           restore-keys: |
             venv-${{ runner.os }}
