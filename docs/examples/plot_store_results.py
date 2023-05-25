@@ -12,15 +12,15 @@ import neurotechdevkit as ndk
 
 scenario = ndk.make('scenario-0-v0')
 result = scenario.simulate_steady_state()
-result.save_to_disk('scenario-0-v0-results.pkl')
+result.save_to_disk('scenario-0-v0-results.tar.gz')
 
 
 # %%
-# The output file from the previous step should be copied to
-# another computer with ndk installed. The results can be loaded running
-# the following code:
+# The output file from the previous step could be copied to
+# another computer with ndk installed or just stored for future use. The results can
+# be loaded running the following code:
 import neurotechdevkit as ndk
 
-result = ndk.load_result_from_disk('scenario-0-v0-results.pkl')
+result = ndk.load_result_from_disk('scenario-0-v0-results.tar.gz')
 result.render_steady_state_amplitudes(show_material_outlines=False)
 # %%
