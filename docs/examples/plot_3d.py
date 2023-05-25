@@ -19,7 +19,7 @@ import pooch
 import neurotechdevkit as ndk
 
 URL = 'https://neurotechdevkit.s3.us-west-2.amazonaws.com/result-scenario-2-3d.tz'
-known_hash = None
+known_hash = "6a5de26466028c673d253ca014c75c719467ec6c28d7178baf9287b44ad15191"
 downloaded_file_path = pooch.retrieve(
     url=URL, known_hash=known_hash, progressbar=True
 )
@@ -43,10 +43,11 @@ except ImportError:
 
 # %%
 # If you have napari installed you should see an output like the following:
+#
+# ```
+# Opening the napari viewer. The window might not show up on top of your notebook; look through your open applications if it does not."""
+# ```
 
-"""
-Opening the napari viewer. The window might not show up on top of your notebook; look through your open applications if it does not.
-"""
-
+# %%
 # If you have napari installed you should have been able to see an image like the following:
 # ![3d-visualization](../../images/3d_visualization.gif)

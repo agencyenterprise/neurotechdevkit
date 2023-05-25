@@ -33,7 +33,6 @@ nav:
       - Scenarios: usage/loading_scenarios.md
       - Sources: usage/defining_sources.md
       - Simulation: usage/running_simulation.md
-      - 3D Visualization: usage/3d.md
       - Troubleshooting: usage/troubleshooting.md
       - GPU support: usage/gpu.md
   - API:
