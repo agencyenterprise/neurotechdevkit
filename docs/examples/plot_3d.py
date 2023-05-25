@@ -6,12 +6,11 @@ Running a 3D simulation
 This example demonstrates how to render a steady state simulation for a 3D source.
 
 Running such simulations is computationally expensive and can take a long time to
-complete. For this reason, we recommend running this example on an external machine, store
-the results in a file and then load them on your local machine for visualization.
+complete. For this reason, we recommend running this simulation on an external machine,
+store the results in a file and then load them on your local machine for visualization.
 
 Check the gallery example
-[Save and load results](./plot_store_results.md) to learn how
-to save and load results.
+[Save and load results](./plot_store_results.md) to learn how to save and load results.
 """
 # %%
 # The following step downloads and loads a simulation executed on an external machine.
