@@ -54,8 +54,8 @@ jobs:
         uses: actions/cache@v3
         with:
           path: docs/generated
-          key: gallery-${{ runner.os }}
+          key: gallery-${{ runner.os }}-${{ hashFiles('docs/examples/**') }}
           restore-keys: |
-            gallery-${{ runner.os }}
+            gallery-${{ runner.os }}-
 
       - run: poetry run mkdocs gh-deploy --force
