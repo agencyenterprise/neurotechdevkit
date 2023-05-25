@@ -1,6 +1,6 @@
 # Installation
 
-You can run NDK through docker without installing locally, as shown [here](../index.md#running). However, if you'd like to install it locally, please follow the instructions below.
+You can run NDK without installing the package using docker, as shown [here](../index.md#running). However, if you'd like to install it, please follow the instructions below.
 
 `neurotechdevkit` requires Python `>=3.9` and `<3.11` to be installed. You can find which Python version you have installed by running `python --version` in a terminal.
 
