@@ -97,7 +97,8 @@ class Result(abc.ABC):
         except Exception as e:
             raise Exception("Unable to save result artifact to disk.") from e
         finally:
-            shutil.rmtree(DATA_FILENAME, ignore_errors=True)
+            if os.path.isfile(DATA_FILENAME):
+                os.remove(DATA_FILENAME)
 
     @abc.abstractmethod
     def _generate_save_data(self) -> dict:
