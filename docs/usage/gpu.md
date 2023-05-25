@@ -33,3 +33,6 @@ Operator `acoustic_iso_state` instance configuration:
 
 ...
 ```
+
+!!! warning
+	Simulations with high memory requirement (e.g. 3D simulations) may not fit in the GPU and running them with GPU acceleration might crash the simulation.
