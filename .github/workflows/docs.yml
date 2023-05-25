@@ -17,26 +17,43 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3.5.2
 
       - name: Set up python
         id: setup-python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4.6.1
         with:
           python-version: ${{ matrix.python-version }}
 
       - name: Install Poetry
-        uses: snok/install-poetry@v1
+        uses: snok/install-poetry@v1.3.0
         with:
           version: 1.4.0
           virtualenvs-create: true
           virtualenvs-in-project: true
           installer-parallel: true
 
-      - name: Install library
-        run: poetry install --no-interaction
+      - name: Load cached poetry dependencies
+        id: cached-poetry-dependencies
+        uses: actions/cache@v3
+        with:
+          path: .cache/pypoetry
+          key: venv-${{ runner.os }}
+
+      - name: Install package dependencies
+        run: poetry install --no-interaction --no-root
 
       - name: Install stride
         run: poetry run pip install git+https://github.com/trustimaging/stride
+
+      - name: Install neurotechdevkit
+        run: poetry install --only-root
+
+      - name: Cache generated gallery
+        id: cache-gallery
+        uses: actions/cache@v3
+        with:
+          path: docs/generated
+          key: ${{ runner.os }}-gallery
 
       - run: poetry run mkdocs gh-deploy --force
