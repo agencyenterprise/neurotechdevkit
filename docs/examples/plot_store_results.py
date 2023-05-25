@@ -5,9 +5,9 @@ Save and load results
 
 !!! note
     NDK and its examples are under constant development, more information and content will be added to this example soon!
-    
+
 This example demonstrates how a simulation can be executed and stored in one
-computer and the results can be loaded and rendered in another computer.
+computer and the results can be loaded and rendered later in the same computer or another one.
 """
 # %%
 # Execute the following code in a computer with ndk installed
@@ -20,7 +20,7 @@ result.save_to_disk('scenario-0-v0-results.tar.gz')
 
 # %%
 # The output file from the previous step could be copied to
-# another computer with ndk installed or just stored for future use. The results can
+# another computer with ndk installed or stored for future use. The results can
 # be loaded running the following code:
 import neurotechdevkit as ndk
 
