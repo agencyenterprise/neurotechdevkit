@@ -361,10 +361,10 @@ def test_load_failure_stored_with_different_ndk_version():
     """
     with pytest.raises(AssertionError) as e:
         ndk.load_result_from_disk(Path(__file__).parent / "test_data/broken_tarball.tz")
-    assert str(e.value) == (
+    assert (
         "Results were stored with neurotechdevkit==0.0.1 and might "
-        "be incompatible with installed version 0.0.32"
-    )
+        "be incompatible with installed version"
+    ) in str(e.value)
 
 
 def test_create_pulsed_result_with_2d_wavefield(result_args):
