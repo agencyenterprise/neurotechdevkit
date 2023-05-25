@@ -33,9 +33,6 @@ jobs:
           virtualenvs-in-project: true
           installer-parallel: true
 
-      - name: Check poetry version
-        run: poetry --version
-
       - name: Install library
         run: poetry install --no-interaction
 
