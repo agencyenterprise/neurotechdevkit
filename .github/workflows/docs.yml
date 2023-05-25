@@ -53,7 +53,7 @@ jobs:
         id: cache-gallery
         uses: actions/cache@v3
         with:
-          path: site/generated/gallery
+          path: docs/generated
           key: ${{ runner.os }}-gallery
 
       - run: poetry run mkdocs gh-deploy --force
