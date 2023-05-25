@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import abc
 import asyncio
+import os
 from dataclasses import dataclass
 from types import SimpleNamespace
 from typing import Mapping
@@ -852,6 +853,7 @@ class Scenario(abc.ABC):
         devito_args = {}
         if n_jobs is not None:
             devito_args = dict(nthreads=n_jobs)
+
         assert sub_problem.shot is not None
         loop = asyncio.get_event_loop()
         return loop.run_until_complete(
@@ -864,6 +866,7 @@ class Scenario(abc.ABC):
                 boundary_type="complex_frequency_shift_PML_2",
                 diff_source=True,
                 save_wavefield=True,
+                platform=os.environ.get("PLATFORM"),
                 save_bounds=save_bounds,
                 save_undersampling=save_undersampling,
                 wavefield_slice=wavefield_slice,
