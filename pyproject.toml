@@ -20,9 +20,6 @@ classifiers = [
 "Documentation" = "https://agencyenterprise.github.io/neurotechdevkit/"
 "Bug Tracker" = "https://github.com/agencyenterprise/neurotechdevkit/issues"
 
-[tool.poetry.scripts]
-download_notebooks = "src.scripts.download_notebooks:run"
-
 [tool.poetry.dependencies]
 python = ">=3.9,<3.11"
 numpy = "^1.23.3"

@@ -116,11 +116,11 @@ You can tell devito to use the correct gcc compiler doing the following:
     export DEVITO_ARCH="gcc-11"
     ```
 
-After installing `neurotechdevkit` you can run a script to download example [Jupyter notebooks](https://docs.jupyter.org/en/latest/start/index.html) showing how to use the package:
+!!! note
+    After installing `neurotechdevkit` you can use [Jupyter](https://docs.jupyter.org/en/latest/start/index.html) to play with the package.
 
-```
-download_notebooks --destination-path the_path_where_files_should_be_downloaded
-```
+    You can download notebook examples on this [link](https://agencyenterprise.github.io/neurotechdevkit/generated/gallery/gallery_jupyter.zip).
+
 
 ### Docker
 
