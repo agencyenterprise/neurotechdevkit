@@ -26,7 +26,9 @@ WORKDIR /ndk
 
 RUN ./venv/bin/pip install --upgrade pip
 
-RUN apt-get update && apt-get install -y g++ jq make
+RUN apt-get update && apt-get install -y g++ jq make unzip wget && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 RUN ./venv/bin/pip install jupyter
 
@@ -38,5 +40,7 @@ LABEL org.opencontainers.image.source="https://github.com/agencyenterprise/neuro
 RUN ./venv/bin/pip install .
 
 WORKDIR /ndk/notebooks
+RUN wget "https://agencyenterprise.github.io/neurotechdevkit/generated/gallery/gallery_jupyter.zip" -O temp.zip && unzip temp.zip && rm temp.zip
+
 EXPOSE 8888
 CMD ["/ndk/run_jupyter_server.sh"]
