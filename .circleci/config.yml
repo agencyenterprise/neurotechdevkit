@@ -28,7 +28,8 @@ jobs:
       - restore_cache:
           name: Restore docs cache
           keys:
-            - docs
+            - docs-{{ epoch }}
+            - docs-
 
       - run:
           name: Build HTML
@@ -36,7 +37,7 @@ jobs:
             OFFLINE=true make docs
 
       - save_cache:
-          key: docs
+          key: docs-{{ epoch }}
           paths:
             - docs/generated
 
