@@ -38,7 +38,9 @@ jobs:
         uses: actions/cache@v3
         with:
           path: .cache/pypoetry
-          key: venv-${{ runner.os }}
+          key: venv-${{ runner.os }}-${{ hashFiles('poetry.lock') }}
+          restore-keys: |
+            venv-${{ runner.os }}
 
       - name: Install package dependencies
         run: poetry install --no-interaction --no-root
