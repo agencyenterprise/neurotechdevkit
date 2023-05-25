@@ -135,10 +135,7 @@ You can run `NDK` inside a docker container with a couple of steps:
   The output of the command above contains the URL of a jupyter notebook server, you can open the URL in your browser or connect to it using your IDE.
 
 !!! note
-    The neurotechdevkit docker image contains a list of notebook examples, you can make them available into your local `notebooks` folder by running the following command:
-    ```
-    docker run -v $(pwd)/notebooks:/ndk/notebooks ghcr.io/agencyenterprise/neurotechdevkit:latest cp -r /ndk/default_notebooks /ndk/notebooks
-    ```
+    You can download a zip file containing notebook examples on this [link](https://agencyenterprise.github.io/neurotechdevkit/generated/gallery/gallery_jupyter.zip), and you can make them available into your container by extracting it into your local `notebooks` folder.
 
 
 ## Usage

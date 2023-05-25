@@ -8,8 +8,6 @@ COPY README.md ./README.md
 COPY Makefile ./Makefile
 COPY src ./src
 COPY tests ./tests
-COPY docs ./docs
-COPY mkdocs.yml ./mkdocs.yml
 COPY run_jupyter_server.sh ./run_jupyter_server.sh
 RUN ["chmod", "+x", "./run_jupyter_server.sh"]
 
@@ -21,8 +19,6 @@ ENV POETRY_VIRTUALENVS_CREATE=false
 RUN ./venv/bin/poetry install && \
     ./venv/bin/pip install git+https://github.com/trustimaging/stride
 
-RUN ./venv/bin/mkdocs build
-
 FROM python:3.10.0-slim
 
 COPY --from=build /ndk /ndk
@@ -30,9 +26,7 @@ WORKDIR /ndk
 
 RUN ./venv/bin/pip install --upgrade pip
 
-RUN apt-get update && apt-get install -y unzip g++ jq make
-
-RUN unzip ./docs/generated/gallery/gallery_jupyter.zip -d default_notebooks
+RUN apt-get update && apt-get install -y g++ jq make
 
 RUN ./venv/bin/pip install jupyter
 
