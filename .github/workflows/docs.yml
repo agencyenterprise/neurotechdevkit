@@ -60,4 +60,8 @@ jobs:
           restore-keys: |
             gallery-${{ runner.os }}-
 
+      - name: Clean cache leftovers
+        run: |
+          rm -f docs/generated/gallery/_*
+
       - run: poetry run mkdocs gh-deploy --force
