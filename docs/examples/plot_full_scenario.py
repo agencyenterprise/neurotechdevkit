@@ -3,7 +3,10 @@
 Implementing a full scenario
 ====================================
 
-The following code is a simplified version of NDK's Scenario 1.
+!!! note
+    NDK and its examples are under constant development, more information and content will be added to this example soon!
+
+The following code is a simplified implementation of NDK's Scenario 1.
 """
 # %%
 # ## Implementing a Scenario
