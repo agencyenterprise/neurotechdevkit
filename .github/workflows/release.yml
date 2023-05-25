@@ -23,13 +23,13 @@ jobs:
     needs: generate-release
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v3.5.2
         with:
           ref: ${{ github.ref }}
           token: ${{ secrets.TAG_CREATOR_API_TOKEN }}
 
       - name: Setup python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v4.6.1
         with:
           python-version: "3.10"
 
