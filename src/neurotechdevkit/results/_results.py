@@ -23,12 +23,12 @@ from .. import rendering, scenarios
 from ..scenarios import _metrics as metrics
 from ..scenarios._utils import drop_element, slice_field
 
+DATA_FILENAME = "data.gz"
+
 
 def _get_ndk_version() -> str:
+    """Get the version of the neurotechdevkit package."""
     return importlib_metadata.version(neurotechdevkit.__package__)
-
-
-DATA_FILENAME = "data.gz"
 
 
 @dataclass
@@ -78,7 +78,8 @@ class Result(abc.ABC):
         in 3D.
 
         Args:
-            filepath: the path to the file where the results should be exported.
+            filepath: the path to the file where the results should be exported. Usually
+                a .tar.gz file.
         """
         try:
             with tarfile.open(filepath, "w") as tar_file:
@@ -1222,6 +1223,11 @@ def create_pulsed_result(
 
 
 def _assert_stored_with_same_version(stored_version_filename: str):
+    """Assert that the stored version is the same as this version of neurotechdevkit.
+
+    Raises an assertion error if the stored version and the current version of
+    neurotechdevkit differ.
+    """
     with open(stored_version_filename, "r") as f:
         stored_version = f.read().strip()
         installed_version = _get_ndk_version()
