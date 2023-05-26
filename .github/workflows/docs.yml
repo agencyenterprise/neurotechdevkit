@@ -48,6 +48,9 @@ jobs:
       - name: Install stride
         run: poetry run pip install git+https://github.com/trustimaging/stride
 
+      - name: Install ffmpeg
+        run: sudo apt-get install -y ffmpeg
+
       - name: Install neurotechdevkit
         run: poetry install --only-root
 
