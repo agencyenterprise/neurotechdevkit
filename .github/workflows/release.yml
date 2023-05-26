@@ -3,6 +3,10 @@ on:
   push:
     branches:
       - main
+  workflow_run:
+    workflows: [test, lint]
+    types:
+      - completed
 
 jobs:
   generate-release:
