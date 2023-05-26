@@ -100,11 +100,19 @@ You can tell devito to use the correct gcc compiler doing the following:
 
 ## Linux
 
-In order to install `neurotechdevkit` you must first install `g++` and the `python-dev` package for your python version.
+1. In order to install `neurotechdevkit` you must first install `g++` and the `python-dev` package for your python version.
 
-Both packages can be installed with:
-```
-apt-get install -y g++ python3.10-dev
-```
+    Both packages can be installed with:
+    ```
+    apt-get install -y g++ python3.10-dev
+    ```
 
-you must replace `3.10` with your python version.
+    **Important:** You must replace `3.10` with your python version when running the command above.
+
+1. Export the `DEVITO_ARCH` environment variable, or add it to your shell profile:
+
+    ```
+    export DEVITO_ARCH="gcc"
+    ```
+
+    The supported values for `DEVITO_ARCH` are: `'custom', 'gnu', 'gcc', 'clang', 'aomp', 'pgcc', 'pgi', 'nvc', 'nvc++', 'nvidia', 'cuda', 'osx', 'intel', 'icpc', 'icc', 'intel-knl', 'knl', 'dpcpp', 'gcc-4.9', 'gcc-5', 'gcc-6', 'gcc-7', 'gcc-8', 'gcc-9', 'gcc-10', 'gcc-11'`.
