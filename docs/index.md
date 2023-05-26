@@ -30,12 +30,12 @@ You can run `neurotechdevkit` inside a docker container with a couple of steps:
     docker run -p 8888:8888 -it ghcr.io/agencyenterprise/neurotechdevkit:latest
     ```
 
-    The command above will start a [Jupyter notebook](https://docs.jupyter.org/en/latest/start/index.html) server with example notebooks you can use to play with `neurotechdevkit`, you can open the printed URL in your browser or connect to it using your IDE.
+    The command above will start a [Jupyter notebook](https://jupyterlab.readthedocs.io/en/stable/getting_started/overview.html) server with example notebooks you can use to play with `neurotechdevkit`, you can open the printed URL in your browser or connect to it using your IDE.
 
     All changes you make to these files will be lost once you stop the docker container.
 
 !!! note
-    You can have persisted [Jupyter notebooks](https://docs.jupyter.org/en/latest/start/index.html) by running
+    You can have persisted [Jupyter notebooks](https://jupyterlab.readthedocs.io/en/stable/getting_started/overview.html) by running
     ```
     docker run -p 8888:8888  -v $(pwd)/notebooks:/ndk/notebooks -it ghcr.io/agencyenterprise/neurotechdevkit:latest
     ```
