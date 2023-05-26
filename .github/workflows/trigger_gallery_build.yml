@@ -1,10 +1,7 @@
 name: "Trigger gallery build"
 on:
-  # schedule:
-  #   - cron: '*/30 * * * *'
-  pull_request:
-    branches:
-      - "*"
+  schedule:
+    - cron: '0 7 * * 1' # every Monday 7am
 
 jobs:
   trigger-circleci:
