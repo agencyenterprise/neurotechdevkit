@@ -11,6 +11,11 @@ jobs:
       - checkout
 
       - run:
+          name: Install ffmpeg dependency
+          command: |
+            sudo apt-get update && sudo apt-get install -y ffmpeg
+
+      - run:
           name: Install the latest version of Poetry
           command: |
             curl -sSL https://install.python-poetry.org | python3 -
