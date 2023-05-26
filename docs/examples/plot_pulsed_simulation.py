@@ -19,5 +19,5 @@ result.render_pulsed_simulation_animation()
 # =======================
 # You can also generate a video file of the simulation (which requires [ffmpeg](https://ffmpeg.org/download.html) installed).
 #
-# To store the `animation.mp4` in the current folder, all you need is the following command:
+# To create and save the video as `animation.mp4` in the current folder, all you need is the execute following command:
 result.create_video_file("animation.mp4", fps=25, overwrite=True)
