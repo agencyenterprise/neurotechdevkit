@@ -6,6 +6,21 @@ You can run NDK without installing the package using docker, as shown [here](../
 
 If you don't have Python installed, or you are running an unsupported version, you can download it from [python.org](https://www.python.org/downloads/). Python environment managers like pyenv, conda, and poetry are all perfectly suitable as well.
 
+<details>
+  <summary>Before installing on Linux</summary>
+
+  1. In order to install `neurotechdevkit` you must first install `g++` and the `python-dev` package for your python version.
+
+    Both packages can be installed with:
+    ```
+    apt-get install -y g++ python3.10-dev
+    ```
+
+    **Important:** You must replace `3.10` with your python version when running the command above.
+
+</details>
+
+
 You can install the `neurotechdevkit` package using:
 
 ```bash
@@ -18,20 +33,16 @@ You also have to install stride, it can be done running:
 pip install git+https://github.com/trustimaging/stride
 ```
 
+## Setting up a compiler
 
 NDK uses [devito](https://www.devitoproject.org/devito/) to perform the heavy computational operations. Devito generates, compiles and runs C code to achieve better performance.
 The compiler used by Devito has to be selected, and paths for the linker might also be added as environment variables.
 
-Export the environment variable that defines what compiler `devito` will use:
-
-```
-export DEVITO_ARCH=gcc
-```
-
-The supported values for `DEVITO_ARCH` are: `'custom', 'gnu', 'gcc', 'clang', 'aomp', 'pgcc', 'pgi', 'nvc', 'nvc++', 'nvidia', 'cuda', 'osx', 'intel', 'icpc', 'icc', 'intel-knl', 'knl', 'dpcpp', 'gcc-4.9', 'gcc-5', 'gcc-6', 'gcc-7', 'gcc-8', 'gcc-9', 'gcc-10', 'gcc-11'`
+As a last step **before running NDK**, follow the instructions below depending on your OS.
 
 
-## MacOS
+<details>
+  <summary>Before running NDK on MacOS</summary>
 
 The two main compiler options for MacOS are **clang** and **gcc**.
 
@@ -98,16 +109,10 @@ You can tell devito to use the correct gcc compiler doing the following:
     export DEVITO_ARCH="gcc-11"
     ```
 
-## Linux
+</details>
 
-1. In order to install `neurotechdevkit` you must first install `g++` and the `python-dev` package for your python version.
-
-    Both packages can be installed with:
-    ```
-    apt-get install -y g++ python3.10-dev
-    ```
-
-    **Important:** You must replace `3.10` with your python version when running the command above.
+<details>
+  <summary>Before running NDK on Linux</summary>
 
 1. Export the `DEVITO_ARCH` environment variable, or add it to your shell profile:
 
@@ -116,3 +121,5 @@ You can tell devito to use the correct gcc compiler doing the following:
     ```
 
     The supported values for `DEVITO_ARCH` are: `'custom', 'gnu', 'gcc', 'clang', 'aomp', 'pgcc', 'pgi', 'nvc', 'nvc++', 'nvidia', 'cuda', 'osx', 'intel', 'icpc', 'icc', 'intel-knl', 'knl', 'dpcpp', 'gcc-4.9', 'gcc-5', 'gcc-6', 'gcc-7', 'gcc-8', 'gcc-9', 'gcc-10', 'gcc-11'`.
+
+</details>
