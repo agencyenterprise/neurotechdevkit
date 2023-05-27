@@ -41,3 +41,7 @@
       show_root_heading: true
       members:
         - _SCENARIO_ID
+
+::: neurotechdevkit.scenarios.Target
+    options:
+      show_root_heading: true

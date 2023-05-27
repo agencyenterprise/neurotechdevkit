@@ -69,15 +69,6 @@ class ScenarioBaseTester(Scenario):
     def get_default_source(self) -> Source:
         return self.default_source
 
-    def render_material_property(
-        self,
-        name,
-        show_orientation: bool = True,
-        show_sources: bool = True,
-        show_target: bool = True,
-    ) -> None:
-        raise NotImplementedError()
-
     def get_target_mask(self) -> npt.NDArray[np.bool_]:
         return np.zeros_like(self.shape).astype(bool)
 

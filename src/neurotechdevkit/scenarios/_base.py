@@ -874,19 +874,6 @@ class Scenario(abc.ABC):
             )
         )
 
-    @abc.abstractmethod
-    def render_material_property(
-        self,
-        name,
-        show_orientation: bool = True,
-        show_sources: bool = True,
-        show_target: bool = True,
-    ) -> None:
-        """Render a material property for the scenario."""
-        # speed of sound, density, and absorption
-        # maybe split these out into 3 separate functions?
-        pass
-
 
 class Scenario2D(Scenario):
     """A 2D scenario."""
