@@ -32,9 +32,9 @@ The supported values for `DEVITO_ARCH` are: `'custom', 'gnu', 'gcc', 'clang', 'a
 
 
 !!! note
-    After installing `neurotechdevkit` you can use [Jupyter](https://jupyterlab.readthedocs.io/en/stable/) to play with the package.
+    After installing `neurotechdevkit` you can use [Jupyter](https://jupyterlab.readthedocs.io/en/stable/) to explore with the package.
 
-    You can download notebook examples on this [link](https://agencyenterprise.github.io/neurotechdevkit/generated/gallery/gallery_jupyter.zip).
+    To get started, we recommend downloading the example notebooks from this [link](https://agencyenterprise.github.io/neurotechdevkit/generated/gallery/gallery_jupyter.zip).
 
 ## MacOS
 

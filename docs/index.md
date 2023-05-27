@@ -20,7 +20,7 @@ Check out the [NDK documentation page](https://agencyenterprise.github.io/neurot
 
 ### Docker
 
-You can run `neurotechdevkit` inside a docker container with a couple of steps:
+You can run `neurotechdevkit` inside a docker container with just a couple of steps:
 
 1. Install [docker](https://docs.docker.com/engine/install/#desktop)
 
@@ -30,18 +30,18 @@ You can run `neurotechdevkit` inside a docker container with a couple of steps:
     docker run -p 8888:8888 -it ghcr.io/agencyenterprise/neurotechdevkit:latest
     ```
 
-    The command above will start a [Jupyter notebook](https://jupyterlab.readthedocs.io/en/stable/getting_started/overview.html) server with example notebooks you can use to play with `neurotechdevkit`, you can open the printed URL in your browser or connect to it using your IDE.
+    The command above will start a [Jupyter notebook](https://jupyterlab.readthedocs.io/en/stable/getting_started/overview.html) server with example notebooks you can use to explore `neurotechdevkit`. Use the printed URL to open it in your browser or connect to it using your IDE.
 
     All changes you make to these files will be lost once you stop the docker container.
 
 !!! note
-    You can have persisted [Jupyter notebooks](https://jupyterlab.readthedocs.io/en/stable/getting_started/overview.html) by running
+    You can have persisting [Jupyter notebooks](https://jupyterlab.readthedocs.io/en/stable/getting_started/overview.html) by running
     ```
     docker run -p 8888:8888  -v $(pwd)/notebooks:/ndk/notebooks -it ghcr.io/agencyenterprise/neurotechdevkit:latest
     ```
     The command above will create a folder `notebooks` in your current directory where you can put your jupyter notebooks.
 
-    You can also download a zip file containing notebook examples on this [link](https://agencyenterprise.github.io/neurotechdevkit/generated/gallery/gallery_jupyter.zip), and you can make them available in your container by extracting the downloaded file into your local `notebooks` folder.
+    We recommend downloading `.zip` file with example notebooks from this [link](https://agencyenterprise.github.io/neurotechdevkit/generated/gallery/gallery_jupyter.zip), and extracting the it into your local `notebooks` folder so you can access them from the docker.
 
 ### Local installation
 
