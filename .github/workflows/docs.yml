@@ -54,17 +54,15 @@ jobs:
       - name: Install neurotechdevkit
         run: poetry install --only-root
 
-      - name: Cache generated gallery
-        id: cache-gallery
-        uses: actions/cache@v3
+      - name: Checkout gallery
+        id: checkout-gallery
+        uses: actions/checkout@v3.5.2
         with:
-          path: docs/generated
-          key: gallery-${{ runner.os }}-${{ hashFiles('docs/examples/**') }}
-          restore-keys: |
-            gallery-${{ runner.os }}-
+          path: current_pages
+          ref: "gh-pages"
 
-      - name: Clean cache leftovers
+      - name: Move generated gallery
         run: |
-          rm -f /home/runner/work/neurotechdevkit/neurotechdevkit/docs/generated/gallery/_*
+          mv current_pages/generated /home/runner/work/neurotechdevkit/neurotechdevkit/docs/
 
       - run: poetry run mkdocs gh-deploy --force
