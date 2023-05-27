@@ -25,7 +25,7 @@ jobs:
 
       - name: Test the docker image
         run: |
-          docker run neurotechdevkit make test
+          docker run -w /ndk neurotechdevkit make test
 
   test:
     strategy:
