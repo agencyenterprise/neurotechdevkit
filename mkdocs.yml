@@ -29,6 +29,7 @@ theme:
 nav:
   - Home: index.md
   - Usage:
+      - Installation: usage/installation.md
       - Scenarios: usage/loading_scenarios.md
       - Sources: usage/defining_sources.md
       - Simulation: usage/running_simulation.md
@@ -38,6 +39,7 @@ nav:
   - API:
       - Make: api/make.md
       - Scenarios: api/scenarios.md
+      - Utils: api/utils.md
       - Sources: api/sources.md
       - Results: api/results.md
   - Examples: generated/gallery

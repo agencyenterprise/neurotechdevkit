@@ -126,12 +126,6 @@ class Scenario1_2D(_Scenario1Mixin, Scenario2D):
             complexity=complexity,
         )
 
-    def render_material_property(
-        self, name, show_orientation=True, show_sources=True, show_target=True
-    ):
-        """Render a material property for the scenario."""
-        raise NotImplementedError()
-
     def _compile_problem(self) -> stride.Problem:
         extent = np.array([0.12, 0.07])  # m
         return self._compile_scenario_1_problem(extent)
@@ -217,12 +211,6 @@ class Scenario1_3D(_Scenario1Mixin, Scenario3D):
         """Return the default slice position for the scenario."""
         default_positions = np.array([0.064, 0.0, 0.0])
         return default_positions[axis]
-
-    def render_material_property(
-        self, name, show_orientation=True, show_sources=True, show_target=True
-    ):
-        """Render a material property for the scenario."""
-        raise NotImplementedError()
 
     def _compile_problem(self) -> stride.Problem:
         extent = np.array([0.12, 0.07, 0.07])  # m
