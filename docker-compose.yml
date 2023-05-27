@@ -4,6 +4,6 @@ services:
   ndk:
     image: ghcr.io/agencyenterprise/neurotechdevkit:latest
     volumes:
-      - ./:/app
+      - ./notebooks:/ndk/notebooks
     ports:
       - 8888:8888

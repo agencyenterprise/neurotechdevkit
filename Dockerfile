@@ -1,36 +1,46 @@
 FROM python:3.10.0 as build
 
-RUN python3 -m venv /venv && \
-    /venv/bin/pip install --upgrade pip && \
-    /venv/bin/pip install poetry
+WORKDIR /ndk
+
+COPY pyproject.toml ./pyproject.toml
+COPY poetry.lock ./poetry.lock
+COPY README.md ./README.md
+COPY Makefile ./Makefile
+COPY src ./src
+COPY tests ./tests
+COPY run_jupyter_server.sh ./run_jupyter_server.sh
+RUN ["chmod", "+x", "./run_jupyter_server.sh"]
+
+RUN python3 -m venv ./venv && \
+    ./venv/bin/pip install --upgrade pip && \
+    ./venv/bin/pip install poetry
 
 ENV POETRY_VIRTUALENVS_CREATE=false
-COPY . ./
-
-RUN /venv/bin/poetry install && \
-    /venv/bin/pip install git+https://github.com/trustimaging/stride
+RUN ./venv/bin/poetry install && \
+    ./venv/bin/pip install git+https://github.com/trustimaging/stride
 
 FROM python:3.10.0-slim
 
-RUN python3 -m venv /venv && \
-    /venv/bin/pip install --upgrade pip
+COPY --from=build /ndk /ndk
+WORKDIR /ndk
 
-COPY --from=build /venv /venv
+RUN ./venv/bin/pip install --upgrade pip
 
-RUN /venv/bin/pip install jupyter
+RUN apt-get update && apt-get install -y g++ jq make unzip wget && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
-COPY . /app
-RUN rm -rf /app/.git
+RUN ./venv/bin/pip install jupyter
 
-ENV PATH "/venv/bin:$PATH"
+ENV PATH "./venv/bin:$PATH"
 ENV DEVITO_ARCH "gcc"
 
 LABEL org.opencontainers.image.source="https://github.com/agencyenterprise/neurotechdevkit"
 
-RUN apt-get update && apt-get install -y gcc gcc+ make
+RUN ./venv/bin/pip install .
 
-WORKDIR /app
-RUN /venv/bin/pip install .
+WORKDIR /ndk/notebooks
+RUN wget "https://agencyenterprise.github.io/neurotechdevkit/generated/gallery/gallery_jupyter.zip" -O temp.zip && unzip temp.zip && rm temp.zip
 
 EXPOSE 8888
-CMD ["/venv/bin/jupyter", "notebook", "--ip=0.0.0.0", "--port=8888", "--allow-root"]
+CMD ["/ndk/run_jupyter_server.sh"]
