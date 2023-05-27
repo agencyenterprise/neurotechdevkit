@@ -67,9 +67,20 @@ def add_material_fields_to_problem(
     """Add material fields as media to the problem.
 
     Included fields are:
-    * the speed of sound (in m/s)
-    * density (in kg/m^3)
-    * absorption (in dB/cm)
+
+    - the speed of sound (in m/s)
+    - density (in kg/m^3)
+    - absorption (in dB/cm)
+
+    Args:
+        problem (stride.Problem): the stride Problem object to which the
+            media should be added.
+        materials (Mapping[str, Struct]): a mapping from material names
+            to Structs containing the material properties.
+        layer_ids (Mapping[str, int]): a mapping from material names to
+            integers representing the layer number for each material.
+        masks (Mapping[str, npt.NDArray[np.bool_]]): a mapping from material
+            names to boolean masks indicating the gridpoints.
     """
     grid = problem.grid
 
