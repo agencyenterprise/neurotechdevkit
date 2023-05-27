@@ -42,7 +42,7 @@ As a last step **before running NDK**, follow the instructions below depending o
 
 
 <details>
-  <summary>Before running NDK on MacOS</summary>
+  <summary>Before running on MacOS</summary>
 
 The two main compiler options for MacOS are **clang** and **gcc**.
 
@@ -112,7 +112,7 @@ You can tell devito to use the correct gcc compiler doing the following:
 </details>
 
 <details>
-  <summary>Before running NDK on Linux</summary>
+  <summary>Before running on Linux</summary>
 
 1. Export the `DEVITO_ARCH` environment variable, or add it to your shell profile:
 
