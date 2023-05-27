@@ -11,6 +11,11 @@ jobs:
       - checkout
 
       - run:
+          name: Install ffmpeg dependency
+          command: |
+            sudo apt-get update && sudo apt-get install -y ffmpeg
+
+      - run:
           name: Install the latest version of Poetry
           command: |
             curl -sSL https://install.python-poetry.org | python3 -
@@ -25,10 +30,21 @@ jobs:
           command: |
             poetry run pip install git+https://github.com/trustimaging/stride
 
+      - restore_cache:
+          name: Restore docs cache
+          keys:
+            - docs-{{ epoch }}
+            - docs-
+
       - run:
           name: Build HTML
           command: |
             OFFLINE=true make docs
+
+      - save_cache:
+          key: docs-{{ epoch }}
+          paths:
+            - docs/generated
 
       - store_artifacts:
           path: site/

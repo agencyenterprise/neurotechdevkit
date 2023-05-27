@@ -35,12 +35,6 @@ class Scenario0(Scenario2D):
             complexity=complexity,
         )
 
-    def render_material_property(
-        self, name, show_orientation=True, show_sources=True, show_target=True
-    ):
-        """Render the material property of the scenario."""
-        raise NotImplementedError()
-
     @property
     def _material_layers(self) -> list[tuple[str, Struct]]:
         return [
