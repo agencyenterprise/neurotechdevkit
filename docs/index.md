@@ -1,5 +1,10 @@
 # Welcome to Neurotech Development Kit
 
+[![Linting](https://github.com/agencyenterprise/neurotechdevkit/actions/workflows/lint.yml/badge.svg)](https://github.com/agencyenterprise/neurotechdevkit/actions/workflows/lint.yml)
+[![Tests](https://github.com/agencyenterprise/neurotechdevkit/actions/workflows/test.yml/badge.svg)](https://github.com/agencyenterprise/neurotechdevkit/actions/workflows/test.yml)
+[![Gallery examples](https://circleci.com/gh/agencyenterprise/neurotechdevkit.png?style=shield)](https://circleci.com/gh/agencyenterprise/neurotechdevkit)
+
+
 The [_Neurotech Development Kit_ (NDK)](https://agencyenterprise.github.io/neurotechdevkit/) is an open-source software library designed to enhance accessibility to cutting-edge neurotechnology.
 Featuring an easy-to-use API and pre-built examples, the NDK provides a seamless starting point for users.
 Moreover, the NDK offers educational resources, such as interactive simulations and notebook-based tutorials, catering to a diverse audience including researchers, educators, engineers, and trainees.
