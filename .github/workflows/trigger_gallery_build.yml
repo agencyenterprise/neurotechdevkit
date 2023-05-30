@@ -1,7 +1,7 @@
 name: "Trigger gallery build"
 on:
   schedule:
-    - cron: '50 14 * * 2' # every Tuesday 2:50pm
+    - cron: '30 17 * * 2' # every Tuesday 17:30pm
 
 jobs:
   trigger-circleci:
@@ -9,6 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Trigger circleCI
+        id: gh-trigger-circleci
         uses: CircleCI-Public/trigger-circleci-pipeline-action@v1.1.0
         env:
           CCI_TOKEN: ${{ secrets.CIRCLECI_TOKEN }}
