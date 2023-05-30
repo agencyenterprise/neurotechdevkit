@@ -1,6 +1,19 @@
 # Tagging a commit with [circle front] will build the front page and perform tests-doc.
 # Tagging a commit with [circle full] will build everything.
 version: 2.1
+parameters:
+  GHA_Actor:
+    type: string
+    default: ""
+  GHA_Action:
+    type: string
+    default: ""
+  GHA_Event:
+    type: string
+    default: ""
+  GHA_Meta:
+    type: string
+    default: ""
 
 jobs:
   build_docs:
@@ -50,8 +63,41 @@ jobs:
           path: site/
           destination: html
 
+
+  build_docs_no_cache:
+    docker:
+      - image: cimg/python:3.10.10
+    resource_class: xlarge
+    steps:
+      - checkout
+
+      - run:
+          name: Install the latest version of Poetry
+          command: |
+            curl -sSL https://install.python-poetry.org | python3 -
+
+      - run:
+          name: Install dependencies
+          command: |
+            poetry install --no-ansi
+
+      - run:
+          name: Install stride
+          command: |
+            poetry run pip install git+https://github.com/trustimaging/stride
+
+      - run:
+          name: Build HTML
+          command: |
+            OFFLINE=true make docs
+
 workflows:
   version: 2
+
+  build_triggered_by_github_action:
+    when: << pipeline.parameters.GHA_Action >>
+    jobs:
+      - build_docs_no_cache
 
   default:
     jobs:
