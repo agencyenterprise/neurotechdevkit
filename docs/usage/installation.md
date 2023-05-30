@@ -2,6 +2,12 @@
 
 You can run NDK without installing the package using docker, as shown [here](../index.md#running). However, if you'd like to install it, please follow the instructions below.
 
+??? "Before installing on Windows"
+
+    1. Install [Ubuntu on WSL](https://ubuntu.com/tutorials/install-ubuntu-on-wsl2-on-windows-11-with-gui-support#1-overview).
+
+    1. Follow the the `Linux` steps described in this page inside your Ubuntu shell.
+
 `neurotechdevkit` requires Python `>=3.9` and `<3.11` to be installed. You can find which Python version you have installed by running `python --version` in a terminal.
 
 If you don't have Python installed, or you are running an unsupported version, you can download it from [python.org](https://www.python.org/downloads/). Python environment managers like pyenv, conda, and poetry are all perfectly suitable as well.
