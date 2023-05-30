@@ -138,3 +138,8 @@ As a last step **before running NDK**, follow the instructions below depending o
     After installing `neurotechdevkit` you can use [Jupyter](https://jupyterlab.readthedocs.io/en/stable/) to explore the package.
 
     To get started, we recommend downloading the example notebooks from this [link](https://agencyenterprise.github.io/neurotechdevkit/generated/gallery/gallery_jupyter.zip).
+
+    **On Linux** you can download and extract the notebooks running the following commands:
+
+    1. `sudo apt-get update && sudo apt-get install -y unzip wget`
+    1. `wget "https://agencyenterprise.github.io/neurotechdevkit/generated/gallery/gallery_jupyter.zip" -O temp.zip && unzip temp.zip && rm temp.zip`
