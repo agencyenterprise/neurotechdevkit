@@ -78,8 +78,13 @@ jobs:
         uses: codecov/codecov-action@v3
         if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.9'
 
+      - name: Install gcc-11
+        if: matrix.os == 'macos-latest'
+        run: |
+          brew install gcc@11
+
       - name: Run integration test
         env:
-          DEVITO_ARCH: gcc
+          DEVITO_ARCH: gcc-11
         run: |
           make test-integration
