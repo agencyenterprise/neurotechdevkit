@@ -1,7 +1,7 @@
 name: "Trigger gallery build"
 on:
   schedule:
-    - cron: '45 17 * * 2' # every Tuesday 17:45pm
+    - cron: '05 18 * * 2' # every Tuesday 18:05pm
 
 jobs:
   trigger-circleci:
