@@ -87,7 +87,8 @@ jobs:
             poetry run pip install git+https://github.com/trustimaging/stride
 
       - run:
-          name: Build HTML
+          name: Build docs
+          no_output_timeout: 30m
           command: |
             OFFLINE=true make docs
 
