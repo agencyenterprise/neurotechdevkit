@@ -77,3 +77,9 @@ jobs:
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
         if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.9'
+
+      - name: Run integration test
+        env:
+          DEVITO_ARCH: gcc
+        run: |
+          make test-integration
