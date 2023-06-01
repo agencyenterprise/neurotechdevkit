@@ -36,8 +36,6 @@ If you don't want to install NDK's dependencies on your machine, you can run it 
 
 * Run the container, which will start a jupyter notebook server:
    ```
-   git clone https://github.com/agencyenterprise/neurotechdevkit.git
-   cd neurotechdevkit
    docker compose up
    ```
 
@@ -48,12 +46,6 @@ If you don't want to install NDK's dependencies on your machine, you can run it 
 This project requires Python `>=3.9` and `<3.11` to be installed. You can find the Python version you have installed by running `python --version` in a terminal. If you don't have Python installed or are running an unsupported version, you can download a supported version from [python.org](https://www.python.org/downloads/).
 
 We use [poetry](https://python-poetry.org/) to manage dependencies and virtual environments. Follow the instructions from [poetry's documentation](https://python-poetry.org/docs/#installation) to install it if you don't have it on your system.
-
-Checkout the repository:
-
-```
-git clone git@github.com:agencyenterprise/neurotechdevkit.git
-```
 
 Install the dependencies by running the following command in a shell within the project directory:
 
