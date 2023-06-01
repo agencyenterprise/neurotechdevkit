@@ -10,10 +10,9 @@ from neurotechdevkit.results import (
     PulsedResult3D,
     SteadyStateResult2D,
     SteadyStateResult3D,
-    create_pulsed_result,
-    create_steady_state_result,
 )
-from neurotechdevkit.scenarios import _metrics as metrics
+from neurotechdevkit.results import _metrics as metrics
+from neurotechdevkit.results import create_pulsed_result, create_steady_state_result
 
 
 @pytest.fixture
