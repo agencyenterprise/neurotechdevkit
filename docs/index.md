@@ -10,7 +10,7 @@ This package enables those fascinated with the future of neurotechnology and hum
 
 To empower users of any technical level, NDK features an easy-to-use API and a range of ready-to-use examples. And for advanced neuro-developers, it provides precise control of low-level functionality and an easy-to-expand framework. NDK is a rapidly developing project with the aim of attracting budding researchers, engineers, academics, and hackers to work on neurotechnology. To this end, we plan to rapidly expand the functionality of the package, build a friendly and empowered community of contributors, help guide new contributors, run machine-learning competitions, host hackathons, and much more.
 
-The initial release of NDK provides support for transcranial functional ultrasound stimulation, with a focus on providing comprehensive documentation, API flexibility, and visualizations like the one below.
+The initial release of NDK provides support for transcranial functional ultrasound stimulation, with a focus on providing comprehensive documentation, API flexibility, and visualizations.
 
 ![Simulation](https://raw.githubusercontent.com/agencyenterprise/neurotechdevkit/main/docs/images/ndk_example.gif)
 
