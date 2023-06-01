@@ -4,18 +4,13 @@
 [![Tests](https://github.com/agencyenterprise/neurotechdevkit/actions/workflows/test.yml/badge.svg)](https://github.com/agencyenterprise/neurotechdevkit/actions/workflows/test.yml)
 [![Gallery examples](https://circleci.com/gh/agencyenterprise/neurotechdevkit.png?style=shield)](https://circleci.com/gh/agencyenterprise/neurotechdevkit)
 
+The [_Neurotech Development Kit_ (NDK)](https://agencyenterprise.github.io/neurotechdevkit/) is an open-source and community-driven software library designed to lower the barrier of entry to cutting-edge neurotechnology for all enthusiasts, from scientists to clinicians and software hackers.
 
-The [_Neurotech Development Kit_ (NDK)](https://agencyenterprise.github.io/neurotechdevkit/) is an open-source software library designed to enhance accessibility to cutting-edge neurotechnology.
-Featuring an easy-to-use API and pre-built examples, the NDK provides a seamless starting point for users.
-Moreover, the NDK offers educational resources, such as interactive simulations and notebook-based tutorials, catering to a diverse audience including researchers, educators, engineers, and trainees.
-By lowering the barrier of entry for newcomers and accelerating the progress of researchers, the NDK aims to be a versatile and invaluable tool for the neurotech community.
+This package enables those fascinated with the future of neurotechnology and humanity to explore next-generation technologies without needing access to a laboratory or expensive medical equipment. As a community-driven project, we encourage you to contribute code, feedback, and features to help develop the future of human-machine communication and accelerate us towards a better future.
 
-The initial set of target users for the NDK are ultrasound simulation trainees – individuals with backgrounds in technical or neuroscience-related fields who are learning to perform ultrasound simulations.
-Our goal is to help users familiarize themselves with ultrasound simulation, understand the importance of input parameters, and streamline the process of running and visualizing simulations.
-In the future, we plan to expand the NDK's features to incorporate additional functionality and modalities, catering to a broader range of users, including ultrasound researchers, product developers, machine learning engineers, and many more.
+To empower users of any technical level, NDK features an easy-to-use API and a range of ready-to-use examples. And for advanced neuro-developers, it provides precise control of low-level functionality and an easy-to-expand framework. NDK is a rapidly developing project with the aim of attracting budding researchers, engineers, academics, and hackers to work on neurotechnology. To this end, we plan to rapidly expand the functionality of the package, build a friendly and empowered community of contributors, help guide new contributors, run machine-learning competitions, host hackathons, and much more.
 
 The initial release of NDK provides support for transcranial functional ultrasound stimulation, with a focus on providing comprehensive documentation, API flexibility, and visualizations.
-The Neurotech Development Kit is actively developed and we welcome feedback and contributions.
 
 ![Simulation](https://raw.githubusercontent.com/agencyenterprise/neurotechdevkit/main/docs/images/ndk_example.gif)
 
