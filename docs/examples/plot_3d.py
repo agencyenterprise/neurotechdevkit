@@ -3,7 +3,7 @@
 Visualizing 3D results with Napari
 ====================================
 
-This example demonstrates how to render a steady state result for a 3D scenario.
+This example demonstrates how to render a steady state result for a 3D scenario using [napari](https://napari.org/stable/).
 
 Running such simulations is computationally expensive and can take a long time to
 complete. For this reason, we recommend running this simulation on an external machine,
