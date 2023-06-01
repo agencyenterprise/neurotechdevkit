@@ -57,15 +57,6 @@ As a last step **before running NDK**, follow the instructions below depending o
         brew install libomp
         ```
 
-        the output of the command above will look like this:
-
-        ```
-        For compilers to find libomp you may need to set:
-        export LDFLAGS="-L/usr/local/opt/libomp/lib"
-        export CPPFLAGS="-I/usr/local/opt/libomp/include"
-        ```
-
-
     1. Run the following command to export a new environment variable `CPATH` with the path for `libomp` headers:
 
         ```

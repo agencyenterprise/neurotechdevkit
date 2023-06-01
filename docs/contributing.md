@@ -49,6 +49,12 @@ This project requires Python `>=3.9` and `<3.11` to be installed. You can find t
 
 We use [poetry](https://python-poetry.org/) to manage dependencies and virtual environments. Follow the instructions from [poetry's documentation](https://python-poetry.org/docs/#installation) to install it if you don't have it on your system.
 
+Checkout the repository:
+
+```
+git clone git@github.com:agencyenterprise/neurotechdevkit.git
+```
+
 Install the dependencies by running the following command in a shell within the project directory:
 
 ```
@@ -58,40 +64,13 @@ poetry install
 This will resolve and install the dependencies from `poetry.lock` and will install the `neurotechdevkit` package in editable mode.
 
 
-Install stride with
+Install stride with:
 
 ```bash
 $ poetry run pip install git+https://github.com/trustimaging/stride
 ```
 
-`devito`, a dependency of `neurotechdevkit`, requires `libomp`. On MacOS it can be installed with:
-
-```
-brew install libomp
-```
-
-the output of the command above will look like this:
-
-```
-For compilers to find libomp you may need to set:
-export LDFLAGS="-L/usr/local/opt/libomp/lib"
-export CPPFLAGS="-I/usr/local/opt/libomp/include"
-```
-
-`devito` requires the directory with `libomp` headers to be accessible during the runtime compilation, you can make it accessible by exporting a new environment variable `CPATH` with the path for libomp headers, like so:
-
-```
-export CPATH="/usr/local/opt/libomp/include"
-```
-
-You will also have to set an environment variable that defines what compiler `devito` will use, like so:
-
-```
-export DEVITO_ARCH=gcc
-```
-
-the supported values for `DEVITO_ARCH` are: `'custom', 'gnu', 'gcc', 'clang', 'aomp', 'pgcc', 'pgi', 'nvc', 'nvc++', 'nvidia', 'cuda', 'osx', 'intel', 'icpc', 'icc', 'intel-knl', 'knl', 'dpcpp', 'gcc-4.9', 'gcc-5', 'gcc-6', 'gcc-7', 'gcc-8', 'gcc-9', 'gcc-10', 'gcc-11'`
-
+Follow the steps described in [Setting up a compiler](usage/installation.md#setting-up-a-compiler).
 
 ### Using the environment
 
