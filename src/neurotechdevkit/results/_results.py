@@ -20,8 +20,8 @@ from matplotlib.animation import FuncAnimation
 import neurotechdevkit
 
 from .. import rendering, scenarios
-from ..scenarios import _metrics as metrics
 from ..scenarios._utils import drop_element, slice_field
+from . import _metrics as metrics
 
 DATA_FILENAME = "data.gz"
 

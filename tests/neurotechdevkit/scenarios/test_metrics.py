@@ -3,8 +3,7 @@ from types import SimpleNamespace
 import numpy as np
 import pytest
 
-from neurotechdevkit.results._results import SteadyStateResult2D
-from neurotechdevkit.scenarios._metrics import (
+from neurotechdevkit.results._metrics import (
     Conversions,
     calculate_all_metrics,
     calculate_focal_gain,
@@ -14,6 +13,7 @@ from neurotechdevkit.scenarios._metrics import (
     calculate_i_ta_target,
     calculate_mechanical_index,
 )
+from neurotechdevkit.results._results import SteadyStateResult2D
 
 CENTER_FREQUENCY = 1.5e6
 AMBIENT_PRESSURE = 2.5e6
@@ -25,7 +25,7 @@ DENSITY = 1200.0
 @pytest.fixture
 def patched_metric_fns(monkeypatch):
     """Stub metric functions to avoid depending on their implementation during tests"""
-    import neurotechdevkit.scenarios._metrics as metrics
+    import neurotechdevkit.results._metrics as metrics
 
     monkeypatch.setattr(
         metrics, "calculate_mechanical_index", lambda result, layer: 0.1234
