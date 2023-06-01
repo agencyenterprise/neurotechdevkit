@@ -2,6 +2,12 @@
 
 You can run NDK without installing the package using docker, as shown [here](../index.md#running). However, if you'd like to install it, please follow the instructions below.
 
+??? "Before installing on Windows"
+
+    1. Install [Ubuntu on WSL](https://ubuntu.com/tutorials/install-ubuntu-on-wsl2-on-windows-11-with-gui-support#1-overview).
+
+    1. Follow the the `Linux` steps described in this page inside your Ubuntu shell.
+
 `neurotechdevkit` requires Python `>=3.9` and `<3.11` to be installed. You can find which Python version you have installed by running `python --version` in a terminal.
 
 If you don't have Python installed, or you are running an unsupported version, you can download it from [python.org](https://www.python.org/downloads/). Python environment managers like pyenv, conda, and poetry are all perfectly suitable as well.
@@ -132,3 +138,8 @@ As a last step **before running NDK**, follow the instructions below depending o
     After installing `neurotechdevkit` you can use [Jupyter](https://jupyterlab.readthedocs.io/en/stable/) to explore the package.
 
     To get started, we recommend downloading the example notebooks from this [link](https://agencyenterprise.github.io/neurotechdevkit/generated/gallery/gallery_jupyter.zip).
+
+    **On Linux** you can download and extract the notebooks running the following commands:
+
+    1. `sudo apt-get update && sudo apt-get install -y unzip wget`
+    1. `wget "https://agencyenterprise.github.io/neurotechdevkit/generated/gallery/gallery_jupyter.zip" -O temp.zip && unzip temp.zip && rm temp.zip`
