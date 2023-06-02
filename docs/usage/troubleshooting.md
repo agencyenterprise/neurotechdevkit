@@ -62,6 +62,6 @@ This error is shown when `neurotechdevkit` is not installed, if you installed it
 
 This error is shown when napari is not installed, make sure to run
 
-  `poetry run pip install "napari[all]"`
+  `pip install "napari[all]"`
 
 and try again.
