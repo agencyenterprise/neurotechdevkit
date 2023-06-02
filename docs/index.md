@@ -34,18 +34,19 @@ You can run `neurotechdevkit` inside a docker container with just a couple of st
 
     All changes you make to these files will be lost once you stop the docker container.
 
-!!! note
-    You can have persisting [Jupyter notebooks](https://jupyterlab.readthedocs.io/en/stable/getting_started/overview.html) by running
-    ```
-    docker run -p 8888:8888  -v $(pwd)/notebooks:/ndk/notebooks -it ghcr.io/agencyenterprise/neurotechdevkit:latest
-    ```
-    The command above will create a folder `notebooks` in your current directory where you can put your jupyter notebooks.
-
-    We recommend downloading the `.zip` file with example notebooks from this [link](https://agencyenterprise.github.io/neurotechdevkit/generated/gallery/gallery_jupyter.zip), and extracting it into your local `notebooks` folder so you can access them from the docker.
+> **Note**:
+>
+>    You can have persisting [Jupyter notebooks](https://jupyterlab.readthedocs.io/en/stable/getting_started/overview.html) by running
+>    ```
+>    docker run -p 8888:8888  -v $(pwd)/notebooks:/ndk/notebooks -it ghcr.io/agencyenterprise/neurotechdevkit:latest
+>    ```
+>    The command above will create a folder `notebooks` in your current directory where you can put your jupyter notebooks.
+>
+>    We recommend downloading the `.zip` file with example notebooks from this [link](https://agencyenterprise.github.io/neurotechdevkit/generated/gallery/gallery_jupyter.zip), and extracting it into your local `notebooks` folder so you can access them from the docker.
 
 ### Local installation
 
-To install and run **neurotechdevkit** locally check the [installation](https://agencyenterprise.github.io/neurotechdevkit/usage/installation/) page.
+To install and run **neurotechdevkit** locally check the [installation](https://agencyenterprise.github.io/neurotechdevkit/installation/) page.
 
 ## Usage
 

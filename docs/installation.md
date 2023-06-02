@@ -1,6 +1,6 @@
 # Installation
 
-You can run NDK without installing the package using docker, as shown [here](../index.md#running). However, if you'd like to install it, please follow the instructions below.
+You can run NDK without installing the package using docker, as shown [here](index.md#running). However, if you'd like to install it, please follow the instructions below.
 
 ??? "Before installing on Windows"
 

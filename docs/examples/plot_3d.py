@@ -29,7 +29,7 @@ result = ndk.load_result_from_disk(downloaded_file_path)
 # Install `napari` via pip:
 #
 # ```
-# poetry run pip install "napari[all]"
+# pip install "napari[all]"
 # ```
 #
 # or by following the `napari` [installation instructions](https://napari.org/stable/tutorials/fundamentals/installation.html).
