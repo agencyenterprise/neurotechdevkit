@@ -18,6 +18,7 @@ To ensure efficient collaborative development, a variety of standards are utiliz
 - [pyright](https://github.com/microsoft/pyright) is used for static type checking.
 - [Type hinting](https://docs.python.org/3/library/typing.html) is used.
       - And checked using [mypy](http://mypy-lang.org).
+- [Pylint](https://pypi.org/project/pylint/) is used for spell checking.
 
 ### Preparing your environment
 

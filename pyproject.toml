@@ -50,6 +50,7 @@ codespell = "^2.2.4"
 pydocstyle = "^6.3.0"
 pyright = "^1.1.306"
 pooch = "^1.7.0"
+pylint = {extras = ["spelling"], version = "^2.17.4"}
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
