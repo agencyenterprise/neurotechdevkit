@@ -62,7 +62,7 @@ Install stride with:
 $ poetry run pip install git+https://github.com/trustimaging/stride
 ```
 
-Follow the steps described in [Setting up a compiler](usage/installation.md#setting-up-a-compiler).
+Follow the steps described in [Setting up a compiler](installation.md#setting-up-a-compiler).
 
 ### Using the environment
 
