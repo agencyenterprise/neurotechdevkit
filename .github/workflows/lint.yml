@@ -18,6 +18,8 @@ jobs:
     runs-on: ${{ matrix.os }}
 
     steps:
+      - name: Install enchant
+        run: sudo apt-get install -y libenchant-2-2
 
       - name: Check out repository
         uses: actions/checkout@v3.5.2
