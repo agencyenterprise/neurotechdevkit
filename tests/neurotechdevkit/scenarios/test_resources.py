@@ -94,6 +94,7 @@ def test_estimate_memory_required_steady_state_returns_value(
     n_points, time_undersampling, n_cycles_steady_st, time_steps, expected_prediction
 ):
     """Verify that estimated memory is inline with intuition."""
+    warnings.simplefilter("ignore")
     estimated_memory = estimate_memory_required(
         n_points,
         time_undersampling,
@@ -120,6 +121,7 @@ def test_estimate_memory_required_pulsed_returns_value(
     expected_prediction,
 ):
     """Verify that estimated memory is inline with intuition."""
+    warnings.simplefilter("ignore")
     estimated_memory = estimate_memory_required(
         n_points=n_points,
         recording_time_undersampling=recording_time_undersampling,
