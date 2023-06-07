@@ -431,6 +431,7 @@ class Scenario(abc.ABC):
             recording_time_undersampling=recording_time_undersampling,
             n_cycles_steady_state=n_cycles_steady_state,
             time_steps=problem.grid.time.grid.shape[0],
+            is_pulsed=False,
         )
 
         sub_problem = self._setup_sub_problem(center_frequency, "steady-state")
@@ -589,9 +590,11 @@ class Scenario(abc.ABC):
         else:
             recorded_slice = None
 
-        print(
-            "Memory and time requirement estimations do not currently support pulsed"
-            " simulations, so none will be provided."
+        budget_time_and_memory_resources(
+            grid_shape=self.shape,
+            recording_time_undersampling=recording_time_undersampling,
+            time_steps=problem.grid.time.grid.shape[0],
+            is_pulsed=True,
         )
 
         sub_problem = self._setup_sub_problem(center_frequency, "pulsed")
