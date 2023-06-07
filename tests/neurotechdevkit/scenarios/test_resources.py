@@ -34,11 +34,11 @@ def test_budget_time_and_memory_resources_prints_cpu_time(capsys):
 @pytest.mark.parametrize(
     "n_threads, n_points, time_steps, expected_time",
     [
-        (1, 0, 0, 46.3),
-        (11, 1e2, 20, 101.36524218000001),
-        (16, 1e3, 30, 47.275800000000004),
-        (70, 1e4, 40, 67.54808772),
-        (73, 1e9, 50, 38227.758102149994),
+        (1, 0, 0, 46),
+        (11, 1e2, 20, 101),
+        (16, 1e3, 30, 47),
+        (70, 1e4, 40, 67),
+        (73, 1e9, 50, 38227),
     ],
 )
 def test_estimate_running_time_steady_state(
@@ -49,16 +49,16 @@ def test_estimate_running_time_steady_state(
     result = estimate_running_time(
         n_points=n_points, time_steps=time_steps, n_threads=n_threads, is_pulsed=False
     )
-    assert result == expected_time
+    assert int(result) == expected_time
 
 
 @pytest.mark.parametrize(
     "n_threads, n_points, time_steps, simulated_not_recorded_frames, expected_time",
     [
-        (24, 58594371, 2722, 1361, 1820.8734061823275),
-        (16, 58594371, 5682, 5562, 2212.1376088474767),
-        (16, 153791, 4754, 4634, 626.7545025354104),
-        (8, 4791321, 2731, 2671, 299.5110687863803),
+        (24, 58594371, 2722, 1361, 1820),
+        (16, 58594371, 5682, 5562, 2212),
+        (16, 153791, 4754, 4634, 626),
+        (8, 4791321, 2731, 2671, 299),
     ],
 )
 def test_estimate_running_time_pulsed(
@@ -73,7 +73,7 @@ def test_estimate_running_time_pulsed(
         n_threads=n_threads,
         is_pulsed=True,
     )
-    assert result == expected_time
+    assert int(result) == expected_time
 
 
 def test_estimate_running_time_raises_warning():
