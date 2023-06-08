@@ -61,7 +61,7 @@ This will resolve and install the dependencies from `poetry.lock` and will insta
 Install stride with
 
 ```bash
-$ poetry run pip install git+https://github.com/trustimaging/stride
+$ poetry run pip install git+https://github.com/NewtonSander/stride
 ```
 
 `devito`, a dependency of `neurotechdevkit`, requires `libomp`. On MacOS it can be installed with:
