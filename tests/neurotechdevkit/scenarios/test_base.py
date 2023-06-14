@@ -5,7 +5,6 @@ import numpy.typing as npt
 import pytest
 import stride
 from frozenlist import FrozenList
-from mosaic.types import Struct
 
 from neurotechdevkit.results import PulsedResult, SteadyStateResult
 from neurotechdevkit.scenarios import materials
@@ -32,6 +31,7 @@ class ScenarioBaseTester(Scenario):
             description="bar",
         ),
     }
+    _material_layers = [("foo", materials.brain), ("bar", materials.skin)]
 
     default_source = PlanarSource3D(
         position=np.array([0.05, 0.1, 0.05]),
@@ -46,10 +46,6 @@ class ScenarioBaseTester(Scenario):
             origin=np.array([-0.1, -0.1, 0.0]),
             complexity=complexity,
         )
-
-    @property
-    def _material_layers(self) -> list[tuple[str, Struct]]:
-        return [("foo", materials.brain), ("bar", materials.skin)]
 
     @property
     def _material_outline_upsample_factor(self) -> int:

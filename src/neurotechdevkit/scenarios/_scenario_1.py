@@ -7,8 +7,7 @@ import numpy.typing as npt
 import stride
 from mosaic.types import Struct
 
-from .. import rendering, sources
-from . import materials
+from .. import materials, rendering, sources
 from ._base import Scenario2D, Scenario3D, Target
 from ._utils import add_material_fields_to_problem, make_grid
 
@@ -51,15 +50,13 @@ class _Scenario1Mixin:
         https://asa.scitation.org/doi/pdf/10.1121/10.0013426
     """
 
-    @property
-    def _material_layers(self: _Scenario1MixinProtocol) -> list[tuple[str, Struct]]:
-        return [
-            ("water", materials.water),
-            ("skin", materials.skin),
-            ("cortical bone", materials.cortical_bone),
-            ("trabecular bone", materials.trabecular_bone),
-            ("brain", materials.brain),
-        ]
+    _material_layers = [
+        ("water", materials.water),
+        ("skin", materials.skin),
+        ("cortical bone", materials.cortical_bone),
+        ("trabecular bone", materials.trabecular_bone),
+        ("brain", materials.brain),
+    ]
 
     @property
     def _material_outline_upsample_factor(self) -> int:

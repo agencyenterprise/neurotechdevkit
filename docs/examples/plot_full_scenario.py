@@ -41,6 +41,24 @@ class FullScenario(Scenario2D):
         "target_1": Target("target_1", np.array([0.064, 0.0]), 0.004, ""),
     }
 
+    """
+    The order of returned materials defines the layering of the scenario.
+
+    Each material has the following properties:
+    - vp: the speed of sound (in m/s).
+    - rho: the mass density (in kg/m³).
+    - alpha: the absorption (in dB/cm).
+    - render_color: the color used when rendering this material in the scenario layout
+        plot.
+    """
+    _material_layers = [
+        ("water", materials.water),
+        ("skin", materials.skin),
+        ("cortical bone", materials.cortical_bone),
+        ("trabecular bone", materials.trabecular_bone),
+        ("brain", materials.brain),
+    ]
+
     def __init__(self, complexity="fast"):
         """
         Instantiate a new scenario.
@@ -52,27 +70,6 @@ class FullScenario(Scenario2D):
             origin=np.array([0.0, -0.035]),
             complexity=complexity,
         )
-
-    @property
-    def _material_layers(self) -> list[tuple[str, Struct]]:
-        """"
-        This function defines the material layers for the scenario.
-        The order of returned materials defines the layering of the scenario.
-
-        Each material has the following properties:
-        - vp: the speed of sound (in m/s).
-        - rho: the mass density (in kg/m³).
-        - alpha: the absorption (in dB/cm).
-        - render_color: the color used when rendering this material in the scenario layout
-            plot.
-        """
-        return [
-            ("water", materials.water),
-            ("skin", materials.skin),
-            ("cortical bone", materials.cortical_bone),
-            ("trabecular bone", materials.trabecular_bone),
-            ("brain", materials.brain),
-        ]
 
     @property
     def _material_outline_upsample_factor(self) -> int:

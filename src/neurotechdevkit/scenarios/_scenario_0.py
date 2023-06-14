@@ -1,9 +1,8 @@
 import numpy as np
 import stride
-from mosaic.types import Struct
 
+from .. import materials
 from ..sources import FocusedSource2D
-from . import materials
 from ._base import Scenario2D, Target
 from ._utils import (
     add_material_fields_to_problem,
@@ -25,6 +24,12 @@ class Scenario0(Scenario2D):
             description="Represents a simulated tumor.",
         ),
     }
+    _material_layers = [
+        ("water", materials.water),
+        ("skull", materials.cortical_bone),
+        ("brain", materials.brain),
+        ("tumor", materials.tumor),
+    ]
 
     def __init__(self, complexity="fast"):
         """Create a new instance of scenario 0."""
@@ -34,15 +39,6 @@ class Scenario0(Scenario2D):
             origin=np.array([0.0, -0.02]),
             complexity=complexity,
         )
-
-    @property
-    def _material_layers(self) -> list[tuple[str, Struct]]:
-        return [
-            ("water", materials.water),
-            ("skull", materials.cortical_bone),
-            ("brain", materials.brain),
-            ("tumor", materials.tumor),
-        ]
 
     @property
     def _material_outline_upsample_factor(self) -> int:

@@ -16,6 +16,7 @@ from mosaic.types import Struct
 from stride.problem import StructuredData
 
 from .. import rendering, results
+from ..materials import Material
 from ..sources import Source
 from ._resources import budget_time_and_memory_resources
 from ._shots import create_shot
@@ -59,6 +60,7 @@ class Scenario(abc.ABC):
 
     _SCENARIO_ID: str
     _TARGET_OPTIONS: dict[str, Target]
+    _material_layers: list[tuple[str, Material]]
 
     def __init__(
         self,
@@ -224,7 +226,7 @@ class Scenario(abc.ABC):
         - render_color: the color used when rendering this material in the
         scenario layout plot.
         """
-        return {name: material for name, material in self._material_layers}
+        return {name: material.to_struct() for name, material in self._material_layers}
 
     @property
     def layer_ids(self) -> Mapping[str, int]:
@@ -235,11 +237,6 @@ class Scenario(abc.ABC):
     def ordered_layers(self) -> list[str]:
         """A list of material names in order of their layer id."""
         return [name for name, _ in self._material_layers]
-
-    @property
-    @abc.abstractmethod
-    def _material_layers(self) -> list[tuple[str, Struct]]:
-        pass
 
     @property
     @abc.abstractmethod
@@ -406,13 +403,6 @@ class Scenario(abc.ABC):
         Returns:
             An object containing the result of the steady-state simulation.
         """
-        if center_frequency != 5.0e5:
-            raise NotImplementedError(
-                "500kHz is the only currently supported center frequency. Support for"
-                " other frequencies will be implemented once material properties as a"
-                " function of frequency has been implemented."
-            )
-
         problem = self.problem
         sim_time = select_simulation_time_for_steady_state(
             grid=problem.grid,
