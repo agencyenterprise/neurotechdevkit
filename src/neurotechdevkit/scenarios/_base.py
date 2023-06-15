@@ -369,10 +369,6 @@ class Scenario(abc.ABC):
         found by taking the Fourier transform of the last `n_cycles_steady_state` cycles
         of data and taking the amplitude of the component at the `center_frequency`.
 
-        !!! note
-            The only supported frequency currently supported is 500kHz. Any other
-            value will raise a NotImplementedError.
-
         !!! warning
             A poor choice of arguments to this function can lead to a failed
             simulation. Make sure you understand the impact of supplying parameter
@@ -380,8 +376,7 @@ class Scenario(abc.ABC):
 
         Args:
             center_frequency: the center frequency (in hertz) to use for the
-                continuous-wave source output. No other value besides 500kHz (the
-                default) is currently supported.
+                continuous-wave source output.
             points_per_period: the number of points in time to simulate for each cycle
                 of the wave.
             n_cycles_steady_state: the number of complete cycles to use when calculating
@@ -396,9 +391,6 @@ class Scenario(abc.ABC):
                 consecutive time points will be recorded and all others will be dropped.
             n_jobs: the number of threads to be used for the computation. Use None to
                 leverage Devito automatic tuning.
-
-        Raises:
-            NotImplementedError: if a `center_frequency` other than 500kHz is provided.
 
         Returns:
             An object containing the result of the steady-state simulation.
@@ -464,10 +456,6 @@ class Scenario(abc.ABC):
         In this simulation, the sources will emit a pulse containing a few cycles of
         oscillation and then let the pulse propagate out to all edges of the scenario.
 
-        !!! note
-            The only supported frequency currently supported is 500kHz. Any other
-            value will raise a NotImplementedError.
-
         !!! warning
             A poor choice of arguments to this function can lead to a failed
             simulation. Make sure you understand the impact of supplying parameter
@@ -475,8 +463,7 @@ class Scenario(abc.ABC):
 
         Args:
             center_frequency: the center frequency (in hertz) to use for the
-                continuous-wave source output. No other value besides
-                500kHz (the default) is currently supported.
+                continuous-wave source output.
             points_per_period: the number of points in time to simulate for each cycle
                 of the wave.
             simulation_time: the amount of time (in seconds) the simulation should run.
@@ -488,9 +475,6 @@ class Scenario(abc.ABC):
                 consecutive time points will be recorded and all others will be dropped.
             n_jobs: the number of threads to be used for the computation. Use None to
                 leverage Devito automatic tuning.
-
-        Raises:
-            NotImplementedError: if a `center_frequency` other than 500kHz is provided.
 
         Returns:
             An object containing the result of the 2D pulsed simulation.
@@ -520,18 +504,13 @@ class Scenario(abc.ABC):
         In this simulation, the sources will emit a pulse containing a few cycles of
         oscillation and then let the pulse propagate out to all edges of the scenario.
 
-        !!! note
-            The only supported frequency currently supported is 500kHz. Any other
-            value will raise a NotImplementedError.
-
         Warning: A poor choice of arguments to this function can lead to a failed
         simulation. Make sure you understand the impact of supplying parameter values
         other than the default if you chose to do so.
 
         Args:
             center_frequency: the center frequency (in hertz) to use for the
-                continuous-wave source output. No other value besides
-                500kHz (the default) is currently supported.
+                continuous-wave source output.
             points_per_period: the number of points in time to simulate for each cycle
                 of the wave.
             simulation_time: the amount of time (in seconds) the simulation should run.
@@ -550,19 +529,9 @@ class Scenario(abc.ABC):
                 which the slice of the 3D field should be made. Only valid if
                 `slice_axis` is not None.
 
-        Raises:
-            NotImplementedError: if a `center_frequency` other than 500kHz is provided.
-
         Returns:
             An object containing the result of the pulsed simulation.
         """
-        if center_frequency != 5.0e5:
-            raise NotImplementedError(
-                "500kHz is the only currently supported center frequency. Support for"
-                " other frequencies will be implemented once material properties as a"
-                " function of frequency has been implemented."
-            )
-
         problem = self.problem
         if simulation_time is None:
             simulation_time = select_simulation_time_for_pulsed(
@@ -998,10 +967,6 @@ class Scenario3D(Scenario):
         In this simulation, the sources will emit a pulse containing a few cycles of
         oscillation and then let the pulse propagate out to all edges of the scenario.
 
-        !!! note
-            The only supported frequency currently supported is 500kHz. Any
-            other value will raise a NotImplementedError.
-
         !!! warning
             A poor choice of arguments to this function can lead to a failed
             simulation. Make sure you understand the impact of supplying parameter
@@ -1009,8 +974,7 @@ class Scenario3D(Scenario):
 
         Args:
             center_frequency: the center frequency (in hertz) to use for the
-                continuous-wave source output. No other value besides
-                500kHz (the default) is currently supported.
+                continuous-wave source output.
             points_per_period: the number of points in time to simulate for each cycle
                 of the wave.
             simulation_time: the amount of time (in seconds) the simulation should run.
@@ -1028,9 +992,6 @@ class Scenario3D(Scenario):
             slice_position: the position (in meters) along the slice axis at
                 which the slice of the 3D field should be made. Only valid if
                 `slice_axis` is not None.
-
-        Raises:
-            NotImplementedError: if a `center_frequency` other than 500kHz is provided.
 
         Returns:
             An object containing the result of the 3D pulsed simulation.
