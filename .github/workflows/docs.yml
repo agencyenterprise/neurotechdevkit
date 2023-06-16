@@ -15,7 +15,7 @@ jobs:
         python-version: ["3.10"]
     runs-on: ${{ matrix.os }}
     env:
-      OFFLINE: false
+      OFFLINE: true
 
     steps:
       - name: Check out repository
