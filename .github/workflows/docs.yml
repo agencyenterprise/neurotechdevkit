@@ -65,4 +65,4 @@ jobs:
         run: |
           mv current_pages/generated /home/runner/work/neurotechdevkit/neurotechdevkit/docs/
 
-      - run: poetry run mkdocs gh-deploy
+      - run: poetry run mkdocs gh-deploy --force
