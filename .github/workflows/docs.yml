@@ -64,5 +64,6 @@ jobs:
       - name: Move generated gallery
         run: |
           mv current_pages/generated /home/runner/work/neurotechdevkit/neurotechdevkit/docs/
+          rm -rf /home/runner/work/neurotechdevkit/neurotechdevkit/docs/generated/gallery/index.html
 
       - run: poetry run mkdocs gh-deploy --force
