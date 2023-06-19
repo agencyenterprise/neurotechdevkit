@@ -1,7 +1,6 @@
 import numpy as np
 import stride
 
-from .. import materials
 from ..sources import FocusedSource2D
 from ._base import Scenario2D, Target
 from ._utils import (
@@ -24,11 +23,11 @@ class Scenario0(Scenario2D):
             description="Represents a simulated tumor.",
         ),
     }
-    _material_layers = [
-        ("water", materials.water),
-        ("skull", materials.cortical_bone),
-        ("brain", materials.brain),
-        ("tumor", materials.tumor),
+    material_layers = [
+        "water",
+        "cortical_bone",
+        "brain",
+        "tumor",
     ]
 
     def __init__(self, complexity="fast"):
@@ -47,7 +46,7 @@ class Scenario0(Scenario2D):
     def _get_material_masks(self, problem):
         return {
             name: _create_scenario_0_mask(name, problem.grid, self._origin)
-            for name in self.materials.keys()
+            for name in self.material_layers
         }
 
     def _compile_problem(self) -> stride.Problem:
@@ -71,7 +70,7 @@ class Scenario0(Scenario2D):
         )
         problem = add_material_fields_to_problem(
             problem=problem,
-            materials=self.materials,
+            materials=self.get_materials(c_freq),
             layer_ids=self.layer_ids,
             masks=self._get_material_masks(problem),
         )
@@ -94,7 +93,7 @@ def _create_scenario_0_mask(material, grid, origin):
         water_mask = ~outer_skull_mask
         return water_mask
 
-    elif material == "skull":
+    elif material == "cortical_bone":
         outer_skull_mask = _create_skull_interface_mask(grid, origin)
         outer_brain_mask = _create_brain_interface_mask(grid, origin)
         skull_mask = outer_skull_mask & ~outer_brain_mask

@@ -7,7 +7,6 @@ import stride
 from frozenlist import FrozenList
 
 from neurotechdevkit.results import PulsedResult, SteadyStateResult
-from neurotechdevkit.scenarios import materials
 from neurotechdevkit.scenarios._base import Scenario, Target
 from neurotechdevkit.scenarios._utils import make_grid, wavelet_helper
 from neurotechdevkit.sources import FocusedSource3D, PlanarSource3D, Source
@@ -31,7 +30,7 @@ class ScenarioBaseTester(Scenario):
             description="bar",
         ),
     }
-    _material_layers = [("foo", materials.brain), ("bar", materials.skin)]
+    material_layers = ["brain", "skin"]
 
     default_source = PlanarSource3D(
         position=np.array([0.05, 0.1, 0.05]),
@@ -515,7 +514,7 @@ def test_get_layer_mask_with_wrong_layer_name(tester_with_layers):
 
 def test_get_layer_mask_with_first_layer(tester_with_layers):
     """Verify that get_layer_mask returns the expected mask for the first layer."""
-    mask = tester_with_layers.get_layer_mask("foo")
+    mask = tester_with_layers.get_layer_mask("brain")
     expected = np.zeros_like(mask, dtype=bool)
     expected[:5] = True
     np.testing.assert_allclose(mask, expected)
@@ -523,7 +522,7 @@ def test_get_layer_mask_with_first_layer(tester_with_layers):
 
 def test_get_layer_mask_with_last_layer(tester_with_layers):
     """Verify that get_layer_mask returns the expected mask for the last layer."""
-    mask = tester_with_layers.get_layer_mask("bar")
+    mask = tester_with_layers.get_layer_mask("skin")
     expected = np.zeros_like(mask, dtype=bool)
     expected[5:] = True
     np.testing.assert_allclose(mask, expected)

@@ -1,44 +1,20 @@
 from __future__ import annotations
 
 import pathlib
-from typing import Mapping, Protocol
+from typing import Mapping
 
 import hdf5storage
 import numpy as np
 import numpy.typing as npt
 import stride
-from mosaic.types import Struct
 
-from .. import materials, rendering, sources
-from ._base import Scenario2D, Scenario3D, Target
+from .. import rendering, sources
+from ._base import Scenario, Scenario2D, Scenario3D, Target
 from ._utils import add_material_fields_to_problem, make_grid
 
 
-class _Scenario2MixinProtocol(Protocol):
-    """Provide type-hinting for Scenario 2 members used by mixins."""
-
-    @property
-    def scenario_id(self) -> str:
-        ...
-
-    @property
-    def complexity(self) -> str:
-        ...
-
-    @property
-    def materials(self) -> Mapping[str, Struct]:
-        ...
-
-    @property
-    def layer_ids(self) -> Mapping[str, int]:
-        ...
-
-    def _get_material_masks(self) -> Mapping[str, npt.NDArray[np.bool_]]:
-        ...
-
-
-class _Scenario2Mixin:
-    """A mixin providing specific implementation detail for scenario 2.
+class Scenario2(Scenario):
+    """Specific implementation detail for scenario 2.
 
     Scenario 2 is based on benchmark 8 of the following paper:
 
@@ -54,8 +30,12 @@ class _Scenario2Mixin:
     def _material_outline_upsample_factor(self) -> int:
         return 4
 
+    def _get_material_masks(self) -> Mapping[str, npt.NDArray[np.bool_]]:
+        """Will be implemented by the subclass."""
+        raise NotImplementedError()
+
     def _compile_scenario_2_problem(
-        self: _Scenario2MixinProtocol, extent: npt.NDArray[np.float_]
+        self, extent: npt.NDArray[np.float_]
     ) -> stride.Problem:
         # scenario constants
         speed_water = 1500  # m/s
@@ -73,14 +53,14 @@ class _Scenario2Mixin:
         )
         problem = add_material_fields_to_problem(
             problem=problem,
-            materials=self.materials,
+            materials=self.get_materials(c_freq),
             layer_ids=self.layer_ids,
             masks=self._get_material_masks(),
         )
         return problem
 
 
-class Scenario2_2D(_Scenario2Mixin, Scenario2D):
+class Scenario2_2D(Scenario2, Scenario2D):
     """A 2D implementation of scenario 2.
 
     Scenario 2 is based on benchmark 8 of the following paper:
@@ -129,10 +109,10 @@ class Scenario2_2D(_Scenario2Mixin, Scenario2D):
             ),
         ),
     }
-    _material_layers = [
-        ("water", materials.water),
-        ("skull", materials.cortical_bone),
-        ("brain", materials.brain),
+    material_layers = [
+        "water",
+        "cortical_bone",
+        "brain",
     ]
 
     def __init__(self, complexity="fast"):
@@ -151,7 +131,7 @@ class Scenario2_2D(_Scenario2Mixin, Scenario2D):
     def _get_material_masks(self) -> Mapping[str, npt.NDArray[np.bool_]]:
         return {
             name: _create_scenario_2_mask(name, convert_2d=True)
-            for name in self.materials.keys()
+            for name in self.material_layers
         }
 
     def get_default_source(self) -> sources.Source:
@@ -165,7 +145,7 @@ class Scenario2_2D(_Scenario2Mixin, Scenario2D):
         )
 
 
-class Scenario2_3D(_Scenario2Mixin, Scenario3D):
+class Scenario2_3D(Scenario2, Scenario3D):
     """A 3D implementation of scenario 2.
 
     Scenario 2 is based on benchmark 8 of the following paper:
@@ -256,12 +236,12 @@ class Scenario2_3D(_Scenario2Mixin, Scenario3D):
             init_zoom=2.0,
             colormaps={
                 "water": "blue",
-                "skull": "magma",
+                "cortical_bone": "magma",
                 "brain": "bop orange",
             },
             opacities={
                 "water": 0.8,
-                "skull": 0.2,
+                "cortical_bone": 0.2,
                 "brain": 0.2,
             },
         )
@@ -282,7 +262,7 @@ class Scenario2_3D(_Scenario2Mixin, Scenario3D):
     def _get_material_masks(self):
         return {
             name: _create_scenario_2_mask(name, convert_2d=False)
-            for name in self.materials.keys()
+            for name in self.material_layers
         }
 
     def get_default_source(self):
@@ -305,7 +285,7 @@ def _create_scenario_2_mask(material, convert_2d=False) -> npt.NDArray[np.bool_]
     skull_mask = mat_data["skull_mask"].astype(np.bool_)
     brain_mask = mat_data["brain_mask"].astype(np.bool_)
 
-    if material == "skull":
+    if material == "cortical_bone":
         mask = skull_mask
 
     elif material == "brain":

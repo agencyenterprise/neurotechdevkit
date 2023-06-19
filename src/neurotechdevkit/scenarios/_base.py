@@ -16,7 +16,7 @@ from mosaic.types import Struct
 from stride.problem import StructuredData
 
 from .. import rendering, results
-from ..materials import Material
+from ..materials import Material, get_material, get_render_color
 from ..sources import Source
 from ._resources import budget_time_and_memory_resources
 from ._shots import create_shot
@@ -60,7 +60,12 @@ class Scenario(abc.ABC):
 
     _SCENARIO_ID: str
     _TARGET_OPTIONS: dict[str, Target]
-    _material_layers: list[tuple[str, Material]]
+
+    # The list of material layers in the scenario.
+    material_layers: list[str]
+
+    # The customizations to the material layers.
+    material_properties: dict[str, Material] = {}
 
     def __init__(
         self,
@@ -216,9 +221,8 @@ class Scenario(abc.ABC):
         """The radius of the target region (in meters)."""
         return self.target.radius
 
-    @property
-    def materials(self) -> Mapping[str, Struct]:
-        """A map between material name and material properties.
+    def get_materials(self, center_frequency: float = 5.0e5) -> Mapping[str, Struct]:
+        """Return a map between material name and material properties.
 
         - vp: the speed of sound (in m/s).
         - rho: the mass density (in kg/m³).
@@ -226,17 +230,36 @@ class Scenario(abc.ABC):
         - render_color: the color used when rendering this material in the
         scenario layout plot.
         """
-        return {name: material.to_struct() for name, material in self._material_layers}
+        materials = {}
+        for layer in self.material_layers:
+            if layer not in self.material_properties:
+                material_properties = get_material(layer, center_frequency)
+            else:
+                material_properties = self.material_properties[layer]
+            materials[layer] = material_properties.to_struct()
+        return materials
+
+    @property
+    def material_colors(self) -> dict[str, str]:
+        """
+        A map between material name and material render color.
+
+        Returns:
+            dict[str, str]: keys are material names and values are the hex color
+        """
+        material_colors = {}
+        for material in self.material_layers:
+            if material in self.material_properties:
+                color = self.material_properties[material].render_color
+            else:
+                color = get_render_color(material_name=material)
+            material_colors[material] = color
+        return material_colors
 
     @property
     def layer_ids(self) -> Mapping[str, int]:
         """A map between material names and their layer id."""
-        return {name: n for n, (name, _) in enumerate(self._material_layers)}
-
-    @property
-    def ordered_layers(self) -> list[str]:
-        """A list of material names in order of their layer id."""
-        return [name for name, _ in self._material_layers]
+        return {name: n for n, name in enumerate(self.material_layers)}
 
     @property
     @abc.abstractmethod
@@ -398,7 +421,7 @@ class Scenario(abc.ABC):
         problem = self.problem
         sim_time = select_simulation_time_for_steady_state(
             grid=problem.grid,
-            materials=self.materials,
+            materials=self.get_materials(center_frequency),
             freq_hz=center_frequency,
             time_to_steady_state=time_to_steady_state,
             n_cycles_steady_state=n_cycles_steady_state,
@@ -536,7 +559,7 @@ class Scenario(abc.ABC):
         if simulation_time is None:
             simulation_time = select_simulation_time_for_pulsed(
                 grid=problem.grid,
-                materials=self.materials,
+                materials=self.get_materials(center_frequency),
                 delay=find_largest_delay_in_sources(self.sources),
             )
         problem.grid.time = create_time_grid(
@@ -863,9 +886,7 @@ class Scenario2D(Scenario):
             show_material_outlines: whether or not to display a thin white outline of
                 the transition between different materials.
         """
-        color_sequence = [
-            self.materials[name].render_color for name in self.ordered_layers
-        ]
+        color_sequence = list(self.material_colors.values())
         field = self.get_field_data("layer").astype(int)
         fig, ax = rendering.create_layout_fig(
             self.extent, self.origin, color_sequence, field
@@ -898,7 +919,7 @@ class Scenario2D(Scenario):
             fig=fig,
             ax=ax,
             color_sequence=color_sequence,
-            layer_labels=self.ordered_layers,
+            layer_labels=self.material_layers,
             show_sources=show_sources,
             show_target=show_target,
             extent=self.extent,
@@ -1038,9 +1059,7 @@ class Scenario3D(Scenario):
         if slice_position is None:
             slice_position = self.get_default_slice_position(slice_axis)
 
-        color_sequence = [
-            self.materials[name].render_color for name in self.ordered_layers
-        ]
+        color_sequence = list(self.material_colors.values())
         field = self.get_field_data("layer").astype(int)
         field = slice_field(field, self, slice_axis, slice_position)
         extent = drop_element(self.extent, slice_axis)
@@ -1078,7 +1097,7 @@ class Scenario3D(Scenario):
             fig=fig,
             ax=ax,
             color_sequence=color_sequence,
-            layer_labels=self.ordered_layers,
+            layer_labels=self.material_layers,
             show_sources=show_sources,
             show_target=show_target,
             extent=extent,

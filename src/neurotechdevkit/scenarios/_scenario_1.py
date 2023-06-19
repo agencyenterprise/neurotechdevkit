@@ -1,44 +1,18 @@
 from __future__ import annotations
 
-from typing import Mapping, Protocol
+from typing import Mapping
 
 import numpy as np
 import numpy.typing as npt
 import stride
-from mosaic.types import Struct
 
-from .. import materials, rendering, sources
-from ._base import Scenario2D, Scenario3D, Target
+from .. import rendering, sources
+from ._base import Scenario, Scenario2D, Scenario3D, Target
 from ._utils import add_material_fields_to_problem, make_grid
 
 
-class _Scenario1MixinProtocol(Protocol):
-    """Provide type-hinting for Scenario 1 members used by mixins."""
-
-    @property
-    def scenario_id(self) -> str:
-        ...
-
-    @property
-    def complexity(self) -> str:
-        ...
-
-    @property
-    def materials(self) -> Mapping[str, Struct]:
-        ...
-
-    @property
-    def layer_ids(self) -> Mapping[str, int]:
-        ...
-
-    def _get_material_masks(
-        self, problem: stride.Problem
-    ) -> Mapping[str, npt.NDArray[np.bool_]]:
-        ...
-
-
-class _Scenario1Mixin:
-    """A mixin providing specific implementation detail for scenario 1.
+class Scenario1(Scenario):
+    """Specific implementation detail for scenario 1.
 
     Scenario 1 is based on benchmark 4 of the following paper:
 
@@ -50,12 +24,12 @@ class _Scenario1Mixin:
         https://asa.scitation.org/doi/pdf/10.1121/10.0013426
     """
 
-    _material_layers = [
-        ("water", materials.water),
-        ("skin", materials.skin),
-        ("cortical bone", materials.cortical_bone),
-        ("trabecular bone", materials.trabecular_bone),
-        ("brain", materials.brain),
+    material_layers = [
+        "water",
+        "skin",
+        "cortical_bone",
+        "trabecular_bone",
+        "brain",
     ]
 
     @property
@@ -63,15 +37,15 @@ class _Scenario1Mixin:
         return 8
 
     def _get_material_masks(
-        self: _Scenario1MixinProtocol, problem: stride.Problem
+        self, problem: stride.Problem
     ) -> Mapping[str, npt.NDArray[np.bool_]]:
         return {
             name: _create_scenario_1_mask(name, problem.grid)
-            for name in self.materials.keys()
+            for name in self.material_layers
         }
 
     def _compile_scenario_1_problem(
-        self: _Scenario1MixinProtocol, extent: npt.NDArray[np.float_]
+        self, extent: npt.NDArray[np.float_]
     ) -> stride.Problem:
         # scenario constants
         speed_water = 1500  # m/s
@@ -89,14 +63,14 @@ class _Scenario1Mixin:
         )
         problem = add_material_fields_to_problem(
             problem=problem,
-            materials=self.materials,
+            materials=self.get_materials(c_freq),
             layer_ids=self.layer_ids,
             masks=self._get_material_masks(problem),
         )
         return problem
 
 
-class Scenario1_2D(_Scenario1Mixin, Scenario2D):
+class Scenario1_2D(Scenario1, Scenario2D):
     """A 2D implementation of scenario 1.
 
     Scenario 1 is based on benchmark 4 of the following paper:
@@ -138,7 +112,7 @@ class Scenario1_2D(_Scenario1Mixin, Scenario2D):
         )
 
 
-class Scenario1_3D(_Scenario1Mixin, Scenario3D):
+class Scenario1_3D(Scenario1, Scenario3D):
     """A 3D implementation of scenario 1.
 
     Scenario 1 is based on benchmark 4 of the following paper:
@@ -187,15 +161,15 @@ class Scenario1_3D(_Scenario1Mixin, Scenario3D):
             colormaps={
                 "water": "blue",
                 "skin": "viridis",
-                "cortical bone": "magma",
-                "trabecular bone": "inferno",
+                "cortical_bone": "magma",
+                "trabecular_bone": "inferno",
                 "brain": "bop orange",
             },
             opacities={
                 "water": 0.8,
                 "skin": 0.2,
-                "cortical bone": 0.2,
-                "trabecular bone": 0.2,
+                "cortical_bone": 0.2,
+                "trabecular_bone": 0.2,
                 "brain": 0.4,
             },
         )
@@ -249,11 +223,11 @@ def _create_scenario_1_mask(material, grid):
     elif material == "skin":
         _fill_mask(mask, start=interfaces[0], end=interfaces[1], dx=dx)
 
-    elif material == "cortical bone":
+    elif material == "cortical_bone":
         _fill_mask(mask, start=interfaces[1], end=interfaces[2], dx=dx)
         _fill_mask(mask, start=interfaces[3], end=interfaces[4], dx=dx)
 
-    elif material == "trabecular bone":
+    elif material == "trabecular_bone":
         _fill_mask(mask, start=interfaces[2], end=interfaces[3], dx=dx)
 
     elif material == "brain":

@@ -13,10 +13,8 @@ The following code is a simplified implementation of NDK's Scenario 1.
 import numpy as np
 import stride
 
-from mosaic.types import Struct
-
 from neurotechdevkit import sources
-from neurotechdevkit.scenarios import Scenario2D, Target, make_grid, add_material_fields_to_problem, materials
+from neurotechdevkit.scenarios import Scenario2D, Target, make_grid, add_material_fields_to_problem
 
 
 class FullScenario(Scenario2D):
@@ -51,12 +49,12 @@ class FullScenario(Scenario2D):
     - render_color: the color used when rendering this material in the scenario layout
         plot.
     """
-    _material_layers = [
-        ("water", materials.water),
-        ("skin", materials.skin),
-        ("cortical bone", materials.cortical_bone),
-        ("trabecular bone", materials.trabecular_bone),
-        ("brain", materials.brain),
+    material_layers = [
+        "water",
+        "skin",
+        "cortical_bone",
+        "trabecular_bone",
+        "brain",
     ]
 
     def __init__(self, complexity="fast"):
@@ -103,7 +101,7 @@ class FullScenario(Scenario2D):
             layer_ids=self.layer_ids,
             masks={
                 name: _create_scenario_1_mask(name, problem.grid)
-                for name in self.materials.keys()
+                for name in self.material_layers
             },
         )
         return problem
@@ -143,11 +141,11 @@ def _create_scenario_1_mask(material, grid):
     elif material == "skin":
         _fill_mask(mask, start=interfaces[0], end=interfaces[1], dx=dx)
 
-    elif material == "cortical bone":
+    elif material == "cortical_bone":
         _fill_mask(mask, start=interfaces[1], end=interfaces[2], dx=dx)
         _fill_mask(mask, start=interfaces[3], end=interfaces[4], dx=dx)
 
-    elif material == "trabecular bone":
+    elif material == "trabecular_bone":
         _fill_mask(mask, start=interfaces[2], end=interfaces[3], dx=dx)
 
     elif material == "brain":
