@@ -41,13 +41,6 @@ class FullScenario(Scenario2D):
 
     """
     The order of returned materials defines the layering of the scenario.
-
-    Each material has the following properties:
-    - vp: the speed of sound (in m/s).
-    - rho: the mass density (in kg/m³).
-    - alpha: the absorption (in dB/cm).
-    - render_color: the color used when rendering this material in the scenario layout
-        plot.
     """
     material_layers = [
         "water",
