@@ -41,7 +41,7 @@ jobs:
       - run:
           name: Install stride
           command: |
-            poetry run pip install git+https://github.com/NewtonSander/stride
+            poetry run pip install git+https://github.com/trustimaging/stride
 
       - restore_cache:
           name: Restore docs cache
@@ -89,7 +89,7 @@ jobs:
       - run:
           name: Install stride
           command: |
-            poetry run pip install git+https://github.com/NewtonSander/stride
+            poetry run pip install git+https://github.com/trustimaging/stride
 
       - run:
           name: Build docs

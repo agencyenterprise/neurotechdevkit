@@ -48,7 +48,7 @@ jobs:
         run: poetry install --no-interaction --no-root
 
       - name: Install stride
-        run: poetry run pip install git+https://github.com/NewtonSander/stride
+        run: poetry run pip install git+https://github.com/trustimaging/stride
 
       - name: Install napari
         run: poetry run pip install napari
