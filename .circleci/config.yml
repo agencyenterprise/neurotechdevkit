@@ -114,9 +114,7 @@ workflows:
 
   generate_website_docs:
     when:
-      or:
-        - equal: [ main, << pipeline.git.branch >> ]
-        - equal: [ fix_docs_links, << pipeline.git.branch >> ]
+      equal: [ main, << pipeline.git.branch >> ]
     jobs:
       - build_docs_no_cache
       - docs-deploy:
@@ -126,8 +124,6 @@ workflows:
   default:
     when:
       not:
-        or:
-          - equal: [ main, << pipeline.git.branch >> ]  # Not building on main branch
-          - equal: [ fix_docs_links, << pipeline.git.branch >> ]
+        equal: [ main, << pipeline.git.branch >> ]  # Not building on main branch
     jobs:
       - build_docs_cached
