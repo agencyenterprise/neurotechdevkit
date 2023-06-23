@@ -130,5 +130,4 @@ workflows:
           - equal: [ main, << pipeline.git.branch >> ]  # Not building on main branch
           - equal: [ fix_docs_links, << pipeline.git.branch >> ]
     jobs:
-      - build_docs:
-          name: build_docs_cached
+      - build_docs_cached
