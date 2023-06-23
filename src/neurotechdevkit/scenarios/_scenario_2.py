@@ -26,6 +26,12 @@ class Scenario2(Scenario):
         https://asa.scitation.org/doi/pdf/10.1121/10.0013426
     """
 
+    material_layers = [
+        "water",
+        "cortical_bone",
+        "brain",
+    ]
+
     @property
     def _material_outline_upsample_factor(self) -> int:
         return 4
@@ -109,11 +115,6 @@ class Scenario2_2D(Scenario2, Scenario2D):
             ),
         ),
     }
-    material_layers = [
-        "water",
-        "cortical_bone",
-        "brain",
-    ]
 
     def __init__(self, complexity="fast"):
         """Create a new instance of scenario 2."""
