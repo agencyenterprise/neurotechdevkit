@@ -90,7 +90,7 @@ class FullScenario(Scenario2D):
         )
         problem = add_material_fields_to_problem(
             problem=problem,
-            materials=self.materials,
+            materials=self.get_materials(c_freq),
             layer_ids=self.layer_ids,
             masks={
                 name: _create_scenario_1_mask(name, problem.grid)
