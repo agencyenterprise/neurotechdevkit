@@ -49,7 +49,7 @@ jobs:
           destination: html
 
 
-  build_docs_no_cache_and_push:
+  build_docs_no_cache:
     docker:
       - image: cimg/python:3.10.10
     resource_class: xlarge
@@ -103,7 +103,7 @@ jobs:
             git config user.name "bcibotae"
       - add_ssh_keys:
           fingerprints:
-            - "fb:b0:89:d9:9a:aa:98:0d:21:2d:a8:f9:9b:98:8d:55"
+            - "b3:36:18:ed:6f:30:4a:b6:5d:93:f8:f2:b4:2d:b4:15"
       - run:
           name: Deploy docs to gh-pages branch
           command: gh-pages --dist site
@@ -118,10 +118,10 @@ workflows:
         - equal: [ main, << pipeline.git.branch >> ]
         - equal: [ fix_docs_links, << pipeline.git.branch >> ]
     jobs:
-      - build_docs_no_cache_and_push
+      - build_docs_no_cache
       - docs-deploy:
           requires:
-            - build_docs_no_cache_and_push
+            - build_docs_no_cache
 
   default:
     when:
