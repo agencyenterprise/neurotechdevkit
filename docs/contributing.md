@@ -161,11 +161,7 @@ Pull requests merged with the tag `norelease` will not trigger any of the action
 
 The examples you can find in the official [documentation](https://agencyenterprise.github.io/neurotechdevkit/generated/gallery/) are [python scripts](https://github.com/agencyenterprise/neurotechdevkit/tree/main/docs/examples) executed in CI.
 
-Running these scripts is a resource intensive and time consuming task, for this reason we are using CircleCI instead of Github Actions (as we can choose a more powerful machine to execute the job) and we are also using a cache that prevents processing all gallery files on each execution.
-
-The cache source for the gallery is the `gh-pages` branch from our repository. This branch is updated every time a new push to the `main` branch occurs, and the output of the execution of gallery scripts are part of it. Our CI checks out the `gh-pages` branch and moves the generated gallery output to the directory that will be read by mkdocs, you can check how it is done [here](https://github.com/agencyenterprise/neurotechdevkit/blob/main/.github/workflows/docs.yml#L57:L66).
-
-With the forementioned cache implemented only newly added gallery scripts are executed on a Pull Request. So there's a risk of having changes to code breaking gallery scripts that were not touched in the Pull Request, these broken scripts would pass unnoticed because of the cache. We try to mitigate this issue by triggering a full execution of all gallery scripts **without cache** on a weekly basis, this is achieved using a [Github Action with a schedule](https://github.com/agencyenterprise/neurotechdevkit/blob/main/.github/workflows/trigger_gallery_build.yml) that starts a CicleCI workflow.
+Running these scripts is a resource intensive and time consuming task, for this reason we are using CircleCI instead of Github Actions (as we can choose a more powerful machine to execute the job).
 
 ### Checking NDK documentation on CI
 
