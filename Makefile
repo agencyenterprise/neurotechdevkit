@@ -1,7 +1,7 @@
 .PHONY:help lint lint-check test test-coverage test-unit test-integration docs
 
 help:
-	@echo "Available commands are: \n*lint, lint-check, test, test-unit, test-integration docs"
+	@echo "Available commands are: \n*lint, lint-check, spellcheck, test, test-unit, test-integration docs"
 
 lint:
 	poetry run isort src tests
@@ -11,6 +11,9 @@ lint:
 	poetry run codespell src
 	poetry run pydocstyle src
 	poetry run pyright
+
+spellcheck:
+	poetry run pylint --disable all --enable spelling --spelling-dict en_US --spelling-private-dict-file=whitelist.txt src
 
 lint-check:
 	poetry run isort --check src tests
