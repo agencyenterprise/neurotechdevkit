@@ -57,19 +57,10 @@ As a last step **before running NDK**, follow the instructions below depending o
         brew install libomp
         ```
 
-        the output of the command above will look like this:
-
-        ```
-        For compilers to find libomp you may need to set:
-        export LDFLAGS="-L/usr/local/opt/libomp/lib"
-        export CPPFLAGS="-I/usr/local/opt/libomp/include"
-        ```
-
-
     1. Run the following command to export a new environment variable `CPATH` with the path for `libomp` headers:
 
         ```
-        echo 'export CPATH="/usr/local/opt/libomp/include"' >> ~/.zshrc
+        echo 'export CPATH="'$(brew --prefix)'/opt/libomp/include"' >> ~/.zshrc
         ```
 
     1. Install `llvm`:
@@ -81,9 +72,9 @@ As a last step **before running NDK**, follow the instructions below depending o
     1. Run the following commands to export the `llvm` environment variables:
 
         ```
-        echo 'export PATH="/usr/local/opt/llvm/bin:$PATH"' >> ~/.zshrc
-        echo 'export LDFLAGS="-L/usr/local/opt/llvm/lib"' >> ~/.zshrc
-        echo 'export CPPFLAGS="-I/usr/local/opt/llvm/include"' >> ~/.zshrc
+        echo 'export PATH="'$(brew --prefix)'/opt/llvm/bin:$PATH"' >> ~/.zshrc
+        echo 'export LDFLAGS="-L'$(brew --prefix)'/opt/llvm/lib"' >> ~/.zshrc
+        echo 'export CPPFLAGS="-I'$(brew --prefix)'/opt/llvm/include"' >> ~/.zshrc
         ```
 
     1. The following command will export the `DEVITO_ARCH` environment variable:
