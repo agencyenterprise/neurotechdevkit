@@ -42,6 +42,20 @@ And run the installation again.
 
 Unfortunately Stride can't be installed on a Windows platform, therefore NDK is also unsupported.
 
+## `Error: Cannot install under Rosetta 2 in ARM default prefix (/opt/homebrew)!` on MacOS
+
+This error occurs when you are not running the native homebrew for an ARM platform.
+To proceed with the installation you can:
+
+* [Migrate to native homebrew](https://blog.smittytone.net/2021/02/07/how-to-migrate-to-native-homebrew-on-an-m1-mac/)
+
+or
+
+* Prepend the brew install commands with `arch -arm64`:
+```
+arch -arm64 brew install ...
+```
+
 ## Getting error `codepy.CompileError: module compilation failed`
 
 This error occurs when the compiler wasn't able to perform the compilation, it can be caused by a environment configuration problem. Check the `DEVITO_ARCH` environment variable, it should be set with the compiler devito will use to compile the code.
