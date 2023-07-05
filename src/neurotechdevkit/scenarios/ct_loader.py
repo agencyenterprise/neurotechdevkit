@@ -1,12 +1,12 @@
 """Functions for loading and preprocessing CT scans."""
 from pathlib import Path
 
-import cv2
 import numpy as np
 import pydicom
 from scipy import ndimage
 from skimage import morphology
 from skimage.measure import find_contours
+from sklearn.decomposition import PCA
 
 BONE_HU_MIN = 400
 
@@ -47,19 +47,20 @@ def get_brain_mask(image: np.ndarray) -> np.ndarray:
     return image
 
 
-def get_rotation_angle(image: np.ndarray) -> float:
+def get_rotation_angle(mask: np.ndarray) -> float:
     """Get the rotation angle of the skull from a CT scan."""
-    img = np.uint8(image)
-    contours, _ = cv2.findContours(img, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-    c = max(contours, key=cv2.contourArea)
-    (x, y), (MA, ma), angle = cv2.fitEllipse(c)
-    return angle
+    c, r = np.where(mask != 0)
+    X = np.array([c, r]).T
+    pca = PCA(n_components=2)
+    pca.fit_transform(X)
+    angle = np.arctan2(pca.components_[0, 1], pca.components_[0, 0])
+    angle = np.degrees(angle)
+    return -(180 + angle)
 
 
 def rotate_image(image: np.ndarray, angle: float) -> np.ndarray:
     """Rotate an image by a given angle."""
-    img = np.uint8(image)
-    rotated_img = ndimage.rotate(img, angle, reshape=False)
+    rotated_img = ndimage.rotate(image, angle, reshape=False)
     return rotated_img
 
 
@@ -73,8 +74,7 @@ def crop(
 
 def get_contours(image: np.ndarray) -> tuple[int, int, int, int]:
     """Get the bounding box of the skull from a CT scan."""
-    img = np.uint8(image)
-    contours = find_contours(img)
+    contours = find_contours(image)
 
     # find the biggest contour (c) by the area
     largest_contour = max(contours, key=len)
@@ -123,16 +123,17 @@ def get_masks(ct_path: Path, convert_2d=False) -> tuple[np.ndarray, np.ndarray]:
         raise Exception("Unknown file format")
 
     skull_image = get_skull_mask(image)
-
     rotation_angle = get_rotation_angle(skull_image)
-    contours = get_contours(skull_image)
 
+    skull_image = skull_image.astype(np.uint8)
     skull_image = rotate_image(skull_image, rotation_angle)
+    contours = get_contours(skull_image)
     skull_image = crop(skull_image, *contours)
     skull_image = add_pad(skull_image)
     skull_mask = to_mask(skull_image)
 
     brain_image = get_brain_mask(image)
+    brain_image = brain_image.astype(np.uint8)
     brain_image = rotate_image(brain_image, rotation_angle)
     brain_image = crop(brain_image, *contours)
     brain_image = add_pad(brain_image)
