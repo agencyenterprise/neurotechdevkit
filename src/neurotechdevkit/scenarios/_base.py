@@ -921,6 +921,7 @@ class Scenario2D(Scenario):
                     aperture=source.aperture,
                     focal_length=source.focal_length,
                     source_is_flat=rendering.source_should_be_flat(source),
+                    is_point_source=rendering.source_should_be_point(source),
                 )
                 rendering.draw_source(ax, drawing_params)
 
@@ -1101,6 +1102,7 @@ class Scenario3D(Scenario):
                     aperture=source.aperture,
                     focal_length=source.focal_length,
                     source_is_flat=rendering.source_should_be_flat(source),
+                    is_point_source=rendering.source_should_be_point(source),
                 )
                 rendering.draw_source(ax, drawing_params)
 

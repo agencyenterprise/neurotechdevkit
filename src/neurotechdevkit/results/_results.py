@@ -281,6 +281,7 @@ class SteadyStateResult2D(SteadyStateResult):
                     aperture=source.aperture,
                     focal_length=source.focal_length,
                     source_is_flat=rendering.source_should_be_flat(source),
+                    is_point_source=rendering.source_should_be_point(source),
                 )
                 rendering.draw_source(ax, drawing_params)
 
@@ -382,6 +383,7 @@ class SteadyStateResult3D(SteadyStateResult):
                     aperture=source.aperture,
                     focal_length=source.focal_length,
                     source_is_flat=rendering.source_should_be_flat(source),
+                    is_point_source=rendering.source_should_be_point(source),
                 )
                 rendering.draw_source(ax, drawing_params)
 
@@ -780,6 +782,7 @@ class PulsedResult2D(PulsedResult):
                     aperture=source.aperture,
                     focal_length=source.focal_length,
                     source_is_flat=rendering.source_should_be_flat(source),
+                    is_point_source=rendering.source_should_be_point(source),
                 )
                 rendering.draw_source(ax, drawing_params)
 
@@ -1069,6 +1072,7 @@ class PulsedResult3D(PulsedResult):
                     aperture=source.aperture,
                     focal_length=source.focal_length,
                     source_is_flat=rendering.source_should_be_flat(source),
+                    is_point_source=rendering.source_should_be_point(source),
                 )
                 rendering.draw_source(ax, drawing_params)
 
