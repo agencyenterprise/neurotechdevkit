@@ -45,17 +45,16 @@ class Scenario1(Scenario):
         }
 
     def _compile_scenario_1_problem(
-        self, extent: npt.NDArray[np.float_]
+        self, extent: npt.NDArray[np.float_], center_frequency: float
     ) -> stride.Problem:
         # scenario constants
         speed_water = 1500  # m/s
-        c_freq = 500e3  # hz
 
         # desired resolution for complexity=fast
         ppw = 6
 
         # compute resolution
-        dx = speed_water / c_freq / ppw  # m
+        dx = speed_water / center_frequency / ppw  # m
 
         grid = make_grid(extent=extent, dx=dx)
         problem = stride.Problem(
@@ -63,7 +62,7 @@ class Scenario1(Scenario):
         )
         problem = add_material_fields_to_problem(
             problem=problem,
-            materials=self.get_materials(c_freq),
+            materials=self.get_materials(center_frequency),
             layer_ids=self.layer_ids,
             masks=self._get_material_masks(problem),
         )
@@ -97,9 +96,9 @@ class Scenario1_2D(Scenario1, Scenario2D):
             complexity=complexity,
         )
 
-    def _compile_problem(self) -> stride.Problem:
+    def _compile_problem(self, center_frequency: float) -> stride.Problem:
         extent = np.array([0.12, 0.07])  # m
-        return self._compile_scenario_1_problem(extent)
+        return self._compile_scenario_1_problem(extent, center_frequency)
 
     def get_default_source(self) -> sources.Source:
         """Return the default source for the scenario."""
@@ -183,9 +182,9 @@ class Scenario1_3D(Scenario1, Scenario3D):
         default_positions = np.array([0.064, 0.0, 0.0])
         return default_positions[axis]
 
-    def _compile_problem(self) -> stride.Problem:
+    def _compile_problem(self, center_frequency: float) -> stride.Problem:
         extent = np.array([0.12, 0.07, 0.07])  # m
-        return self._compile_scenario_1_problem(extent)
+        return self._compile_scenario_1_problem(extent, center_frequency)
 
     def get_default_source(self) -> sources.Source:
         """Return the default source for the scenario."""

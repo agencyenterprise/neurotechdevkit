@@ -41,6 +41,7 @@ class ScenarioBaseTester(Scenario):
 
     def __init__(self, complexity="fast"):
         self._target_id = "target_1"
+        self._problem = self._compile_problem(center_frequency=5e5)
         super().__init__(
             origin=np.array([-0.1, -0.1, 0.0]),
             complexity=complexity,
@@ -50,7 +51,7 @@ class ScenarioBaseTester(Scenario):
     def _material_outline_upsample_factor(self) -> int:
         return 3
 
-    def _compile_problem(self) -> stride.Problem:
+    def _compile_problem(self, center_frequency: float) -> stride.Problem:
         extent = np.array([2.0, 3.0, 4.0])
         dx = 0.1
         grid = make_grid(extent=extent, dx=dx)

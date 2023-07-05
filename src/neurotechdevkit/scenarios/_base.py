@@ -78,7 +78,6 @@ class Scenario(abc.ABC):
             raise ValueError("the only complexity currently supported is 'fast'")
 
         self._origin = origin
-        self._problem = self._compile_problem()
         self._sources: FrozenList[Source] = FrozenList()
         self._target_id: str
 
@@ -221,7 +220,7 @@ class Scenario(abc.ABC):
         """The radius of the target region (in meters)."""
         return self.target.radius
 
-    def get_materials(self, center_frequency: float = 5.0e5) -> Mapping[str, Struct]:
+    def get_materials(self, center_frequency=float) -> Mapping[str, Struct]:
         """Return a map between material name and material properties.
 
         - vp: the speed of sound (in m/s).
@@ -340,7 +339,7 @@ class Scenario(abc.ABC):
         return self.problem.medium.fields[field].data
 
     @abc.abstractmethod
-    def _compile_problem(self) -> stride.Problem:
+    def _compile_problem(self, center_frequency: float) -> stride.Problem:
         pass
 
     def reset(self) -> None:
@@ -418,6 +417,7 @@ class Scenario(abc.ABC):
         Returns:
             An object containing the result of the steady-state simulation.
         """
+        self._problem = self._compile_problem(center_frequency)
         problem = self.problem
         sim_time = select_simulation_time_for_steady_state(
             grid=problem.grid,
@@ -555,6 +555,7 @@ class Scenario(abc.ABC):
         Returns:
             An object containing the result of the pulsed simulation.
         """
+        self._problem = self._compile_problem(center_frequency)
         problem = self.problem
         if simulation_time is None:
             simulation_time = select_simulation_time_for_pulsed(

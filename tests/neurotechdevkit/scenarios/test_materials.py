@@ -27,7 +27,7 @@ class BaseScenario(Scenario):
             complexity=complexity,
         )
 
-    def _compile_problem(self):
+    def _compile_problem(self, center_frequency: float):
         pass
 
     def _material_outline_upsample_factor(self):
@@ -49,7 +49,7 @@ def test_default_materials():
     scenario = ScenarioWithDefaultMaterials()
     assert scenario.material_colors == {"brain": "#DB504A", "skin": "#FA8B53"}
 
-    materials = scenario.get_materials()
+    materials = scenario.get_materials(500e3)
     assert list(materials.keys()) == ["brain", "skin"]
     compare_structs(materials["brain"], SUPPORTED_MATERIALS["brain"].to_struct())
     compare_structs(materials["skin"], SUPPORTED_MATERIALS["skin"].to_struct())
@@ -67,7 +67,7 @@ def test_custom_material_property():
     scenario = ScenarioWithCustomMaterialProperties()
     assert scenario.material_colors == {"brain": "#2E86AB"}
 
-    materials = scenario.get_materials()
+    materials = scenario.get_materials(500e3)
     assert list(materials.keys()) == ["brain"]
     compare_structs(
         materials["brain"],
@@ -87,7 +87,7 @@ def test_new_material():
     scenario = ScenarioWithCustomMaterial()
     assert scenario.material_colors == {"brain": "#DB504A", "eye": "#2E86AB"}
 
-    materials = scenario.get_materials()
+    materials = scenario.get_materials(500e3)
 
     assert list(materials.keys()) == ["brain", "eye"]
     compare_structs(materials["brain"], SUPPORTED_MATERIALS["brain"].to_struct())
@@ -121,4 +121,4 @@ def test_unknown_material_without_properties():
     with pytest.raises(ValueError):
         scenario.material_colors
     with pytest.raises(ValueError):
-        scenario.get_materials()
+        scenario.get_materials(500e3)

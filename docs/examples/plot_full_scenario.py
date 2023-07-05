@@ -14,7 +14,12 @@ import numpy as np
 import stride
 
 from neurotechdevkit import sources
-from neurotechdevkit.scenarios import Scenario2D, Target, make_grid, add_material_fields_to_problem
+from neurotechdevkit.scenarios import (
+    Scenario2D,
+    Target,
+    make_grid,
+    add_material_fields_to_problem,
+)
 
 
 class FullScenario(Scenario2D):
@@ -26,6 +31,7 @@ class FullScenario(Scenario2D):
     doi: 10.1121/10.0013426
     https://asa.scitation.org/doi/pdf/10.1121/10.0013426
     """
+
     _SCENARIO_ID = "the_id_for_this_scenario"
 
     """
@@ -71,18 +77,17 @@ class FullScenario(Scenario2D):
         """
         return 8
 
-    def _compile_problem(self) -> stride.Problem:
+    def _compile_problem(self, center_frequency) -> stride.Problem:
         """The problem definition for the scenario."""
         extent = np.array([0.12, 0.07])  # m
         # scenario constants
         speed_water = 1500  # m/s
-        c_freq = 500e3  # hz
 
         # desired resolution for complexity=fast
         ppw = 6
 
         # compute resolution
-        dx = speed_water / c_freq / ppw  # m
+        dx = speed_water / center_frequency / ppw  # m
 
         grid = make_grid(extent=extent, dx=dx)
         problem = stride.Problem(
@@ -90,7 +95,7 @@ class FullScenario(Scenario2D):
         )
         problem = add_material_fields_to_problem(
             problem=problem,
-            materials=self.get_materials(c_freq),
+            materials=self.get_materials(center_frequency),
             layer_ids=self.layer_ids,
             masks={
                 name: _create_scenario_1_mask(name, problem.grid)
