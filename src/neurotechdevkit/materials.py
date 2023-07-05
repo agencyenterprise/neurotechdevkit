@@ -3,6 +3,8 @@ from dataclasses import dataclass
 
 from mosaic.types import Struct
 
+NEPER_TO_DECIBEL = 8.6860000037
+
 
 @dataclass
 class Material:
@@ -28,7 +30,7 @@ class Material:
 
 
 # The values below consider a center frequency of 500kHz
-SUPPORTED_MATERIALS = {
+DEFAULT_MATERIALS = {
     "water": Material(vp=1500.0, rho=1000.0, alpha=0.0, render_color="#2E86AB"),
     "skin": Material(vp=1610.0, rho=1090.0, alpha=0.2, render_color="#FA8B53"),
     "cortical_bone": Material(vp=2800.0, rho=1850.0, alpha=4.0, render_color="#FAF0CA"),
@@ -66,7 +68,7 @@ class AttenuationConstant:
             float: attenuation in dB/cm/MHz
         """
         attenuation = self.a0 * (frequency / 1e6) ** self.b  # Np/m
-        db_attenuation = attenuation * 8.6860000037  # dB/m
+        db_attenuation = attenuation * NEPER_TO_DECIBEL  # dB/m
         return db_attenuation / 100  # convert from dB/m to dB/cm
 
 
@@ -101,7 +103,7 @@ def _calculate_absorption(material_name: str, center_frequency: float) -> float:
             center_frequency
         )
     except KeyError:
-        raise ValueError(f"Unsupported material: {material_name}")
+        raise ValueError(f"Undefined material: {material_name}")
 
 
 def get_render_color(material_name: str) -> str:
@@ -117,10 +119,10 @@ def get_render_color(material_name: str) -> str:
     Returns:
         str: the render color of the material.
     """
-    if material_name not in SUPPORTED_MATERIALS:
-        raise ValueError(f"Unsupported material: {material_name}")
+    if material_name not in DEFAULT_MATERIALS:
+        raise ValueError(f"Undefined material: {material_name}")
 
-    return SUPPORTED_MATERIALS[material_name].render_color
+    return DEFAULT_MATERIALS[material_name].render_color
 
 
 def get_material(material_name: str, center_frequency: float = 5.0e5) -> Material:
@@ -138,10 +140,10 @@ def get_material(material_name: str, center_frequency: float = 5.0e5) -> Materia
     Returns:
         Material: a material with properties used in the neurotechdevkit.
     """
-    if material_name not in SUPPORTED_MATERIALS:
-        raise ValueError(f"Unsupported material: {material_name}")
+    if material_name not in DEFAULT_MATERIALS:
+        raise ValueError(f"Undefined material: {material_name}")
 
-    base_material = SUPPORTED_MATERIALS[material_name]
+    base_material = DEFAULT_MATERIALS[material_name]
     if center_frequency == 5.0e5:
         return base_material
 

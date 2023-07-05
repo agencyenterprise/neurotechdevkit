@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 from mosaic.types import Struct
 
-from neurotechdevkit.materials import SUPPORTED_MATERIALS, Material
+from neurotechdevkit.materials import DEFAULT_MATERIALS, Material
 from neurotechdevkit.scenarios import Scenario
 
 
@@ -51,8 +51,8 @@ def test_default_materials():
 
     materials = scenario.get_materials(500e3)
     assert list(materials.keys()) == ["brain", "skin"]
-    compare_structs(materials["brain"], SUPPORTED_MATERIALS["brain"].to_struct())
-    compare_structs(materials["skin"], SUPPORTED_MATERIALS["skin"].to_struct())
+    compare_structs(materials["brain"], DEFAULT_MATERIALS["brain"].to_struct())
+    compare_structs(materials["skin"], DEFAULT_MATERIALS["skin"].to_struct())
 
 
 def test_custom_material_property():
@@ -90,7 +90,7 @@ def test_new_material():
     materials = scenario.get_materials(500e3)
 
     assert list(materials.keys()) == ["brain", "eye"]
-    compare_structs(materials["brain"], SUPPORTED_MATERIALS["brain"].to_struct())
+    compare_structs(materials["brain"], DEFAULT_MATERIALS["brain"].to_struct())
     compare_structs(
         materials["eye"],
         Material(vp=1600.0, rho=1100.0, alpha=0.0, render_color="#2E86AB").to_struct(),
