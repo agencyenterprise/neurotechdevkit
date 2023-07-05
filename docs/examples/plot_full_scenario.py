@@ -4,7 +4,8 @@ Implementing a full scenario
 ====================================
 
 !!! note
-    NDK and its examples are under constant development, more information and content will be added to this example soon!
+    NDK and its examples are under constant development, more information
+    and content will be added to this example soon!
 
 The following code is a simplified implementation of NDK's Scenario 1.
 """
@@ -14,11 +15,12 @@ import numpy as np
 import stride
 
 from neurotechdevkit import sources
+from neurotechdevkit.results import SteadyStateResult2D
 from neurotechdevkit.scenarios import (
     Scenario2D,
     Target,
-    make_grid,
     add_material_fields_to_problem,
+    make_grid,
 )
 
 
@@ -171,4 +173,5 @@ def _fill_mask(mask, start, end, dx):
 
 scenario = FullScenario()
 result = scenario.simulate_steady_state()
+assert isinstance(result, SteadyStateResult2D)
 result.render_steady_state_amplitudes(show_material_outlines=False)
