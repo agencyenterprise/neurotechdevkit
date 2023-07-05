@@ -38,7 +38,9 @@ gzip
 handlebox
 html
 https
+hounsfield
 hz
+hu
 img
 imshow
 intercomparison
@@ -67,6 +69,7 @@ png
 ppp
 ppw
 pre
+preprocessing
 precomputed
 reproducibility
 resampling
