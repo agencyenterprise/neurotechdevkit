@@ -1,7 +1,7 @@
 version: 2.1
 
 jobs:
-  build_docs_cached:
+  build_docs_pr:
     docker:
       - image: cimg/python:3.10.10
     resource_class: xlarge
@@ -48,7 +48,6 @@ jobs:
           path: site/
           destination: html
 
-
   build_docs_no_cache:
     docker:
       - image: cimg/python:3.10.10
@@ -87,7 +86,6 @@ jobs:
           paths:
             - site
 
-
   docs-deploy:
     docker:
       - image: node:8.10.0
@@ -108,13 +106,12 @@ jobs:
           name: Deploy docs to gh-pages branch
           command: gh-pages --dist site
 
-
 workflows:
   version: 2
 
   generate_website_docs:
     when:
-      equal: [ main, << pipeline.git.branch >> ]
+      equal: [main, << pipeline.git.branch >>]
     jobs:
       - build_docs_no_cache
       - docs-deploy:
@@ -124,6 +121,6 @@ workflows:
   default:
     when:
       not:
-        equal: [ main, << pipeline.git.branch >> ]  # Not building on main branch
+        equal: [main, << pipeline.git.branch >>] # Not building on main branch
     jobs:
-      - build_docs_cached
+      - build_docs_pr
