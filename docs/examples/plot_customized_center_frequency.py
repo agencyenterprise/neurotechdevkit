@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Plot customized center frequency
+Custom center frequency
 ====================================
 
 This example demonstrates how to use a customized center frequency
