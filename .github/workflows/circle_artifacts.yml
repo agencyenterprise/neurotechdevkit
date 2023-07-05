@@ -3,7 +3,7 @@ on: [status]
 permissions: read-all
 jobs:
   circleci_artifacts_redirector_job:
-    if: "${{ startsWith(github.event.context, 'ci/circleci: build_docs') }}"
+    if: "${{ startsWith(github.event.context, 'ci/circleci: build_docs_pr') }}"
     permissions:
       statuses: write
     runs-on: ubuntu-20.04
@@ -15,5 +15,5 @@ jobs:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           api-token: ${{ secrets.CIRCLECI_TOKEN }}
           artifact-path: 0/html/index.html
-          circleci-jobs: build_docs
+          circleci-jobs: build_docs_pr
           job-title: Check the rendered docs here!
