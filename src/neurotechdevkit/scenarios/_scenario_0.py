@@ -1,6 +1,7 @@
 import numpy as np
 import stride
 
+from ..materials import Material
 from ..sources import FocusedSource2D
 from ._base import Scenario2D, Target
 from ._utils import (
@@ -29,6 +30,14 @@ class Scenario0(Scenario2D):
         "brain",
         "tumor",
     ]
+    material_properties = {
+        "water": Material(vp=1500.0, rho=1000.0, alpha=0.0, render_color="#2E86AB"),
+        "cortical_bone": Material(
+            vp=2800.0, rho=1850.0, alpha=4.0, render_color="#FAF0CA"
+        ),
+        "brain": Material(vp=1560.0, rho=1040.0, alpha=0.3, render_color="#DB504A"),
+        "tumor": Material(vp=1650.0, rho=1150.0, alpha=0.8, render_color="#94332F"),
+    }
 
     def __init__(self, complexity="fast"):
         """Create a new instance of scenario 0."""

@@ -7,6 +7,7 @@ import numpy.typing as npt
 import stride
 
 from .. import rendering, sources
+from ..materials import Material
 from ._base import Scenario, Scenario2D, Scenario3D, Target
 from ._utils import add_material_fields_to_problem, make_grid
 
@@ -31,6 +32,17 @@ class Scenario1(Scenario):
         "trabecular_bone",
         "brain",
     ]
+    material_properties = {
+        "water": Material(vp=1500.0, rho=1000.0, alpha=0.0, render_color="#2E86AB"),
+        "skin": Material(vp=1610.0, rho=1090.0, alpha=0.2, render_color="#FA8B53"),
+        "cortical_bone": Material(
+            vp=2800.0, rho=1850.0, alpha=4.0, render_color="#FAF0CA"
+        ),
+        "trabecular_bone": Material(
+            vp=2300.0, rho=1700.0, alpha=8.0, render_color="#EBD378"
+        ),
+        "brain": Material(vp=1560.0, rho=1040.0, alpha=0.3, render_color="#DB504A"),
+    }
 
     @property
     def _material_outline_upsample_factor(self) -> int:
