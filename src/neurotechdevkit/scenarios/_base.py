@@ -64,7 +64,7 @@ class Scenario(abc.ABC):
     # The list of material layers in the scenario.
     material_layers: list[str]
 
-    # The customizations to the material layers.
+    # The customization to the material layers.
     material_properties: dict[str, Material] = {}
 
     def __init__(
