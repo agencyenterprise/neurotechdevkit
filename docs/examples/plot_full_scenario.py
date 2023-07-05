@@ -172,4 +172,3 @@ def _fill_mask(mask, start, end, dx):
 scenario = FullScenario()
 result = scenario.simulate_steady_state()
 result.render_steady_state_amplitudes(show_material_outlines=False)
-# %%
