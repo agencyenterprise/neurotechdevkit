@@ -7,13 +7,19 @@ NEPER_TO_DECIBEL = 8.6860000037
 
 
 @dataclass
-class Material:
+class _BaseMaterial:
     """A material with properties used in the neurotechdevkit scenarios."""
 
     vp: float
     rho: float
-    alpha: float
     render_color: str
+
+
+@dataclass
+class Material(_BaseMaterial):
+    """A NDK Material with an attenuation coefficient."""
+
+    alpha: float
 
     def to_struct(self) -> Struct:
         """Return a Struct representation of the material.
@@ -31,16 +37,14 @@ class Material:
 
 # The values below consider a center frequency of 500kHz
 DEFAULT_MATERIALS = {
-    "water": Material(vp=1500.0, rho=1000.0, alpha=0.0, render_color="#2E86AB"),
-    "skin": Material(vp=1610.0, rho=1090.0, alpha=0.2, render_color="#FA8B53"),
-    "cortical_bone": Material(vp=2800.0, rho=1850.0, alpha=4.0, render_color="#FAF0CA"),
-    "trabecular_bone": Material(
-        vp=2300.0, rho=1700.0, alpha=8.0, render_color="#EBD378"
-    ),
-    "brain": Material(vp=1560.0, rho=1040.0, alpha=0.3, render_color="#DB504A"),
+    "water": _BaseMaterial(vp=1500.0, rho=1000.0, render_color="#2E86AB"),
+    "skin": _BaseMaterial(vp=1610.0, rho=1090.0, render_color="#FA8B53"),
+    "cortical_bone": _BaseMaterial(vp=2800.0, rho=1850.0, render_color="#FAF0CA"),
+    "trabecular_bone": _BaseMaterial(vp=2300.0, rho=1700.0, render_color="#EBD378"),
+    "brain": _BaseMaterial(vp=1560.0, rho=1040.0, render_color="#DB504A"),
     # these numbers are completely made up
     # TODO: research reasonable values
-    "tumor": Material(vp=1650.0, rho=1150.0, alpha=0.8, render_color="#94332F"),
+    "tumor": _BaseMaterial(vp=1650.0, rho=1150.0, render_color="#94332F"),
 }
 
 
@@ -144,8 +148,6 @@ def get_material(material_name: str, center_frequency: float = 5.0e5) -> Materia
         raise ValueError(f"Undefined material: {material_name}")
 
     base_material = DEFAULT_MATERIALS[material_name]
-    if center_frequency == 5.0e5:
-        return base_material
 
     return Material(
         vp=base_material.vp,

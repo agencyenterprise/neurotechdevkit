@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 from mosaic.types import Struct
 
-from neurotechdevkit.materials import DEFAULT_MATERIALS, Material
+from neurotechdevkit.materials import Material
 from neurotechdevkit.scenarios import Scenario
 
 
@@ -40,21 +40,6 @@ class BaseScenario(Scenario):
         pass
 
 
-def test_default_materials():
-    """Test that the default materials are used."""
-
-    class ScenarioWithDefaultMaterials(BaseScenario):
-        material_layers = ["brain", "skin"]
-
-    scenario = ScenarioWithDefaultMaterials()
-    assert scenario.material_colors == {"brain": "#DB504A", "skin": "#FA8B53"}
-
-    materials = scenario.get_materials(500e3)
-    assert list(materials.keys()) == ["brain", "skin"]
-    compare_structs(materials["brain"], DEFAULT_MATERIALS["brain"].to_struct())
-    compare_structs(materials["skin"], DEFAULT_MATERIALS["skin"].to_struct())
-
-
 def test_custom_material_property():
     """Test that a custom material property is used."""
 
@@ -90,7 +75,6 @@ def test_new_material():
     materials = scenario.get_materials(500e3)
 
     assert list(materials.keys()) == ["brain", "eye"]
-    compare_structs(materials["brain"], DEFAULT_MATERIALS["brain"].to_struct())
     compare_structs(
         materials["eye"],
         Material(vp=1600.0, rho=1100.0, alpha=0.0, render_color="#2E86AB").to_struct(),
