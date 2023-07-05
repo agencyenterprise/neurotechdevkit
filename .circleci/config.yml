@@ -1,22 +1,7 @@
-# Tagging a commit with [circle front] will build the front page and perform tests-doc.
-# Tagging a commit with [circle full] will build everything.
 version: 2.1
-parameters:
-  GHA_Actor:
-    type: string
-    default: ""
-  GHA_Action:
-    type: string
-    default: ""
-  GHA_Event:
-    type: string
-    default: ""
-  GHA_Meta:
-    type: string
-    default: ""
 
 jobs:
-  build_docs:
+  build_docs_cached:
     docker:
       - image: cimg/python:3.10.10
     resource_class: xlarge
@@ -95,18 +80,50 @@ jobs:
           name: Build docs
           no_output_timeout: 30m
           command: |
-            OFFLINE=true make docs
+            make docs
+
+      - persist_to_workspace:
+          root: .
+          paths:
+            - site
+
+
+  docs-deploy:
+    docker:
+      - image: node:8.10.0
+    steps:
+      - checkout
+      - attach_workspace:
+          at: .
+      - run:
+          name: Install and configure dependencies
+          command: |
+            npm install -g --silent gh-pages@2.0.1
+            git config user.email "bcibotae@ae.studio"
+            git config user.name "bcibotae"
+      - add_ssh_keys:
+          fingerprints:
+            - "b3:36:18:ed:6f:30:4a:b6:5d:93:f8:f2:b4:2d:b4:15"
+      - run:
+          name: Deploy docs to gh-pages branch
+          command: gh-pages --dist site
+
 
 workflows:
   version: 2
 
-  build_triggered_by_github_action:
-    when: << pipeline.parameters.GHA_Action >>
+  generate_website_docs:
+    when:
+      equal: [ main, << pipeline.git.branch >> ]
     jobs:
       - build_docs_no_cache
+      - docs-deploy:
+          requires:
+            - build_docs_no_cache
 
   default:
-    unless: << pipeline.parameters.GHA_Action >>
+    when:
+      not:
+        equal: [ main, << pipeline.git.branch >> ]  # Not building on main branch
     jobs:
-      - build_docs:
-          name: build_docs
+      - build_docs_cached

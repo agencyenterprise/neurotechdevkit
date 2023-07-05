@@ -1325,7 +1325,7 @@ class PhasedArraySource3D(PhasedArraySource):
         The current alignment is rotated to match the `self.unit_center_line` alignment.
 
         Args:
-            coords: Aa array containing the 3D coordinates to be aligned.
+            coords: An array containing the 3D coordinates to be aligned.
 
         Returns:
             An array of shape containing the aligned 3D coordinates.

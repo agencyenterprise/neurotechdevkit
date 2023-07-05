@@ -18,6 +18,7 @@ To ensure efficient collaborative development, a variety of standards are utiliz
 - [pyright](https://github.com/microsoft/pyright) is used for static type checking.
 - [Type hinting](https://docs.python.org/3/library/typing.html) is used.
       - And checked using [mypy](http://mypy-lang.org).
+- [Pylint](https://pypi.org/project/pylint/) is used for spell checking.
 
 ### Preparing your environment
 
@@ -36,8 +37,6 @@ If you don't want to install NDK's dependencies on your machine, you can run it 
 
 * Run the container, which will start a jupyter notebook server:
    ```
-   git clone https://github.com/agencyenterprise/neurotechdevkit.git
-   cd neurotechdevkit
    docker compose up
    ```
 
@@ -58,40 +57,13 @@ poetry install
 This will resolve and install the dependencies from `poetry.lock` and will install the `neurotechdevkit` package in editable mode.
 
 
-Install stride with
+Install stride with:
 
 ```bash
 $ poetry run pip install git+https://github.com/trustimaging/stride
 ```
 
-`devito`, a dependency of `neurotechdevkit`, requires `libomp`. On MacOS it can be installed with:
-
-```
-brew install libomp
-```
-
-the output of the command above will look like this:
-
-```
-For compilers to find libomp you may need to set:
-export LDFLAGS="-L/usr/local/opt/libomp/lib"
-export CPPFLAGS="-I/usr/local/opt/libomp/include"
-```
-
-`devito` requires the directory with `libomp` headers to be accessible during the runtime compilation, you can make it accessible by exporting a new environment variable `CPATH` with the path for libomp headers, like so:
-
-```
-export CPATH="/usr/local/opt/libomp/include"
-```
-
-You will also have to set an environment variable that defines what compiler `devito` will use, like so:
-
-```
-export DEVITO_ARCH=gcc
-```
-
-the supported values for `DEVITO_ARCH` are: `'custom', 'gnu', 'gcc', 'clang', 'aomp', 'pgcc', 'pgi', 'nvc', 'nvc++', 'nvidia', 'cuda', 'osx', 'intel', 'icpc', 'icc', 'intel-knl', 'knl', 'dpcpp', 'gcc-4.9', 'gcc-5', 'gcc-6', 'gcc-7', 'gcc-8', 'gcc-9', 'gcc-10', 'gcc-11'`
-
+Follow the steps described in [Setting up a compiler](installation.md#setting-up-a-compiler).
 
 ### Using the environment
 
@@ -161,11 +133,7 @@ Pull requests merged with the tag `norelease` will not trigger any of the action
 
 The examples you can find in the official [documentation](https://agencyenterprise.github.io/neurotechdevkit/generated/gallery/) are [python scripts](https://github.com/agencyenterprise/neurotechdevkit/tree/main/docs/examples) executed in CI.
 
-Running these scripts is a resource intensive and time consuming task, for this reason we are using CircleCI instead of Github Actions (as we can choose a more powerful machine to execute the job) and we are also using a cache that prevents processing all gallery files on each execution.
-
-The cache source for the gallery is the `gh-pages` branch from our repository. This branch is updated every time a new push to the `main` branch occurs, and the output of the execution of gallery scripts are part of it. Our CI checks out the `gh-pages` branch and moves the generated gallery output to the directory that will be read by mkdocs, you can check how it is done [here](https://github.com/agencyenterprise/neurotechdevkit/blob/main/.github/workflows/docs.yml#L57:L66).
-
-With the forementioned cache implemented only newly added gallery scripts are executed on a Pull Request. So there's a risk of having changes to code breaking gallery scripts that were not touched in the Pull Request, these broken scripts would pass unnoticed because of the cache. We try to mitigate this issue by triggering a full execution of all gallery scripts **without cache** on a weekly basis, this is achieved using a [Github Action with a schedule](https://github.com/agencyenterprise/neurotechdevkit/blob/main/.github/workflows/trigger_gallery_build.yml) that starts a CicleCI workflow.
+Running these scripts is a resource intensive and time consuming task, for this reason we are using CircleCI instead of Github Actions (as we can choose a more powerful machine to execute the job).
 
 ### Checking NDK documentation on CI
 
