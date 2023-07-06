@@ -6,10 +6,7 @@ from ._animations import (
     save_animation,
     video_only_output,
 )
-from ._source import (
-    source_should_be_flat,
-    source_should_be_point,
-)
+from ._source import source_should_be_flat, source_should_be_point
 from .layers import (
     SourceDrawingParams,
     draw_material_outlines,

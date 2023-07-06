@@ -9,7 +9,7 @@ import scipy
 from matplotlib.image import BboxImage
 from matplotlib.transforms import Bbox, Transform, TransformedBbox
 
-from neurotechdevkit.sources import PhasedArraySource, Source, PointSource
+from neurotechdevkit.sources import PhasedArraySource, PointSource, Source
 
 _COMPONENT_DIR = pathlib.Path(__file__).parent / "components"
 

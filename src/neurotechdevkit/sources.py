@@ -160,11 +160,11 @@ class PointSource(Source):
     """
 
     def __init__(
-            self,
-            *,
-            position: npt.NDArray[np.float_],
-            num_dim: int = 2,
-            delay: float = 0.0,
+        self,
+        *,
+        position: npt.NDArray[np.float_],
+        num_dim: int = 2,
+        delay: float = 0.0,
     ) -> None:
         """Initialize a new point source."""
         super().__init__(
@@ -207,10 +207,10 @@ class PointSource2D(PointSource):
     """A point source in 2D."""
 
     def __init__(
-            self,
-            *,
-            position: npt.NDArray[np.float_],
-            delay: float = 0.0,
+        self,
+        *,
+        position: npt.NDArray[np.float_],
+        delay: float = 0.0,
     ) -> None:
         """Initialize a new 2-D point source."""
         super().__init__(
@@ -224,10 +224,10 @@ class PointSource3D(PointSource):
     """A point source in 3D."""
 
     def __init__(
-            self,
-            *,
-            position: npt.NDArray[np.float_],
-            delay: float = 0.0,
+        self,
+        *,
+        position: npt.NDArray[np.float_],
+        delay: float = 0.0,
     ) -> None:
         """Initialize a new 2-D point source."""
         super().__init__(
