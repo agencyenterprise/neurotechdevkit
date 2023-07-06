@@ -2,7 +2,8 @@
 from pathlib import Path
 
 import numpy as np
-import pydicom
+import nibabel as nib
+from nibabel.nicom import dicomwrappers
 from scipy import ndimage
 from skimage import morphology
 from skimage.measure import find_contours
@@ -13,21 +14,17 @@ BONE_HU_MIN = 400
 
 def load_dicom(file_path: Path) -> np.ndarray:
     """Load a DICOM file and return a numpy array with the image data."""
-    medical_image = pydicom.read_file(file_path)  # type: ignore
-    assert isinstance(medical_image, pydicom.FileDataset)
-    image = medical_image.pixel_array
-    image = transform_to_hu(medical_image, image)
-    return image
-
-
-def transform_to_hu(
-    medical_image: pydicom.FileDataset, image: np.ndarray
-) -> np.ndarray:
-    """Transform raw image data to Hounsfield Units (HU)."""
-    intercept = medical_image.RescaleIntercept
-    slope = medical_image.RescaleSlope
-    hu_image = image * slope + intercept
+    img = dicomwrappers.wrapper_from_file(file_path)
+    hu_image = img.get_data()
     return hu_image
+
+
+def load_nifti(file_path: Path) -> np.ndarray:
+    """Load a NIfTI file and return a numpy array with the image data."""
+    full_img = nib.load(file_path)
+    middle = int(full_img.get_fdata().shape[0]/2)
+    image = full_img.get_fdata()[middle]
+    return image
 
 
 def get_skull_mask(image: np.ndarray) -> np.ndarray:
@@ -55,7 +52,7 @@ def get_rotation_angle(mask: np.ndarray) -> float:
     pca.fit_transform(X)
     angle = np.arctan2(pca.components_[0, 1], pca.components_[0, 0])
     angle = np.degrees(angle)
-    return -(180 + angle)
+    return -angle
 
 
 def rotate_image(image: np.ndarray, angle: float) -> np.ndarray:
@@ -117,8 +114,11 @@ def add_pad(
 
 def get_masks(ct_path: Path, convert_2d=False) -> tuple[np.ndarray, np.ndarray]:
     """Get the brain and skull masks from a CT scan."""
+    assert convert_2d is True, "Only 2d is supported"
     if ct_path.suffix == ".dcm":
         image = load_dicom(ct_path)
+    elif ct_path.suffix in [".nii", ".gz"]:
+        image = load_nifti(ct_path)
     else:
         raise Exception("Unknown file format")
 
