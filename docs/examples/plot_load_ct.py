@@ -1,13 +1,23 @@
 # -*- coding: utf-8 -*-
 """
-Loading material mask from CT scan
+Loading material mask from a CT scan
 ====================================
 
 The following code is based on NDK's Scenario 2 implementation.
 The brain and skull masks are loaded from a CT scan.
+
+The currently supported CT scan file formats are
+[DICOM](https://www.dicomstandard.org/) and
+[NIfTI](https://nifti.nimh.nih.gov/nifti-1).
+You can use NDK to load the brain and skull masks of a CT scan with:
+```
+from neurotechdevkit.scenarios import ct_loader
+skull_mask, brain_mask = ct_loader.get_masks('PathToCTScanFile.dcm_or_nii')
+```
+You can find the above call in the method `_create_scenario_2_mask`.
 """
 # %%
-# Implementing the Scenario
+# Implementing the scenario with brain and skull masks of a CT scan
 from __future__ import annotations
 
 import pathlib
@@ -19,7 +29,7 @@ import stride
 from mosaic.types import Struct
 
 from neurotechdevkit import sources
-from neurotechdevkit.scenarios.ct_loader import get_masks
+from neurotechdevkit.scenarios import ct_loader
 from neurotechdevkit.scenarios import (
     Scenario2D,
     Target,
@@ -104,8 +114,9 @@ class ScenarioWithMasksFromCTScan(Scenario2D):
     ) -> npt.NDArray[np.bool_]:
         cur_dir = pathlib.Path("__file__").parent
 
+        # Here we load the CT scan and get the brain and skull masks:
         data_file = cur_dir / "ID_0000ca2f6.dcm"
-        skull_mask, brain_mask = get_masks(data_file, convert_2d)
+        skull_mask, brain_mask = ct_loader.get_masks(data_file, convert_2d)
 
         if material == "skull":
             mask = skull_mask
