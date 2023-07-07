@@ -3,26 +3,55 @@
 Phased array source
 ====================================
 
-Phased arrays consist of multiple individual transducer elements arranged in a specific pattern, such as a linear or circle. Each element can be controlled independently, allowing for precise manipulation of the generated ultrasound waves. By adjusting the timing or phase of the signals sent to these elements, the ultrasound waves can be focused, steered, and shaped without mechanically moving the transducer.
+Phased arrays consist of multiple individual transducer elements arranged in a
+specific pattern, such as a linear or circle. Each element can be controlled
+independently, allowing for precise manipulation of the generated ultrasound
+waves. By adjusting the timing or phase of the signals sent to these elements,
+the ultrasound waves can be focused, steered, and shaped without mechanically
+moving the transducer.
 
-They are becoming increasingly popular in the field of transcranial ultrasound stimulation as they offer several advantages over traditional ultrasound transducers -- among others are precise targeting and better control over steering and shaping:
+They are becoming increasingly popular in the field of transcranial ultrasound
+stimulation as they offer several advantages over traditional ultrasound
+transducers -- among others are precise targeting and better control over steering
+and shaping:
 
-* **Precise targeting:** as individual transducer elements can be individually controlled, it allows for the generation of a focused ultrasound beam with high spatial accuracy. This enables the stimulation of specific brain regions without affecting the surrounding healthy tissue and minimizes the risk of potential side effects.
+* **Precise targeting:** as individual transducer elements can be individually
+controlled, it allows for the generation of a focused ultrasound beam with high
+spatial accuracy. This enables the stimulation of specific brain regions without
+affecting the surrounding healthy tissue and minimizes the risk of potential side
+effects.
 
-* **Steering and shaping:** The phased array technology allows the ultrasound beam to be electronically steered and shaped in real-time without mechanically moving the transducers. This enables targeting of different brain regions or adjusting the stimulation pattern as needed during a session, making the procedure more versatile and adaptable.
+* **Steering and shaping:** The phased array technology allows the ultrasound beam
+to be electronically steered and shaped in real-time without mechanically moving the
+transducers. This enables targeting of different brain regions or adjusting the
+stimulation pattern as needed during a session, making the procedure more versatile
+and adaptable.
 
-These features allow the stimulation to be tailored to suit to more specific requirements. With ongoing research and development, they have the potential to revolutionize the field of brain stimulation and offer new treatment options for a range of neurological and psychiatric disorders.
+These features allow the stimulation to be tailored to suit to more specific
+requirements. With ongoing research and development, they have the potential to
+revolutionize the field of brain stimulation and offer new treatment options for
+a range of neurological and psychiatric disorders.
 
-This notebook will show how to define a phased array within NDK and experiment with some of the available features. For more details, checkout the [NDK documentation](https://agencyenterprise.github.io/neurotechdevkit/).
+This notebook will show how to define a phased array within NDK and experiment with
+some of the available features. For more details, checkout the
+[NDK documentation](https://agencyenterprise.github.io/neurotechdevkit/).
 
 ## Phased Arrays Components
 
-* **Elements:** A phased array consists of multiple transducer elements that can be individually controlled in terms of phase.
-* **Pitch:** The pitch of a phased array refers to the distance between adjacent transducer elements, and affects the resolution of the array.
-* **Spacing:** The spacing between transducer elements affects the width and shape of the ultrasound beam that is produced.
-* **Aperture:** The aperture of a phased array refers to the total size of the array, and affects the power and focus of the ultrasound beam.
-* **Element width:** The element width of a phased array refers to the size of each individual transducer element. Wider elements generally result in a more powerful and focused beam, while narrower elements can increase the resolution of the array.
-* **Tilt angle**: The tilt angle of a phased array refers to the angle at which the ultrasound beam is directed relative to the normal of plane of the array. Tilt angle can be adjusted by controlling the phase (delays) of the individual transducer elements.
+* **Elements:** A phased array consists of multiple transducer elements that can be
+individually controlled in terms of phase.
+* **Pitch:** The pitch of a phased array refers to the distance between adjacent
+transducer elements, and affects the resolution of the array.
+* **Spacing:** The spacing between transducer elements affects the width and shape
+of the ultrasound beam that is produced.
+* **Aperture:** The aperture of a phased array refers to the total size of the array,
+and affects the power and focus of the ultrasound beam.
+* **Element width:** The element width of a phased array refers to the size of each
+individual transducer element. Wider elements generally result in a more powerful
+and focused beam, while narrower elements can increase the resolution of the array.
+* **Tilt angle**: The tilt angle of a phased array refers to the angle at which the
+ultrasound beam is directed relative to the normal of plane of the array. Tilt angle
+can be adjusted by controlling the phase (delays) of the individual transducer elements.
 
 ![phased-array-schematic](../../images/phased-array-schematic.png)
 
@@ -31,10 +60,13 @@ The image above shows a schematic representation of a phased array.
 
 ![phased-array-axis-definition](../../images/phased-array-axis-definition.png)
 
-The image above shows the axis definition and the look of a phased array in the real world. Image source [link](https://www.biomecardio.com/MUST/functions/html/txdelay_doc.html).
+The image above shows the axis definition and the look of a phased array in the real
+world. Image source
+[link](https://www.biomecardio.com/MUST/functions/html/txdelay_doc.html).
 
 
-Below we will go through some examples of how to use the NDK to API to simulate Phased Arrays in the most common settings. Examples we wil cover:
+Below we will go through some examples of how to use the NDK to API to simulate
+Phased Arrays in the most common settings. Examples we will cover:
 
 * Setting up a tilted wavefront
 * Focusing phased arrays
@@ -58,10 +90,11 @@ A PhasedArraySource receives the following parameters:
 - num_elements `(int)`: the number of elements of the phased array.
 - pitch `(float)`: the distance (in meters) between the centers of neighboring
     elements in the phased array.
-- element_width `(float)`: the width (in meters) of each individual element of the array.
-- tilt_angle `(float)`: the desired tilt angle (in degrees) of the wavefront. The angle is
-    measured between the direction the wavefront travels and the normal to the
-    surface of the transducer, with positive angles resulting in a
+- element_width `(float)`: the width (in meters) of each individual element of
+    the array.
+- tilt_angle `(float)`: the desired tilt angle (in degrees) of the wavefront.
+    The angle is measured between the direction the wavefront travels and the
+    normal to the surface of the transducer, with positive angles resulting in a
     counter-clockwise tilt away from the normal.
 - focal_length `(float)`: the distance (in meters) from `position` to the focal
     point.
@@ -81,75 +114,80 @@ A PhasedArraySource receives the following parameters:
 # argument different than zero. Positive angles result in counter-clockwise rotations.
 
 import numpy as np
-import neurotechdevkit as ndk
 
+import neurotechdevkit as ndk
 
 # define the source
 source = ndk.sources.PhasedArraySource2D(
-            position=np.array([0.0, 0.0]),
-            direction=np.array([1., 0.]),
-            num_elements=20,
-            pitch=1.5e-3,
-            element_width=1.2e-3,
-            tilt_angle=30,
-            num_points=1000,
+    position=np.array([0.0, 0.0]),
+    direction=np.array([1.0, 0.0]),
+    num_elements=20,
+    pitch=1.5e-3,
+    element_width=1.2e-3,
+    tilt_angle=30,
+    num_points=1000,
 )
 
-scenario = ndk.make('scenario-1-2d-v0')
+scenario = ndk.make("scenario-1-2d-v0")
 scenario.add_source(source)
 result = scenario.simulate_steady_state()
+assert isinstance(result, ndk.results.SteadyStateResult2D)
 result.render_steady_state_amplitudes()
 
 # %%
 # ## Focusing
-# Similarly, a phased array can be focused by applying delays in a specific way. Such delays are automatically computed when `focal_length` is defined. Let's explore how the API looks like:
+# Similarly, a phased array can be focused by applying delays in a specific way. Such
+# delays are automatically computed when `focal_length` is defined. Let's explore how
+# the API looks like:
 
-scenario = ndk.make('scenario-1-2d-v0')
+scenario = ndk.make("scenario-1-2d-v0")
 
 phased_array = ndk.sources.PhasedArraySource2D(
-            position=np.array([0.0, 0.0]),
-            direction=np.array([1.0, 0.0]),
-            num_elements=20,
-            pitch=1.5e-3,
-            element_width=1.2e-3,
-            focal_length=0.03,
-            num_points=1000,
+    position=np.array([0.0, 0.0]),
+    direction=np.array([1.0, 0.0]),
+    num_elements=20,
+    pitch=1.5e-3,
+    element_width=1.2e-3,
+    focal_length=0.03,
+    num_points=1000,
 )
 
 scenario.add_source(phased_array)
-print(f'Focal point is: {phased_array.focal_point}')
+print(f"Focal point is: {phased_array.focal_point}")
 # %%
 # `focal_point` shows the coordinates (in meters) where the array focuses.
 
 result = scenario.simulate_steady_state()
+assert isinstance(result, ndk.results.SteadyStateResult2D)
 result.render_steady_state_amplitudes()
 # %%
 # We can see that the arrays focuses at a distance equal to `focal_length`.
 
 
-
 # %%
 # ## Custom Wavefront Shapes
-# In the examples shown so far we specified high level arguments and the required delays were
-# automatically computed. The NDK API offers also the possibility to specify delays directly
-# to create arbitrary wavefront shapes.
+# In the examples shown so far we specified high level arguments and the required
+# delays were automatically computed. The NDK API offers also the possibility to
+# specify delays directly to create arbitrary wavefront shapes.
 #
-# In the example below we apply monotonically increasing delays to mimic a counter-clockwise angle.
+# In the example below we apply monotonically increasing delays to mimic a
+# counter-clockwise angle.
 
-scenario = ndk.make('scenario-1-2d-v0')
+scenario = ndk.make("scenario-1-2d-v0")
 
 phased_array = ndk.sources.PhasedArraySource2D(
-            position=np.array([0.0, 0.0]),
-            direction=np.array([1., 0.]),
-            num_elements=20,
-            pitch=1.5e-3,
-            element_width=1.2e-3,
-            element_delays=np.linspace(0, 1e-5, 20),
-            num_points=1000,
+    position=np.array([0.0, 0.0]),
+    direction=np.array([1.0, 0.0]),
+    num_elements=20,
+    pitch=1.5e-3,
+    element_width=1.2e-3,
+    element_delays=np.linspace(0, 1e-5, 20),
+    num_points=1000,
 )
 
 scenario.add_source(phased_array)
 result = scenario.simulate_steady_state()
+assert isinstance(result, ndk.results.SteadyStateResult2D)
 result.render_steady_state_amplitudes()
 
 # %%
@@ -166,21 +204,23 @@ result.render_steady_state_amplitudes()
 #
 # The rest of the API is identical for both 2D and 3D scenarios.
 
-scenario = ndk.make('scenario-1-3d-v0')
+scenario = ndk.make("scenario-1-3d-v0")
 
 phased_3d = ndk.sources.PhasedArraySource3D(
-    position=np.array([0.,0.,0.]),
-    direction=np.array([1.,0.,0.]),
-    center_line=np.array([0.,0.,1.]),
+    position=np.array([0.0, 0.0, 0.0]),
+    direction=np.array([1.0, 0.0, 0.0]),
+    center_line=np.array([0.0, 0.0, 1.0]),
     num_points=20_000,
     num_elements=16,
     pitch=1.5e-3,
     element_width=1.2e-3,
     tilt_angle=30,
-    height=5.e-3)
+    height=5.0e-3,
+)
 
 scenario.add_source(phased_3d)
 results = scenario.simulate_steady_state()
+assert isinstance(results, ndk.results.SteadyStateResult3D)
 results.render_steady_state_amplitudes(slice_axis=1, slice_position=0.0)
 
 # %%

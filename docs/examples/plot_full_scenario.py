@@ -4,7 +4,8 @@ Implementing a full scenario
 ====================================
 
 !!! note
-    NDK and its examples are under constant development, more information and content will be added to this example soon!
+    NDK and its examples are under constant development, more information
+    and content will be added to this example soon!
 
 The following code is a simplified implementation of NDK's Scenario 1.
 """
@@ -13,10 +14,14 @@ The following code is a simplified implementation of NDK's Scenario 1.
 import numpy as np
 import stride
 
-from mosaic.types import Struct
-
 from neurotechdevkit import sources
-from neurotechdevkit.scenarios import Scenario2D, Target, make_grid, add_material_fields_to_problem, materials
+from neurotechdevkit.results import SteadyStateResult2D
+from neurotechdevkit.scenarios import (
+    Scenario2D,
+    Target,
+    add_material_fields_to_problem,
+    make_grid,
+)
 
 
 class FullScenario(Scenario2D):
@@ -28,6 +33,7 @@ class FullScenario(Scenario2D):
     doi: 10.1121/10.0013426
     https://asa.scitation.org/doi/pdf/10.1121/10.0013426
     """
+
     _SCENARIO_ID = "the_id_for_this_scenario"
 
     """
@@ -40,6 +46,17 @@ class FullScenario(Scenario2D):
     _TARGET_OPTIONS = {
         "target_1": Target("target_1", np.array([0.064, 0.0]), 0.004, ""),
     }
+
+    """
+    The order of returned materials defines the layering of the scenario.
+    """
+    material_layers = [
+        "water",
+        "skin",
+        "cortical_bone",
+        "trabecular_bone",
+        "brain",
+    ]
 
     def __init__(self, complexity="fast"):
         """
@@ -54,27 +71,6 @@ class FullScenario(Scenario2D):
         )
 
     @property
-    def _material_layers(self) -> list[tuple[str, Struct]]:
-        """"
-        This function defines the material layers for the scenario.
-        The order of returned materials defines the layering of the scenario.
-
-        Each material has the following properties:
-        - vp: the speed of sound (in m/s).
-        - rho: the mass density (in kg/m³).
-        - alpha: the absorption (in dB/cm).
-        - render_color: the color used when rendering this material in the scenario layout
-            plot.
-        """
-        return [
-            ("water", materials.water),
-            ("skin", materials.skin),
-            ("cortical bone", materials.cortical_bone),
-            ("trabecular bone", materials.trabecular_bone),
-            ("brain", materials.brain),
-        ]
-
-    @property
     def _material_outline_upsample_factor(self) -> int:
         """
         The factor to use when upsampling the material field before
@@ -83,18 +79,17 @@ class FullScenario(Scenario2D):
         """
         return 8
 
-    def _compile_problem(self) -> stride.Problem:
+    def _compile_problem(self, center_frequency) -> stride.Problem:
         """The problem definition for the scenario."""
         extent = np.array([0.12, 0.07])  # m
         # scenario constants
         speed_water = 1500  # m/s
-        c_freq = 500e3  # hz
 
         # desired resolution for complexity=fast
         ppw = 6
 
         # compute resolution
-        dx = speed_water / c_freq / ppw  # m
+        dx = speed_water / center_frequency / ppw  # m
 
         grid = make_grid(extent=extent, dx=dx)
         problem = stride.Problem(
@@ -102,11 +97,11 @@ class FullScenario(Scenario2D):
         )
         problem = add_material_fields_to_problem(
             problem=problem,
-            materials=self.materials,
+            materials=self.get_materials(center_frequency),
             layer_ids=self.layer_ids,
             masks={
                 name: _create_scenario_1_mask(name, problem.grid)
-                for name in self.materials.keys()
+                for name in self.material_layers
             },
         )
         return problem
@@ -146,11 +141,11 @@ def _create_scenario_1_mask(material, grid):
     elif material == "skin":
         _fill_mask(mask, start=interfaces[0], end=interfaces[1], dx=dx)
 
-    elif material == "cortical bone":
+    elif material == "cortical_bone":
         _fill_mask(mask, start=interfaces[1], end=interfaces[2], dx=dx)
         _fill_mask(mask, start=interfaces[3], end=interfaces[4], dx=dx)
 
-    elif material == "trabecular bone":
+    elif material == "trabecular_bone":
         _fill_mask(mask, start=interfaces[2], end=interfaces[3], dx=dx)
 
     elif material == "brain":
@@ -178,4 +173,5 @@ def _fill_mask(mask, start, end, dx):
 
 scenario = FullScenario()
 result = scenario.simulate_steady_state()
+assert isinstance(result, SteadyStateResult2D)
 result.render_steady_state_amplitudes(show_material_outlines=False)

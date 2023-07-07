@@ -1,5 +1,5 @@
 """Scenarios module."""
-from . import materials
+from .. import materials
 from ._base import Scenario, Scenario2D, Scenario3D, Target
 from ._scenario_0 import Scenario0
 from ._scenario_1 import Scenario1_2D, Scenario1_3D

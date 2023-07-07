@@ -52,7 +52,7 @@ def test_select_simulation_time_for_steady_state_with_defined_time_to_ss(grid_fa
     When time_to_steady_state is provided, the function should use it to calculate the
     simulation time.
     """
-    test_materials = {"test": materials.brain}
+    test_materials = {"brain": materials.get_material("brain")}
     test_freq = 2.0e4
     n_cycles = 5
     test_time_ss = 1e-4
@@ -76,7 +76,10 @@ def test_select_simulation_time_for_steady_state_with_default_time_to_ss(grid_fa
     When time_to_steady_state is not provided, the function should estimate a value
     for it based on the size of the scenario and the lowest speed of sound.
     """
-    test_materials = {"fast": materials.cortical_bone, "slow": materials.brain}
+    test_materials = {
+        "fast": materials.get_material("cortical_bone"),
+        "slow": materials.get_material("brain"),
+    }
     test_freq = 2.0e4
     n_cycles = 5
     sim_time = select_simulation_time_for_steady_state(
@@ -89,14 +92,17 @@ def test_select_simulation_time_for_steady_state_with_default_time_to_ss(grid_fa
     )
     period = 1.0 / test_freq
     length = np.sqrt(0.3**2 + 0.4**2 + 0.5**2)
-    expected_time_ss = 2 * length / materials.brain.vp
+    expected_time_ss = 2 * length / materials.get_material("brain").vp
     expected_time = expected_time_ss + n_cycles * period
     np.testing.assert_allclose(sim_time, expected_time)
 
 
 def test_select_simulation_time_for_pulsed(grid_fake):
     """Verify that the returned simulation time is correct for a pulsed simulation."""
-    test_materials = {"fast": materials.cortical_bone, "slow": materials.brain}
+    test_materials = {
+        "fast": materials.get_material("cortical_bone"),
+        "slow": materials.get_material("brain"),
+    }
     source_delay = 31.0
     sim_time = select_simulation_time_for_pulsed(
         grid=grid_fake,
@@ -104,7 +110,7 @@ def test_select_simulation_time_for_pulsed(grid_fake):
         delay=source_delay,
     )
     length = np.sqrt(0.3**2 + 0.4**2 + 0.5**2)
-    expected_time = source_delay + length / materials.brain.vp
+    expected_time = source_delay + length / materials.get_material("brain").vp
     np.testing.assert_allclose(sim_time, expected_time)
 
 

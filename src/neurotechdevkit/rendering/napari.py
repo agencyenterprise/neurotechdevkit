@@ -98,7 +98,6 @@ def render_amplitudes_3d_with_napari(result: "results.SteadyStateResult3D") -> N
     Raises:
         ImportError: If napari is not found.
     """
-    pass
     _create_napari_3d(scenario=result.scenario, amplitudes=result.get_steady_state())
 
 
