@@ -1,8 +1,8 @@
 """Functions for loading and preprocessing CT scans."""
 from pathlib import Path
 
-import numpy as np
 import nibabel as nib
+import numpy as np
 from nibabel.nicom import dicomwrappers
 from scipy import ndimage
 from skimage import morphology
@@ -12,17 +12,18 @@ from sklearn.decomposition import PCA
 BONE_HU_MIN = 400
 
 
-def load_dicom(file_path: Path) -> np.ndarray:
+def _load_dicom(file_path: Path) -> np.ndarray:
     """Load a DICOM file and return a numpy array with the image data."""
     img = dicomwrappers.wrapper_from_file(file_path)
     hu_image = img.get_data()
     return hu_image
 
 
-def load_nifti(file_path: Path) -> np.ndarray:
+def _load_nifti(file_path: Path) -> np.ndarray:
     """Load a NIfTI file and return a numpy array with the image data."""
-    full_img = nib.load(file_path)
-    middle = int(full_img.get_fdata().shape[0]/2)
+    full_img = nib.load(file_path)  # type: ignore
+    assert isinstance(full_img, nib.nifti1.Nifti1Image)
+    middle = int(full_img.get_fdata().shape[0] / 2)
     image = full_img.get_fdata()[middle]
     return image
 
@@ -112,13 +113,13 @@ def add_pad(
     return final_image
 
 
-def get_masks(ct_path: Path, convert_2d=False) -> tuple[np.ndarray, np.ndarray]:
+def get_masks(ct_path: Path, convert_2d=True) -> tuple[np.ndarray, np.ndarray]:
     """Get the brain and skull masks from a CT scan."""
     assert convert_2d is True, "Only 2d is supported"
     if ct_path.suffix == ".dcm":
-        image = load_dicom(ct_path)
+        image = _load_dicom(ct_path)
     elif ct_path.suffix in [".nii", ".gz"]:
-        image = load_nifti(ct_path)
+        image = _load_nifti(ct_path)
     else:
         raise Exception("Unknown file format")
 
