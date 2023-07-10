@@ -26,6 +26,7 @@ from ._time import (
     select_simulation_time_for_steady_state,
 )
 from ._utils import (
+    add_material_fields_to_problem,
     choose_wavelet_for_mode,
     create_grid_circular_mask,
     create_grid_spherical_mask,
@@ -54,7 +55,7 @@ class Target:
     description: str
 
 
-class Scenario(abc.ABC):
+class Scenario:
     """The base scenario."""
 
     _SCENARIO_ID: str
@@ -202,7 +203,7 @@ class Scenario(abc.ABC):
     @property
     def target(self) -> Target:
         """Details about the current target."""
-        return self._TARGET_OPTIONS[self._target_id]
+        return self._target
 
     @property
     def target_center(self) -> npt.NDArray[np.float_]:
@@ -237,20 +238,6 @@ class Scenario(abc.ABC):
         return [name for name, _ in self._material_layers]
 
     @property
-    @abc.abstractmethod
-    def _material_layers(self) -> list[tuple[str, Struct]]:
-        pass
-
-    @property
-    @abc.abstractmethod
-    def _material_outline_upsample_factor(self) -> int:
-        """Upsample_factor to use for this scenario when drawing material outlines.
-
-        This parameter is internal to ndk, is not intended to be used directly.
-        """
-        pass
-
-    @property
     def sources(self) -> FrozenList[Source]:
         """The list of sources currently defined.
 
@@ -259,15 +246,15 @@ class Scenario(abc.ABC):
         """
         return self._sources
 
-    def _freeze_sources(self) -> None:
-        """Freeze the sources list so that it can no longer be modified.
+    # def _freeze_sources(self) -> None:
+    #     """Freeze the sources list so that it can no longer be modified.
 
-        This should be done before any simulation is run because the scenario and
-        simulation are highly coupled and any changes to sources after the simulation
-        could cause problems.
-        """
-        if not self._sources.frozen:
-            self._sources.freeze()
+    #     This should be done before any simulation is run because the scenario and
+    #     simulation are highly coupled and any changes to sources after the simulation
+    #     could cause problems.
+    #     """
+    #     if not self._sources.frozen:
+    #         self._sources.freeze()
 
     def get_layer_mask(self, layer_name: str) -> npt.NDArray[np.bool_]:
         """Return the mask for the desired layer.
@@ -292,15 +279,6 @@ class Scenario(abc.ABC):
         layers_field = self.get_field_data("layer")
         return layers_field == layer
 
-    @abc.abstractmethod
-    def get_target_mask(self) -> npt.NDArray[np.bool_]:
-        """Return the mask for the target region.
-
-        Returns:
-            A boolean array indicating which gridpoints correspond to the target region.
-        """
-        pass
-
     def get_field_data(self, field: str) -> npt.NDArray[np.float_]:
         """Return the array of field values across the scenario for a particular field.
 
@@ -319,10 +297,6 @@ class Scenario(abc.ABC):
         """
         return self.problem.medium.fields[field].data
 
-    @abc.abstractmethod
-    def _compile_problem(self) -> stride.Problem:
-        pass
-
     def reset(self) -> None:
         """Reset the scenario to initial state."""
         raise NotImplementedError()
@@ -338,15 +312,6 @@ class Scenario(abc.ABC):
             source: the source to add to the scenario.
         """
         self._sources.append(source)
-
-    @abc.abstractmethod
-    def get_default_source(self) -> Source:
-        """Create and returns a default source for this scenario.
-
-        Returns:
-            The default source.
-        """
-        pass
 
     def _ensure_source(self) -> None:
         """Ensure the scenario includes at least one source.
@@ -413,7 +378,8 @@ class Scenario(abc.ABC):
                 " function of frequency has been implemented."
             )
 
-        problem = self.problem
+        self.create_problem()
+        problem = self._problem
         sim_time = select_simulation_time_for_steady_state(
             grid=problem.grid,
             materials=self.materials,
@@ -505,6 +471,7 @@ class Scenario(abc.ABC):
         Returns:
             An object containing the result of the 2D pulsed simulation.
         """
+        self.create_problem()
         return self._simulate_pulse(
             center_frequency=center_frequency,
             points_per_period=points_per_period,
@@ -636,8 +603,8 @@ class Scenario(abc.ABC):
         Returns:
             The `SubProblem` to use for the simulation.
         """
-        self._ensure_source()
-        self._freeze_sources()
+        # self._ensure_source()
+        # self._freeze_sources()
 
         # create an actual list to avoid needing to use FrozenList as the type
         source_list = list(self.sources)
@@ -1157,3 +1124,46 @@ class Scenario3D(Scenario):
         [documentation](https://napari.org/stable/tutorials/fundamentals/viewer.html)
         """
         rendering.render_layout_3d_with_napari(self)
+
+
+class ProceduralScenario(Scenario):
+    def __init__(
+        self,
+        complexity: str = "fast",
+        material_outline_upsample_factor=16,
+    ):
+        """Initialize the scenario."""
+        self._complexity = complexity
+        self._material_outline_upsample_factor = material_outline_upsample_factor
+        self._sources = []
+        if self._complexity != "fast":
+            raise ValueError("the only complexity currently supported is 'fast'")
+
+    def add_origin(self, origin) -> None:
+        self._origin = origin
+
+    def create_problem(self) -> stride:
+        problem = stride.Problem(name="a problem", grid=self._grid)
+        problem = add_material_fields_to_problem(
+            problem=problem,
+            materials=self.materials,
+            layer_ids=self.layer_ids,
+            masks=self._material_masks,
+        )
+        self._problem = problem
+        return problem
+
+    def add_source(self, source) -> None:
+        self._sources.append(source)
+
+    def add_target(self, target) -> None:
+        self._target = target
+
+    def add_material_layers(self, material_layers) -> None:
+        self._material_layers = material_layers
+
+    def add_material_masks(self, material_masks) -> None:
+        self._material_masks = material_masks
+
+    def add_grid(self, grid) -> None:
+        self._grid = grid
