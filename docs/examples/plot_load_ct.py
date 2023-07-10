@@ -2,13 +2,13 @@
 """
 Loading material mask from a CT scan
 ====================================
-
-The following code is based on NDK's Scenario 2 implementation.
-The brain and skull masks are loaded from a CT scan.
+This example shows how to load the brain and skull masks of a CT scan and use them
+to create a scenario.
 
 The currently supported CT scan file formats are
 [DICOM](https://www.dicomstandard.org/) and
 [NIfTI](https://nifti.nimh.nih.gov/nifti-1).
+
 You can use NDK to load the brain and skull masks of a CT scan with:
 ```
 from neurotechdevkit.scenarios import ct_loader
@@ -38,7 +38,7 @@ from neurotechdevkit.scenarios import (
     materials,
 )
 
-
+# The following code is based on NDK's Scenario 2 implementation.
 class ScenarioWithMasksFromCTScan(Scenario2D):
     _SCENARIO_ID = "scenario-2-2d-custom-ct"
     _TARGET_OPTIONS = {
