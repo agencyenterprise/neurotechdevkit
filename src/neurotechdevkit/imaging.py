@@ -91,18 +91,21 @@ def _estimate_carrier_frequency(rf_signals: np.ndarray, freq_sampling: float, ma
     num_samples, num_channels = rf_signals.shape
 
     # randomly select channels (scan-lines) to speed up calculation
-    selected_channel_idxs = np.random.choice(num_channels, min(max_num_channels, num_channels), replace=False)
-    # Calculate the power spectrum using welch
-    frequencies, power_spectrum = welch(rf_signals[:, selected_channel_idxs], fs=freq_sampling, axis=0)
-
+    num_selected_channels = min(max_num_channels, num_channels)
+    selected_channel_idxs = np.random.choice(num_channels, num_selected_channels, replace=False)
+    # Calculate power spectrum using FFT (along the time axis)
+    power_spectrum = np.square(np.abs(np.fft.rfft(rf_signals[:, selected_channel_idxs], axis=0)))
+    # Aggregate spectra over channels
+    power_spectrum = power_spectrum.sum(axis=1)
     # Extract the positive portion of the power spectrum
-    relevant_spectrum = power_spectrum[:num_channels // 2 + 1]
-    relevant_frequencies = frequencies[:num_channels // 2 + 1]
+    relevant_spectrum = power_spectrum[:num_samples // 2 + 1]
+    # Convert from index to frequency
+    freq_carrier_idx = np.average(np.arange(relevant_spectrum.shape[0]), weights=relevant_spectrum)
+    freq_carrier = freq_carrier_idx * freq_sampling / num_samples
 
-    # Estimate the carrier frequency using the weighted average
-    weighted_average = np.average(relevant_frequencies, weights=relevant_spectrum)
-    # Convert from spectrum-index to Hz
-    freq_carrier = weighted_average * freq_sampling / num_samples
+    # Calculated carrier frequency should be positive
+    assert freq_carrier > 0, "Estimated carrier frequency is negative: {}".format(freq_carrier)
+    print(freq_carrier)
 
     return freq_carrier
 
