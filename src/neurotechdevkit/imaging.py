@@ -79,29 +79,41 @@ def demodulate_rf_to_iq(rf_signals: np.ndarray,
     return iq_signals, freq_carrier
 
 
-def _estimate_carrier_frequency(rf_signals: np.ndarray, freq_sampling: float, max_num_channels: int = 100) -> float:
+def _estimate_carrier_frequency(rf_signals: np.ndarray, freq_sampling: float, max_num_channels: int = 100, use_welch: bool = True) -> float:
     """Estimate the carrier frequency based on the power spectrum of the RF signals.
 
     Args:
         rf_signals: Radio-frequency signals estimate the carrier frequency of. Shape: (num_samples, num_channels)
         freq_sampling: Sampling frequency of the RF signals (in Hz).
         max_num_channels: Maximum number of channels to use for power spectrum analysis.
+        use_welch: whether to use Welch's method to estimate the power spectrum.
+            If False, uses FFT sum-of-squares.
     """
     assert rf_signals.ndim == 2, "Expected rf_signals to have shape (num_samples, num_channels)."
+    assert np.isrealobj(rf_signals), "rf_signals must be real-valued."
     num_samples, num_channels = rf_signals.shape
 
     # randomly select channels (scan-lines) to speed up calculation
     num_selected_channels = min(max_num_channels, num_channels)
     selected_channel_idxs = np.random.choice(num_channels, num_selected_channels, replace=False)
-    # Calculate power spectrum using FFT (along the time axis)
-    power_spectrum = np.square(np.abs(np.fft.rfft(rf_signals[:, selected_channel_idxs], axis=0)))
-    # Aggregate spectra over channels
+
+    # Calculate the power spectrum
+    kwargs = {} if use_welch else {"nperseg": num_samples, "window": "boxcar"}
+    frequencies, power_spectrum = welch(
+        rf_signals[:, selected_channel_idxs],
+        fs=freq_sampling,
+        scaling="spectrum",
+        return_onesided=True,  # only positive frequencies
+        axis=0,
+        **kwargs,
+    )
+
+    # Aggregate spectrum across channels
+    num_frequencies, = frequencies.shape
+    assert power_spectrum.shape == (num_frequencies, num_selected_channels)
     power_spectrum = power_spectrum.sum(axis=1)
-    # Extract the positive portion of the power spectrum
-    relevant_spectrum = power_spectrum[:num_samples // 2 + 1]
-    # Convert from index to frequency
-    freq_carrier_idx = np.average(np.arange(relevant_spectrum.shape[0]), weights=relevant_spectrum)
-    freq_carrier = freq_carrier_idx * freq_sampling / num_samples
+    # Estimate the carrier frequency using the weighted average
+    freq_carrier = np.average(frequencies, weights=power_spectrum)
 
     # Calculated carrier frequency should be positive
     assert freq_carrier > 0, "Estimated carrier frequency is negative: {}".format(freq_carrier)
