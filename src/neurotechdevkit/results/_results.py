@@ -295,6 +295,7 @@ class SteadyStateResult2D(SteadyStateResult):
             horizontal_label="Y",
             title="Steady-State Wave Amplitude",
         )
+        return fig
 
 
 class SteadyStateResult3D(SteadyStateResult):

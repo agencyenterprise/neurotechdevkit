@@ -378,7 +378,6 @@ class Scenario:
                 " function of frequency has been implemented."
             )
 
-        self.create_problem()
         problem = self._problem
         sim_time = select_simulation_time_for_steady_state(
             grid=problem.grid,
@@ -471,7 +470,6 @@ class Scenario:
         Returns:
             An object containing the result of the 2D pulsed simulation.
         """
-        self.create_problem()
         return self._simulate_pulse(
             center_frequency=center_frequency,
             points_per_period=points_per_period,
@@ -1143,7 +1141,7 @@ class ProceduralScenario(Scenario):
         self._origin = origin
 
     def create_problem(self) -> stride:
-        problem = stride.Problem(name="a problem", grid=self._grid)
+        problem = stride.Problem(name="", grid=self._grid)
         problem = add_material_fields_to_problem(
             problem=problem,
             materials=self.materials,
@@ -1167,3 +1165,51 @@ class ProceduralScenario(Scenario):
 
     def add_grid(self, grid) -> None:
         self._grid = grid
+
+    def render_layout(
+        self,
+        show_sources: bool = True,
+        show_target: bool = True,
+        show_material_outlines: bool = False,
+    ) -> None:
+        color_sequence = [
+            self.materials[name].render_color for name in self.ordered_layers
+        ]
+        field = self.get_field_data("layer").astype(int)
+        fig, ax = rendering.create_layout_fig(
+            self.extent, self.origin, color_sequence, field
+        )
+
+        # add layers
+        if show_material_outlines:
+            rendering.draw_material_outlines(
+                ax=ax,
+                material_field=field,
+                dx=self.dx,
+                origin=self.origin,
+                upsample_factor=self._material_outline_upsample_factor,
+            )
+        if show_target:
+            rendering.draw_target(ax, self.target_center, self.target_radius)
+        if show_sources:
+            for source in self.sources:
+                drawing_params = rendering.SourceDrawingParams(
+                    position=source.position,
+                    direction=source.unit_direction,
+                    aperture=source.aperture,
+                    focal_length=source.focal_length,
+                    source_is_flat=rendering.source_should_be_flat(source),
+                )
+                rendering.draw_source(ax, drawing_params)
+
+        rendering.configure_layout_plot(
+            fig=fig,
+            ax=ax,
+            color_sequence=color_sequence,
+            layer_labels=self.ordered_layers,
+            show_sources=show_sources,
+            show_target=show_target,
+            extent=self.extent,
+            origin=self.origin,
+        )
+        return fig
