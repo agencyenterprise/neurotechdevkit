@@ -1,4 +1,4 @@
-"""Ultrasound imaging simulations."""
+"""Demodulate ultrasound radio-frequency (RF) signals."""
 
 from typing import Optional, Tuple
 import warnings
@@ -15,7 +15,9 @@ def demodulate_rf_to_iq(rf_signals: np.ndarray,
                         time_offset: float = 0.0,
                         return_analytic: bool = False) -> Tuple[np.ndarray, float]:
     """
-    Perform demodulation of radio-frequency (RF) signals to in-phase/quadrature (I/Q) signals.
+    Demodulate radio-frequency (RF) signals to in-phase/quadrature (I/Q) signals.
+
+    Performed as one-step of ultrasound imaging.
 
     Parameters:
         rf_signals: Radio-frequency signals to be demodulated. Shape: (num_samples, num_channels)
