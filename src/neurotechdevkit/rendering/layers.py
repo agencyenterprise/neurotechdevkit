@@ -1,13 +1,31 @@
 """Layers for rendering scenario figures."""
+from typing import Optional
+
 import matplotlib.axes
 import numpy as np
 import numpy.typing as npt
 
-from ._source import SourceDrawingParams, create_source_drawing_artist
+from neurotechdevkit.sources import (
+    FocusedSource3D,
+    PhasedArraySource3D,
+    PlanarSource3D,
+    PointSource,
+    Source,
+)
+
+from ..scenarios._utils import drop_element
+from ._source import (
+    SourceDrawingParams,
+    create_point_source_artist,
+    create_source_drawing_artist,
+    source_should_be_flat,
+)
 from ._target import create_target_drawing_artist
 
 
-def draw_source(ax: matplotlib.axes.Axes, source: SourceDrawingParams) -> None:
+def draw_source(
+    ax: matplotlib.axes.Axes, source: Source, slice_axis: Optional[int] = None
+) -> None:
     """Draw a layer showing the scenario sources on top of a figure.
 
     This layer can be added to any scenario figure in 2D.
@@ -16,7 +34,29 @@ def draw_source(ax: matplotlib.axes.Axes, source: SourceDrawingParams) -> None:
         ax: the axes to draw the sources on.
         source: the Source object to be drawn.
     """
-    source_artist = create_source_drawing_artist(source, transform=ax.transData)
+    if isinstance(source, PointSource):
+        source_artist = create_point_source_artist(source.position)
+    else:
+        if isinstance(source, (FocusedSource3D, PlanarSource3D, PhasedArraySource3D)):
+            assert slice_axis is not None
+            drawing_params = SourceDrawingParams(
+                position=drop_element(source.position, slice_axis),
+                direction=drop_element(source.unit_direction, slice_axis),
+                aperture=source.aperture,
+                focal_length=source.focal_length,
+                source_is_flat=source_should_be_flat(source),
+            )
+        else:
+            drawing_params = SourceDrawingParams(
+                position=source.position,
+                direction=source.unit_direction,
+                aperture=source.aperture,
+                focal_length=source.focal_length,
+                source_is_flat=source_should_be_flat(source),
+            )
+        source_artist = create_source_drawing_artist(
+            drawing_params, transform=ax.transData
+        )
     ax.add_artist(source_artist)
 
 

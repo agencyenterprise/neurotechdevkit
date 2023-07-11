@@ -9,7 +9,7 @@ import scipy
 from matplotlib.image import BboxImage
 from matplotlib.transforms import Bbox, Transform, TransformedBbox
 
-from neurotechdevkit.sources import PhasedArraySource, PointSource, Source
+from neurotechdevkit.sources import PhasedArraySource, Source
 
 _COMPONENT_DIR = pathlib.Path(__file__).parent / "components"
 
@@ -43,7 +43,6 @@ class SourceDrawingParams(NamedTuple):
     aperture: float
     focal_length: float
     source_is_flat: bool
-    is_point_source: bool
 
 
 def create_source_drawing_artist(
@@ -62,9 +61,6 @@ def create_source_drawing_artist(
     Returns:
         A matplotlib artist containing the rendered source.
     """
-    if source_params.is_point_source:
-        return create_point_source_artist(source_params, transform)
-
     raw_img = _load_most_similar_source_image(
         source_params.aperture, source_params.focal_length, source_params.source_is_flat
     )
@@ -94,7 +90,7 @@ def create_source_drawing_artist(
 
 
 def create_point_source_artist(
-    source_params: SourceDrawingParams, transform: Transform
+    position: npt.NDArray[np.float_],
 ) -> matplotlib.artist.Artist:
     """Create a matplotlib artist for a PointSource2D rendered inside a scenario.
 
@@ -103,9 +99,6 @@ def create_point_source_artist(
 
     Args:
         source_params: the SourceDrawingParams that describe the source.
-        transform: A Transform function which maps from plot data coordinates into
-            display coordinates.
-
     Returns:
         A matplotlib artist containing the rendered source.
     """
@@ -113,8 +106,8 @@ def create_point_source_artist(
     marker_style = "o"
     artist = plt.scatter(
         # plot x/y is flipped
-        source_params.position[1],
-        source_params.position[0],
+        position[1],
+        position[0],
         s=marker_size,
         marker=marker_style,
         c="gray",
@@ -209,18 +202,6 @@ def source_should_be_flat(source: Source) -> bool:
     """
     is_phased_array = isinstance(source, PhasedArraySource)
     return is_phased_array or np.isinf(source.focal_length)
-
-
-def source_should_be_point(source: Source) -> bool:
-    """Determine if a source should be represented as a point.
-
-    Args:
-        source: the source instance.
-
-    Returns:
-        True if the source is a PointSource, and False otherwise.
-    """
-    return isinstance(source, PointSource)
 
 
 def _select_image_file(

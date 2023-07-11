@@ -926,15 +926,7 @@ class Scenario2D(Scenario):
         if show_sources:
             self._ensure_source()
             for source in self.sources:
-                drawing_params = rendering.SourceDrawingParams(
-                    position=source.position,
-                    direction=source.unit_direction,
-                    aperture=source.aperture,
-                    focal_length=source.focal_length,
-                    source_is_flat=rendering.source_should_be_flat(source),
-                    is_point_source=rendering.source_should_be_point(source),
-                )
-                rendering.draw_source(ax, drawing_params)
+                rendering.draw_source(ax, source)
 
         rendering.configure_layout_plot(
             fig=fig,
@@ -1112,15 +1104,7 @@ class Scenario3D(Scenario):
         if show_sources:
             self._ensure_source()
             for source in self.sources:
-                drawing_params = rendering.SourceDrawingParams(
-                    position=drop_element(source.position, slice_axis),
-                    direction=drop_element(source.unit_direction, slice_axis),
-                    aperture=source.aperture,
-                    focal_length=source.focal_length,
-                    source_is_flat=rendering.source_should_be_flat(source),
-                    is_point_source=rendering.source_should_be_point(source),
-                )
-                rendering.draw_source(ax, drawing_params)
+                rendering.draw_source(ax, source, slice_axis)
 
         axis_names = np.array(["X", "Y", "Z"])
         vert_name, horz_name = drop_element(axis_names, slice_axis)
