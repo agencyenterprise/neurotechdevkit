@@ -124,10 +124,10 @@ def delay_and_sum_matrix(
     z: np.ndarray,
     *,
     pitch: float,  # m  center-to-center distance between two adjacent elements/channels
-    delaysTX: np.ndarray,
+    tx_delays: np.ndarray,
     fs: float,  # Hz
     fc: float,  # Hz
-    t0: float = 0,
+    t0: float = 0,  # s
     c: float = 1540,  # m/s
     f_number: Optional[float] = 1.5,
     width: Optional[float] = None,  # m
@@ -157,7 +157,7 @@ def delay_and_sum_matrix(
     assert x.ndim == 2, "Expected x to have shape (width_pixels, depth_pixels)."
     assert z.ndim == 2, "Expected z to have shape (width_pixels, depth_pixels)."
     assert x.shape == z.shape, "Expected image grid x and z to have the same shape."
-    assert len(delaysTX) == num_channels, "Expected one transmit-delay per channel."
+    assert len(tx_delays) == num_channels, "Expected one transmit-delay per channel."
     if f_number is None:
         # Optimize f-number based on other parameters
         assert width is not None, "Element width is required to estimate f-number."
@@ -175,43 +175,38 @@ def delay_and_sum_matrix(
     # Convert to xarray for more intuitive broadcasting
     x = xr.DataArray(x, dims=("x", "z"))  # keep as 0-index
     z = xr.DataArray(z, dims=("x", "z"))
-    delaysTX = xr.DataArray(delaysTX, dims=("channel",))
+    tx_delays = xr.DataArray(tx_delays, dims=("channel",))
 
     # transducer centered on (0, 0) parallel to x-axis
-    xe = (np.arange(num_channels) - (num_channels - 1) / 2) * pitch
-    xe = xr.DataArray(xe, dims=("channel",))  # keep as 0-index
-    ze = np.zeros(xe.shape)
-    ze = xr.DataArray(ze, dims=("channel",))
-
-    # TODO: interpolate transducers for better estimation of delays
-    # For now, don't interpolate
-    xTi = xe
-    zTi = ze
+    x_channels = (np.arange(num_channels) - (num_channels - 1) / 2) * pitch
+    x_channels = xr.DataArray(x_channels, dims=("channel",))  # keep as 0-index
+    z_channels = np.zeros(x_channels.shape)
+    z_channels = xr.DataArray(z_channels, dims=("channel",))
 
     # Effective transmit-distance from each (interpolated) element to each pixel
-    # TODO: add new dimension / broadcast for the channel dimension
-    dTX = delaysTX * c + np.sqrt((x - xTi) ** 2 + (z - zTi) ** 2)
-    assert dTX.sizes == {
+    # TODO: interpolate transducers for better estimation of delays
+    # For now, don't interpolate
+    x_channels_interp = x_channels
+    z_channels_interp = z_channels
+    tx_distance = tx_delays * c + np.sqrt((x - x_channels_interp) ** 2 + (z - z_channels_interp) ** 2)
+    assert tx_distance.sizes == {
         "x": width_pixels, "z": depth_pixels, "channel": num_channels,
     }, "Expected one transmit distance per pixel and channel."
     # transmit-pulse reaches pixel, based on the "closest" transducer channel/element
-    dTX = dTX.min(dim="channel")
-    assert dTX.sizes == {
+    tx_distance = tx_distance.min(dim="channel")
+    assert tx_distance.sizes == {
         "x": width_pixels, "z": depth_pixels,
     }, "Expected transmit delays to be calculated for each pixel."
 
     # Receive-delay:
     # Calculate distances from each pixel to each receive-element/channel
-    dRX = np.sqrt((x - xe)**2 + (z - ze)**2)
-    assert dRX.sizes == {
+    rx_distance = np.sqrt((x - x_channels)**2 + (z - z_channels)**2)
+    assert rx_distance.sizes == {
         "x": width_pixels, "z": depth_pixels, "channel": num_channels,
     }, "Expected one receive delay per pixel and channel."
 
     # Wave propagation times
-    tau = (dTX + dRX) / c
-    # # Clear large variables
-    # del dTX
-    # del dRX
+    tau = (tx_distance + rx_distance) / c
 
     # Convert wave propagation time to sample index (fast-time)
     # Keep `tau` for later use
@@ -226,7 +221,7 @@ def delay_and_sum_matrix(
     if f_number > 0:
         # assume linear array at z=0
         half_aperture = z / (2 * f_number)
-        is_within_aperture = np.abs(x - xe) <= half_aperture
+        is_within_aperture = np.abs(x - x_channels) <= half_aperture
         assert is_within_aperture.sizes == {
             "x": width_pixels, "z": depth_pixels, "channel": num_channels,
         }, "Expected to know whether each pixel was within each channel's aperture."
