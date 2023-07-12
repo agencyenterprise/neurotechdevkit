@@ -1,12 +1,11 @@
 """Beam-form I/Q signals for ultrasound imaging."""
 
 from enum import IntEnum
-from typing import Optional, Tuple, Dict
+from typing import Optional
 
 import numpy as np
-from scipy.interpolate import griddata, interp1d
-from scipy.sparse import csr_array
 import xarray as xr
+from scipy.sparse import csr_array
 
 
 class InterpolationMethod(IntEnum):
@@ -14,12 +13,13 @@ class InterpolationMethod(IntEnum):
 
     Value corresponds to the number of points used for interpolation.
     """
+
     NEAREST = 1  # nearest-neighbor interpolation
     LINEAR = 2
     QUADRATIC = 3
     LANZCOS_3 = 3  # 3-lobe Lanczos interpolation
     LSQ_PARABOLA_5 = 5  # 5-point least-squares parabolic interpolation
-    LANZCOS_5 = 6 # 5-lobe Lanczos interpolation
+    LANZCOS_5 = 6  # 5-lobe Lanczos interpolation
 
 
 def beamform_delay_and_sum(
@@ -35,7 +35,8 @@ def beamform_delay_and_sum(
     Currently, assumes that the input signal is in-phase/quadrature (I/Q) signals.
 
     Parameters:
-        iq_signals: 2-D complex-valued array containing I/Q signals. Shape: (time_samples, num_channels)
+        iq_signals: 2-D complex-valued array containing I/Q signals.
+            Shape: (time_samples, num_channels)
             channels usually correspond to transducer elements.
             TODO: Support 3rd dimension for repeated-echos (slow-time)
         x: 2-D array specifying the x-coordinates of the [x, z] image grid.
@@ -57,8 +58,12 @@ def beamform_delay_and_sum(
     Adapted from: https://doi.org/10.1016/j.ultras.2020.106309
     """
     # Check input arguments
-    assert iq_signals.ndim == 2, "Expected iq_signals to have shape (time_samples, num_channels)."
-    assert np.iscomplexobj(iq_signals), "Expected iq_signals to be complex-valued I/Q signals."
+    assert (
+        iq_signals.ndim == 2
+    ), "Expected iq_signals to have shape (time_samples, num_channels)."
+    assert np.iscomplexobj(
+        iq_signals
+    ), "Expected iq_signals to be complex-valued I/Q signals."
     assert x.ndim == 2, "Expected x to have shape (width_pixels, depth_pixels)."
     assert z.ndim == 2, "Expected z to have shape (width_pixels, depth_pixels)."
     assert x.shape == z.shape, "Expected image grid x and z to have the same shape."
@@ -72,7 +77,7 @@ def beamform_delay_and_sum(
         z=z,
         fs=fs,
         fc=fc,
-        **kwargs
+        **kwargs,
     )
 
     # Beamform
@@ -131,10 +136,12 @@ def delay_and_sum_matrix(
     if f_number is None:
         # Optimize f-number based on other parameters
         assert width is not None, "Element width is required to estimate f-number."
-        assert bandwidth is not None, "Element bandwidth is required to estimate f-number."
+        assert (
+            bandwidth is not None
+        ), "Element bandwidth is required to estimate f-number."
         assert 0 < bandwidth < 2, "Fractional bandwidth at -6dB must be in (0, 2)."
     else:
-        assert f_number >= 0, 'f-number must be non-negative.'
+        assert f_number >= 0, "f-number must be non-negative."
     if method != InterpolationMethod.NEAREST:
         raise NotImplementedError("Only nearest-neighbor interpolation is supported.")
 
@@ -158,21 +165,28 @@ def delay_and_sum_matrix(
     # For now, don't interpolate
     x_channels_interp = x_channels
     z_channels_interp = z_channels
-    tx_distance = tx_delays * c + np.sqrt((x - x_channels_interp) ** 2 + (z - z_channels_interp) ** 2)
+    tx_distance = tx_delays * c + np.sqrt(
+        (x - x_channels_interp) ** 2 + (z - z_channels_interp) ** 2
+    )
     assert tx_distance.sizes == {
-        "x": width_pixels, "z": depth_pixels, "channel": num_channels,
+        "x": width_pixels,
+        "z": depth_pixels,
+        "channel": num_channels,
     }, "Expected one transmit distance per pixel and channel."
     # transmit-pulse reaches pixel, based on the "closest" transducer channel/element
     tx_distance = tx_distance.min(dim="channel")
     assert tx_distance.sizes == {
-        "x": width_pixels, "z": depth_pixels,
+        "x": width_pixels,
+        "z": depth_pixels,
     }, "Expected transmit delays to be calculated for each pixel."
 
     # Receive-delay:
     # Calculate distances from each pixel to each receive-element/channel
-    rx_distance = np.sqrt((x - x_channels)**2 + (z - z_channels)**2)
+    rx_distance = np.sqrt((x - x_channels) ** 2 + (z - z_channels) ** 2)
     assert rx_distance.sizes == {
-        "x": width_pixels, "z": depth_pixels, "channel": num_channels,
+        "x": width_pixels,
+        "z": depth_pixels,
+        "channel": num_channels,
     }, "Expected one receive delay per pixel and channel."
 
     # Wave propagation times
@@ -183,7 +197,9 @@ def delay_and_sum_matrix(
     das_ds = tau.to_dataset(name="tau")
     das_ds["time_idx"] = (tau - t0) * fs
     assert das_ds.sizes == {
-        "x": width_pixels, "z": depth_pixels, "channel": num_channels,
+        "x": width_pixels,
+        "z": depth_pixels,
+        "channel": num_channels,
     }, "Expected one fast-time index and weight per pixel/channel combo."
 
     # Each channel only needs to consider pixels within its receive aperture
@@ -193,7 +209,9 @@ def delay_and_sum_matrix(
         half_aperture = z / (2 * f_number)
         is_within_aperture = np.abs(x - x_channels) <= half_aperture
         assert is_within_aperture.sizes == {
-            "x": width_pixels, "z": depth_pixels, "channel": num_channels,
+            "x": width_pixels,
+            "z": depth_pixels,
+            "channel": num_channels,
         }, "Expected to know whether each pixel was within each channel's aperture."
         das_ds = das_ds.where(is_within_aperture)
     else:
@@ -201,15 +219,17 @@ def delay_and_sum_matrix(
 
     # Use nearest-neighbor interpolation
     assert method == InterpolationMethod.NEAREST
-    num_interp_points = method.value
     interp_weights = xr.DataArray([1], dims=("interp",))
     das_ds["time_idx"] = das_ds["time_idx"].round()
-    is_valid_time_idx = (das_ds["time_idx"] >= 0) & (das_ds["time_idx"] <= (num_time_samples - 1))
+    is_valid_time_idx = (das_ds["time_idx"] >= 0) & (
+        das_ds["time_idx"] <= (num_time_samples - 1)
+    )
     das_ds = das_ds.where(is_valid_time_idx)
 
     if das_ds["time_idx"].count() == 0:
         raise ValueError(
-            "No I/Q time indices correspond to valid measurements within the image grid."
+            "No I/Q time indices correspond to valid measurements within the "
+            "image grid."
         )
 
     # Rotate phase of I/Q signals, based on delays
@@ -229,7 +249,9 @@ def delay_and_sum_matrix(
     das_ds_flat = das_ds.stack(
         nonzero=tmp_dim_order,
     ).dropna(dim="nonzero", how="all")
-    assert das_ds_flat["time_idx"].notnull().all(), "Should have dropped nuull time indices"
+    assert (
+        das_ds_flat["time_idx"].notnull().all()
+    ), "Should have dropped nuull time indices"
     assert das_ds_flat["weights"].notnull().all(), "Should have dropped null weights."
     assert len(das_ds_flat.dims) == 1, "Expected to have stacked all dimensions"
     assert das_ds_flat.count().equals(das_ds.count()), ".dropna shouldn't change count."
@@ -255,9 +277,10 @@ def delay_and_sum_matrix(
     )
 
     # Construct delay-and-sum sparse matrix
-    shape = (width_pixels * depth_pixels, num_time_samples * num_channels)
+    shape = (num_pixels, num_time_samples * num_channels)
     das_matrix = csr_array(
-        (das_ds_flat["weights"].values, (x_z_flat_indices, time_channel_flat_indices)), shape=shape
+        (das_ds_flat["weights"].values, (x_z_flat_indices, time_channel_flat_indices)),
+        shape=shape,
     )
 
     return das_matrix

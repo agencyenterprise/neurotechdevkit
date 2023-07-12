@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import os
 
-from . import scenarios, sources, imaging
+from . import imaging, scenarios, sources
 from .results import load_result_from_disk
 
 __all__ = [

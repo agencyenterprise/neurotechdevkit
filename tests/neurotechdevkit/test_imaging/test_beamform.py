@@ -1,10 +1,10 @@
-import pytest
-
 import numpy as np
+import pytest
 from scipy.sparse import csr_array
 
 from neurotechdevkit.imaging.beamform import (
-    beamform_delay_and_sum, delay_and_sum_matrix, InterpolationMethod
+    beamform_delay_and_sum,
+    delay_and_sum_matrix,
 )
 
 
@@ -12,14 +12,14 @@ from neurotechdevkit.imaging.beamform import (
 def simple_inputs():
     fs = 1e5  # Hz
     inputs = {
-        'num_time_samples': 10,
-        'num_channels': 5,
-        'x': np.array([[0, 1], [0, 1]]) * 1e-4,  # meters
-        'z': np.array([[1, 1], [2, 2]]) * 1e-4,  # meters
-        'pitch': 0.5,
-        'tx_delays': np.arange(5) / fs,
-        'fs': fs,
-        'fc': fs / 4,
+        "num_time_samples": 10,
+        "num_channels": 5,
+        "x": np.array([[0, 1], [0, 1]]) * 1e-4,  # meters
+        "z": np.array([[1, 1], [2, 2]]) * 1e-4,  # meters
+        "pitch": 0.5,
+        "tx_delays": np.arange(5) / fs,
+        "fs": fs,
+        "fc": fs / 4,
     }
     return inputs
 
@@ -29,7 +29,7 @@ def test_delay_and_sum_matrix(simple_inputs):
     assert isinstance(das_matrix, csr_array)
     assert das_matrix.shape == (
         simple_inputs["x"].size,
-        simple_inputs["num_time_samples"] * simple_inputs["num_channels"]
+        simple_inputs["num_time_samples"] * simple_inputs["num_channels"],
     )
 
 
@@ -42,13 +42,11 @@ def test_delay_and_sum_matrix_outside_aperture(simple_inputs):
 
 
 def test_delay_and_sum(simple_inputs):
-    das_matrix = delay_and_sum_matrix(**simple_inputs)
     num_time_samples = simple_inputs["num_time_samples"]
     num_channels = simple_inputs["num_channels"]
 
-    iq_signals = (
-        np.random.rand(num_time_samples, num_channels) +
-        1j * np.random.rand(num_time_samples, num_channels)
+    iq_signals = np.random.rand(num_time_samples, num_channels) + 1j * np.random.rand(
+        num_time_samples, num_channels
     )
     del simple_inputs["num_time_samples"]
     del simple_inputs["num_channels"]
