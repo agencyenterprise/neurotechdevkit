@@ -5,6 +5,7 @@ from typing import Optional
 
 import numpy as np
 import xarray as xr
+from scipy.optimize import minimize_scalar
 from scipy.sparse import csr_array
 
 
@@ -140,6 +141,22 @@ def delay_and_sum_matrix(
             bandwidth is not None
         ), "Element bandwidth is required to estimate f-number."
         assert 0 < bandwidth < 2, "Fractional bandwidth at -6dB must be in (0, 2)."
+
+        # Eq. 14 of https://doi.org/10.1016/j.ultras.2020.106309
+        wavelength_min = c / (fc * (1 + bandwidth / 2))
+
+        # Eq. 11 of https://doi.org/10.1016/j.ultras.2020.106309
+        def directivity(theta, width, wavelength):
+            return np.cos(theta) * np.sinc(width / wavelength * np.sin(theta))
+        optimal_directivity = 0.71
+
+        # Eq. 13 of https://doi.org/10.1016/j.ultras.2020.106309
+        result = minimize_scalar(
+            lambda theta: np.abs(directivity(theta, width, wavelength_min) - optimal_directivity),
+            bounds=(0, np.pi / 2),
+        )
+        alpha = result.x
+        f_number = 1 / (2 * np.tan(alpha))
     else:
         assert f_number >= 0, "f-number must be non-negative."
     if method != InterpolationMethod.NEAREST:
