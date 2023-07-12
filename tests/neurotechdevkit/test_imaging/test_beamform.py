@@ -27,7 +27,7 @@ def simple_inputs():
 def test_delay_and_sum_matrix(simple_inputs):
     das_matrix = delay_and_sum_matrix(**simple_inputs)
     assert isinstance(das_matrix, csr_array)
-    assert das_matrix.get_shape() == (
+    assert das_matrix.shape (
         simple_inputs["x"].size,
         simple_inputs["num_time_samples"] * simple_inputs["num_channels"]
     )

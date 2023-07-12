@@ -214,10 +214,12 @@ def delay_and_sum_matrix(
     # del dRX
 
     # Convert wave propagation time to sample index (fast-time)
-    time_idx = (tau - t0) * fs
-    assert time_idx.sizes == {
+    # Keep `tau` for later use
+    das_ds = tau.to_dataset(name="tau")
+    das_ds["time_idx"] = (tau - t0) * fs
+    assert das_ds.sizes == {
         "x": width_pixels, "z": depth_pixels, "channel": num_channels,
-    }, "Expected one fast-time index per pixel/channel combo."
+    }, "Expected one fast-time index and weight per pixel/channel combo."
 
     # Each channel only needs to consider pixels within its receive aperture
     # (i.e., angle-of-view = 2*alpha)
@@ -228,49 +230,56 @@ def delay_and_sum_matrix(
         assert is_within_aperture.sizes == {
             "x": width_pixels, "z": depth_pixels, "channel": num_channels,
         }, "Expected to know whether each pixel was within each channel's aperture."
-        time_idx = time_idx.where(is_within_aperture)
-        # # Clear large variable
-        # del is_within_aperture
+        das_ds = das_ds.where(is_within_aperture)
     else:
         assert f_number == 0, "f-number must be non-negative."
 
     # Use nearest-neighbor interpolation
     assert method == InterpolationMethod.NEAREST
     num_interp_points = method.value
-    time_idx = time_idx.round()
     interp_weights = xr.DataArray([1], dims=("interp",))
-    is_valid_time_idx = (time_idx >= 0) & (time_idx < num_time_samples)
+    das_ds["time_idx"] = das_ds["time_idx"].round()
+    is_valid_time_idx = (das_ds["time_idx"] >= 0) & (das_ds["time_idx"] <= (num_time_samples - 1))
+    das_ds = das_ds.where(is_valid_time_idx)
 
-    if time_idx.where(is_valid_time_idx).count() == 0:
+    if das_ds["time_idx"].count() == 0:
         raise ValueError(
             "No I/Q time indices correspond to valid measurements within the image grid."
         )
-    time_idx = time_idx.where(is_valid_time_idx)
 
     # Rotate phase of I/Q signals, based on delays
-    tau = tau.where(time_idx.notnull())
-    das_weights = interp_weights * np.exp(1j * (2 * np.pi * fc) * tau)
+    das_ds["weights"] = interp_weights * np.exp(1j * (2 * np.pi * fc) * das_ds.tau)
     # For nearest-neighbor,
     # we can drop interp dimension simply because we only have one interp point
-    das_weights = das_weights.squeeze("interp")
+    das_ds = das_ds.squeeze("interp")
 
     # In case, e.g., "x", "z", and "channel" are not 0-indexed
     # Convert "x", "z", "channel" coords to 0-indices, in case they have been
     # set to something else
-    time_idx = time_idx.drop_indexes(time_idx.indexes.keys()).reset_coords(drop=True)
+    das_ds = das_ds.drop_indexes(das_ds.indexes.keys()).reset_coords(drop=True)
 
     # Convert from semi-sparse (x, z, channel)-shape array of time indices
-    # to list of [x, z, time, channel] indices
-    time_idx_flat = time_idx.stack(
-        nonzero=("x", "z", "channel"),
-    ).dropna(dim="nonzero")
-    assert time_idx_flat.ndim == 1, "Expected to have stacked all dimensions"
-    assert time_idx_flat.count() == time_idx.count(), "Stacking shouldn't change count."
-    # Convert rounded-float time_indices back to int indices
-    np.testing.assert_allclose(time_idx_flat, time_idx_flat.astype(int), rtol=0, atol=1e-3)
-    time_idx_flat = time_idx_flat.astype(int)
-    x_z_multi_indices = np.column_stack((time_idx_flat.x, time_idx_flat.z))
-    time_channel_multi_indices = np.column_stack((time_idx_flat.values, time_idx_flat.channel))
+    # to list of [x, z, time, channel] indices, and corresponding weights
+    tmp_dim_order = ("x", "z", "channel")
+    das_ds_flat = das_ds.stack(
+        nonzero=tmp_dim_order,
+    ).dropna(dim="nonzero", how="all")
+    assert das_ds_flat["time_idx"].notnull().all(), "Should have dropped nuull time indices"
+    assert das_ds_flat["weights"].notnull().all(), "Should have dropped null weights."
+    assert len(das_ds_flat.dims) == 1, "Expected to have stacked all dimensions"
+    assert das_ds_flat.count().equals(das_ds.count()), ".dropna shouldn't change count."
+
+    x_z_multi_indices = np.column_stack((das_ds_flat.x, das_ds_flat.z))
+    np.testing.assert_allclose(
+        das_ds_flat.time_idx,
+        das_ds_flat.time_idx.astype(int),
+        rtol=0,
+        atol=1e-6,
+        err_msg="Expected time indices to be integers.",
+    )
+    time_channel_multi_indices = np.column_stack(
+        (das_ds_flat.time_idx.astype(int), das_ds_flat.channel)
+    )
 
     # Convert from [x, z, time, channel] indices to [x_z, time_channel] indices
     x_z_flat_indices = np.ravel_multi_index(
@@ -282,9 +291,8 @@ def delay_and_sum_matrix(
 
     # Construct delay-and-sum sparse matrix
     shape = (width_pixels * depth_pixels, num_time_samples * num_channels)
-    assert das_weights_flat.size == time_idx.count()
     das_matrix = csr_array(
-        (das_weights_flat, (x_z_flat_indices, time_channel_flat_indices)), shape=shape
+        (das_ds_flat["weights"].values, (x_z_flat_indices, time_channel_flat_indices)), shape=shape
     )
 
     return das_matrix
