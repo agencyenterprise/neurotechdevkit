@@ -44,7 +44,6 @@ def make_grid(
     else:
         absorbing = tuple(absorbing)
 
-    print(f"creating a grid with shape: {shape} for extent: {extent} m")
     space = stride.Space(shape=shape, extra=extra, absorbing=absorbing, spacing=dx)
     return stride.Grid(space=space, time=None)
 

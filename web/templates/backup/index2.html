@@ -1,0 +1,31 @@
+{% extends "base.html" %} {% block title %}{{title}}{% endblock %} {%
+block head %} {{ super() }} {% endblock %}
+{% block content %}
+
+<script>
+  function get(){
+    const geology_url = {{ url_for("post_json_data")|tojson }}
+    const geology_div = document.getElementById("geology-fact")
+    let data = {
+        "name": "Flask Room",
+        "description": "Talk about Flask here.",
+    }
+    fetch("/plotb64.png", {
+        "method": "GET",
+    }).then(response => response.text())
+      .then(text => {$('#geology-fact').html(text);})
+  }
+</script>
+
+<div class="row text-center">
+  <h1>{{ title}}</h1>
+  <div><span>An input</span><input name="inp" id="inp"></input></div>
+</div>
+
+<div id="geology-fact"></div>
+<div class="row text-center">
+  <button class="btn btn-primary" onclick="get()">
+    Send data
+  </button>
+</div>
+{% endblock %}

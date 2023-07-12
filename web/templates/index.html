@@ -1,0 +1,383 @@
+{% extends "base.html" %} {% block title %}{{title}}{% endblock %} {% block head
+%} {{ super() }} {% endblock %} {% block content %}
+
+<script>
+  function plot_layout(button){
+    BtnLoading(button);
+    let formData = new FormData(button.form);
+    const ct_file = document.getElementById("ct_file").files[0];
+    if (ct_file===undefined){
+      formData.delete("ct_file");
+    }
+
+    $('#plot-content-base64').empty()
+
+    fetch({{ url_for("plot")|tojson }}, {
+      "method": "POST",
+      "body": formData,
+    }).then(response => response.text())
+    .then(text => {$('#plot-content-base64').html(text);})
+
+    $('#plot-content-mpld3').empty()
+    fetch({{ url_for("plot_mpld3")|tojson }}, {
+        "method": "POST",
+        "body": formData,
+    }).then(response => response.text())
+      .then(text => {$('#plot-content-mpld3').html(text);})
+      .then(() => {BtnReset(button);})
+  }
+
+  function run_simulation(button){
+    BtnLoading(button);
+    var formData = new FormData(button.form);
+    const ct_file = document.getElementById("ct_file").files[0];
+    if (ct_file===undefined){
+      formData.delete("ct_file");
+    }
+
+    $('#plot-content-mpld3').empty()
+    $('#plot-content-base64').empty()
+
+    fetch({{ url_for("run_simulation")|tojson }}, {
+      "method": "POST",
+      "body": formData,
+    }).then(response => response.text())
+    .then(text => {$('#plot-content-base64').html(text);})
+    .then(() => {BtnReset(button);})
+  }
+</script>
+
+<div class="row text-center">
+  <h1>{{title}}</h1>
+</div>
+<div class="container">
+  <div class="row">
+    <div class="col-md-4 order-md-2 mb-4">
+      <h4 class="d-flex justify-content-between align-items-center mb-3">
+        <span class="text-muted">Parameters</span>
+        <span class="badge badge-secondary badge-pill">3</span>
+      </h4>
+      <form id="parameters" class="needs-validation" novalidate>
+        <div class="accordion" id="accordionExample">
+          <div class="accordion-item">
+            <h2 class="accordion-header" id="headingOne">
+              <button
+                class="accordion-button"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#collapseOne"
+                aria-expanded="true"
+                aria-controls="collapseOne"
+              >
+                Grid
+              </button>
+            </h2>
+            <div
+              id="collapseOne"
+              class="accordion-collapse collapse show"
+              aria-labelledby="headingOne"
+              data-bs-parent="#accordionExample"
+            >
+              <div class="accordion-body">
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    <label for="origin_y">Origin Y</label>
+                    <input
+                      type="number"
+                      class="form-control"
+                      id="origin_y"
+                      name="origin_y"
+                      value="0.0"
+                      required
+                    />
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label for="origin_x">Origin X</label>
+                    <input
+                      type="number"
+                      class="form-control"
+                      name="origin_x"
+                      id="origin_x"
+                      value="-0.085"
+                      required
+                    />
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    <label for="extent_y">Extent Y</label>
+                    <input
+                      type="number"
+                      class="form-control"
+                      name="extent_y"
+                      id="extent_y"
+                      value="0.225"
+                      required
+                    />
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label for="extent_x">Extent X</label>
+                    <input
+                      type="number"
+                      class="form-control"
+                      name="extent_x"
+                      id="extent_x"
+                      value="0.170"
+                      required
+                    />
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <label for="dx">DX</label>
+                  <input
+                    type="number"
+                    class="form-control"
+                    name="dx"
+                    id="dx"
+                    value="0.0005"
+                    required
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="accordion-item">
+            <h2 class="accordion-header" id="headingTwo">
+              <button
+                class="accordion-button collapsed"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#collapseTwo"
+                aria-expanded="false"
+                aria-controls="collapseTwo"
+              >
+                Target
+              </button>
+            </h2>
+            <div
+              id="collapseTwo"
+              class="accordion-collapse collapse"
+              aria-labelledby="headingTwo"
+              data-bs-parent="#accordionExample"
+            >
+              <div class="accordion-body">
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    <label for="center_y">Center Y</label>
+                    <input
+                      type="number"
+                      class="form-control"
+                      id="center_y"
+                      name="center_y"
+                      value="0.047"
+                      required
+                    />
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label for="center_x">Center X</label>
+                    <input
+                      type="number"
+                      class="form-control"
+                      name="center_x"
+                      id="center_x"
+                      value="0.002"
+                      required
+                    />
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <label for="radius">Radius</label>
+                  <input
+                    type="number"
+                    class="form-control"
+                    name="radius"
+                    id="radius"
+                    value="0.010"
+                    required
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="accordion-item">
+            <h2 class="accordion-header" id="headingThree">
+              <button
+                class="accordion-button collapsed"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#collapseThree"
+                aria-expanded="false"
+                aria-controls="collapseThree"
+              >
+                Source
+              </button>
+            </h2>
+            <div
+              id="collapseThree"
+              class="accordion-collapse collapse"
+              aria-labelledby="headingThree"
+              data-bs-parent="#accordionExample"
+            >
+              <div class="accordion-body">
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    <label for="position_y">Position Y</label>
+                    <input
+                      type="number"
+                      class="form-control"
+                      id="position_y"
+                      name="position_y"
+                      value="0.00"
+                      required
+                    />
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label for="position_x">Position X</label>
+                    <input
+                      type="number"
+                      class="form-control"
+                      name="position_x"
+                      id="position_x"
+                      value="0.0"
+                      required
+                    />
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    <label for="direction_y">Direction Y</label>
+                    <input
+                      type="number"
+                      class="form-control"
+                      name="direction_y"
+                      id="direction_y"
+                      value="1.0"
+                      required
+                    />
+                  </div>
+                  <div class="col-md-6 mb-3">
+                    <label for="direction_x">Direction X</label>
+                    <input
+                      type="number"
+                      class="form-control"
+                      name="direction_x"
+                      id="direction_x"
+                      value="0.0"
+                      required
+                    />
+                  </div>
+                </div>
+                <div class="mb-3">
+                  <label for="aperture">Aperture</label>
+                  <input
+                    type="number"
+                    class="form-control"
+                    name="aperture"
+                    id="aperture"
+                    value="0.064"
+                    required
+                  />
+                </div>
+                <div class="mb-3">
+                  <label for="focal_length">Focal Length</label>
+                  <input
+                    type="number"
+                    class="form-control"
+                    name="focal_length"
+                    id="focal_length"
+                    value="0.064"
+                    required
+                  />
+                </div>
+                <div class="mb-3">
+                  <label for="num_points">Points</label>
+                  <input
+                    type="number"
+                    class="form-control"
+                    name="num_points"
+                    id="num_points"
+                    value="1000"
+                    required
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="accordion-item">
+            <h2 class="accordion-header" id="headingFour">
+              <button
+                class="accordion-button collapsed"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#collapseFour"
+                aria-expanded="false"
+                aria-controls="collapseFour"
+              >
+                Masks
+              </button>
+            </h2>
+            <div
+              id="collapseFour"
+              class="accordion-collapse collapse"
+              aria-labelledby="headingFour"
+              data-bs-parent="#accordionExample"
+            >
+              <div class="accordion-body">
+                <div class="mb-3">
+                  <label for="ct_file" class="form-label">CT file</label>
+                  <input
+                    class="form-control"
+                    type="file"
+                    name="ct_file"
+                    id="ct_file"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <hr class="mb-4" />
+        <div class="container">
+          <div class="row">
+            <div class="col">
+              <button
+                type="button"
+                class="btn btn-primary btn-lg btn-block"
+                onclick="plot_layout(this)"
+              >
+                Render layout
+              </button>
+            </div>
+            <div class="col">
+              <button
+                type="button"
+                class="btn btn-primary btn-lg btn-block"
+                onclick="run_simulation(this)"
+              >
+                Run simulation
+              </button>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="col-md-8 order-md-1">
+      <h4 class="d-flex justify-content-between align-items-center mb-3">
+        <span class="text-muted">Plots</span>
+      </h4>
+
+      <div>
+        <h5 class="mb-3">Plot base64</h5>
+        <div id="plot-content-base64"></div>
+
+        <h5 class="mb-3">Plot mpld3</h5>
+        <div id="plot-content-mpld3"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

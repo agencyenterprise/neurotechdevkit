@@ -1,0 +1,12 @@
+{% extends "layouts/base.html" %}
+{% block title %}{{title}}{% endblock %}
+{% block head %}
+  {{ super() }}
+{% endblock %}
+{% block content %}
+<div class="row"></div>
+{% for data in datalist %}
+  <img class="results-img" src="{{ url_for('plot', imgdata = data) }}" alt="Image Placeholder">
+{% endfor %}
+</div>
+{% endblock %}
