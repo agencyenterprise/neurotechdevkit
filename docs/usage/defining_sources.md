@@ -1,9 +1,10 @@
-NDK provides a simple but flexibly API to control the parameters of sources.
+NDK provides a simple but flexible API to control the parameters of sources.
 Users can specify the parameters and placement of sources, and add them to their simulation.
 
 
 ```py
 import neurotechdevkit as ndk
+import numpy as np
 
 scenario = ndk.make('scenario-2-2d-v0')
 scenario.current_target_id = 'right-inferior-frontal-gyrus'
@@ -25,7 +26,7 @@ scenario.render_layout()
 
 In the visualization of the source, the `position` parameter of the source corresponds to the point located at the midpoint of the dark arc on the front (concave) edge. The `position` and `direction` of the source are accurately shown in the plot, while the `aperture` and `focal_length` (radius of curvature) of the rendered source approximately visualize what is defined in the source object. The blue dotted lines indicate the ultrasound waves.
 
-Transducer locations are currently not constrained within the scenario or by materials, and so care needs to be taken when configuring a source so that it is embedded inside the skull, for instance, or located outside of the simulation volume.
+Transducer locations are currently not constrained within the scenario or by materials, and so care needs to be taken when configuring a source so that it is not embedded inside the skull, for instance, or located outside of the simulation volume.
 
 In the future, we plan to implement constraints to avoid overlapping with solid materials or other sources, and to also add helper utilities to assist with placing sources along the surface of the skull using fewer degrees of freedom.
 
@@ -47,6 +48,7 @@ The 2D sources are for 2D scenarios and the 3D sources for 3D scenarios. The par
 
 ```py
 import neurotechdevkit as ndk
+import numpy as np
 
 scenario = ndk.make('scenario-2-2d-v0')
 scenario.current_target_id = 'right-inferior-frontal-gyrus'
