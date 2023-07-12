@@ -23,24 +23,26 @@ class InterpolationMethod(IntEnum):
 
 
 def beamform_delay_and_sum(
-    SIG: np.ndarray,
+    iq_signals: np.ndarray,
     x: np.ndarray,
     z: np.ndarray,
-    *das_matrix_args,
-    interp_method: InterpolationMethod = InterpolationMethod.NEAREST,
+    fs: float,
+    fc: float,
+    **kwargs,
 ) -> np.ndarray:
     """Delay-And-Sum beamforming.
 
     Currently, assumes that the input signal is in-phase/quadrature (I/Q) signals.
 
     Parameters:
-        SIG: 2-D complex-valued array containing I/Q signals. Shape: (time_samples, num_channels)
+        iq_signals: 2-D complex-valued array containing I/Q signals. Shape: (time_samples, num_channels)
             channels usually correspond to transducer elements.
-            Note: Can also stack a 3rd dimension for repeated-echos (slow-time)
+            TODO: Support 3rd dimension for repeated-echos (slow-time)
         x: 2-D array specifying the x-coordinates of the [x, z] image grid.
         z: 2-D array specifying the z-coordinates of the [x, z] image grid.
-        *das_matrix_args: additional arguments for the delay-and-sum beamforming.
-        interp_method: interpolation method for delay-and-sum matrix.
+        fs: sampling frequency of the input signals.
+        fc: center/carrier frequency of the input signals.
+        **kwargs: additional arguments passed to `delay_and_sum_matrix`
 
     Returns:
         Beamformed signals at the specified [x, z] image grid.
@@ -55,66 +57,30 @@ def beamform_delay_and_sum(
     Adapted from: https://doi.org/10.1016/j.ultras.2020.106309
     """
     # Check input arguments
-    assert SIG.ndim == 2, "Expected SIG to have shape (time_samples, num_channels)."
-    assert np.iscomplexobj(SIG), "Expected SIG to be complex-valued I/Q signals."
+    assert iq_signals.ndim == 2, "Expected iq_signals to have shape (time_samples, num_channels)."
+    assert np.iscomplexobj(iq_signals), "Expected iq_signals to be complex-valued I/Q signals."
     assert x.ndim == 2, "Expected x to have shape (width_pixels, depth_pixels)."
     assert z.ndim == 2, "Expected z to have shape (width_pixels, depth_pixels)."
     assert x.shape == z.shape, "Expected image grid x and z to have the same shape."
-    num_time_samples, num_channels = SIG.shape
+    num_time_samples, num_channels = iq_signals.shape
 
     # Check for potential underlying errors before allocating memory
-    delay_and_sum_matrix([nl, nc], x[0], z[0], *args)
+    das_matrix: csr_array = delay_and_sum_matrix(
+        num_time_samples=num_time_samples,
+        num_channels=num_channels,
+        x=x,
+        z=z,
+        fs=fs,
+        fc=fc,
+        **kwargs
+    )
 
-    # Chunking
-    # Large data can generate tall DAS matrices. The input data (X,Z) are
-    # chunked to avoid out-of-memory issues.
+    # Beamform
+    iq_signals_column_vec = iq_signals.reshape(-1, 1)
+    beamformed_iq_signals = das_matrix @ iq_signals_column_vec
+    beamformed_iq_signals = beamformed_iq_signals.reshape(x.shape)
 
-    # Maximum possible array bytes
-    MPAB = np.finfo(np.float64).max
-
-    # The number of bytes required to store a sparse matrix M is roughly:
-    #     bytes = 16*nnz(M) + 8*(size(M,2)+1)
-    # (for a 64-bit system)
-    #
-    # In our case:
-    # nnz(M) < (number of transducer elements)*...
-    #          (number of interpolating points)*...
-    #          (number of grid points)
-    # size(M,2) = min(number of RF/IQ samples,number of grid points)
-    #
-    # Roughly:
-    # bytes < 16*(number of transducer elements)*...
-    #            (number of interpolating points)*...
-    #            (number of grid points)
-    #
-
-    # Number of chunks
-    NoE = nc  # number of elements
-    bytes = 16 * NoE * Npoints * np.prod(x.shape)
-    factor = 20  # other large variables in DASMTX + ...
-    # compromise for-loops vs. memory
-    # (arbitrary value > 4-5)
-    Nchunks = np.ceil(factor * bytes / MPAB)
-
-    # Delay-and-Sum
-    SIG = SIG.reshape(nl * nc, -1)
-    bfSIG = np.zeros([np.prod(siz0), SIG.shape[1]], dtype=SIG.dtype)
-
-    idx = np.round(np.linspace(0, np.prod(siz0), Nchunks + 1)).astype(int)
-
-    for k in range(Nchunks):
-        # DAS matrices using DASMTX
-        M, param = delay_and_sum_matrix((~isIQ + isIQ * 1j) * np.array([nl, nc]),
-                          x[idx[k]:idx[k + 1]],
-                          z[idx[k]:idx[k + 1]],
-                          *args)
-
-        # Delay-and-Sum
-        bfSIG[idx[k]:idx[k + 1], :] = M @ SIG
-
-    bfSIG = bfSIG.reshape([*siz0, SIG.shape[1]])
-
-    return bfSIG
+    return beamformed_iq_signals
 
 
 def delay_and_sum_matrix(
@@ -146,6 +112,10 @@ def delay_and_sum_matrix(
         - The sensor array is linear.
         - The sensor array is parallel to the x-axis and centered at (0, 0).
         - Nearest-neighbor interpolation is used for the delay-and-sum matrix.
+
+    Notes:
+        - Memory usage for the delay-and-sum matrix is:
+            O(num_pixels * num_channels * num_interpolation_points).
 
     For details on delay-and-sum by matrix-multiplication:
         https://doi.org/10.1016/j.ultras.2020.106309

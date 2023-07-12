@@ -39,3 +39,19 @@ def test_delay_and_sum_matrix_outside_aperture(simple_inputs):
     simple_inputs["f_number"] = 1.5
     with pytest.raises(ValueError):
         delay_and_sum_matrix(**simple_inputs)
+
+
+def test_delay_and_sum(simple_inputs):
+    das_matrix = delay_and_sum_matrix(**simple_inputs)
+    num_time_samples = simple_inputs["num_time_samples"]
+    num_channels = simple_inputs["num_channels"]
+
+    iq_signals = (
+        np.random.rand(num_time_samples, num_channels) +
+        1j * np.random.rand(num_time_samples, num_channels)
+    )
+    del simple_inputs["num_time_samples"]
+    del simple_inputs["num_channels"]
+
+    beamformed_iq_signals = beamform_delay_and_sum(iq_signals, **simple_inputs)
+    assert beamformed_iq_signals.shape == simple_inputs["x"].shape
