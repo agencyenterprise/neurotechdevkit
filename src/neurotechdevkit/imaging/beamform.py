@@ -125,9 +125,9 @@ def delay_and_sum_matrix(
     *,
     pitch: float,  # m  center-to-center distance between two adjacent elements/channels
     delaysTX: np.ndarray,
-    t0: float = 0,
     fs: float,  # Hz
     fc: float,  # Hz
+    t0: float = 0,
     c: float = 1540,  # m/s
     f_number: Optional[float] = 1.5,
     width: Optional[float] = None,  # m
@@ -191,27 +191,33 @@ def delay_and_sum_matrix(
     # Effective transmit-distance from each (interpolated) element to each pixel
     # TODO: add new dimension / broadcast for the channel dimension
     dTX = delaysTX * c + np.sqrt((x - xTi) ** 2 + (z - zTi) ** 2)
-    assert dTX.shape == (width_pixels, depth_pixels, num_channels), "Expected one transmit distance per pixel and channel."
+    assert dTX.sizes == {
+        "x": width_pixels, "z": depth_pixels, "channel": num_channels,
+    }, "Expected one transmit distance per pixel and channel."
     # transmit-pulse reaches pixel, based on the "closest" transducer channel/element
-    dTX = dTX.min(axis=2)
-    assert dTX.shape == (width_pixels, depth_pixels), "Expected transmit delays to be calculated for each pixel."
+    dTX = dTX.min(dim="channel")
+    assert dTX.sizes == {
+        "x": width_pixels, "z": depth_pixels,
+    }, "Expected transmit delays to be calculated for each pixel."
 
     # Receive-delay:
     # Calculate distances from each pixel to each receive-element/channel
     dRX = np.sqrt((x - xe)**2 + (z - ze)**2)
-    assert dRX.shape == (width_pixels, depth_pixels, num_channels), "Expected one receive delay per pixel and channel."
+    assert dRX.sizes == {
+        "x": width_pixels, "z": depth_pixels, "channel": num_channels,
+    }, "Expected one receive delay per pixel and channel."
 
     # Wave propagation times
     tau = (dTX + dRX) / c
-    # Clear large variables
-    del dTX
-    del dRX
+    # # Clear large variables
+    # del dTX
+    # del dRX
 
     # Convert wave propagation time to sample index (fast-time)
     time_idx = (tau - t0) * fs
-    assert time_idx.shape == (width_pixels, depth_pixels, num_channels), (
-        "Expected one fast-time index per pixel/channel combo."
-    )
+    assert time_idx.sizes == {
+        "x": width_pixels, "z": depth_pixels, "channel": num_channels,
+    }, "Expected one fast-time index per pixel/channel combo."
 
     # Each channel only needs to consider pixels within its receive aperture
     # (i.e., angle-of-view = 2*alpha)
@@ -219,20 +225,27 @@ def delay_and_sum_matrix(
         # assume linear array at z=0
         half_aperture = z / (2 * f_number)
         is_within_aperture = np.abs(x - xe) <= half_aperture
-        assert is_within_aperture.shape == (width_pixels, depth_pixels, num_channels)
-        time_idx[~is_within_aperture] = np.nan
-        # Clear large variable
-        del is_within_aperture
+        assert is_within_aperture.sizes == {
+            "x": width_pixels, "z": depth_pixels, "channel": num_channels,
+        }, "Expected to know whether each pixel was within each channel's aperture."
+        time_idx = time_idx.where(is_within_aperture)
+        # # Clear large variable
+        # del is_within_aperture
     else:
         assert f_number == 0, "f-number must be non-negative."
 
     # Use nearest-neighbor interpolation
     assert method == InterpolationMethod.NEAREST
     num_interp_points = method.value
-    time_idx = time_idx.round().astype(int)
+    time_idx = time_idx.round()
     interp_weights = xr.DataArray([1], dims=("interp",))
     is_valid_time_idx = (time_idx >= 0) & (time_idx < num_time_samples)
-    time_idx[~is_valid_time_idx] = np.nan
+
+    if time_idx.where(is_valid_time_idx).count() == 0:
+        raise ValueError(
+            "No I/Q time indices correspond to valid measurements within the image grid."
+        )
+    time_idx = time_idx.where(is_valid_time_idx)
 
     # Rotate phase of I/Q signals, based on delays
     tau = tau.where(time_idx.notnull())
@@ -241,28 +254,37 @@ def delay_and_sum_matrix(
     # we can drop interp dimension simply because we only have one interp point
     das_weights = das_weights.squeeze("interp")
 
+    # In case, e.g., "x", "z", and "channel" are not 0-indexed
+    # Convert "x", "z", "channel" coords to 0-indices, in case they have been
+    # set to something else
+    time_idx = time_idx.drop_indexes(time_idx.indexes.keys()).reset_coords(drop=True)
+
     # Convert from semi-sparse (x, z, channel)-shape array of time indices
     # to list of [x, z, time, channel] indices
-    # Note: We may need to reset coordinate values before doing this
-    stacked = time_idx.stack(
+    time_idx_flat = time_idx.stack(
         nonzero=("x", "z", "channel"),
     ).dropna(dim="nonzero")
-    assert stacked.ndim == 1, "Expected to have stacked all dimensions"
-    # Convert to shape (num_dim, num_nonzero) as expected by sparse.COO
-    coords = np.stack([
-        stacked.x, stacked.z, stacked.values, stacked.channel,
-    ])
-    x_z_idxs = np.ravel_multi_index(stacked.xy, (width_pixels, depth_pixels))
-    slowtime_fasttime_idxs = np.ravel_multi_index(
-        [stacked.values, stacked.channel], (num_time_samples, num_channels)
+    assert time_idx_flat.ndim == 1, "Expected to have stacked all dimensions"
+    assert time_idx_flat.count() == time_idx.count(), "Stacking shouldn't change count."
+    # Convert rounded-float time_indices back to int indices
+    np.testing.assert_allclose(time_idx_flat, time_idx_flat.astype(int), rtol=0, atol=1e-3)
+    time_idx_flat = time_idx_flat.astype(int)
+    x_z_multi_indices = np.column_stack((time_idx_flat.x, time_idx_flat.z))
+    time_channel_multi_indices = np.column_stack((time_idx_flat.values, time_idx_flat.channel))
+
+    # Convert from [x, z, time, channel] indices to [x_z, time_channel] indices
+    x_z_flat_indices = np.ravel_multi_index(
+        x_z_multi_indices, (width_pixels, depth_pixels)
     )
-    # Dataframe-style merge with s values, using these coords?
+    time_channel_flat_indices = np.ravel_multi_index(
+        time_channel_multi_indices, (num_time_samples, num_channels)
+    )
 
     # Construct delay-and-sum sparse matrix
     shape = (width_pixels * depth_pixels, num_time_samples * num_channels)
     assert das_weights_flat.size == time_idx.count()
     das_matrix = csr_array(
-        (das_weights_flat, (x_z_idxs, slowtime_fasttime_idxs)), shape=shape)
+        (das_weights_flat, (x_z_flat_indices, time_channel_flat_indices)), shape=shape
     )
 
     return das_matrix
