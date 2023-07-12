@@ -1,5 +1,5 @@
 Scenarios provide a convenient structure to describe the environment, transducers, and sensors.
-A collection of preconfigured scenarios are provided with NDK, and can be easily loaded.
+A collection of preconfigured scenarios are provided with NDK, and can be loaded using a scenario id.
 
 There are currently three scenarios provided with NDK, two of which have both a 2D and 3D version.
 2D versions are quick to simulate and are great for testing out ideas quickly before transferring to a 3D simulation.
