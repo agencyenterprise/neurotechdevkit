@@ -256,7 +256,7 @@ def delay_and_sum_matrix(
     assert len(das_ds_flat.dims) == 1, "Expected to have stacked all dimensions"
     assert das_ds_flat.count().equals(das_ds.count()), ".dropna shouldn't change count."
 
-    x_z_multi_indices = np.column_stack((das_ds_flat.x, das_ds_flat.z))
+    x_z_multi_indices = np.row_stack((das_ds_flat.x, das_ds_flat.z))
     np.testing.assert_allclose(
         das_ds_flat.time_idx,
         das_ds_flat.time_idx.astype(int),
@@ -264,7 +264,7 @@ def delay_and_sum_matrix(
         atol=1e-6,
         err_msg="Expected time indices to be integers.",
     )
-    time_channel_multi_indices = np.column_stack(
+    time_channel_multi_indices = np.row_stack(
         (das_ds_flat.time_idx.astype(int), das_ds_flat.channel)
     )
 

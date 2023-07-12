@@ -14,8 +14,8 @@ def simple_inputs():
     inputs = {
         "num_time_samples": 10,
         "num_channels": 5,
-        "x": np.array([[0, 1], [0, 1]]) * 1e-4,  # meters
-        "z": np.array([[1, 1], [2, 2]]) * 1e-4,  # meters
+        "x": np.array([[0, 1], [0, 1], [0, 1]]) * 1e-4,  # meters
+        "z": np.array([[1, 1], [2, 2], [3, 3]]) * 1e-4,  # meters
         "pitch": 0.5,
         "tx_delays": np.arange(5) / fs,
         "fs": fs,
@@ -35,7 +35,7 @@ def test_delay_and_sum_matrix(simple_inputs):
 
 def test_delay_and_sum_matrix_outside_aperture(simple_inputs):
     # Error-case where image is outside of aperture
-    simple_inputs["x"] = np.array([[1, 2], [1, 2]]) * 1e3
+    simple_inputs["x"] = np.array([[1, 2], [1, 2], [1, 2]]) * 1e3
     simple_inputs["f_number"] = 1.5
     with pytest.raises(ValueError):
         delay_and_sum_matrix(**simple_inputs)
