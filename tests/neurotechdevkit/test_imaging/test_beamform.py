@@ -31,3 +31,11 @@ def test_delay_and_sum_matrix(simple_inputs):
         simple_inputs["x"].size,
         simple_inputs["num_time_samples"] * simple_inputs["num_channels"]
     )
+
+
+def test_delay_and_sum_matrix_outside_aperture(simple_inputs):
+    # Error-case where image is outside of aperture
+    simple_inputs["x"] = np.array([[1, 2], [1, 2]]) * 1e3
+    simple_inputs["f_number"] = 1.5
+    with pytest.raises(ValueError):
+        delay_and_sum_matrix(**simple_inputs)
