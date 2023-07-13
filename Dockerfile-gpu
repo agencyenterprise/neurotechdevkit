@@ -1,5 +1,4 @@
 FROM python:3.10.0 as build
-
 WORKDIR /ndk
 
 COPY pyproject.toml ./pyproject.toml
@@ -19,10 +18,15 @@ ENV POETRY_VIRTUALENVS_CREATE=false
 RUN ./venv/bin/poetry install && \
     ./venv/bin/pip install git+https://github.com/trustimaging/stride
 
-FROM python:3.10.0-slim
 
+FROM nvcr.io/nvidia/nvhpc:23.5-devel-cuda_multi-ubuntu22.04 
+RUN apt update && apt install -y python3.10 python3-pip
 COPY --from=build /ndk /ndk
 WORKDIR /ndk
+RUN ln -s /usr/bin/python3 /ndk/venv/bin/python3 && \
+    ln -s /ndk/venv/bin/python3 /ndk/venv/bin/python && \
+    ln -s /usr/bin/pip /ndk/venv/bin/pip
+
 
 RUN ./venv/bin/pip install --upgrade pip
 
@@ -35,6 +39,7 @@ RUN ./venv/bin/pip install jupyter
 
 ENV PATH "/ndk/venv/bin:$PATH"
 ENV DEVITO_ARCH "gcc"
+ENV PLATFORM "nvidia-acc"
 
 LABEL org.opencontainers.image.source="https://github.com/agencyenterprise/neurotechdevkit"
 
@@ -45,3 +50,4 @@ RUN wget "https://agencyenterprise.github.io/neurotechdevkit/generated/gallery/g
 
 EXPOSE 8888
 CMD ["/ndk/run_jupyter_server.sh"]
+
