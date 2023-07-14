@@ -12,8 +12,9 @@ from ._utils import (
 )
 
 
-_PHANTOM_1_CENTER = np.array([0.05, 0.0])
-_PHANTOM_2_CENTER = np.array([0.08, 0.03])
+_PHANTOM_RADIUS = 0.01  # m
+_AGAR_PHANTOM_CENTER = np.array([0.05, 0.0])
+_BONE_PHANTOM_CENTER = np.array([0.08, 0.03])
 
 
 class Scenario3(Scenario2D):
@@ -21,23 +22,23 @@ class Scenario3(Scenario2D):
 
     _SCENARIO_ID = "scenario-3-v0"
     _TARGET_OPTIONS = {
-        "target_1": Target(
-            target_id="target_1",
-            center=_PHANTOM_1_CENTER,
-            radius=0.005,
+        "agar-phantom": Target(
+            target_id="bone-phantom",
+            center=_AGAR_PHANTOM_CENTER,
+            radius=_PHANTOM_RADIUS,
             description="Imaging phantom 1.",
         ),
-        "target_2": Target(
-            target_id="target_2",
-            center=_PHANTOM_2_CENTER,
-            radius=0.005,
+        "bone-phantom": Target(
+            target_id="bone-phantom",
+            center=_BONE_PHANTOM_CENTER,
+            radius=_PHANTOM_RADIUS,
             description="Imaging phantom 2.",
         ),
     }
 
     def __init__(self, complexity="fast"):
         """Create a new instance of scenario 3."""
-        self._target_id = "target_1"
+        self._target_id = "bone-phantom"
         self._extent = np.array([0.12, 0.1])  # m
 
         super().__init__(
@@ -49,7 +50,8 @@ class Scenario3(Scenario2D):
     def _material_layers(self) -> list[tuple[str, Struct]]:
         return [
             ("water", materials.water),
-            ("agar_hydrogel", materials.agar_hydrogel),
+            ("agar phantom", materials.agar_hydrogel),
+            ("bone phantom", materials.trabecular_bone),
         ]
 
     @property
@@ -99,24 +101,20 @@ class Scenario3(Scenario2D):
 
 
 def _create_scenario_3_mask(material, grid, origin):
+    bone_phantom_mask = create_grid_circular_mask(
+        grid, origin, _BONE_PHANTOM_CENTER, _PHANTOM_RADIUS
+    )
+    agar_phantom_mask = create_grid_circular_mask(
+        grid, origin, _AGAR_PHANTOM_CENTER, _PHANTOM_RADIUS
+    )
     if material == "water":
-        phantom_mask = _create_phantom_mask(grid, origin)
-        water_mask = ~phantom_mask
-        return water_mask
+        return ~(bone_phantom_mask | agar_phantom_mask)
 
-    elif material == "agar_hydrogel":
-        phantom_mask = _create_phantom_mask(grid, origin)
-        return phantom_mask
+    elif material == "agar phantom":
+        return agar_phantom_mask
+
+    elif material == "bone phantom":
+        return bone_phantom_mask
 
     else:
         raise ValueError(material)
-
-
-def _create_phantom_mask(grid, origin):
-    phantom_radius = 0.01  # m
-    phantom_mask = (
-        create_grid_circular_mask(grid, origin, _PHANTOM_1_CENTER, phantom_radius)
-        | create_grid_circular_mask(grid, origin, _PHANTOM_2_CENTER, phantom_radius)
-    )
-    return phantom_mask
-
