@@ -39,7 +39,7 @@ class Scenario3(Scenario2D):
     def __init__(self, complexity="fast"):
         """Create a new instance of scenario 3."""
         self._target_id = "bone-phantom"
-        self._extent = np.array([0.12, 0.1])  # m
+        self._extent = np.array([0.2, 0.1])  # m
 
         super().__init__(
             origin=np.array([0.0, -self._extent[1] / 2]),
