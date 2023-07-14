@@ -1,4 +1,12 @@
-"""Materials for the neurotechdevkit scenarios."""
+"""Materials for the neurotechdevkit scenarios.
+
+Each material has the following characteristics:
+- vp: the speed of sound (in m/s).
+- rho: the mass density (in kg/m³).
+- alpha: the absorption (in dB/cm).
+- render_color: the color used when rendering this material in the scenario layout
+    plot.
+"""
 from mosaic.types import Struct
 
 # TODO: encapsulate mosaic struct behind an NDK materials type
@@ -46,3 +54,11 @@ tumor.vp = 1650.0
 tumor.rho = 1150.0
 tumor.alpha = 0.8
 tumor.render_color = "#94332F"
+
+
+# Based on Table 1 of: https://doi.org/10.1016/j.ultrasmedbio.2020.03.011
+agar_hydrogel = Struct()
+agar_hydrogel.vp = 1570.0
+agar_hydrogel.rho = 1016.0
+agar_hydrogel.alpha = 0.1
+agar_hydrogel.render_color = "#E9E6C9"

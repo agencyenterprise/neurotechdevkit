@@ -69,4 +69,5 @@ _scenario_map = {
     scenarios.Scenario1_3D._SCENARIO_ID: scenarios.Scenario1_3D,
     scenarios.Scenario2_2D._SCENARIO_ID: scenarios.Scenario2_2D,
     scenarios.Scenario2_3D._SCENARIO_ID: scenarios.Scenario2_3D,
+    scenarios.Scenario3._SCENARIO_ID: scenarios.Scenario3,
 }
