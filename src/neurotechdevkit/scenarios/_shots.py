@@ -14,6 +14,7 @@ def create_shot(
     origin: npt.NDArray[np.float_],
     wavelet: npt.NDArray[np.float_],
     dx: float,
+    record_traces: bool = False,
 ) -> stride.Shot:
     """Compile and return a shot for a problem.
 
@@ -25,24 +26,32 @@ def create_shot(
         Support for receivers in a shot is not currently implemented in ndk.
 
     Args:
-        problem: the problem to which the shot will be be added.
+        problem: the problem to which the shot will be added.
         sources: the list of sources containing all sources used in the shot.
         origin: the coordinates of the scenario gridpoint with index (0, 0)
             or (0, 0, 0).
         wavelet: a 1D array with shape (num_time_steps,) containing the pressure
             amplitude for a point source without any delays.
         dt: the time step (in seconds) used in the simulation.
+        record_traces: whether to record the pressure traces at the sources.
 
     Returns:
         The newly-created shot for the simulation.
     """
     point_transducers = _add_sources_to_geometry(problem, sources, origin)
+    if record_traces:
+        source_element_positions = np.vstack([
+            source.element_positions for source in sources
+        ]) - origin[np.newaxis, :]
+        receivers = _add_points_for_source_to_geometry(problem, source_element_positions)
+    else:
+        receivers = []
 
     shot = stride.Shot(
         id=0,
         problem=problem,
         sources=point_transducers,
-        receivers=[],
+        receivers=receivers,
         geometry=problem.geometry,
     )
     assert shot.wavelets is not None

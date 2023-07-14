@@ -73,6 +73,13 @@ class Source(abc.ABC):
         return self._position
 
     @property
+    def element_positions(self) -> npt.NDArray[np.float_]:
+        """An array with the position of the center of each sensor element."""
+        element_positions = np.array([self._position])
+        assert element_positions.shape == (1, 2)
+        return element_positions
+
+    @property
     def unit_direction(self) -> npt.NDArray[np.float_]:
         """A normalized vector indicating the orientation of the source.
 

@@ -467,6 +467,7 @@ class Scenario(abc.ABC):
         points_per_period: int = 24,
         simulation_time: float | None = None,
         recording_time_undersampling: int = 4,
+        record_traces: bool = False,
         n_jobs: int | None = None,
     ) -> results.PulsedResult:
         """Execute a pulsed simulation in 2D.
@@ -496,6 +497,8 @@ class Scenario(abc.ABC):
             recording_time_undersampling: the undersampling factor to apply to the time
                 axis when recording simulation results. One out of every this many
                 consecutive time points will be recorded and all others will be dropped.
+            record_traces: whether to record the traces of the wavefield at the
+                source elements.
             n_jobs: the number of threads to be used for the computation. Use None to
                 leverage Devito automatic tuning.
 
@@ -510,6 +513,7 @@ class Scenario(abc.ABC):
             points_per_period=points_per_period,
             simulation_time=simulation_time,
             recording_time_undersampling=recording_time_undersampling,
+            record_traces=record_traces,
             n_jobs=n_jobs,
             slice_axis=None,
             slice_position=None,
@@ -521,6 +525,7 @@ class Scenario(abc.ABC):
         points_per_period: int = 24,
         simulation_time: float | None = None,
         recording_time_undersampling: int = 4,
+        record_traces: bool = False,
         n_jobs: int | None = None,
         slice_axis: int | None = None,
         slice_position: float | None = None,
@@ -551,6 +556,8 @@ class Scenario(abc.ABC):
             recording_time_undersampling: the undersampling factor to apply to the time
                 axis when recording simulation results. One out of every this many
                 consecutive time points will be recorded and all others will be dropped.
+            record_traces: whether to record the traces of the wavefield at the
+                source elements.
             n_jobs: the number of threads to be used for the computation. Use None to
                 leverage Devito automatic tuning.
             slice_axis: the axis along which to slice the 3D field to be recorded. If
@@ -594,7 +601,7 @@ class Scenario(abc.ABC):
             " simulations, so none will be provided."
         )
 
-        sub_problem = self._setup_sub_problem(center_frequency, "pulsed")
+        sub_problem = self._setup_sub_problem(center_frequency, "pulsed", record_traces=record_traces)
         pde = self._create_pde()
         traces = self._execute_pde(
             pde=pde,
@@ -622,7 +629,7 @@ class Scenario(abc.ABC):
         )
 
     def _setup_sub_problem(
-        self, center_frequency: float, simulation_mode: str
+        self, center_frequency: float, simulation_mode: str, record_traces: bool = False,
     ) -> stride.SubProblem:
         """Set up a stride `SubProblem` for the simulation.
 
@@ -641,11 +648,11 @@ class Scenario(abc.ABC):
 
         # create an actual list to avoid needing to use FrozenList as the type
         source_list = list(self.sources)
-        shot = self._setup_shot(source_list, center_frequency, simulation_mode)
+        shot = self._setup_shot(source_list, center_frequency, simulation_mode, record_traces=record_traces)
         return self.problem.sub_problem(shot.id)
 
     def _setup_shot(
-        self, sources: list[Source], freq_hz: float, simulation_mode: str
+        self, sources: list[Source], freq_hz: float, simulation_mode: str, record_traces: bool = False
     ) -> stride.Shot:
         """Create the stride `Shot` for the simulation.
 
@@ -664,7 +671,7 @@ class Scenario(abc.ABC):
         wavelet = wavelet_helper(
             name=wavelet_name, freq_hz=freq_hz, time=problem.grid.time
         )
-        return create_shot(problem, sources, self.origin, wavelet, self.dx)
+        return create_shot(problem, sources, self.origin, wavelet, self.dx, record_traces=record_traces)
 
     def _create_pde(self) -> stride.IsoAcousticDevito:
         """Instantiate the stride `Operator` representing the PDE for the scenario.
