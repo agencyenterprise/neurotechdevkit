@@ -4,11 +4,11 @@ help:
 	@echo "Available commands are: \n*lint, lint-check, spellcheck, test, test-unit, test-integration docs"
 
 lint:
-	poetry run isort src tests
-	poetry run black src tests
-	poetry run flake8 src tests
-	poetry run mypy src
-	poetry run codespell src
+	poetry run isort src tests docs/examples
+	poetry run black src tests docs/examples
+	poetry run flake8 src tests docs/examples
+	poetry run mypy src docs/examples
+	poetry run codespell src docs/examples
 	poetry run pydocstyle src
 	poetry run pyright
 
@@ -16,11 +16,11 @@ spellcheck:
 	poetry run pylint --disable all --enable spelling --spelling-dict en_US --spelling-private-dict-file=whitelist.txt src
 
 lint-check:
-	poetry run isort --check src tests
-	poetry run black --check src tests
-	poetry run flake8  src tests
-	poetry run mypy src
-	poetry run codespell src
+	poetry run isort --check src tests docs/examples
+	poetry run black --check src tests docs/examples
+	poetry run flake8  src tests docs/examples
+	poetry run mypy src docs/examples
+	poetry run codespell src docs/examples
 	poetry run pydocstyle src
 	poetry run pyright --warnings
 
