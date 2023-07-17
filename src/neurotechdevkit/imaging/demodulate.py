@@ -64,7 +64,10 @@ def demodulate_rf_to_iq(
 
     # Normalized cut-off frequency
     if bandwidth is None:
-        normalized_freq_cutoff = min(2 * freq_carrier / freq_sampling, 0.5)
+        normalized_freq_cutoff = 2 * freq_carrier / freq_sampling
+        # Cutoff should be less than the (normalized) Nyquist frequency
+        normalized_freq_cutoff = min(normalized_freq_cutoff, 0.5)
+        bandwidth = normalized_freq_cutoff * freq_sampling / freq_carrier
     else:
         assert np.isscalar(
             bandwidth
@@ -151,7 +154,6 @@ def _estimate_carrier_frequency(
     assert freq_carrier > 0, "Estimated carrier frequency is negative: {}".format(
         freq_carrier
     )
-    print(freq_carrier)
 
     return freq_carrier
 
