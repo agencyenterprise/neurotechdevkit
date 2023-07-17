@@ -113,7 +113,7 @@ def calculate_all_metrics(
                     " intended use)."
                 ),
             }
-            for layer in result.scenario.ordered_layers
+            for layer in result.scenario.material_layers
         },
     }
 
