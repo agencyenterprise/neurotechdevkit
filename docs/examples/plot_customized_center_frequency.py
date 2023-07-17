@@ -16,7 +16,7 @@ scenario = ndk.make("scenario-0-v0")
 # using default material layers
 scenario.material_layers = ["water", "cortical_bone", "brain", "tumor"]
 
-# Customizing material properties with random values
+# Customizing material properties
 scenario.material_properties = {
     "tumor": ndk.materials.Material(
         vp=1850.0, rho=1250.0, alpha=0.8, render_color="#94332F"
