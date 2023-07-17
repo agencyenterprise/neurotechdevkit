@@ -1297,6 +1297,7 @@ def load_result_from_disk(filepath: str | pathlib.Path) -> Result:
             wavefield=save_data.get("wavefield"),
             traces=None,
         )
+        scenario._problem = scenario._compile_problem(save_data["center_frequency"])
 
         if save_data.get("steady_state") is not None:
             fields_kwargs.update(steady_state=save_data["steady_state"])

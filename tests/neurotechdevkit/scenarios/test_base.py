@@ -5,10 +5,8 @@ import numpy.typing as npt
 import pytest
 import stride
 from frozenlist import FrozenList
-from mosaic.types import Struct
 
 from neurotechdevkit.results import PulsedResult, SteadyStateResult
-from neurotechdevkit.scenarios import materials
 from neurotechdevkit.scenarios._base import Scenario, Target
 from neurotechdevkit.scenarios._utils import make_grid, wavelet_helper
 from neurotechdevkit.sources import FocusedSource3D, PlanarSource3D, Source
@@ -32,6 +30,7 @@ class ScenarioBaseTester(Scenario):
             description="bar",
         ),
     }
+    material_layers = ["brain", "skin"]
 
     default_source = PlanarSource3D(
         position=np.array([0.05, 0.1, 0.05]),
@@ -42,20 +41,17 @@ class ScenarioBaseTester(Scenario):
 
     def __init__(self, complexity="fast"):
         self._target_id = "target_1"
+        self._problem = self._compile_problem(center_frequency=5e5)
         super().__init__(
             origin=np.array([-0.1, -0.1, 0.0]),
             complexity=complexity,
         )
 
     @property
-    def _material_layers(self) -> list[tuple[str, Struct]]:
-        return [("foo", materials.brain), ("bar", materials.skin)]
-
-    @property
     def _material_outline_upsample_factor(self) -> int:
         return 3
 
-    def _compile_problem(self) -> stride.Problem:
+    def _compile_problem(self, center_frequency: float) -> stride.Problem:
         extent = np.array([2.0, 3.0, 4.0])
         dx = 0.1
         grid = make_grid(extent=extent, dx=dx)
@@ -519,7 +515,7 @@ def test_get_layer_mask_with_wrong_layer_name(tester_with_layers):
 
 def test_get_layer_mask_with_first_layer(tester_with_layers):
     """Verify that get_layer_mask returns the expected mask for the first layer."""
-    mask = tester_with_layers.get_layer_mask("foo")
+    mask = tester_with_layers.get_layer_mask("brain")
     expected = np.zeros_like(mask, dtype=bool)
     expected[:5] = True
     np.testing.assert_allclose(mask, expected)
@@ -527,7 +523,7 @@ def test_get_layer_mask_with_first_layer(tester_with_layers):
 
 def test_get_layer_mask_with_last_layer(tester_with_layers):
     """Verify that get_layer_mask returns the expected mask for the last layer."""
-    mask = tester_with_layers.get_layer_mask("bar")
+    mask = tester_with_layers.get_layer_mask("skin")
     expected = np.zeros_like(mask, dtype=bool)
     expected[5:] = True
     np.testing.assert_allclose(mask, expected)
