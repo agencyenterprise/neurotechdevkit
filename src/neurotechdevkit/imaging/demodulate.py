@@ -163,6 +163,8 @@ def _potential_harmful_aliasing(
 ):
     """Determine if harmful aliasing is present in the RF signals.
 
+    See: https://en.wikipedia.org/wiki/Undersampling
+
     Args:
         freq_sampling: Sampling frequency of the RF signals (in Hz).
         freq_carrier: Carrier frequency for down-mixing (in Hz).
@@ -175,12 +177,12 @@ def _potential_harmful_aliasing(
     if freq_sampling < (2 * freq_carrier + bandwidth):  # The RF signal is undersampled
         freq_low = freq_carrier - bandwidth / 2
         freq_high = freq_carrier + bandwidth / 2
-        n = np.floor(freq_high / (freq_high - freq_low)).astype(int)
+        n = np.floor(freq_high / (freq_high - freq_low))
         aliasing_freqs = 2 * freq_high / np.arange(1, n + 1)
-        if np.any(
-            (aliasing_freqs <= freq_sampling)
-            & (freq_sampling <= 2 * freq_low / np.arange(0, n))
-        ):
-            return True
+        avoids_overlap = np.any(
+            ((2 * freq_high / np.arange(1, n + 1)) <= freq_sampling)
+            & (freq_sampling <= 2 * freq_low / np.arange(n))
+        )
+        return not avoids_overlap
 
     return False
