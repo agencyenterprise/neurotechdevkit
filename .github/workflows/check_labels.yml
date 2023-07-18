@@ -1,7 +1,11 @@
 name: Pull Request Labels
 on:
   pull_request:
-    types: [opened, labeled, unlabeled, synchronize]
+    types: [labeled, unlabeled, synchronize]
+  workflow_run:
+    workflows: ["Pull Request Labeler"]
+    types:
+      - completed
 jobs:
   label:
     runs-on: ubuntu-latest
