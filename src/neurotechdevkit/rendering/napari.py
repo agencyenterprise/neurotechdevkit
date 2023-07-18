@@ -112,7 +112,7 @@ def _create_napari_3d(
             " experimental and is not included as an explicit dependency of NDK."
             ' Please install via `pip install "napari[all]"` or"'
             ' `pip install "napari[pyqt6_experimental]"` or'
-            " follow napari\'s' instructions at:"
+            " follow napari's' instructions at:"
             " https://napari.org/stable/tutorials/fundamentals/installation.html"
         ) from e
 
