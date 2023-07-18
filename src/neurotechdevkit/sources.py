@@ -613,6 +613,21 @@ class PhasedArraySource(Source):
         """The angle (in degrees) that the wave front is tilted."""
         return self._tilt_angle
 
+    @tilt_angle.setter
+    def tilt_angle(self, tilt_angle: float) -> None:
+        """Set the angle (in degrees) that the wave front is tilted,
+        and recalculate the element delays.
+        """
+        self._validate_input_configuration(
+            tilt_angle=tilt_angle,
+            focal_length=self.focal_length,
+            delay=self.delay,
+            element_delays=None,
+        )
+        self._tilt_angle = tilt_angle
+        # Recalculate the element delays
+        self._element_delays = self._set_element_delays(element_delays=None)
+
     @property
     def element_width(self) -> float:
         """The width (in meters) of each element of the array."""
