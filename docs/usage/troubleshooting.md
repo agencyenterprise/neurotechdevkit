@@ -78,4 +78,6 @@ This error is shown when napari is not installed, make sure to run
 
   `pip install "napari[all]"`
 
+(or `pip install "napari[pyqt6_experimental]"` if running on a Mac M1)
+
 and try again.
