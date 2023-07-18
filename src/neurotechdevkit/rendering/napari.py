@@ -111,7 +111,7 @@ def _create_napari_3d(
             "3D rendering requires napari to be installed. Integration with napari is"
             " experimental and is not included as an explicit dependency of NDK."
             ' Please install via `pip install "napari[all]"` or"'
-            ' `pip install "napari[pyqt6_experimental]"` or'
+            ' `pip install "napari[pyqt6_experimental]" if running on a Mac M1` or'
             " follow napari's' instructions at:"
             " https://napari.org/stable/tutorials/fundamentals/installation.html"
         ) from e
