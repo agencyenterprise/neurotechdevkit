@@ -1,5 +1,6 @@
 """Demodulate ultrasound radio-frequency (RF) signals."""
 
+import itertools
 import warnings
 from typing import Optional, Tuple
 
@@ -23,7 +24,9 @@ def demodulate_rf_to_iq(
 
     Parameters:
         rf_signals: Radio-frequency signals to be demodulated.
-            Shape: (num_samples, num_channels)
+            Shape: (num_samples, num_channels) or (num_samples, num_channels, num_echoes)
+            num_samples dimension is sometimes called the "fast time" dimension.
+            num_echoes dimension is sometimes called the "slow time" dimension.
         freq_sampling: Sampling frequency of the RF signals (in Hz).
         freq_carrier: Carrier frequency for down-mixing (in Hz). If not provided,
             it will be automatically calculated based on the RF signals.
@@ -52,11 +55,19 @@ def demodulate_rf_to_iq(
     assert np.isrealobj(rf_signals), "rf_signals must be real-valued."
 
     # Time vector
-    assert (
-        rf_signals.ndim == 2
-    ), "Expected rf_signals to have shape (num_samples, num_channels)."
-    num_samples, num_channels = rf_signals.shape
+    if rf_signals.ndim == 2:
+        num_samples, num_channels = rf_signals.shape
+    elif rf_signals.ndim == 3:
+        num_samples, num_channels, num_echoes = rf_signals.shape
+    else:
+        raise ValueError(
+            "Expected rf_signals to have shape (num_samples, num_channels) "
+            "or (num_samples, num_channels, num_echoes)."
+        )
     time_arr = (np.arange(num_samples) / freq_sampling) + time_offset
+    # Expand time_arr to broadcast-match the shape of rf_signals
+    for _ in range(rf_signals.ndim - 1):
+        time_arr = time_arr[:, np.newaxis]
 
     if freq_carrier is None:
         # Estimate the carrier frequency based on the power spectrum
@@ -81,7 +92,7 @@ def demodulate_rf_to_iq(
     # by multiplying them with a complex exponential corresponding to the
     # carrier frequency.
     iq_signals = rf_signals * np.exp(
-        -1j * 2 * np.pi * freq_carrier * time_arr[:, np.newaxis]
+        -1j * 2 * np.pi * freq_carrier * time_arr
     )
 
     # Low-pass Butterworth filter to extract demodulated I/Q signals
@@ -114,28 +125,42 @@ def _estimate_carrier_frequency(
 
     Args:
         rf_signals: Radio-frequency signals estimate the carrier frequency of.
-            Shape: (num_samples, num_channels)
+            Shape: (num_samples, num_channels) or (num_samples, num_channels, num_echoes)
         freq_sampling: Sampling frequency of the RF signals (in Hz).
-        max_num_channels: Maximum number of channels to use for power spectrum analysis.
+        max_num_channels: Maximum number of channels (or channel-echo combos)
+            to use for power spectrum analysis.
         use_welch: whether to use Welch's method to estimate the power spectrum.
             If False, uses FFT sum-of-squares.
     """
-    assert (
-        rf_signals.ndim == 2
-    ), "Expected rf_signals to have shape (num_samples, num_channels)."
+    # Select a subset of channels/echoes to speed up calculation
+    if rf_signals.ndim == 2:
+        num_samples, num_channels = rf_signals.shape
+        num_selected_channels = min(max_num_channels, num_channels)
+        # randomly select channels (scan-lines) to speed up calculation
+        selected_channel_idxs = np.random.choice(
+            num_channels, num_selected_channels, replace=False
+        )
+        selected_idx_tuple = (selected_channel_idxs,)
+    elif rf_signals.ndim == 3:
+        num_samples, num_channels, num_echoes = rf_signals.shape
+        num_selected = min(max_num_channels, num_channels * num_echoes)
+        channel_echo_combo_idxs = itertools.product(
+            range(num_channels), range(num_echoes)
+        )
+        selected_idxs_tuple = np.random.choice(
+            channel_echo_combo_idxs, num_selected, replace=False
+        )
+    else:
+        raise ValueError(
+            "Expected rf_signals to have shape (num_samples, num_channels) or"
+            "(num_samples, num_channels, num_echoes)."
+        )
     assert np.isrealobj(rf_signals), "rf_signals must be real-valued."
-    num_samples, num_channels = rf_signals.shape
-
-    # randomly select channels (scan-lines) to speed up calculation
-    num_selected_channels = min(max_num_channels, num_channels)
-    selected_channel_idxs = np.random.choice(
-        num_channels, num_selected_channels, replace=False
-    )
 
     # Calculate the power spectrum
     kwargs = {} if use_welch else {"nperseg": num_samples, "window": "boxcar"}
     frequencies, power_spectrum = welch(
-        rf_signals[:, selected_channel_idxs],
+        rf_signals[(slice(None),) + selected_idxs_tuple],
         fs=freq_sampling,
         scaling="spectrum",
         return_onesided=True,  # only positive frequencies
