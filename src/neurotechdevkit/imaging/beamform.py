@@ -37,9 +37,9 @@ def beamform_delay_and_sum(
 
     Parameters:
         iq_signals: 2-D complex-valued array containing I/Q signals.
-            Shape: (time_samples, num_channels)
+            Shape: (time_samples, num_channels) or
+                (time_samples, num_channels, num_echoes)
             channels usually correspond to transducer elements.
-            TODO: Support 3rd dimension for repeated-echos (slow-time)
         x: 2-D array specifying the x-coordinates of the [x, z] image grid.
         z: 2-D array specifying the z-coordinates of the [x, z] image grid.
         fs: sampling frequency of the input signals.
@@ -59,16 +59,22 @@ def beamform_delay_and_sum(
     Adapted from: https://doi.org/10.1016/j.ultras.2020.106309
     """
     # Check input arguments
-    assert (
-        iq_signals.ndim == 2
-    ), "Expected iq_signals to have shape (time_samples, num_channels)."
+    if iq_signals.ndim == 2:
+        num_time_samples, num_channels = iq_signals.shape
+    elif iq_signals.ndim == 3:
+        num_time_samples, num_channels, num_echoes = iq_signals.shape
+    else:
+        raise ValueError(
+            "Expected iq_signals to have shape (time_samples, num_channels) or "
+            "(time_samples, num_channels, num_echoes)."
+        )
+
     assert np.iscomplexobj(
         iq_signals
     ), "Expected iq_signals to be complex-valued I/Q signals."
     assert x.ndim == 2, "Expected x to have shape (width_pixels, depth_pixels)."
     assert z.ndim == 2, "Expected z to have shape (width_pixels, depth_pixels)."
     assert x.shape == z.shape, "Expected image grid x and z to have the same shape."
-    num_time_samples, num_channels = iq_signals.shape
 
     # Check for potential underlying errors before allocating memory
     das_matrix: csr_array = delay_and_sum_matrix(
