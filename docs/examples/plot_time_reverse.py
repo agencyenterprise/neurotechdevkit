@@ -65,6 +65,7 @@ true_scenario.render_layout()
 # %%
 # ## Simulate the time-reverse scenario
 # Place a point source at the original target, and simulate a pulse.
+# The point source is visualized as a gray dot.
 
 # Reinitialize the scenario
 reversed_scenario = ndk.make(SCENARIO_NAME)
