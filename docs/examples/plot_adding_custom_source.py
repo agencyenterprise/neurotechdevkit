@@ -5,7 +5,8 @@ Custom source
 ====================================
 
 !!! note
-    NDK and its examples are under constant development, more information and content will be added to this example soon!
+    NDK and its examples are under constant development, more information
+    and content will be added to this example soon!
 
 This example demonstrates how to add a source to the simulation.
 """
@@ -27,6 +28,7 @@ This example demonstrates how to add a source to the simulation.
 #   emitting. Defaults to 0.0.
 
 import numpy as np
+
 import neurotechdevkit as ndk
 
 source = ndk.sources.FocusedSource2D(
@@ -37,9 +39,10 @@ source = ndk.sources.FocusedSource2D(
     num_points=1000,
 )
 
-scenario = ndk.make('scenario-0-v0')
+scenario = ndk.make("scenario-0-v0")
 scenario.add_source(source)
 result = scenario.simulate_steady_state()
+assert isinstance(result, ndk.results.SteadyStateResult2D)
 result.render_steady_state_amplitudes()
 
 # %%

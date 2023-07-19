@@ -1,9 +1,8 @@
 import numpy as np
 import stride
-from mosaic.types import Struct
 
+from ..materials import Material
 from ..sources import FocusedSource2D
-from . import materials
 from ._base import Scenario2D, Target
 from ._utils import (
     add_material_fields_to_problem,
@@ -25,6 +24,20 @@ class Scenario0(Scenario2D):
             description="Represents a simulated tumor.",
         ),
     }
+    material_layers = [
+        "water",
+        "cortical_bone",
+        "brain",
+        "tumor",
+    ]
+    material_properties = {
+        "water": Material(vp=1500.0, rho=1000.0, alpha=0.0, render_color="#2E86AB"),
+        "cortical_bone": Material(
+            vp=2800.0, rho=1850.0, alpha=4.0, render_color="#FAF0CA"
+        ),
+        "brain": Material(vp=1560.0, rho=1040.0, alpha=0.3, render_color="#DB504A"),
+        "tumor": Material(vp=1650.0, rho=1150.0, alpha=0.8, render_color="#94332F"),
+    }
 
     def __init__(self, complexity="fast"):
         """Create a new instance of scenario 0."""
@@ -36,37 +49,27 @@ class Scenario0(Scenario2D):
         )
 
     @property
-    def _material_layers(self) -> list[tuple[str, Struct]]:
-        return [
-            ("water", materials.water),
-            ("skull", materials.cortical_bone),
-            ("brain", materials.brain),
-            ("tumor", materials.tumor),
-        ]
-
-    @property
     def _material_outline_upsample_factor(self) -> int:
         return 16
 
     def _get_material_masks(self, problem):
         return {
             name: _create_scenario_0_mask(name, problem.grid, self._origin)
-            for name in self.materials.keys()
+            for name in self.material_layers
         }
 
-    def _compile_problem(self) -> stride.Problem:
+    def _compile_problem(self, center_frequency=float) -> stride.Problem:
         extent = np.array([0.05, 0.04])  # m
         origin = self.origin  # m
 
         # scenario constants
         speed_water = 1500  # m/s
-        c_freq = 500e3  # hz
 
         # desired resolution for complexity=fast
         ppw = 6
 
         # compute resolution
-        dx = speed_water / c_freq / ppw  # m
+        dx = speed_water / center_frequency / ppw  # m
 
         grid = make_grid(extent=extent, dx=dx)
         self._origin = origin
@@ -75,7 +78,7 @@ class Scenario0(Scenario2D):
         )
         problem = add_material_fields_to_problem(
             problem=problem,
-            materials=self.materials,
+            materials=self.get_materials(center_frequency),
             layer_ids=self.layer_ids,
             masks=self._get_material_masks(problem),
         )
@@ -98,7 +101,7 @@ def _create_scenario_0_mask(material, grid, origin):
         water_mask = ~outer_skull_mask
         return water_mask
 
-    elif material == "skull":
+    elif material == "cortical_bone":
         outer_skull_mask = _create_skull_interface_mask(grid, origin)
         outer_brain_mask = _create_brain_interface_mask(grid, origin)
         skull_mask = outer_skull_mask & ~outer_brain_mask
