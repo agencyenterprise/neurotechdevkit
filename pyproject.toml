@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "neurotechdevkit"
-version = "v0.1.1"
+version = "v0.2.1"
 description = "Neurotech Development Kit: an open-source software library designed to enhance accessibility to cutting-edge neurotechnology"
 authors = ["AE Studio <bci@ae.studio>"]
 maintainers = ["AE Studio <bci@ae.studio>"]
@@ -22,7 +22,7 @@ classifiers = [
 
 
 [tool.poetry.dependencies]
-python = ">=3.9,<3.11"
+python = ">=3.9,<3.12"
 numpy = "^1.23.3"
 matplotlib = "^3.5.3"
 imageio = "^2.21.2"
@@ -50,6 +50,7 @@ codespell = "^2.2.4"
 pydocstyle = "^6.3.0"
 pyright = "^1.1.306"
 pooch = "^1.7.0"
+pylint = {extras = ["spelling"], version = "^2.17.4"}
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

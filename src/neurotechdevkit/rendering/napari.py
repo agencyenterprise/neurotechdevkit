@@ -98,7 +98,6 @@ def render_amplitudes_3d_with_napari(result: "results.SteadyStateResult3D") -> N
     Raises:
         ImportError: If napari is not found.
     """
-    pass
     _create_napari_3d(scenario=result.scenario, amplitudes=result.get_steady_state())
 
 
@@ -111,8 +110,9 @@ def _create_napari_3d(
         raise ImportError(
             "3D rendering requires napari to be installed. Integration with napari is"
             " experimental and is not included as an explicit dependency of NDK."
-            ' Please install via `pip install "napari[all]"` or follow napari\'s'
-            " instructions at:"
+            ' Please install via `pip install "napari[all]"` or"'
+            ' `pip install "napari[pyqt6_experimental]" if running on a Mac M1` or'
+            " follow napari's' instructions at:"
             " https://napari.org/stable/tutorials/fundamentals/installation.html"
         ) from e
 

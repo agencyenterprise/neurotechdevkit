@@ -51,7 +51,7 @@ jobs:
         run: poetry run pip install git+https://github.com/trustimaging/stride
 
       - name: Install napari
-        run: poetry run pip install napari
+        run: poetry run pip install "napari[all,pyqt6_experimental]"
 
       - name: Install neurotechdevkit
         run: poetry install --only-root
@@ -59,3 +59,7 @@ jobs:
       - name: Run linting
         run: |
           make lint-check
+
+      - name: Run spellcheck
+        run: |
+          make spellcheck

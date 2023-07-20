@@ -26,7 +26,8 @@ WORKDIR /ndk
 
 RUN ./venv/bin/pip install --upgrade pip
 
-RUN apt-get update && apt-get install -y g++ jq make unzip wget && \
+RUN apt-get update && \
+    apt-get install -y g++ jq make unzip wget ffmpeg && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 

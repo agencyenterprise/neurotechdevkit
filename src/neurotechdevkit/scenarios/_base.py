@@ -16,6 +16,7 @@ from mosaic.types import Struct
 from stride.problem import StructuredData
 
 from .. import rendering, results
+from ..materials import Material, get_material, get_render_color
 from ..sources import Source
 from ._resources import budget_time_and_memory_resources
 from ._shots import create_shot
@@ -60,6 +61,12 @@ class Scenario(abc.ABC):
     _SCENARIO_ID: str
     _TARGET_OPTIONS: dict[str, Target]
 
+    # The list of material layers in the scenario.
+    material_layers: list[str]
+
+    # The customization to the material layers.
+    material_properties: dict[str, Material] = {}
+
     def __init__(
         self,
         origin: npt.NDArray[np.float_],
@@ -71,7 +78,6 @@ class Scenario(abc.ABC):
             raise ValueError("the only complexity currently supported is 'fast'")
 
         self._origin = origin
-        self._problem = self._compile_problem()
         self._sources: FrozenList[Source] = FrozenList()
         self._target_id: str
 
@@ -214,9 +220,8 @@ class Scenario(abc.ABC):
         """The radius of the target region (in meters)."""
         return self.target.radius
 
-    @property
-    def materials(self) -> Mapping[str, Struct]:
-        """A map between material name and material properties.
+    def get_materials(self, center_frequency=float) -> Mapping[str, Struct]:
+        """Return a map between material name and material properties.
 
         - vp: the speed of sound (in m/s).
         - rho: the mass density (in kg/m³).
@@ -224,22 +229,36 @@ class Scenario(abc.ABC):
         - render_color: the color used when rendering this material in the
         scenario layout plot.
         """
-        return {name: material for name, material in self._material_layers}
+        materials = {}
+        for layer in self.material_layers:
+            if layer not in self.material_properties:
+                material_properties = get_material(layer, center_frequency)
+            else:
+                material_properties = self.material_properties[layer]
+            materials[layer] = material_properties.to_struct()
+        return materials
+
+    @property
+    def material_colors(self) -> dict[str, str]:
+        """
+        A map between material name and material render color.
+
+        Returns:
+            dict[str, str]: keys are material names and values are the hex color
+        """
+        material_colors = {}
+        for material in self.material_layers:
+            if material in self.material_properties:
+                color = self.material_properties[material].render_color
+            else:
+                color = get_render_color(material_name=material)
+            material_colors[material] = color
+        return material_colors
 
     @property
     def layer_ids(self) -> Mapping[str, int]:
         """A map between material names and their layer id."""
-        return {name: n for n, (name, _) in enumerate(self._material_layers)}
-
-    @property
-    def ordered_layers(self) -> list[str]:
-        """A list of material names in order of their layer id."""
-        return [name for name, _ in self._material_layers]
-
-    @property
-    @abc.abstractmethod
-    def _material_layers(self) -> list[tuple[str, Struct]]:
-        pass
+        return {name: n for n, name in enumerate(self.material_layers)}
 
     @property
     @abc.abstractmethod
@@ -320,7 +339,7 @@ class Scenario(abc.ABC):
         return self.problem.medium.fields[field].data
 
     @abc.abstractmethod
-    def _compile_problem(self) -> stride.Problem:
+    def _compile_problem(self, center_frequency: float) -> stride.Problem:
         pass
 
     def reset(self) -> None:
@@ -372,10 +391,6 @@ class Scenario(abc.ABC):
         found by taking the Fourier transform of the last `n_cycles_steady_state` cycles
         of data and taking the amplitude of the component at the `center_frequency`.
 
-        !!! note
-            The only supported frequency currently supported is 500kHz. Any other
-            value will raise a NotImplementedError.
-
         !!! warning
             A poor choice of arguments to this function can lead to a failed
             simulation. Make sure you understand the impact of supplying parameter
@@ -383,8 +398,7 @@ class Scenario(abc.ABC):
 
         Args:
             center_frequency: the center frequency (in hertz) to use for the
-                continuous-wave source output. No other value besides 500kHz (the
-                default) is currently supported.
+                continuous-wave source output.
             points_per_period: the number of points in time to simulate for each cycle
                 of the wave.
             n_cycles_steady_state: the number of complete cycles to use when calculating
@@ -400,23 +414,14 @@ class Scenario(abc.ABC):
             n_jobs: the number of threads to be used for the computation. Use None to
                 leverage Devito automatic tuning.
 
-        Raises:
-            NotImplementedError: if a `center_frequency` other than 500kHz is provided.
-
         Returns:
             An object containing the result of the steady-state simulation.
         """
-        if center_frequency != 5.0e5:
-            raise NotImplementedError(
-                "500kHz is the only currently supported center frequency. Support for"
-                " other frequencies will be implemented once material properties as a"
-                " function of frequency has been implemented."
-            )
-
+        self._problem = self._compile_problem(center_frequency)
         problem = self.problem
         sim_time = select_simulation_time_for_steady_state(
             grid=problem.grid,
-            materials=self.materials,
+            materials=self.get_materials(center_frequency),
             freq_hz=center_frequency,
             time_to_steady_state=time_to_steady_state,
             n_cycles_steady_state=n_cycles_steady_state,
@@ -475,10 +480,6 @@ class Scenario(abc.ABC):
         In this simulation, the sources will emit a pulse containing a few cycles of
         oscillation and then let the pulse propagate out to all edges of the scenario.
 
-        !!! note
-            The only supported frequency currently supported is 500kHz. Any other
-            value will raise a NotImplementedError.
-
         !!! warning
             A poor choice of arguments to this function can lead to a failed
             simulation. Make sure you understand the impact of supplying parameter
@@ -486,8 +487,7 @@ class Scenario(abc.ABC):
 
         Args:
             center_frequency: the center frequency (in hertz) to use for the
-                continuous-wave source output. No other value besides
-                500kHz (the default) is currently supported.
+                continuous-wave source output.
             points_per_period: the number of points in time to simulate for each cycle
                 of the wave.
             simulation_time: the amount of time (in seconds) the simulation should run.
@@ -499,9 +499,6 @@ class Scenario(abc.ABC):
                 consecutive time points will be recorded and all others will be dropped.
             n_jobs: the number of threads to be used for the computation. Use None to
                 leverage Devito automatic tuning.
-
-        Raises:
-            NotImplementedError: if a `center_frequency` other than 500kHz is provided.
 
         Returns:
             An object containing the result of the 2D pulsed simulation.
@@ -531,18 +528,13 @@ class Scenario(abc.ABC):
         In this simulation, the sources will emit a pulse containing a few cycles of
         oscillation and then let the pulse propagate out to all edges of the scenario.
 
-        !!! note
-            The only supported frequency currently supported is 500kHz. Any other
-            value will raise a NotImplementedError.
-
         Warning: A poor choice of arguments to this function can lead to a failed
         simulation. Make sure you understand the impact of supplying parameter values
         other than the default if you chose to do so.
 
         Args:
             center_frequency: the center frequency (in hertz) to use for the
-                continuous-wave source output. No other value besides
-                500kHz (the default) is currently supported.
+                continuous-wave source output.
             points_per_period: the number of points in time to simulate for each cycle
                 of the wave.
             simulation_time: the amount of time (in seconds) the simulation should run.
@@ -561,24 +553,15 @@ class Scenario(abc.ABC):
                 which the slice of the 3D field should be made. Only valid if
                 `slice_axis` is not None.
 
-        Raises:
-            NotImplementedError: if a `center_frequency` other than 500kHz is provided.
-
         Returns:
             An object containing the result of the pulsed simulation.
         """
-        if center_frequency != 5.0e5:
-            raise NotImplementedError(
-                "500kHz is the only currently supported center frequency. Support for"
-                " other frequencies will be implemented once material properties as a"
-                " function of frequency has been implemented."
-            )
-
+        self._problem = self._compile_problem(center_frequency)
         problem = self.problem
         if simulation_time is None:
             simulation_time = select_simulation_time_for_pulsed(
                 grid=problem.grid,
-                materials=self.materials,
+                materials=self.get_materials(center_frequency),
                 delay=find_largest_delay_in_sources(self.sources),
             )
         problem.grid.time = create_time_grid(
@@ -907,9 +890,7 @@ class Scenario2D(Scenario):
             show_material_outlines: whether or not to display a thin white outline of
                 the transition between different materials.
         """
-        color_sequence = [
-            self.materials[name].render_color for name in self.ordered_layers
-        ]
+        color_sequence = list(self.material_colors.values())
         field = self.get_field_data("layer").astype(int)
         fig, ax = rendering.create_layout_fig(
             self.extent, self.origin, color_sequence, field
@@ -942,7 +923,7 @@ class Scenario2D(Scenario):
             fig=fig,
             ax=ax,
             color_sequence=color_sequence,
-            layer_labels=self.ordered_layers,
+            layer_labels=self.material_layers,
             show_sources=show_sources,
             show_target=show_target,
             extent=self.extent,
@@ -1011,10 +992,6 @@ class Scenario3D(Scenario):
         In this simulation, the sources will emit a pulse containing a few cycles of
         oscillation and then let the pulse propagate out to all edges of the scenario.
 
-        !!! note
-            The only supported frequency currently supported is 500kHz. Any
-            other value will raise a NotImplementedError.
-
         !!! warning
             A poor choice of arguments to this function can lead to a failed
             simulation. Make sure you understand the impact of supplying parameter
@@ -1022,8 +999,7 @@ class Scenario3D(Scenario):
 
         Args:
             center_frequency: the center frequency (in hertz) to use for the
-                continuous-wave source output. No other value besides
-                500kHz (the default) is currently supported.
+                continuous-wave source output.
             points_per_period: the number of points in time to simulate for each cycle
                 of the wave.
             simulation_time: the amount of time (in seconds) the simulation should run.
@@ -1041,9 +1017,6 @@ class Scenario3D(Scenario):
             slice_position: the position (in meters) along the slice axis at
                 which the slice of the 3D field should be made. Only valid if
                 `slice_axis` is not None.
-
-        Raises:
-            NotImplementedError: if a `center_frequency` other than 500kHz is provided.
 
         Returns:
             An object containing the result of the 3D pulsed simulation.
@@ -1090,9 +1063,7 @@ class Scenario3D(Scenario):
         if slice_position is None:
             slice_position = self.get_default_slice_position(slice_axis)
 
-        color_sequence = [
-            self.materials[name].render_color for name in self.ordered_layers
-        ]
+        color_sequence = list(self.material_colors.values())
         field = self.get_field_data("layer").astype(int)
         field = slice_field(field, self, slice_axis, slice_position)
         extent = drop_element(self.extent, slice_axis)
@@ -1130,7 +1101,7 @@ class Scenario3D(Scenario):
             fig=fig,
             ax=ax,
             color_sequence=color_sequence,
-            layer_labels=self.ordered_layers,
+            layer_labels=self.material_layers,
             show_sources=show_sources,
             show_target=show_target,
             extent=extent,
