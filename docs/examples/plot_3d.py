@@ -32,7 +32,13 @@ result = ndk.load_result_from_disk(downloaded_file_path)
 # pip install "napari[all]"
 # ```
 #
-# or by following the `napari` installation instructions
+# Note for Mac M1 users: Qt5 does not support Mac M1, so you will need to
+# install the Qt6 backend instead:
+# ```
+# pip install "napari[pyqt6_experimental]"
+# ```
+#
+# You can also follow the `napari` installation instructions:
 # [link](https://napari.org/stable/tutorials/fundamentals/installation.html).
 
 try:
