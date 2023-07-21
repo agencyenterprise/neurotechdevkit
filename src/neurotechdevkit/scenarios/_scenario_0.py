@@ -58,7 +58,7 @@ class Scenario0(Scenario2D):
             for name in self.material_layers
         }
 
-    def _compile_problem(self, center_frequency=float) -> stride.Problem:
+    def _compile_problem(self, center_frequency: float) -> stride.Problem:
         extent = np.array([0.05, 0.04])  # m
         origin = self.origin  # m
 
