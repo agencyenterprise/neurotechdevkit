@@ -879,6 +879,7 @@ class Scenario2D(Scenario):
         show_sources: bool = True,
         show_target: bool = True,
         show_material_outlines: bool = False,
+        center_frequency: float = 5.0e5,
     ) -> None:
         """Create a matplotlib figure showing the 2D scenario layout.
 
@@ -889,7 +890,11 @@ class Scenario2D(Scenario):
             show_target: whether or not to show the target layer.
             show_material_outlines: whether or not to display a thin white outline of
                 the transition between different materials.
+            center_frequency: the center frequency (in hertz) to use for the
+                continuous-wave source output.
         """
+        if not hasattr(self, "_problem") or not self.problem:
+            self._problem = self._compile_problem(center_frequency)
         color_sequence = list(self.material_colors.values())
         field = self.get_field_data("layer").astype(int)
         fig, ax = rendering.create_layout_fig(
@@ -1038,6 +1043,7 @@ class Scenario3D(Scenario):
         show_sources: bool = True,
         show_target: bool = True,
         show_material_outlines: bool = False,
+        center_frequency: float = 5.0e5,
     ) -> None:
         """Create a matplotlib figure showing a 2D slice of the scenario layout.
 
@@ -1057,7 +1063,11 @@ class Scenario3D(Scenario):
             show_target: whether or not to show the target layer.
             show_material_outlines: whether or not to display a thin white outline of
                 the transition between different materials.
+            center_frequency: the center frequency (in hertz) to use for the
+                continuous-wave source output.
         """
+        if not hasattr(self, "_problem") or not self.problem:
+            self._problem = self._compile_problem(center_frequency)
         if slice_axis is None:
             slice_axis = self.get_default_slice_axis()
         if slice_position is None:
