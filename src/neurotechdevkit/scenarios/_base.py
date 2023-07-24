@@ -784,8 +784,6 @@ class Scenario2D(Scenario):
             center_frequency: the center frequency (in hertz) to use for the
                 continuous-wave source output.
         """
-        if not hasattr(self, "problem") or not self.problem:
-            self._problem = self.compile_problem(center_frequency)
         color_sequence = list(self.material_colors.values())
         field = self.get_field_data("layer").astype(int)
         fig, ax = rendering.create_layout_fig(
@@ -913,9 +911,6 @@ class Scenario3D(Scenario):
             center_frequency: the center frequency (in hertz) to use for the
                 continuous-wave source output.
         """
-        if not hasattr(self, "problem") or not self.problem:
-            self.problem = self.compile_problem(center_frequency)
-
         slice_axis = self.slice_axis
         slice_position = self.slice_position
         color_sequence = list(self.material_colors.values())

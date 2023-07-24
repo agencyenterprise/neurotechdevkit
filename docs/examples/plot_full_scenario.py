@@ -148,8 +148,8 @@ def _fill_mask(mask, start, end, dx):
 
 # %%
 # ## Running the scenario
-
 scenario = FullScenario()
+scenario.compile_problem(center_frequency=5e5)
 
 # %%
 # ## Rendering the scenario layout
@@ -157,7 +157,6 @@ scenario.render_layout()
 
 # %%
 # ## Rendering the simulation
-scenario.compile_problem(center_frequency=5e5)
 result = scenario.simulate_steady_state()
 assert isinstance(result, SteadyStateResult2D)
 result.render_steady_state_amplitudes(show_material_outlines=False)
