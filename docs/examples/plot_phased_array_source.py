@@ -221,6 +221,6 @@ phased_3d = ndk.sources.PhasedArraySource3D(
 scenario.add_source(phased_3d)
 results = scenario.simulate_steady_state()
 assert isinstance(results, ndk.results.SteadyStateResult3D)
-results.render_steady_state_amplitudes(slice_axis=1, slice_position=0.0)
+results.render_steady_state_amplitudes()
 
 # %%

@@ -205,7 +205,7 @@ class SteadyStateResult(Result):
             "result_type": type(self).__name__,
             "scenario_id": self.scenario.scenario_id,
             "sources": self.scenario.sources,
-            "target_id": self.scenario.current_target_id,
+            "problem": self.scenario.problem,
             "center_frequency": self.center_frequency,
             "effective_dt": self.effective_dt,
             "steady_state": self.get_steady_state(),
@@ -267,7 +267,7 @@ class SteadyStateResult2D(SteadyStateResult):
                 material_field=material_field,
                 dx=self.scenario.dx,
                 origin=self.scenario.origin,
-                upsample_factor=self.scenario._material_outline_upsample_factor,
+                upsample_factor=self.scenario.material_outline_upsample_factor,
             )
         if show_target:
             rendering.draw_target(
@@ -314,8 +314,6 @@ class SteadyStateResult3D(SteadyStateResult):
 
     def render_steady_state_amplitudes(
         self,
-        slice_axis: int | None = None,
-        slice_position: float | None = None,
         show_sources: bool = True,
         show_target: bool = True,
         show_material_outlines: bool = True,
@@ -329,22 +327,14 @@ class SteadyStateResult3D(SteadyStateResult):
         The grid can be turned on via: `plt.grid(True)`
 
         Args:
-            slice_axis: the axis along which to slice. If None, then the value returned
-                by `scenario.get_default_slice_axis()` is used.
-            slice_position: the position (in meters) along the slice axis at
-                which the slice should be made. If None, then the value returned by
-                `scenario.get_default_slice_position()` is used.
             show_sources: whether or not to show the source transducer layer.
             show_target: whether or not to show the target layer.
             show_material_outlines: whether or not to display a thin white outline of
                 the transition between different materials.
         """
-        if slice_axis is None:
-            slice_axis = self.scenario.get_default_slice_axis()
-        if slice_position is None:
-            slice_position = self.scenario.get_default_slice_position(slice_axis)
-
         field = self.get_steady_state()
+        slice_axis = self.scenario.slice_axis
+        slice_position = self.scenario.slice_position
 
         field = slice_field(field, self.scenario, slice_axis, slice_position)
         extent = drop_element(self.scenario.extent, slice_axis)
@@ -363,7 +353,7 @@ class SteadyStateResult3D(SteadyStateResult):
                 material_field=material_field_2d,
                 dx=self.scenario.dx,
                 origin=origin,
-                upsample_factor=self.scenario._material_outline_upsample_factor,
+                upsample_factor=self.scenario.material_outline_upsample_factor,
             )
         if show_target:
             target_loc = drop_element(self.scenario.target_center, slice_axis)
@@ -571,7 +561,7 @@ class PulsedResult(Result):
             "result_type": type(self).__name__,
             "scenario_id": self.scenario.scenario_id,
             "sources": self.scenario.sources,
-            "target_id": self.scenario.current_target_id,
+            "problem": self.scenario.problem,
             "center_frequency": self.center_frequency,
             "effective_dt": self.effective_dt,
             "wavefield": self.wavefield,
@@ -758,7 +748,7 @@ class PulsedResult2D(PulsedResult):
                 material_field=material_field,
                 dx=self.scenario.dx,
                 origin=self.scenario.origin,
-                upsample_factor=self.scenario._material_outline_upsample_factor,
+                upsample_factor=self.scenario.material_outline_upsample_factor,
             )
 
         if show_target:
@@ -846,8 +836,6 @@ class PulsedResult3D(PulsedResult):
         show_target: bool = True,
         show_material_outlines: bool = True,
         n_frames_undersampling: int = 1,
-        slice_axis: int | None = None,
-        slice_position: float | None = None,
         time_lim: tuple[np.float_, np.float_] | None = None,
         norm: str = "linear",
     ) -> FuncAnimation:
@@ -865,11 +853,6 @@ class PulsedResult3D(PulsedResult):
                 the transition between different materials.
             n_frames_undersampling: the number of time steps to be skipped when creating
                 the animation.
-            slice_axis: the axis along which to slice. If None, then the value returned
-                by `scenario.get_default_slice_axis()` is used.
-            slice_position: the position (in meters) along the slice axis at
-                which the slice should be made. If None, then the value returned by
-                `scenario.get_default_slice_position()` is used.
             time_lim: the input time limit tuple to validate. The expected format is
                 (minimum_time, maximum_time).
             norm: the normalization method used to scale scalar data to the [0, 1]
@@ -879,15 +862,17 @@ class PulsedResult3D(PulsedResult):
         Returns:
             An matplotlib animation object.
         """
+        slice_axis = self.scenario.slice_axis
+        slice_position = self.scenario.slice_position
         animation = self._build_animation(
+            slice_axis=slice_axis,
+            slice_position=slice_position,
             show_sources=show_sources,
             show_target=show_target,
             show_material_outlines=show_material_outlines,
             time_lim=time_lim,
             n_frames_undersampling=n_frames_undersampling,
             norm=norm,
-            slice_axis=slice_axis,
-            slice_position=slice_position,
         )
         rendering.configure_matplotlib_for_embedded_animation()
         return animation
@@ -922,11 +907,9 @@ class PulsedResult3D(PulsedResult):
                 the transition between different materials.
             n_frames_undersampling: the number of time steps to be skipped when creating
                 the animation.
-            slice_axis: the axis along which to slice. If None, then the value returned
-                by `scenario.get_default_slice_axis()` is used.
+            slice_axis: the axis along which to slice.
             slice_position: the position (in meters) along the slice axis at
-                which the slice should be made. If None, then the value returned by
-                `scenario.get_default_slice_position()` is used.
+                which the slice should be made.
             time_lim: the input time limit tuple to validate. The expected format is
                 (minimum_time, maximum_time).
             norm: the normalization method used to scale scalar data to the [0, 1]
@@ -943,14 +926,14 @@ class PulsedResult3D(PulsedResult):
         self._validate_file_name(file_name, overwrite)
 
         animation = self._build_animation(
+            slice_axis=slice_axis,
+            slice_position=slice_position,
             show_sources=show_sources,
             show_target=show_target,
             show_material_outlines=show_material_outlines,
             time_lim=time_lim,
             n_frames_undersampling=n_frames_undersampling,
             norm=norm,
-            slice_axis=slice_axis,
-            slice_position=slice_position,
         )
 
         rendering.save_animation(
@@ -961,10 +944,10 @@ class PulsedResult3D(PulsedResult):
     @rendering.video_only_output
     def _build_animation(
         self,
+        slice_axis: int,
+        slice_position: float,
         time_lim: tuple[np.float_, np.float_] | None = None,
         n_frames_undersampling: int = 1,
-        slice_axis: int | None = None,
-        slice_position: float | None = None,
         show_sources: bool = True,
         show_target: bool = True,
         show_material_outlines: bool = True,
@@ -980,15 +963,13 @@ class PulsedResult3D(PulsedResult):
             ValueError if the wave field is not in 2D.
 
         Args:
+            slice_axis: the axis along which to slice.
+            slice_position: the position (in meters) along the slice axis at
+                which the slice should be made.
             time_lim: the input time limit tuple to validate. The expected format is
                 (minimum_time, maximum_time).
             n_frames_undersampling: the number of time steps to be skipped when creating
                 the animation.
-            slice_axis: the axis along which to slice. If None, then the value returned
-                by `scenario.get_default_slice_axis()` is used.
-            slice_position: the position (in meters) along the slice axis at
-                which the slice should be made. If None, then the value returned by
-                `scenario.get_default_slice_position()` is used.
             show_sources: whether or not to show the source transducer layer.
             show_target: whether or not to show the target layer.
             show_material_outlines: whether or not to display a thin white outline of
@@ -1005,10 +986,6 @@ class PulsedResult3D(PulsedResult):
         wavefield = self.wavefield
 
         if self.recorded_slice is None:
-            if slice_axis is None:
-                slice_axis = self.scenario.get_default_slice_axis()
-            if slice_position is None:
-                slice_position = self.scenario.get_default_slice_position(slice_axis)
             wavefield = slice_field(
                 wavefield, self.scenario, slice_axis, slice_position
             )
@@ -1043,7 +1020,7 @@ class PulsedResult3D(PulsedResult):
                 material_field=material_field_2d,
                 dx=self.scenario.dx,
                 origin=origin,
-                upsample_factor=self.scenario._material_outline_upsample_factor,
+                upsample_factor=self.scenario.material_outline_upsample_factor,
             )
         if show_target:
             target_loc = drop_element(self.scenario.target_center, slice_axis)
@@ -1273,7 +1250,6 @@ def load_result_from_disk(filepath: str | pathlib.Path) -> Result:
         for source in save_data["sources"]:
             scenario.add_source(source)
 
-        scenario.current_target_id = save_data["target_id"]
         result_type = getattr(ndk.results, save_data["result_type"])
 
         fields_kwargs = dict(
@@ -1285,7 +1261,7 @@ def load_result_from_disk(filepath: str | pathlib.Path) -> Result:
             wavefield=save_data.get("wavefield"),
             traces=None,
         )
-        scenario._problem = scenario._compile_problem(save_data["center_frequency"])
+        scenario.problem = save_data.get("problem")
 
         if save_data.get("steady_state") is not None:
             fields_kwargs.update(steady_state=save_data["steady_state"])

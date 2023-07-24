@@ -116,13 +116,14 @@ def _create_napari_3d(
             " https://napari.org/stable/tutorials/fundamentals/installation.html"
         ) from e
 
+    assert hasattr(scenario, "viewer_config_3d")
     viewer_config = scenario.viewer_config_3d
     viewer = napari.Viewer(ndisplay=3)
 
     add_material_layers(viewer, scenario, viewer_config)
     add_target(viewer, scenario)
 
-    scenario._ensure_source()
+    assert hasattr(scenario, "sources")
     for source in scenario.sources:
         add_source(viewer, scenario, source)
 

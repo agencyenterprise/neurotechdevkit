@@ -11,7 +11,6 @@ import nest_asyncio
 import numpy as np
 import numpy.typing as npt
 import stride
-from frozenlist import FrozenList
 from mosaic.types import Struct
 from stride.problem import StructuredData
 
@@ -58,71 +57,73 @@ class Target:
 class Scenario(abc.ABC):
     """The base scenario."""
 
-    _SCENARIO_ID: str
-    _TARGET_OPTIONS: dict[str, Target]
-
     # The list of material layers in the scenario.
     material_layers: list[str]
 
     # The customization to the material layers.
-    material_properties: dict[str, Material] = {}
+    material_properties: dict[str, Material]
+
+    origin: npt.NDArray[np.float_]
+
+    # The list of sources in the scenario.
+    sources: list[Source]
+
+    problem: stride.Problem
+
+    grid: stride.Grid
+
+    target: Target
+
+    scenario_id: str
+    material_outline_upsample_factor: int
+    slice_axis: int
+    slice_position: float
 
     def __init__(
         self,
-        origin: npt.NDArray[np.float_],
-        complexity: str = "fast",
+        scenario_id: str,
+        material_outline_upsample_factor: int = 16,
     ):
-        """Initialize the scenario."""
-        self._complexity = complexity
-        if self._complexity != "fast":
-            raise ValueError("the only complexity currently supported is 'fast'")
-
-        self._origin = origin
-        self._sources: FrozenList[Source] = FrozenList()
-        self._target_id: str
-
-    @property
-    def scenario_id(self) -> str:
-        """The ID for this scenario."""
-        return self._SCENARIO_ID
-
-    @property
-    def complexity(self) -> str:
-        """The complexity level to use when simulating this scenario.
-
-        !!! note
-            The only currently supported complexity is `fast`.
-
-        Options are:
-
-        - `fast`: uses a small grid size (large grid spacing) so that simulations are
-        fast.
-        - `accurate`: uses a large grid size (small grid spacing) so that simulation
-        results are accurate.
-        - `balanced`: a grid size and grid spacing balanced between `fast` and
-        `accurate`.
         """
-        return self._complexity
+        Initialize a new scenario.
 
-    @property
-    def problem(self) -> stride.Problem:
-        """The stride Problem object."""
-        return self._problem
+        Args:
+            scenario_id (str): An identifier for the scenario.
+            material_outline_upsample_factor (int, optional): The factor by which to
+                upsample the material outline. Defaults to 16.
+        """
+        self.scenario_id = scenario_id
+        self.material_outline_upsample_factor = material_outline_upsample_factor
+
+    def render_layout(
+        self,
+        show_sources: bool = True,
+        show_target: bool = True,
+        show_material_outlines: bool = False,
+    ) -> None:
+        """Render the layout of the scenario. Is implemented by subclasses."""
+        raise NotImplementedError()
+
+    @abc.abstractmethod
+    def get_target_mask(self) -> npt.NDArray[np.bool_]:
+        """Return the mask for the target region.
+
+        Returns:
+            A boolean array indicating which gridpoints correspond to the target region.
+        """
+        pass
 
     @property
     def extent(self) -> npt.NDArray[np.float_]:
         """The extent of the spatial grid (in meters)."""
+        assert hasattr(self, "problem")
         assert self.problem.space is not None
         return np.array(self.problem.space.size, dtype=float)
 
     @property
-    def origin(self) -> npt.NDArray[np.float_]:
-        """The spatial coordinates of grid position (0, 0, 0)."""
-        return self._origin
-
-    @property
     def shape(self) -> npt.NDArray[np.int_]:
         """The shape of the spatial grid (in number of grid points)."""
+        assert hasattr(self, "problem")
         assert self.problem.space is not None
         return np.array(self.problem.space.shape, dtype=int)
 
@@ -132,14 +133,9 @@ class Scenario(abc.ABC):
 
         Spacing is the same in each spatial direction.
         """
+        assert hasattr(self, "problem")
         assert self.problem.space is not None
         return self.problem.space.spacing[0]
-
-    @property
-    def ppw(self) -> float:
-        """The number of points per wavelength."""
-        # maybe choose lowest speed of sound?
-        raise NotImplementedError()
 
     @property
     def t_min(self) -> float:
@@ -147,6 +143,7 @@ class Scenario(abc.ABC):
 
         Only available once a simulation has been completed.
         """
+        assert hasattr(self, "problem")
         if self.problem.time is None:
             raise ValueError(
                 "t_min is not defined until the simulation frequency is defined."
@@ -159,6 +156,7 @@ class Scenario(abc.ABC):
 
         Only available once a simulation has been completed.
         """
+        assert hasattr(self, "problem")
         if self.problem.time is None:
             raise ValueError(
                 "t_max is not defined until the simulation frequency is defined."
@@ -171,6 +169,7 @@ class Scenario(abc.ABC):
 
         Only available once a simulation has been completed.
         """
+        assert hasattr(self, "problem")
         if self.problem.time is None:
             raise ValueError(
                 "dt is not defined until the simulation frequency is defined."
@@ -178,46 +177,15 @@ class Scenario(abc.ABC):
         return self.problem.time.step
 
     @property
-    def ppp(self) -> float:
-        """The number of points per period."""
-        raise NotImplementedError()
-
-    @property
-    def current_target_id(self) -> str:
-        """Get or set the id of the currently selected target."""
-        return self._target_id
-
-    @current_target_id.setter
-    def current_target_id(self, target_id: str) -> None:
-        """Set the id of the currently selected target."""
-        if target_id not in self._TARGET_OPTIONS:
-            raise ValueError(
-                f"{target_id} is not a valid target id."
-                f" Options are: {self._TARGET_OPTIONS.keys()}."
-            )
-        self._target_id = target_id
-
-    @property
-    def target_options(self) -> dict[str, str]:
-        """Information about each of the available targets for the scenario."""
-        return {
-            scenario_id: target.description
-            for scenario_id, target in self._TARGET_OPTIONS.items()
-        }
-
-    @property
-    def target(self) -> Target:
-        """Details about the current target."""
-        return self._TARGET_OPTIONS[self._target_id]
-
-    @property
     def target_center(self) -> npt.NDArray[np.float_]:
         """The coordinates of the center of the target region (in meters)."""
+        assert hasattr(self, "target")
         return self.target.center
 
     @property
     def target_radius(self) -> float:
         """The radius of the target region (in meters)."""
+        assert hasattr(self, "target")
         return self.target.radius
 
     def get_materials(self, center_frequency=float) -> Mapping[str, Struct]:
@@ -229,6 +197,7 @@ class Scenario(abc.ABC):
         - render_color: the color used when rendering this material in the
         scenario layout plot.
         """
+        assert hasattr(self, "material_layers")
         materials = {}
         for layer in self.material_layers:
             if layer not in self.material_properties:
@@ -246,6 +215,7 @@ class Scenario(abc.ABC):
         Returns:
             dict[str, str]: keys are material names and values are the hex color
         """
+        assert hasattr(self, "material_layers")
         material_colors = {}
         for material in self.material_layers:
             if material in self.material_properties:
@@ -258,35 +228,8 @@ class Scenario(abc.ABC):
     @property
     def layer_ids(self) -> Mapping[str, int]:
         """A map between material names and their layer id."""
+        assert hasattr(self, "material_layers")
         return {name: n for n, name in enumerate(self.material_layers)}
-
-    @property
-    @abc.abstractmethod
-    def _material_outline_upsample_factor(self) -> int:
-        """Upsample_factor to use for this scenario when drawing material outlines.
-
-        This parameter is internal to ndk, is not intended to be used directly.
-        """
-        pass
-
-    @property
-    def sources(self) -> FrozenList[Source]:
-        """The list of sources currently defined.
-
-        The source list can be edited only before a simulation is run. Once a simulation
-        is run, the source list will be frozen and can no longer be modified.
-        """
-        return self._sources
-
-    def _freeze_sources(self) -> None:
-        """Freeze the sources list so that it can no longer be modified.
-
-        This should be done before any simulation is run because the scenario and
-        simulation are highly coupled and any changes to sources after the simulation
-        could cause problems.
-        """
-        if not self._sources.frozen:
-            self._sources.freeze()
 
     def get_layer_mask(self, layer_name: str) -> npt.NDArray[np.bool_]:
         """Return the mask for the desired layer.
@@ -311,15 +254,6 @@ class Scenario(abc.ABC):
         layers_field = self.get_field_data("layer")
         return layers_field == layer
 
-    @abc.abstractmethod
-    def get_target_mask(self) -> npt.NDArray[np.bool_]:
-        """Return the mask for the target region.
-
-        Returns:
-            A boolean array indicating which gridpoints correspond to the target region.
-        """
-        pass
-
     def get_field_data(self, field: str) -> npt.NDArray[np.float_]:
         """Return the array of field values across the scenario for a particular field.
 
@@ -336,15 +270,8 @@ class Scenario(abc.ABC):
         Returns:
             An array containing the field data.
         """
+        assert hasattr(self, "problem")
         return self.problem.medium.fields[field].data
-
-    @abc.abstractmethod
-    def _compile_problem(self, center_frequency: float) -> stride.Problem:
-        pass
-
-    def reset(self) -> None:
-        """Reset the scenario to initial state."""
-        raise NotImplementedError()
 
     def add_source(self, source: Source) -> None:
         """Add the specified source to the scenario.
@@ -356,24 +283,11 @@ class Scenario(abc.ABC):
         Args:
             source: the source to add to the scenario.
         """
-        self._sources.append(source)
+        self.sources.append(source)
 
-    @abc.abstractmethod
-    def get_default_source(self) -> Source:
-        """Create and returns a default source for this scenario.
-
-        Returns:
-            The default source.
-        """
-        pass
-
-    def _ensure_source(self) -> None:
-        """Ensure the scenario includes at least one source.
-
-        If no source is pre-defined, the default source is included.
-        """
-        if len(self.sources) == 0:
-            self.add_source(self.get_default_source())
+    def compile_problem(self, center_frequency: float):
+        """Compile the problem for the scenario. Can be implemented by subclasses."""
+        raise NotImplementedError()
 
     def simulate_steady_state(
         self,
@@ -417,7 +331,6 @@ class Scenario(abc.ABC):
         Returns:
             An object containing the result of the steady-state simulation.
         """
-        self._problem = self._compile_problem(center_frequency)
         problem = self.problem
         sim_time = select_simulation_time_for_steady_state(
             grid=problem.grid,
@@ -556,7 +469,6 @@ class Scenario(abc.ABC):
         Returns:
             An object containing the result of the pulsed simulation.
         """
-        self._problem = self._compile_problem(center_frequency)
         problem = self.problem
         if simulation_time is None:
             simulation_time = select_simulation_time_for_pulsed(
@@ -622,12 +534,7 @@ class Scenario(abc.ABC):
         Returns:
             The `SubProblem` to use for the simulation.
         """
-        self._ensure_source()
-        self._freeze_sources()
-
-        # create an actual list to avoid needing to use FrozenList as the type
-        source_list = list(self.sources)
-        shot = self._setup_shot(source_list, center_frequency, simulation_mode)
+        shot = self._setup_shot(self.sources, center_frequency, simulation_mode)
         return self.problem.sub_problem(shot.id)
 
     def _setup_shot(
@@ -893,8 +800,8 @@ class Scenario2D(Scenario):
             center_frequency: the center frequency (in hertz) to use for the
                 continuous-wave source output.
         """
-        if not hasattr(self, "_problem") or not self.problem:
-            self._problem = self._compile_problem(center_frequency)
+        if not hasattr(self, "problem") or not self.problem:
+            self._problem = self.compile_problem(center_frequency)
         color_sequence = list(self.material_colors.values())
         field = self.get_field_data("layer").astype(int)
         fig, ax = rendering.create_layout_fig(
@@ -908,12 +815,12 @@ class Scenario2D(Scenario):
                 material_field=field,
                 dx=self.dx,
                 origin=self.origin,
-                upsample_factor=self._material_outline_upsample_factor,
+                upsample_factor=self.material_outline_upsample_factor,
             )
         if show_target:
             rendering.draw_target(ax, self.target_center, self.target_radius)
         if show_sources:
-            self._ensure_source()
+            assert self.sources
             for source in self.sources:
                 drawing_params = rendering.SourceDrawingParams.from_source(source)
                 rendering.draw_source(ax, drawing_params)
@@ -933,38 +840,7 @@ class Scenario2D(Scenario):
 class Scenario3D(Scenario):
     """A 3D scenario."""
 
-    @abc.abstractmethod
-    def get_default_slice_axis(self) -> int:
-        """Return the default slice_axis for this scenario.
-
-        This field is used if the slice_axis is not specified when plotting 3D data in
-        2D.
-
-        Returns:
-            The default slice_axis for this scenario.
-        """
-        pass
-
-    @abc.abstractmethod
-    def get_default_slice_position(self, axis: int) -> float:
-        """Return the default slice_position (in meters) for this scenario.
-
-        This field is used if the slice_position is not specified when plotting 3D data
-        in 2D.
-
-        Args:
-            axis: the slice axis.
-
-        Returns:
-            The default slice_position for this scenario along the given axis.
-        """
-        pass
-
-    @property
-    @abc.abstractmethod
-    def viewer_config_3d(self) -> rendering.ViewerConfig3D:
-        """Configuration parameters for 3D visualization of this scenario."""
-        pass
+    viewer_config_3d: rendering.ViewerConfig3D
 
     def get_target_mask(self) -> npt.NDArray[np.bool_]:
         """Return the mask for the target region."""
@@ -1032,8 +908,6 @@ class Scenario3D(Scenario):
 
     def render_layout(
         self,
-        slice_axis: int | None = None,
-        slice_position: float | None = None,
         show_sources: bool = True,
         show_target: bool = True,
         show_material_outlines: bool = False,
@@ -1048,11 +922,6 @@ class Scenario3D(Scenario):
         The grid can be turned on via: `plt.grid(True)`
 
         Args:
-            slice_axis: the axis along which to slice. If None, then the value returned
-                by `scenario.get_default_slice_axis()` is used.
-            slice_position: the position (in meters) along the slice axis at
-                which the slice should be made. If None, then the value returned by
-                `scenario.get_default_slice_position()` is used.
             show_sources: whether or not to show the source transducer layer.
             show_target: whether or not to show the target layer.
             show_material_outlines: whether or not to display a thin white outline of
@@ -1060,13 +929,11 @@ class Scenario3D(Scenario):
             center_frequency: the center frequency (in hertz) to use for the
                 continuous-wave source output.
         """
-        if not hasattr(self, "_problem") or not self.problem:
-            self._problem = self._compile_problem(center_frequency)
-        if slice_axis is None:
-            slice_axis = self.get_default_slice_axis()
-        if slice_position is None:
-            slice_position = self.get_default_slice_position(slice_axis)
+        if not hasattr(self, "problem") or not self.problem:
+            self.problem = self.compile_problem(center_frequency)
 
+        slice_axis = self.slice_axis
+        slice_position = self.slice_position
         color_sequence = list(self.material_colors.values())
         field = self.get_field_data("layer").astype(int)
         field = slice_field(field, self, slice_axis, slice_position)
@@ -1081,13 +948,13 @@ class Scenario3D(Scenario):
                 material_field=field,
                 dx=self.dx,
                 origin=origin,
-                upsample_factor=self._material_outline_upsample_factor,
+                upsample_factor=self.material_outline_upsample_factor,
             )
         if show_target:
             target_loc = drop_element(self.target_center, slice_axis)
             rendering.draw_target(ax, target_loc, self.target_radius)
         if show_sources:
-            self._ensure_source()
+            assert self.sources
             for source in self.sources:
                 drawing_params = rendering.SourceDrawingParams(
                     position=drop_element(source.position, slice_axis),
