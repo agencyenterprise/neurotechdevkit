@@ -33,4 +33,3 @@ For internal methods and computation steps, always express values using uom with
 Whenever new conventions are used, they should be added to this document within the PR where the conventions were first added.
 
 Whenever existing conventions are discovered or refined (such as through PR review discussion), the conventions should be added or updated in this document as part of that PR.
-
