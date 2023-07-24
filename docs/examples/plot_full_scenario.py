@@ -35,8 +35,6 @@ class FullScenario(Scenario2D):
     """
 
     scenario_id = "the_id_for_this_scenario"
-    material_properties = {}
-
     """
     Target attributes:
         target_id: the string id of the target.
@@ -147,7 +145,7 @@ def _fill_mask(mask, start, end, dx):
 
 
 # %%
-# ## Running the scenario
+# ## Creating the scenario
 scenario = FullScenario()
 scenario.compile_problem(center_frequency=5e5)
 
