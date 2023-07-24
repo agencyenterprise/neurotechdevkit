@@ -101,13 +101,7 @@ class Scenario2_2D(Scenario2, Scenario2D):
             num_points=1000,
         )
     ]
-
-    def __init__(self, scenario_id, material_outline_upsample_factor: int = 4):
-        """Instantiate Scenario2 with overwritten material_outline_upsample_factor."""
-        super().__init__(
-            scenario_id=scenario_id,
-            material_outline_upsample_factor=material_outline_upsample_factor,
-        )
+    material_outline_upsample_factor = 4
 
     def compile_problem(self, center_frequency: float) -> stride.Problem:
         """
@@ -183,13 +177,7 @@ class Scenario2_3D(Scenario2, Scenario3D):
     )
     slice_axis = 2
     slice_position = 0.0
-
-    def __init__(self, scenario_id, material_outline_upsample_factor: int = 4):
-        """Instantiate Scenario2 with overwritten material_outline_upsample_factor."""
-        super().__init__(
-            scenario_id=scenario_id,
-            material_outline_upsample_factor=material_outline_upsample_factor,
-        )
+    material_outline_upsample_factor = 4
 
     def compile_problem(self, center_frequency: float) -> stride.Problem:
         """

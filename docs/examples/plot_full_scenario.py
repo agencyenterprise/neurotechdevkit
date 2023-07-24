@@ -67,9 +67,7 @@ class FullScenario(Scenario2D):
             num_points=1000,
         )
     ]
-
-    def __init__(self, scenario_id: str, material_outline_upsample_factor: int = 8):
-        super().__init__(scenario_id, material_outline_upsample_factor)
+    material_outline_upsample_factor = 8
 
     def compile_problem(self, center_frequency) -> stride.Problem:
         """The problem definition for the scenario."""
@@ -149,15 +147,17 @@ def _fill_mask(mask, start, end, dx):
 
 
 # %%
-# ## Creating the scenario
-scenario = FullScenario(FullScenario.scenario_id)
+# ## Running the scenario
+
+scenario = FullScenario()
 
 # %%
 # ## Rendering the scenario layout
 scenario.render_layout()
 
 # %%
-# ## Running the scenario
+# ## Rendering the simulation
+scenario.compile_problem(center_frequency=5e5)
 result = scenario.simulate_steady_state()
 assert isinstance(result, SteadyStateResult2D)
 result.render_steady_state_amplitudes(show_material_outlines=False)

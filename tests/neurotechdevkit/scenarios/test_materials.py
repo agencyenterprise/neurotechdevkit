@@ -13,17 +13,10 @@ def compare_structs(struct1: Struct, struct2: Struct):
     assert struct1.render_color == struct2.render_color
 
 
-class BaseScenario(Scenario2D):
-    """A scenario for testing the materials module."""
-
-    def __init__(self):
-        super().__init__(scenario_id="test", material_outline_upsample_factor=16)
-
-
 def test_custom_material_property():
     """Test that a custom material property is used."""
 
-    class ScenarioWithCustomMaterialProperties(BaseScenario):
+    class ScenarioWithCustomMaterialProperties(Scenario2D):
         material_layers = ["brain"]
         material_properties = {
             "brain": Material(vp=1600.0, rho=1100.0, alpha=0.0, render_color="#2E86AB")
@@ -43,7 +36,7 @@ def test_custom_material_property():
 def test_new_material():
     """Test that a new material is used."""
 
-    class ScenarioWithCustomMaterial(BaseScenario):
+    class ScenarioWithCustomMaterial(Scenario2D):
         material_layers = ["brain", "eye"]
         material_properties = {
             "eye": Material(vp=1600.0, rho=1100.0, alpha=0.0, render_color="#2E86AB")
@@ -64,7 +57,7 @@ def test_new_material():
 def test_material_absorption_is_calculated():
     """Test that the material absorption is calculated for a frequency !=500e3."""
 
-    class ScenarioWithBrainMaterial(BaseScenario):
+    class ScenarioWithBrainMaterial(Scenario2D):
         material_layers = ["brain"]
         material_properties = {}
 
@@ -79,7 +72,7 @@ def test_material_absorption_is_calculated():
 def test_unknown_material_without_properties():
     """Test that an unknown material without properties raises an error."""
 
-    class ScenarioWithCustomMaterial(BaseScenario):
+    class ScenarioWithCustomMaterial(Scenario2D):
         material_layers = ["unknown_material"]
         material_properties = {}
 
