@@ -38,8 +38,8 @@ s2 = ndk.sources.FocusedSource2D(
     delay=5.1e-6,
 )
 
-scenario.add_source(s1)
-scenario.add_source(s2)
+scenario.sources = [s1, s2]
+scenario.compile_problem(center_frequency=5e5)
 result = scenario.simulate_pulse()
 assert isinstance(result, ndk.results.PulsedResult2D)
 result.render_pulsed_simulation_animation()
