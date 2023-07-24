@@ -10,6 +10,16 @@ jobs:
     permissions:
       contents: read
       pull-requests: write
+    if: >
+      ${{
+        !(
+          github.event.label.name == 'release:patch' ||
+          github.event.label.name == 'release:minor' ||
+          github.event.label.name == 'release:major' ||
+          github.event.label.name == 'norelease' ||
+          github.event.label.name == 'label_review'
+        )
+      }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/labeler@v4
