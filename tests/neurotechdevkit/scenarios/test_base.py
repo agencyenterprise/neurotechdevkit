@@ -4,7 +4,6 @@ import numpy as np
 import numpy.typing as npt
 import pytest
 import stride
-from frozenlist import FrozenList
 
 from neurotechdevkit.results import PulsedResult, SteadyStateResult
 from neurotechdevkit.scenarios._base import Scenario, Target
@@ -15,7 +14,7 @@ from neurotechdevkit.sources import FocusedSource3D, PlanarSource3D, Source
 class ScenarioBaseTester(Scenario):
     """A class which can be used to test attributes and methods of Scenario."""
 
-    _SCENARIO_ID = "scenario-tester"
+    scenario_id = "scenario-tester"
     _TARGET_OPTIONS = {
         "target_1": Target(
             target_id="target_1",
@@ -31,25 +30,23 @@ class ScenarioBaseTester(Scenario):
         ),
     }
     material_layers = ["brain", "skin"]
+    material_properties = {}
 
-    default_source = PlanarSource3D(
-        position=np.array([0.05, 0.1, 0.05]),
-        direction=np.array([0.0, 0.0, 1.0]),
-        aperture=0.05,
-        num_points=123,
-    )
-
-    def __init__(self, complexity="fast"):
-        self._target_id = "target_1"
-        self._problem = self._compile_problem(center_frequency=5e5)
-        super().__init__(
-            origin=np.array([-0.1, -0.1, 0.0]),
-            complexity=complexity,
+    sources = [
+        PlanarSource3D(
+            position=np.array([0.05, 0.1, 0.05]),
+            direction=np.array([0.0, 0.0, 1.0]),
+            aperture=0.05,
+            num_points=123,
         )
+    ]
+    origin = np.array([-0.1, -0.1, 0.0])
 
-    @property
-    def _material_outline_upsample_factor(self) -> int:
-        return 3
+    def __init__(self):
+        self.problem = self._compile_problem(center_frequency=5e5)
+        super().__init__(
+            scenario_id=self.scenario_id, material_outline_upsample_factor=3
+        )
 
     def _compile_problem(self, center_frequency: float) -> stride.Problem:
         extent = np.array([2.0, 3.0, 4.0])
@@ -134,97 +131,6 @@ def tester_with_layers(base_tester):
     return base_tester
 
 
-def test_add_source(base_tester, a_source):
-    """With no existing sources, add_source should add the source to the scenario."""
-    base_tester.add_source(a_source)
-    assert len(base_tester.sources) == 1
-    assert base_tester.sources[0] == a_source
-
-
-def test_add_source_can_add_multiple_sources(base_tester, a_source):
-    """add_source should not let the user add more than one source."""
-    base_tester.add_source(base_tester.get_default_source())
-    base_tester.add_source(a_source)
-    assert base_tester.sources == [base_tester.default_source, a_source]
-
-
-def test_sources_cannot_replace_list(base_tester):
-    """It should not be possible to replace the sources list."""
-    with pytest.raises(AttributeError):
-        base_tester.sources = []
-
-
-def test_sources_can_be_mutated(base_tester):
-    """Verify that the sources list can be mutated.
-
-    We should be able to:
-    append, extend, replace, delete, insert, and remove sources.
-
-    We are substituting actual source objects with strings to avoid a large amount of
-    setup overhead.
-    """
-    base_tester.sources.append("source1")
-    base_tester.sources.extend(["source2", "source3", "source4"])
-    base_tester.sources[1] = "source5"
-    del base_tester.sources[0]
-    base_tester.sources.insert(1, "source6")
-    base_tester.sources.remove("source3")
-    assert list(base_tester.sources) == ["source5", "source6", "source4"]
-
-
-def test_sources_returns_a_frozenlist(base_tester, a_source):
-    """Sources property returns a frozenlist to allow for list freezing."""
-    base_tester.sources.append(a_source)
-    assert isinstance(base_tester.sources, FrozenList)
-
-
-def test_ensure_source_with_no_existing_sources(base_tester):
-    """_ensure_source should add the default source if no sources exist."""
-    base_tester._ensure_source()
-    assert len(base_tester.sources) == 1
-    assert base_tester.sources[0] == base_tester.default_source
-
-
-def test_ensure_source_with_existing_source(base_tester, a_source):
-    """_ensure_source should not add a source if sources already exist."""
-    base_tester.add_source(a_source)
-    base_tester._ensure_source()
-    assert len(base_tester.sources) == 1
-    assert base_tester.sources[0] == a_source
-
-
-def test_sources_can_remove_default(base_tester):
-    """Verify that we can remove the default source after it is added."""
-    base_tester._ensure_source()
-    del base_tester.sources[0]
-    assert len(base_tester.sources) == 0
-
-
-def test_freeze_sources(base_tester, a_source):
-    """Verify that calling _freeze_sources prevents sources from being modified."""
-    base_tester.add_source(a_source)
-    base_tester.sources.append(base_tester.get_default_source())
-    base_tester._freeze_sources()
-    with pytest.raises(RuntimeError):
-        del base_tester.sources[0]
-    with pytest.raises(RuntimeError):
-        base_tester.sources[0] = "another_source"
-    with pytest.raises(RuntimeError):
-        base_tester.sources.append("another_source")
-
-
-def test_freeze_sources_is_idempotent(base_tester, a_source):
-    """_freeze_sources can be called twice with no error.
-
-    And after the second call, sources should still be frozen.
-    """
-    base_tester.add_source(a_source)
-    base_tester._freeze_sources()
-    base_tester._freeze_sources()
-    with pytest.raises(RuntimeError):
-        del base_tester.sources[0]
-
-
 @pytest.mark.parametrize("sim_mode", ["steady-state", "pulsed"])
 def test_setup_shot_sources_locations(tester_with_time, a_source, sim_mode):
     """The shot should add the sources to the problem and itself.
@@ -296,7 +202,6 @@ def test_setup_sub_problem(tester_with_time, sim_mode):
     sub-problem.
     """
     problem = tester_with_time.problem
-    assert len(tester_with_time.sources) == 0
     assert problem.acquisitions.num_shots == 0
     sub_problem = tester_with_time._setup_sub_problem(
         center_frequency=50.0, simulation_mode=sim_mode
@@ -536,55 +441,6 @@ def test_get_field_data(base_tester):
     field_value = base_tester.get_field_data("vp")
     np.testing.assert_allclose(field_value, test_field)
     assert isinstance(field_value, np.ndarray)
-
-
-def test_current_target_id(base_tester):
-    """Verify that we can set and get current_target_id."""
-    assert base_tester.current_target_id == "target_1"
-    base_tester.current_target_id = "target_2"
-    assert base_tester.current_target_id == "target_2"
-
-
-def test_current_target_id_raises_on_invalid_id(base_tester):
-    """Ensure we cannot set an invalid target_id."""
-    with pytest.raises(ValueError):
-        base_tester.current_target_id = "not_a_target"
-
-
-def test_target_center(base_tester):
-    """The target_center property should reflect the current target_id."""
-    np.testing.assert_equal(
-        base_tester.target_center, base_tester._TARGET_OPTIONS["target_1"].center
-    )
-    base_tester.current_target_id = "target_2"
-    np.testing.assert_equal(
-        base_tester.target_center, base_tester._TARGET_OPTIONS["target_2"].center
-    )
-
-
-def test_target_radius(base_tester):
-    """The target_radius property should reflect the current target_id."""
-    np.testing.assert_equal(
-        base_tester.target_radius, base_tester._TARGET_OPTIONS["target_1"].radius
-    )
-    base_tester.current_target_id = "target_2"
-    np.testing.assert_equal(
-        base_tester.target_radius, base_tester._TARGET_OPTIONS["target_2"].radius
-    )
-
-
-def test_target_options(base_tester):
-    """Verify that target_options lists options and and their description."""
-    options = base_tester.target_options
-    assert set(options.keys()) == {"target_1", "target_2"}
-    assert options["target_1"] == base_tester._TARGET_OPTIONS["target_1"].description
-    assert options["target_2"] == base_tester._TARGET_OPTIONS["target_2"].description
-
-
-def test_target(base_tester):
-    """Verify that the target property returns the current Target object."""
-    target = base_tester.target
-    assert target is base_tester._TARGET_OPTIONS["target_1"]
 
 
 @pytest.mark.parametrize(

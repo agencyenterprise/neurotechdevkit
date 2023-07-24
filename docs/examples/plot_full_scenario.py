@@ -34,7 +34,8 @@ class FullScenario(Scenario2D):
     https://asa.scitation.org/doi/pdf/10.1121/10.0013426
     """
 
-    _SCENARIO_ID = "the_id_for_this_scenario"
+    scenario_id = "the_id_for_this_scenario"
+    material_properties = {}
 
     """
     Target attributes:
@@ -43,9 +44,7 @@ class FullScenario(Scenario2D):
         radius: the radius of the target (in meters).
         description: a text describing the target.
     """
-    _TARGET_OPTIONS = {
-        "target_1": Target("target_1", np.array([0.064, 0.0]), 0.004, ""),
-    }
+    target = Target("target_1", np.array([0.064, 0.0]), 0.004, "")
 
     """
     The order of returned materials defines the layering of the scenario.
@@ -57,29 +56,21 @@ class FullScenario(Scenario2D):
         "trabecular_bone",
         "brain",
     ]
-
-    def __init__(self, complexity="fast"):
-        """
-        Instantiate a new scenario.
-        The origin defines the spatial coordinates of grid position (0, 0, 0).
-        """
-        self._target_id = "target_1"
-
-        super().__init__(
-            origin=np.array([0.0, -0.035]),
-            complexity=complexity,
+    origin = np.array([0.0, -0.035])
+    sources = [
+        sources.FocusedSource2D(
+            position=np.array([0.0, 0.0]),
+            direction=np.array([1.0, 0.0]),
+            aperture=0.064,
+            focal_length=0.064,
+            num_points=1000,
         )
+    ]
 
-    @property
-    def _material_outline_upsample_factor(self) -> int:
-        """
-        The factor to use when upsampling the material field before
-        detecting transitions between materials. If the factor is N, then each pixel
-        will be split into N^2 pixels. Defaults to 1 (no resampling).
-        """
-        return 8
+    def __init__(self, scenario_id: str, material_outline_upsample_factor: int = 8):
+        super().__init__(scenario_id, material_outline_upsample_factor)
 
-    def _compile_problem(self, center_frequency) -> stride.Problem:
+    def compile_problem(self, center_frequency) -> stride.Problem:
         """The problem definition for the scenario."""
         extent = np.array([0.12, 0.07])  # m
         # scenario constants
@@ -92,10 +83,8 @@ class FullScenario(Scenario2D):
         dx = speed_water / center_frequency / ppw  # m
 
         grid = make_grid(extent=extent, dx=dx)
-        problem = stride.Problem(
-            name=f"{self.scenario_id}-{self.complexity}", grid=grid
-        )
-        problem = add_material_fields_to_problem(
+        problem = stride.Problem(name=f"{self.scenario_id}", grid=grid)
+        self.problem = add_material_fields_to_problem(
             problem=problem,
             materials=self.get_materials(center_frequency),
             layer_ids=self.layer_ids,
@@ -104,17 +93,7 @@ class FullScenario(Scenario2D):
                 for name in self.material_layers
             },
         )
-        return problem
-
-    def get_default_source(self) -> sources.Source:
-        """The transducer source for the scenario."""
-        return sources.FocusedSource2D(
-            position=np.array([0.0, 0.0]),
-            direction=np.array([1.0, 0.0]),
-            aperture=0.064,
-            focal_length=0.064,
-            num_points=1000,
-        )
+        return self.problem
 
 
 def _create_scenario_1_mask(material, grid):
@@ -170,7 +149,7 @@ def _fill_mask(mask, start, end, dx):
 
 # %%
 # ## Creating the scenario
-scenario = FullScenario()
+scenario = FullScenario(FullScenario.scenario_id)
 
 # %%
 # ## Rendering the scenario layout

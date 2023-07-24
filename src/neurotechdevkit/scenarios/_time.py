@@ -4,7 +4,6 @@ from typing import Mapping
 
 import numpy as np
 import stride
-from frozenlist import FrozenList
 from mosaic.types import Struct
 
 
@@ -103,7 +102,7 @@ def create_time_grid(*, freq_hz: float, ppp: int, sim_time: float) -> stride.Tim
     return stride.Time(start=t_min, stop=sim_time, step=dt)
 
 
-def find_largest_delay_in_sources(sources: FrozenList) -> float:
+def find_largest_delay_in_sources(sources) -> float:
     """Find the largest delay (in seconds) among all sources.
 
     Args:

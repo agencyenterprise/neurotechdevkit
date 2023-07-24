@@ -29,7 +29,7 @@ class ScenarioNotFoundError(Exception):
     pass
 
 
-def make(scenario_id: str, complexity: str = "fast") -> scenarios.Scenario:
+def make(scenario_id: str) -> scenarios.Scenario:
     """
     Initialize a scenario and return an object which represents the simulation.
 
@@ -37,11 +37,11 @@ def make(scenario_id: str, complexity: str = "fast") -> scenarios.Scenario:
         scenario_id (str): the id of the scenario to load. Supported
             scenarios are:
 
-            - [Scenario 0][neurotechdevkit.scenarios.Scenario0._SCENARIO_ID]
-            - [Scenario 1 2D][neurotechdevkit.scenarios.Scenario1_2D._SCENARIO_ID]
-            - [Scenario 1 3D][neurotechdevkit.scenarios.Scenario1_3D._SCENARIO_ID]
-            - [Scenario 2 2D][neurotechdevkit.scenarios.Scenario2_2D._SCENARIO_ID]
-            - [Scenario 2 3D][neurotechdevkit.scenarios.Scenario2_3D._SCENARIO_ID]
+            - [Scenario 0][neurotechdevkit.scenarios.Scenario0.scenario_id]
+            - [Scenario 1 2D][neurotechdevkit.scenarios.Scenario1_2D.scenario_id]
+            - [Scenario 1 3D][neurotechdevkit.scenarios.Scenario1_3D.scenario_id]
+            - [Scenario 2 2D][neurotechdevkit.scenarios.Scenario2_2D.scenario_id]
+            - [Scenario 2 3D][neurotechdevkit.scenarios.Scenario2_3D.scenario_id]
 
         complexity (str, optional): allow the user to choose from a few
             pre-selected options for parameters such as PPP and PPW that
@@ -60,13 +60,13 @@ def make(scenario_id: str, complexity: str = "fast") -> scenarios.Scenario:
             f"Scenario '{scenario_id}' does not exist. Please refer to documentation"
             " for the list of provided scenarios."
         )
-    return _scenario_map[scenario_id](complexity=complexity)  # type: ignore
+    return _scenario_map[scenario_id](scenario_id=scenario_id)  # type: ignore
 
 
 _scenario_map = {
-    scenarios.Scenario0._SCENARIO_ID: scenarios.Scenario0,
-    scenarios.Scenario1_2D._SCENARIO_ID: scenarios.Scenario1_2D,
-    scenarios.Scenario1_3D._SCENARIO_ID: scenarios.Scenario1_3D,
-    scenarios.Scenario2_2D._SCENARIO_ID: scenarios.Scenario2_2D,
-    scenarios.Scenario2_3D._SCENARIO_ID: scenarios.Scenario2_3D,
+    scenarios.Scenario0.scenario_id: scenarios.Scenario0,
+    scenarios.Scenario1_2D.scenario_id: scenarios.Scenario1_2D,
+    scenarios.Scenario1_3D.scenario_id: scenarios.Scenario1_3D,
+    scenarios.Scenario2_2D.scenario_id: scenarios.Scenario2_2D,
+    scenarios.Scenario2_3D.scenario_id: scenarios.Scenario2_3D,
 }

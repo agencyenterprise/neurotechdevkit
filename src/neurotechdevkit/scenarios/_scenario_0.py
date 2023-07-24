@@ -15,15 +15,23 @@ from ._utils import (
 class Scenario0(Scenario2D):
     """Scenario 0."""
 
-    _SCENARIO_ID = "scenario-0-v0"
-    _TARGET_OPTIONS = {
-        "target_1": Target(
-            target_id="target_1",
-            center=np.array([0.0285, 0.0024]),
-            radius=0.0017,
-            description="Represents a simulated tumor.",
-        ),
-    }
+    scenario_id = "scenario-0-v0"
+    target = Target(
+        target_id="target_1",
+        center=np.array([0.0285, 0.0024]),
+        radius=0.0017,
+        description="Represents a simulated tumor.",
+    )
+    sources = [
+        FocusedSource2D(
+            position=np.array([0.01, 0.0]),
+            direction=np.array([1.0, 0.0]),
+            aperture=0.01,
+            focal_length=0.01,
+            num_points=1000,
+        )
+    ]
+    origin = np.array([0.0, -0.02])
     material_layers = [
         "water",
         "cortical_bone",
@@ -39,28 +47,23 @@ class Scenario0(Scenario2D):
         "tumor": Material(vp=1650.0, rho=1150.0, alpha=0.8, render_color="#94332F"),
     }
 
-    def __init__(self, complexity="fast"):
-        """Create a new instance of scenario 0."""
-        self._target_id = "target_1"
-
-        super().__init__(
-            origin=np.array([0.0, -0.02]),
-            complexity=complexity,
-        )
-
-    @property
-    def _material_outline_upsample_factor(self) -> int:
-        return 16
-
     def _get_material_masks(self, problem):
         return {
-            name: _create_scenario_0_mask(name, problem.grid, self._origin)
+            name: _create_scenario_0_mask(name, problem.grid, self.origin)
             for name in self.material_layers
         }
 
-    def _compile_problem(self, center_frequency: float) -> stride.Problem:
+    def compile_problem(self, center_frequency: float) -> stride.Problem:
+        """
+        Compile the problem for scenario 0.
+
+        Args:
+            center_frequency (float): the center frequency of the transducer
+
+        Returns:
+            stride.Problem: the compiled problem
+        """
         extent = np.array([0.05, 0.04])  # m
-        origin = self.origin  # m
 
         # scenario constants
         speed_water = 1500  # m/s
@@ -71,28 +74,15 @@ class Scenario0(Scenario2D):
         # compute resolution
         dx = speed_water / center_frequency / ppw  # m
 
-        grid = make_grid(extent=extent, dx=dx)
-        self._origin = origin
-        problem = stride.Problem(
-            name=f"{self.scenario_id}-{self.complexity}", grid=grid
-        )
-        problem = add_material_fields_to_problem(
-            problem=problem,
+        self.grid = make_grid(extent=extent, dx=dx)
+        self.problem = stride.Problem(name=f"{self.scenario_id}", grid=self.grid)
+        self.problem = add_material_fields_to_problem(
+            problem=self.problem,
             materials=self.get_materials(center_frequency),
             layer_ids=self.layer_ids,
-            masks=self._get_material_masks(problem),
+            masks=self._get_material_masks(self.problem),
         )
-        return problem
-
-    def get_default_source(self):
-        """Return the default source for the scenario."""
-        return FocusedSource2D(
-            position=np.array([0.01, 0.0]),
-            direction=np.array([1.0, 0.0]),
-            aperture=0.01,
-            focal_length=0.01,
-            num_points=1000,
-        )
+        return self.problem
 
 
 def _create_scenario_0_mask(material, grid, origin):

@@ -44,10 +44,6 @@ class Scenario1(Scenario):
         "brain": Material(vp=1560.0, rho=1040.0, alpha=0.3, render_color="#DB504A"),
     }
 
-    @property
-    def _material_outline_upsample_factor(self) -> int:
-        return 8
-
     def _get_material_masks(
         self, problem: stride.Problem
     ) -> Mapping[str, npt.NDArray[np.bool_]]:
@@ -69,9 +65,7 @@ class Scenario1(Scenario):
         dx = speed_water / center_frequency / ppw  # m
 
         grid = make_grid(extent=extent, dx=dx)
-        problem = stride.Problem(
-            name=f"{self.scenario_id}-{self.complexity}", grid=grid
-        )
+        problem = stride.Problem(name=f"{self.scenario_id}", grid=grid)
         problem = add_material_fields_to_problem(
             problem=problem,
             materials=self.get_materials(center_frequency),
@@ -94,33 +88,39 @@ class Scenario1_2D(Scenario1, Scenario2D):
         https://asa.scitation.org/doi/pdf/10.1121/10.0013426
     """
 
-    _SCENARIO_ID = "scenario-1-2d-v0"
-    _TARGET_OPTIONS = {
-        "target_1": Target("target_1", np.array([0.064, 0.0]), 0.004, ""),
-    }
-
-    def __init__(self, complexity="fast"):
-        """Instantiate a new scenario 1 2D."""
-        self._target_id = "target_1"
-
-        super().__init__(
-            origin=np.array([0.0, -0.035]),
-            complexity=complexity,
-        )
-
-    def _compile_problem(self, center_frequency: float) -> stride.Problem:
-        extent = np.array([0.12, 0.07])  # m
-        return self._compile_scenario_1_problem(extent, center_frequency)
-
-    def get_default_source(self) -> sources.Source:
-        """Return the default source for the scenario."""
-        return sources.FocusedSource2D(
+    scenario_id = "scenario-1-2d-v0"
+    target = Target("target_1", np.array([0.064, 0.0]), 0.004, "")
+    sources = [
+        sources.FocusedSource2D(
             position=np.array([0.0, 0.0]),
             direction=np.array([1.0, 0.0]),
             aperture=0.064,
             focal_length=0.064,
             num_points=1000,
         )
+    ]
+    origin = np.array([0.0, -0.035])
+
+    def __init__(self, scenario_id: str, material_outline_upsample_factor: int = 8):
+        """Instantiate Scenario1 with overwritten material_outline_upsample_factor."""
+        super().__init__(
+            scenario_id=scenario_id,
+            material_outline_upsample_factor=material_outline_upsample_factor,
+        )
+
+    def compile_problem(self, center_frequency: float) -> stride.Problem:
+        """
+        Compile the problem for scenario 1.
+
+        Args:
+            center_frequency (float): the center frequency of the transducer
+
+        Returns:
+            stride.Problem: the compiled problem
+        """
+        extent = np.array([0.12, 0.07])  # m
+        self.problem = self._compile_scenario_1_problem(extent, center_frequency)
+        return self.problem
 
 
 class Scenario1_3D(Scenario1, Scenario3D):
@@ -136,77 +136,66 @@ class Scenario1_3D(Scenario1, Scenario3D):
         https://asa.scitation.org/doi/pdf/10.1121/10.0013426
     """
 
-    _SCENARIO_ID = "scenario-1-3d-v0"
-    _TARGET_OPTIONS = {
-        "target_1": Target(
-            target_id="target_1",
-            center=np.array([0.064, 0.0, 0.0]),
-            radius=0.004,
-            description=(
-                "A centered location below the skull at approximately the focal point."
-            ),
+    scenario_id = "scenario-1-3d-v0"
+    target = Target(
+        target_id="target_1",
+        center=np.array([0.064, 0.0, 0.0]),
+        radius=0.004,
+        description=(
+            "A centered location below the skull at approximately the focal point."
         ),
-        "target_2": Target(
-            target_id="target_2",
-            center=np.array([0.09, 0.01, -0.01]),
-            radius=0.006,
-            description=("An off-center location below the skull."),
-        ),
-    }
-
-    def __init__(self, complexity="fast"):
-        """Instantiate a new scenario 1 3D."""
-        self._target_id = "target_1"
-
-        super().__init__(
-            origin=np.array([0.0, -0.035, -0.035]),
-            complexity=complexity,
-        )
-
-    @property
-    def viewer_config_3d(self) -> rendering.ViewerConfig3D:
-        """Return the default viewer configuration for the scenario."""
-        return rendering.ViewerConfig3D(
-            init_angles=(-15, 45, 160),
-            init_zoom=3.0,
-            colormaps={
-                "water": "blue",
-                "skin": "viridis",
-                "cortical_bone": "magma",
-                "trabecular_bone": "inferno",
-                "brain": "bop orange",
-            },
-            opacities={
-                "water": 0.8,
-                "skin": 0.2,
-                "cortical_bone": 0.2,
-                "trabecular_bone": 0.2,
-                "brain": 0.4,
-            },
-        )
-
-    def get_default_slice_axis(self) -> int:
-        """Return the default slice axis for the scenario."""
-        return 1
-
-    def get_default_slice_position(self, axis: int) -> float:
-        """Return the default slice position for the scenario."""
-        default_positions = np.array([0.064, 0.0, 0.0])
-        return default_positions[axis]
-
-    def _compile_problem(self, center_frequency: float) -> stride.Problem:
-        extent = np.array([0.12, 0.07, 0.07])  # m
-        return self._compile_scenario_1_problem(extent, center_frequency)
-
-    def get_default_source(self) -> sources.Source:
-        """Return the default source for the scenario."""
-        return sources.FocusedSource3D(
+    )
+    origin = np.array([0.0, -0.035, -0.035])
+    sources = [
+        sources.FocusedSource3D(
             position=np.array([0.0, 0.0, 0.0]),
             direction=np.array([1.0, 0.0, 0.0]),
             aperture=0.064,
             focal_length=0.064,
             num_points=20_000,
         )
+    ]
+    viewer_config_3d = rendering.ViewerConfig3D(
+        init_angles=(-15, 45, 160),
+        init_zoom=3.0,
+        colormaps={
+            "water": "blue",
+            "skin": "viridis",
+            "cortical_bone": "magma",
+            "trabecular_bone": "inferno",
+            "brain": "bop orange",
+        },
+        opacities={
+            "water": 0.8,
+            "skin": 0.2,
+            "cortical_bone": 0.2,
+            "trabecular_bone": 0.2,
+            "brain": 0.4,
+        },
+    )
+    slice_axis = 1
+    slice_position = 0.0
+
+    def __init__(self, scenario_id, material_outline_upsample_factor: int = 8):
+        """Instantiate Scenario1 with overwritten material_outline_upsample_factor."""
+        super().__init__(
+            scenario_id=scenario_id,
+            material_outline_upsample_factor=material_outline_upsample_factor,
+        )
+
+    def compile_problem(self, center_frequency: float) -> stride.Problem:
+        """
+        Compile the problem for scenario 1.
+
+        Args:
+            center_frequency (float): the center frequency of the transducer
+
+        Returns:
+            stride.Problem: the compiled problem
+        """
+        extent = np.array([0.12, 0.07, 0.07])  # m
+        self.problem = self._compile_scenario_1_problem(extent, center_frequency)
+        return self.problem
 
 
 def _create_scenario_1_mask(material, grid):

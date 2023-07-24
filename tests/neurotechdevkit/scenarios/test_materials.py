@@ -1,9 +1,8 @@
-import numpy as np
 import pytest
 from mosaic.types import Struct
 
 from neurotechdevkit.materials import Material
-from neurotechdevkit.scenarios import Scenario
+from neurotechdevkit.scenarios import Scenario2D
 
 
 def compare_structs(struct1: Struct, struct2: Struct):
@@ -14,30 +13,11 @@ def compare_structs(struct1: Struct, struct2: Struct):
     assert struct1.render_color == struct2.render_color
 
 
-class BaseScenario(Scenario):
+class BaseScenario(Scenario2D):
     """A scenario for testing the materials module."""
 
-    _SCENARIO_ID = "scenario-tester"
-    _TARGET_OPTIONS = {}
-
-    def __init__(self, complexity="fast"):
-        self._target_id = "target_1"
-        super().__init__(
-            origin=np.array([-0.1, -0.1, 0.0]),
-            complexity=complexity,
-        )
-
-    def _compile_problem(self, center_frequency: float):
-        pass
-
-    def _material_outline_upsample_factor(self):
-        pass
-
-    def get_default_source(self):
-        pass
-
-    def get_target_mask(self):
-        pass
+    def __init__(self):
+        super().__init__(scenario_id="test", material_outline_upsample_factor=16)
 
 
 def test_custom_material_property():
@@ -86,6 +66,7 @@ def test_material_absorption_is_calculated():
 
     class ScenarioWithBrainMaterial(BaseScenario):
         material_layers = ["brain"]
+        material_properties = {}
 
     scenario = ScenarioWithBrainMaterial()
 
@@ -100,6 +81,7 @@ def test_unknown_material_without_properties():
 
     class ScenarioWithCustomMaterial(BaseScenario):
         material_layers = ["unknown_material"]
+        material_properties = {}
 
     scenario = ScenarioWithCustomMaterial()
     with pytest.raises(ValueError):
