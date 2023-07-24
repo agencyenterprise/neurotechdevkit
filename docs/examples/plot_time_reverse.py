@@ -115,10 +115,12 @@ plt.ylabel("delay [s]")
 
 # %%
 # Visually inspecting the earlier scenario layout, these results seem reasonable.
-# The expected delay $$t_d$$ is approximately:
+# The expected delay \(t_d\) is approximately:
 #
-# $$t_d \approx \frac{||x_{source} - x_{target}||_2}{c_{water}} \approx \
-# \frac{0.07 \text{ m}}{1500 \text{ m/s}} \approx 47 \mu s$$
+# $$
+# t_d \approx \frac{||x_{source} - x_{target}||_2}{c_{water}} \approx
+# \frac{0.07 \text{ m}}{1500 \text{ m/s}} \approx 47 \mu s
+# $$
 #
 
 
