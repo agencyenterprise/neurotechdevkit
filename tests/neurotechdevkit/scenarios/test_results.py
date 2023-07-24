@@ -108,7 +108,7 @@ def pulsed_data_2d():
 @pytest.fixture
 def a_test_scenario_2d():
     """A real 2D scenario that can be saved to disk and reloaded."""
-    scenario = scenarios.Scenario1_2D(scenario_id=scenarios.Scenario1_2D.scenario_id)
+    scenario = scenarios.Scenario1_2D()
     scenario.add_source(
         sources.FocusedSource2D(
             position=np.array([0.02, 0.02]),
@@ -125,7 +125,7 @@ def a_test_scenario_2d():
 @pytest.fixture
 def a_test_scenario_3d():
     """A real 3D scenario that can be saved to disk and reloaded."""
-    scenario = scenarios.Scenario1_3D(scenario_id=scenarios.Scenario1_3D.scenario_id)
+    scenario = scenarios.Scenario1_3D()
     scenario.add_source(
         sources.FocusedSource3D(
             position=np.array([0.02, 0.02, 0.0]),

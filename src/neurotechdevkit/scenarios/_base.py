@@ -75,25 +75,9 @@ class Scenario(abc.ABC):
     target: Target
 
     scenario_id: str
-    material_outline_upsample_factor: int
     slice_axis: int
     slice_position: float
-
-    def __init__(
-        self,
-        scenario_id: str,
-        material_outline_upsample_factor: int = 16,
-    ):
-        """
-        Initialize a new scenario.
-
-        Args:
-            scenario_id (str): An identifier for the scenario.
-            material_outline_upsample_factor (int, optional): The factor by which to
-                upsample the material outline. Defaults to 16.
-        """
-        self.scenario_id = scenario_id
-        self.material_outline_upsample_factor = material_outline_upsample_factor
+    material_outline_upsample_factor: int = 16
 
     def render_layout(
         self,

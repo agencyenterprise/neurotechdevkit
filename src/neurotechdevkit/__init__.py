@@ -60,7 +60,7 @@ def make(scenario_id: str) -> scenarios.Scenario:
             f"Scenario '{scenario_id}' does not exist. Please refer to documentation"
             " for the list of provided scenarios."
         )
-    return _scenario_map[scenario_id](scenario_id=scenario_id)  # type: ignore
+    return _scenario_map[scenario_id]()  # type: ignore
 
 
 _scenario_map = {

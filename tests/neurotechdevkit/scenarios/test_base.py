@@ -44,9 +44,6 @@ class ScenarioBaseTester(Scenario):
 
     def __init__(self):
         self.problem = self._compile_problem(center_frequency=5e5)
-        super().__init__(
-            scenario_id=self.scenario_id, material_outline_upsample_factor=3
-        )
 
     def _compile_problem(self, center_frequency: float) -> stride.Problem:
         extent = np.array([2.0, 3.0, 4.0])
