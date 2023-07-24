@@ -40,7 +40,9 @@ source = ndk.sources.FocusedSource2D(
 )
 
 scenario = ndk.make("scenario-0-v0")
+scenario.sources.clear()
 scenario.add_source(source)
+scenario.compile_problem(center_frequency=5e5)
 result = scenario.simulate_steady_state()
 assert isinstance(result, ndk.results.SteadyStateResult2D)
 result.render_steady_state_amplitudes()

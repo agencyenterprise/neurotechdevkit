@@ -56,6 +56,7 @@ class FullScenario(Scenario2D):
         "trabecular_bone",
         "brain",
     ]
+    material_properties = {}
     origin = np.array([0.0, -0.035])
     sources = [
         sources.FocusedSource2D(
