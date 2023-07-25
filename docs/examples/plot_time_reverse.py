@@ -157,7 +157,7 @@ steady_state_result.render_steady_state_amplitudes()
 
 # %%
 # We want to visualize and find the maximum pressure within the brain, so let's
-# mask out everythig else.
+# mask out everything else.
 steady_state_pressure = steady_state_result.get_steady_state()
 # Only consider the brain region
 steady_state_pressure[~true_scenario.get_layer_mask("brain")] = np.nan
@@ -174,10 +174,12 @@ max_pressure_idx = np.unravel_index(max_pressure_flat_idx, steady_state_pressure
 max_pressure_idx
 
 grid = steady_state_result.traces.grid.space.grid
-focal_point = np.array([
-    grid[0][max_pressure_idx[0]],
-    grid[1][max_pressure_idx[1]],
-])
+focal_point = np.array(
+    [
+        grid[0][max_pressure_idx[0]],
+        grid[1][max_pressure_idx[1]],
+    ]
+)
 # The backend grid is in different coordinates from the scenario grid, so we
 # need to shift it.
 focal_point += true_scenario.origin
