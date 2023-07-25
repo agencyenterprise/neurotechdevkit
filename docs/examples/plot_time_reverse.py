@@ -5,13 +5,12 @@ Time-reverse simulation for phased array
 
 The skull adds aberrations to the beam propagation; phased arrays can compensate
 for those by having different delays for each element, but estimating these
-delays can be challenging. One method shared by Sergio Jiménez-Gambín and
-Samuel Blackman is to run a "time reverse" simulation to calculate the
-necessary delays.
-
-This notebook shows an example of a "time reverse" simulation. The notebook
-sets up a scenario with a phased array source and a target and then runs
-a simulation with the source and target reversed to calculate the delays.
+delays can be challenging.
+One method to estimate the delays is a "time reverse" simulation:
+https://koreascience.kr/article/JAKO200612242715181.pdf
+This notebook demonstrates the "time reverse" method to estimate the delays. The
+notebook sets up a scenario with a phased array source and a target and then
+runs a simulation with the source and target reversed to calculate the delays.
 Finally, it uses the calculated delays to perform a forward-time simulation.
 
 Note: In this notebook, we refer to the "true" target as the eventual brain
@@ -157,7 +156,13 @@ steady_state_result.render_steady_state_amplitudes()
 
 
 # %%
-# ## Future directions for improvement
+# ## Reasons for target mismatch
 # The time-reverse simulation is not an exact solution for the forward-time
 # design. Other factors, like the angle of incidence at the boundary of two
 # materials, will be different in the time reverse vs forward-time.
+
+
+# %%
+# ### Acknowledgments
+# Thanks to Sergio Jiménez-Gambín and Samuel Blackman for pointing us to the
+# "time reverse" simulation method.
