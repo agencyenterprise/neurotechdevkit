@@ -26,17 +26,17 @@ from typing import Mapping
 import numpy as np
 import numpy.typing as npt
 import stride
-from mosaic.types import Struct
 
 from neurotechdevkit import sources
-from neurotechdevkit.scenarios import ct_loader
+from neurotechdevkit.results import SteadyStateResult2D
 from neurotechdevkit.scenarios import (
     Scenario2D,
     Target,
     add_material_fields_to_problem,
+    ct_loader,
     make_grid,
-    materials,
 )
+
 
 # The following code is based on NDK's Scenario 2 implementation.
 class ScenarioWithMasksFromCTScan(Scenario2D):
@@ -49,6 +49,7 @@ class ScenarioWithMasksFromCTScan(Scenario2D):
             description="description",
         ),
     }
+    material_layers = ["water", "trabecular_bone", "brain"]
 
     def __init__(self, complexity="fast"):
         self._target_id = "primary-visual-cortex"
@@ -59,18 +60,10 @@ class ScenarioWithMasksFromCTScan(Scenario2D):
         )
 
     @property
-    def _material_layers(self) -> list[tuple[str, Struct]]:
-        return [
-            ("water", materials.water),
-            ("skull", materials.cortical_bone),
-            ("brain", materials.brain),
-        ]
-
-    @property
     def _material_outline_upsample_factor(self) -> int:
         return 4
 
-    def _compile_problem(self) -> stride.Problem:
+    def _compile_problem(self, center_frequency) -> stride.Problem:
         extent = np.array([0.225, 0.170])  # m
         speed_water = 1500  # m/s
         c_freq = 500e3  # hz
@@ -87,7 +80,7 @@ class ScenarioWithMasksFromCTScan(Scenario2D):
         )
         problem = add_material_fields_to_problem(
             problem=problem,
-            materials=self.materials,
+            materials=self.get_materials(center_frequency),
             layer_ids=self.layer_ids,
             masks=self._get_material_masks(),
         )
@@ -96,7 +89,7 @@ class ScenarioWithMasksFromCTScan(Scenario2D):
     def _get_material_masks(self) -> Mapping[str, npt.NDArray[np.bool_]]:
         return {
             name: self._create_scenario_2_mask(name, convert_2d=True)
-            for name in self.materials.keys()
+            for name in self.material_layers
         }
 
     def get_default_source(self) -> sources.Source:
@@ -118,7 +111,7 @@ class ScenarioWithMasksFromCTScan(Scenario2D):
         data_file = cur_dir / "ID_0000ca2f6.dcm"
         skull_mask, brain_mask = ct_loader.get_masks(data_file, convert_2d)
 
-        if material == "skull":
+        if material == "trabecular_bone":
             mask = skull_mask
 
         elif material == "brain":
@@ -137,6 +130,7 @@ class ScenarioWithMasksFromCTScan(Scenario2D):
 # Running the scenario
 scenario = ScenarioWithMasksFromCTScan()
 result = scenario.simulate_steady_state()
+assert isinstance(result, SteadyStateResult2D)
 result.render_steady_state_amplitudes(show_material_outlines=True)
 
 # %%
