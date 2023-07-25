@@ -1523,6 +1523,18 @@ MarkupSafe = ">=2.0"
 i18n = ["Babel (>=2.7)"]
 
 [[package]]
+name = "joblib"
+version = "1.3.1"
+description = "Lightweight pipelining with Python functions"
+category = "main"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "joblib-1.3.1-py3-none-any.whl", hash = "sha256:89cf0529520e01b3de7ac7b74a8102c90d16d54c64b5dd98cafcd14307fdf915"},
+    {file = "joblib-1.3.1.tar.gz", hash = "sha256:1f937906df65329ba98013dc9692fe22a4c5e4a648112de500508b18a21b41e3"},
+]
+
+[[package]]
 name = "json5"
 version = "0.9.11"
 description = "A Python implementation of the JSON5 data format."
@@ -2795,34 +2807,6 @@ files = [
 ]
 
 [[package]]
-name = "opencv-python"
-version = "4.7.0.72"
-description = "Wrapper package for OpenCV python bindings."
-category = "main"
-optional = false
-python-versions = ">=3.6"
-files = [
-    {file = "opencv-python-4.7.0.72.tar.gz", hash = "sha256:3424794a711f33284581f3c1e4b071cfc827d02b99d6fd9a35391f517c453306"},
-    {file = "opencv_python-4.7.0.72-cp37-abi3-macosx_10_16_x86_64.whl", hash = "sha256:d4f8880440c433a0025d78804dda6901d1e8e541a561dda66892d90290aef881"},
-    {file = "opencv_python-4.7.0.72-cp37-abi3-macosx_11_0_arm64.whl", hash = "sha256:7a297e7651e22eb17c265ddbbc80e2ba2a8ff4f4a1696a67c45e5f5798245842"},
-    {file = "opencv_python-4.7.0.72-cp37-abi3-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:cd08343654c6b88c5a8c25bf425f8025aed2e3189b4d7306b5861d32affaf737"},
-    {file = "opencv_python-4.7.0.72-cp37-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:ebfc0a3a2f57716e709028b992e4de7fd8752105d7a768531c4f434043c6f9ff"},
-    {file = "opencv_python-4.7.0.72-cp37-abi3-win32.whl", hash = "sha256:eda115797b114fc16ca6f182b91c5d984f0015c19bec3145e55d33d708e9bae1"},
-    {file = "opencv_python-4.7.0.72-cp37-abi3-win_amd64.whl", hash = "sha256:812af57553ec1c6709060c63f6b7e9ad07ddc0f592f3ccc6d00c71e0fe0e6376"},
-]
-
-[package.dependencies]
-numpy = [
-    {version = ">=1.21.0", markers = "python_version <= \"3.9\" and platform_system == \"Darwin\" and platform_machine == \"arm64\""},
-    {version = ">=1.21.2", markers = "python_version >= \"3.10\""},
-    {version = ">=1.21.4", markers = "python_version >= \"3.10\" and platform_system == \"Darwin\""},
-    {version = ">=1.19.3", markers = "python_version >= \"3.6\" and platform_system == \"Linux\" and platform_machine == \"aarch64\" or python_version >= \"3.9\""},
-    {version = ">=1.17.0", markers = "python_version >= \"3.7\""},
-    {version = ">=1.17.3", markers = "python_version >= \"3.8\""},
-    {version = ">=1.22.0", markers = "python_version >= \"3.11\""},
-]
-
-[[package]]
 name = "packaging"
 version = "23.1"
 description = "Core utilities for Python packages"
@@ -3487,6 +3471,57 @@ files = [
 six = ">=1.5"
 
 [[package]]
+name = "python-gdcm"
+version = "3.0.22"
+description = "Grassroots DICOM runtime libraries"
+category = "main"
+optional = false
+python-versions = ">=3.6"
+files = [
+    {file = "python-gdcm-3.0.22.tar.gz", hash = "sha256:1f8dcbd58db77d001a0db8fe81def4068ec4e316dc244ca30d0a55b4d88f5209"},
+    {file = "python_gdcm-3.0.22-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:66f3edd1a3dc6c0f438ddc0f4f794ea9950e4b329b4a811f6a9b243318ba379f"},
+    {file = "python_gdcm-3.0.22-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:ec6641ad371d2dab16f7ab6babcb3686d1f92fba035c702b57d90909141ef550"},
+    {file = "python_gdcm-3.0.22-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:72bf4e7c65e41378288e08618d4b5be9c2666306ff5a867a814a99eb55b9d360"},
+    {file = "python_gdcm-3.0.22-cp310-cp310-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:cdefe3e820b73f44d9d06ab02f9aa1358405d792ed059bcce5489946d85cffa5"},
+    {file = "python_gdcm-3.0.22-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:2512c3e7b91e56432127dd598a9b80f466c99a363f8465f74642daaa9a4ad675"},
+    {file = "python_gdcm-3.0.22-cp310-cp310-win32.whl", hash = "sha256:63797aa2b3c50515363ca7327cd92b4804d240b4dec297f9b703951b73a68668"},
+    {file = "python_gdcm-3.0.22-cp310-cp310-win_amd64.whl", hash = "sha256:922e6630045d27dbd77ba5dea2578b989f04b12871dafd232a91ecc63e97751f"},
+    {file = "python_gdcm-3.0.22-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:28de2001e4d7577338510a576418ffaaa5ffe0385332acdacd832efca5aa92fe"},
+    {file = "python_gdcm-3.0.22-cp311-cp311-macosx_11_0_arm64.whl", hash = "sha256:4c590809a5c66b2a1b15495d612b3a67a3218cbe1996c22eb037b09135f7367c"},
+    {file = "python_gdcm-3.0.22-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:a3c84c7b0dce028d77f5555d9d5c0b6760658ac2b96fdece3aa72d60cb48a35f"},
+    {file = "python_gdcm-3.0.22-cp311-cp311-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:f6596c86ecd47eb76c78d8608ad91b0c457351bec1100b43ff8b742fd33230bc"},
+    {file = "python_gdcm-3.0.22-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:1012860fc982957b4bfebb9303baa816bfade904f9dd1c0b1622664971e83dd7"},
+    {file = "python_gdcm-3.0.22-cp311-cp311-win32.whl", hash = "sha256:1cac4f69663019e42f45de54fbea363c73074fcfb262048d0ec120bcb05394bf"},
+    {file = "python_gdcm-3.0.22-cp311-cp311-win_amd64.whl", hash = "sha256:dcd7e49ef8c9246921268c3cc67e31b855e4d6c90d9c0600ffb91ae9cee958a0"},
+    {file = "python_gdcm-3.0.22-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:ddebf391657d098ed94f5bbcee28727856901f0ac05d279161a11053cc4e7688"},
+    {file = "python_gdcm-3.0.22-cp36-cp36m-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:ec61bf437786c117eeec5c1c6282e8783d296c3536f8d11fd26740843b0c048c"},
+    {file = "python_gdcm-3.0.22-cp36-cp36m-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:8b13be609f307bf1b63038cfae84914cb25340798246f021c93f0ba3382673fb"},
+    {file = "python_gdcm-3.0.22-cp36-cp36m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:e1448be49ccfa9bd7b2c86264ea912d0fdd42875b6ddbab16f618e4d99568318"},
+    {file = "python_gdcm-3.0.22-cp36-cp36m-win32.whl", hash = "sha256:daa843cf4066f93861ffffdb0198e2fa4a8a56d54c8529fcf6e256f4f2046293"},
+    {file = "python_gdcm-3.0.22-cp36-cp36m-win_amd64.whl", hash = "sha256:b4eb6098368adc1d2e75d406d34347452372bafac6e9d984e949463cfd425ccc"},
+    {file = "python_gdcm-3.0.22-cp37-cp37m-macosx_10_9_x86_64.whl", hash = "sha256:b751bab3752e1df819ff48b55e873a8259c24880fa3366b85bd690538cea3635"},
+    {file = "python_gdcm-3.0.22-cp37-cp37m-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:099299f619b8c9e5d8abb1c823fc29fdf22f541ec710dff32561b7e6fda71901"},
+    {file = "python_gdcm-3.0.22-cp37-cp37m-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:c08fb3e83a1308d2b8dbf68804410d0fdcdfc8bdecb3be7db06cc970dfc461d2"},
+    {file = "python_gdcm-3.0.22-cp37-cp37m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:0fc2e2bb1706746dec168a6f4fb117f0d791dbb61cc1c93579cdc38ae744617f"},
+    {file = "python_gdcm-3.0.22-cp37-cp37m-win32.whl", hash = "sha256:99b18dd09e8f7bbb196f2342437d2440276337f5fef883c146707387e1b31a4b"},
+    {file = "python_gdcm-3.0.22-cp37-cp37m-win_amd64.whl", hash = "sha256:7ad142ba9ad5d95633e6c31094ae103566c6bbe54546182e9a4cdea27efde52f"},
+    {file = "python_gdcm-3.0.22-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:b749305c44d8781ef52cf26a1711eadd3dbe8b498d76655ee2e9d2b826ad0ab3"},
+    {file = "python_gdcm-3.0.22-cp38-cp38-macosx_11_0_arm64.whl", hash = "sha256:a6abe67ac19f82d3440c13dbd2ab0a0abfb8ec7ea99d28b81c379fae2f5c539f"},
+    {file = "python_gdcm-3.0.22-cp38-cp38-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:8f43ddfc891bd3a21871421610f4a2583e0b41d4c211829c7523df5efe1b2dfb"},
+    {file = "python_gdcm-3.0.22-cp38-cp38-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:5701a16d716b1c6fd210f0125e25166321d9c885714b6384f77a22f8935c609d"},
+    {file = "python_gdcm-3.0.22-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:b35a62adecaddc84476a715666b6e4535e223a5df39ff7f09a5f79c39a819709"},
+    {file = "python_gdcm-3.0.22-cp38-cp38-win32.whl", hash = "sha256:b06bd34b2f9e9c4d3027a4b55315e9613762ef9f5b752755dad865d8e5eeb1fb"},
+    {file = "python_gdcm-3.0.22-cp38-cp38-win_amd64.whl", hash = "sha256:35b29759c23854093fbf347f549fa8c6427da85107112bb0578ab579f32b4057"},
+    {file = "python_gdcm-3.0.22-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:3c162dce15175f7b91b6ee2683bbba626da6e368030247fdee040b9182bb5415"},
+    {file = "python_gdcm-3.0.22-cp39-cp39-macosx_11_0_arm64.whl", hash = "sha256:9e69d7bb5b01633c79c2c8f08a1e26d50b2c83d10c480527c1dcdb53d9eb4bf4"},
+    {file = "python_gdcm-3.0.22-cp39-cp39-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:c7113a6735e6f1e13f8a896e9cd90337c0597a697fc5074462ad154bc5f36485"},
+    {file = "python_gdcm-3.0.22-cp39-cp39-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:6ac140a44d04ccf36f9f44c482e7855c790bffd6bd5f10c075966865ff487e5f"},
+    {file = "python_gdcm-3.0.22-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:eeb1499934acd0b0f0a3275641222b43d4ed7cee20935b2ff6a87d61d7f1d99b"},
+    {file = "python_gdcm-3.0.22-cp39-cp39-win32.whl", hash = "sha256:b1489406732e0305a1e698957fd6244cc00174863d427f9bbbad28ac6d331e4b"},
+    {file = "python_gdcm-3.0.22-cp39-cp39-win_amd64.whl", hash = "sha256:b9c050ed91d537aa4d8b94e442265187e09dfc087c79aabefad6cc3b8a6fc261"},
+]
+
+[[package]]
 name = "python-json-logger"
 version = "2.0.7"
 description = "A python library adding a json log formatter"
@@ -3859,6 +3894,49 @@ files = [
 ]
 
 [[package]]
+name = "scikit-learn"
+version = "1.3.0"
+description = "A set of python modules for machine learning and data mining"
+category = "main"
+optional = false
+python-versions = ">=3.8"
+files = [
+    {file = "scikit-learn-1.3.0.tar.gz", hash = "sha256:8be549886f5eda46436b6e555b0e4873b4f10aa21c07df45c4bc1735afbccd7a"},
+    {file = "scikit_learn-1.3.0-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:981287869e576d42c682cf7ca96af0c6ac544ed9316328fd0d9292795c742cf5"},
+    {file = "scikit_learn-1.3.0-cp310-cp310-macosx_12_0_arm64.whl", hash = "sha256:436aaaae2c916ad16631142488e4c82f4296af2404f480e031d866863425d2a2"},
+    {file = "scikit_learn-1.3.0-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:c7e28d8fa47a0b30ae1bd7a079519dd852764e31708a7804da6cb6f8b36e3630"},
+    {file = "scikit_learn-1.3.0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:ae80c08834a473d08a204d966982a62e11c976228d306a2648c575e3ead12111"},
+    {file = "scikit_learn-1.3.0-cp310-cp310-win_amd64.whl", hash = "sha256:552fd1b6ee22900cf1780d7386a554bb96949e9a359999177cf30211e6b20df6"},
+    {file = "scikit_learn-1.3.0-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:79970a6d759eb00a62266a31e2637d07d2d28446fca8079cf9afa7c07b0427f8"},
+    {file = "scikit_learn-1.3.0-cp311-cp311-macosx_12_0_arm64.whl", hash = "sha256:850a00b559e636b23901aabbe79b73dc604b4e4248ba9e2d6e72f95063765603"},
+    {file = "scikit_learn-1.3.0-cp311-cp311-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:ee04835fb016e8062ee9fe9074aef9b82e430504e420bff51e3e5fffe72750ca"},
+    {file = "scikit_learn-1.3.0-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:9d953531f5d9f00c90c34fa3b7d7cfb43ecff4c605dac9e4255a20b114a27369"},
+    {file = "scikit_learn-1.3.0-cp311-cp311-win_amd64.whl", hash = "sha256:151ac2bf65ccf363664a689b8beafc9e6aae36263db114b4ca06fbbbf827444a"},
+    {file = "scikit_learn-1.3.0-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:6a885a9edc9c0a341cab27ec4f8a6c58b35f3d449c9d2503a6fd23e06bbd4f6a"},
+    {file = "scikit_learn-1.3.0-cp38-cp38-macosx_12_0_arm64.whl", hash = "sha256:9877af9c6d1b15486e18a94101b742e9d0d2f343d35a634e337411ddb57783f3"},
+    {file = "scikit_learn-1.3.0-cp38-cp38-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:c470f53cea065ff3d588050955c492793bb50c19a92923490d18fcb637f6383a"},
+    {file = "scikit_learn-1.3.0-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:fd6e2d7389542eae01077a1ee0318c4fec20c66c957f45c7aac0c6eb0fe3c612"},
+    {file = "scikit_learn-1.3.0-cp38-cp38-win_amd64.whl", hash = "sha256:3a11936adbc379a6061ea32fa03338d4ca7248d86dd507c81e13af428a5bc1db"},
+    {file = "scikit_learn-1.3.0-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:998d38fcec96584deee1e79cd127469b3ad6fefd1ea6c2dfc54e8db367eb396b"},
+    {file = "scikit_learn-1.3.0-cp39-cp39-macosx_12_0_arm64.whl", hash = "sha256:ded35e810438a527e17623ac6deae3b360134345b7c598175ab7741720d7ffa7"},
+    {file = "scikit_learn-1.3.0-cp39-cp39-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:0e8102d5036e28d08ab47166b48c8d5e5810704daecf3a476a4282d562be9a28"},
+    {file = "scikit_learn-1.3.0-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:7617164951c422747e7c32be4afa15d75ad8044f42e7d70d3e2e0429a50e6718"},
+    {file = "scikit_learn-1.3.0-cp39-cp39-win_amd64.whl", hash = "sha256:1d54fb9e6038284548072df22fd34777e434153f7ffac72c8596f2d6987110dd"},
+]
+
+[package.dependencies]
+joblib = ">=1.1.1"
+numpy = ">=1.17.3"
+scipy = ">=1.5.0"
+threadpoolctl = ">=2.0.0"
+
+[package.extras]
+benchmark = ["matplotlib (>=3.1.3)", "memory-profiler (>=0.57.0)", "pandas (>=1.0.5)"]
+docs = ["Pillow (>=7.1.2)", "matplotlib (>=3.1.3)", "memory-profiler (>=0.57.0)", "numpydoc (>=1.2.0)", "pandas (>=1.0.5)", "plotly (>=5.14.0)", "pooch (>=1.6.0)", "scikit-image (>=0.16.2)", "seaborn (>=0.9.0)", "sphinx (>=6.0.0)", "sphinx-copybutton (>=0.5.2)", "sphinx-gallery (>=0.10.1)", "sphinx-prompt (>=1.3.0)", "sphinxext-opengraph (>=0.4.2)"]
+examples = ["matplotlib (>=3.1.3)", "pandas (>=1.0.5)", "plotly (>=5.14.0)", "pooch (>=1.6.0)", "scikit-image (>=0.16.2)", "seaborn (>=0.9.0)"]
+tests = ["black (>=23.3.0)", "matplotlib (>=3.1.3)", "mypy (>=1.3)", "numpydoc (>=1.2.0)", "pandas (>=1.0.5)", "pooch (>=1.6.0)", "pyamg (>=4.0.0)", "pytest (>=7.1.2)", "pytest-cov (>=2.9.0)", "ruff (>=0.0.272)", "scikit-image (>=0.16.2)"]
+
+[[package]]
 name = "scipy"
 version = "1.10.1"
 description = "Fundamental algorithms for scientific computing in Python"
@@ -4058,6 +4136,18 @@ tornado = ">=6.1.0"
 [package.extras]
 docs = ["myst-parser", "pydata-sphinx-theme", "sphinx"]
 test = ["pre-commit", "pytest (>=7.0)", "pytest-timeout"]
+
+[[package]]
+name = "threadpoolctl"
+version = "3.1.0"
+description = "threadpoolctl"
+category = "main"
+optional = false
+python-versions = ">=3.6"
+files = [
+    {file = "threadpoolctl-3.1.0-py3-none-any.whl", hash = "sha256:8b99adda265feb6773280df41eece7b2e6561b772d21ffd52e372f999024907b"},
+    {file = "threadpoolctl-3.1.0.tar.gz", hash = "sha256:a335baacfaa4400ae1f0d8e3a58d6674d2f8828e3716bb2802c44955ad391380"},
+]
 
 [[package]]
 name = "tinycss2"
@@ -4525,4 +4615,4 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<3.12"
-content-hash = "a68429c499c3faa53e9f4d63e02f1a9381d7e626c551edd2ae64d34bed5da422"
+content-hash = "396e604cb556f90b6686e0b941ed5e8f54244dbe42207761103596dfb544987f"
