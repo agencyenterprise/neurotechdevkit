@@ -196,6 +196,11 @@ print("error [mm]:", error_distance * 1000)
 # The time-reverse simulation is not an exact solution for the forward-time
 # design. Other factors, like the angle of incidence at the boundary of two
 # materials, will be different in the time reverse vs forward-time.
+#
+# ### Exercise
+# Do you think the time-reverse simulation will work better or worse for deeper
+# targets? How about if the transducer was positioned next to a different part
+# of the skull that is flatter?
 
 
 # %%
