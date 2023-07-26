@@ -6,7 +6,7 @@ from ._animations import (
     save_animation,
     video_only_output,
 )
-from ._source import source_should_be_flat, source_should_be_point
+from ._source import SourceType
 from .layers import (
     SourceDrawingParams,
     draw_material_outlines,
@@ -41,8 +41,7 @@ __all__ = [
     "make_animation",
     "video_only_output",
     "display_video_file",
-    "source_should_be_flat",
-    "source_should_be_point",
+    "SourceType",
     "configure_matplotlib_for_embedded_animation",
     "save_animation",
 ]

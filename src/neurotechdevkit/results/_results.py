@@ -275,14 +275,7 @@ class SteadyStateResult2D(SteadyStateResult):
             )
         if show_sources:
             for source in self.scenario.sources:
-                drawing_params = rendering.SourceDrawingParams(
-                    position=source.position,
-                    direction=source.unit_direction,
-                    aperture=source.aperture,
-                    focal_length=source.focal_length,
-                    source_is_flat=rendering.source_should_be_flat(source),
-                    is_point_source=rendering.source_should_be_point(source),
-                )
+                drawing_params = rendering.SourceDrawingParams.from_source(source)
                 rendering.draw_source(ax, drawing_params)
 
         rendering.configure_result_plot(
@@ -382,8 +375,7 @@ class SteadyStateResult3D(SteadyStateResult):
                     direction=drop_element(source.unit_direction, slice_axis),
                     aperture=source.aperture,
                     focal_length=source.focal_length,
-                    source_is_flat=rendering.source_should_be_flat(source),
-                    is_point_source=rendering.source_should_be_point(source),
+                    source_type=rendering.SourceType.from_source(source),
                 )
                 rendering.draw_source(ax, drawing_params)
 
@@ -776,14 +768,7 @@ class PulsedResult2D(PulsedResult):
 
         if show_sources:
             for source in self.scenario.sources:
-                drawing_params = rendering.SourceDrawingParams(
-                    position=source.position,
-                    direction=source.unit_direction,
-                    aperture=source.aperture,
-                    focal_length=source.focal_length,
-                    source_is_flat=rendering.source_should_be_flat(source),
-                    is_point_source=rendering.source_should_be_point(source),
-                )
+                drawing_params = rendering.SourceDrawingParams.from_source(source)
                 rendering.draw_source(ax, drawing_params)
 
         rendering.configure_result_plot(
@@ -1071,8 +1056,7 @@ class PulsedResult3D(PulsedResult):
                     direction=drop_element(source.unit_direction, slice_axis),
                     aperture=source.aperture,
                     focal_length=source.focal_length,
-                    source_is_flat=rendering.source_should_be_flat(source),
-                    is_point_source=rendering.source_should_be_point(source),
+                    source_type=rendering.SourceType.from_source(source),
                 )
                 rendering.draw_source(ax, drawing_params)
 
