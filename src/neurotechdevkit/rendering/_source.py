@@ -223,8 +223,7 @@ def _load_most_similar_source_image(
         aperture: the aperture of the source (in meters).
         focal_length: the focal length of the source (in meters). For planar sources,
             this value should equal np.inf.
-        source_type: SourceType enum boolean indicating how the source should be
-            represented.
+        source_type: SourceType indicating how the source should be represented.
 
     Returns:
         A numpy array containing the source image data.
@@ -274,8 +273,7 @@ def _select_image_file(
         aperture: the aperture of the source (in meters).
         focal_length: the focal length of the source (in meters). For planar sources,
             this value should equal np.inf.
-        source_type: SourceType enum boolean indicating how the source should be
-            represented.
+        source_type: SourceType indicating how the source should be represented.
 
     Returns:
         The path to the file containing the selected image.
