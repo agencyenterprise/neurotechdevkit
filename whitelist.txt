@@ -18,6 +18,7 @@ config
 coords
 der
 devito
+dicom
 dimensionality
 docstring
 doi

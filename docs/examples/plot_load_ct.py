@@ -1,19 +1,29 @@
 # -*- coding: utf-8 -*-
 """
-Loading material mask from a CT scan
-====================================
-This example shows how to load the brain and skull masks of a CT scan and use them
-to create a scenario.
+Loading material masks from a CT scan
+========================================
+This example shows how to load the brain and skull masks segmented
+from a CT scan to create a scenario.
 
-The currently supported CT scan file formats are
-[DICOM](https://www.dicomstandard.org/) and
-[NIfTI](https://nifti.nimh.nih.gov/nifti-1).
+The currently supported CT segmentation file formats is
+[DICOM](https://www.dicomstandard.org/) exported from
+[Slicer](https://www.slicer.org/)
 
 You can use NDK to load the brain and skull masks of a CT scan with:
 ```
 from neurotechdevkit.scenarios import ct_loader
-skull_mask, brain_mask = ct_loader.get_masks('PathToCTScanFile.dcm_or_nii')
+skull_mask, brain_mask = ct_loader.get_masks(
+    'PathToTheDicomFolder',
+    ct_loader.MaterialMap(
+        brain_mask_id=1,
+        skull_mask_id=2,
+    ),
+    convert_2d=True
+)
 ```
+Where the `brain_mask_id` and `skull_mask_id` are the integer values
+of the masks in the DICOM files.
+
 You can find the above call in the method `_create_scenario_2_mask`.
 """
 # %%
@@ -21,10 +31,13 @@ You can find the above call in the method `_create_scenario_2_mask`.
 from __future__ import annotations
 
 import pathlib
+import tempfile
+import zipfile
 from typing import Mapping
 
 import numpy as np
 import numpy.typing as npt
+import pooch
 import stride
 
 from neurotechdevkit import sources
@@ -34,7 +47,7 @@ from neurotechdevkit.scenarios import (
     Target,
     add_material_fields_to_problem,
     ct_loader,
-    make_grid,
+    make_grid_with_shape,
 )
 
 
@@ -64,7 +77,8 @@ class ScenarioWithMasksFromCTScan(Scenario2D):
         return 4
 
     def _compile_problem(self, center_frequency) -> stride.Problem:
-        extent = np.array([0.225, 0.170])  # m
+        masks = self._get_material_masks()
+        shape = masks[self.material_layers[0]].shape
         speed_water = 1500  # m/s
         c_freq = 500e3  # hz
 
@@ -74,7 +88,7 @@ class ScenarioWithMasksFromCTScan(Scenario2D):
         # compute resolution
         dx = speed_water / c_freq / ppw  # m
 
-        grid = make_grid(extent=extent, dx=dx)
+        grid = make_grid_with_shape(shape=shape, dx=dx)
         problem = stride.Problem(
             name=f"{self.scenario_id}-{self.complexity}", grid=grid
         )
@@ -82,7 +96,7 @@ class ScenarioWithMasksFromCTScan(Scenario2D):
             problem=problem,
             materials=self.get_materials(center_frequency),
             layer_ids=self.layer_ids,
-            masks=self._get_material_masks(),
+            masks=masks,
         )
         return problem
 
@@ -105,11 +119,28 @@ class ScenarioWithMasksFromCTScan(Scenario2D):
     def _create_scenario_2_mask(
         self, material, convert_2d=False
     ) -> npt.NDArray[np.bool_]:
-        cur_dir = pathlib.Path("__file__").parent
 
         # Here we load the CT scan and get the brain and skull masks:
-        data_file = cur_dir / "ID_0000ca2f6.dcm"
-        skull_mask, brain_mask = ct_loader.get_masks(data_file, convert_2d)
+
+        URL = "https://neurotechdevkit.s3.us-west-2.amazonaws.com/ct_example.zip"
+        known_hash = "370cf1b9f61247ae466230828a1764af4c1157476fe15e594726d18891ebca41"
+        downloaded_file_path = pooch.retrieve(
+            url=URL, known_hash=known_hash, progressbar=True
+        )
+        temp_directory = tempfile.TemporaryDirectory()
+
+        with zipfile.ZipFile(downloaded_file_path, "r") as zip_ref:
+            zip_ref.extractall(temp_directory.name)
+
+        skull_mask, brain_mask = ct_loader.get_masks(
+            pathlib.Path(temp_directory.name),
+            ct_loader.MaterialMap(
+                brain_mask_id=1,
+                skull_mask_id=2,
+            ),
+            convert_2d=convert_2d,
+        )
+        temp_directory.cleanup()
 
         if material == "trabecular_bone":
             mask = skull_mask
@@ -129,6 +160,9 @@ class ScenarioWithMasksFromCTScan(Scenario2D):
 # %%
 # Running the scenario
 scenario = ScenarioWithMasksFromCTScan()
+scenario.render_layout()
+
+# %%
 result = scenario.simulate_steady_state()
 assert isinstance(result, SteadyStateResult2D)
 result.render_steady_state_amplitudes(show_material_outlines=True)
