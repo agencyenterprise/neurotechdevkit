@@ -9,6 +9,43 @@ from mosaic.types import Struct
 from stride.utils import wavelets
 
 
+def make_grid_with_shape(
+    shape: tuple[int, ...],
+    dx: float,
+    extra: int | Iterable[int] = 50,
+    absorbing: int | Iterable[int] = 40,
+) -> stride.Grid:
+    """Create a stride Grid.
+
+    Note that the time component of the grid is not defined here. That is created
+    at simulation time because it depends on simulation parameters.
+
+    Args:
+        shape: a 2-tuple or 3-tuple containing the dimensions of the simulation.
+        dx: a float describing the distance (in meters) between grid points.
+        extra: the number of gridpoints to add as boundary layers on each side of the
+            grid. extras are added both before and after the grid on each axis.
+        absorbing: the number of gridpoints within the boundary layers that are
+            absorbing.
+
+    Returns:
+        The stride Grid object.
+    """
+    n_dims = len(shape)
+
+    if isinstance(extra, int):
+        extra = (extra,) * n_dims
+    else:
+        extra = tuple(extra)
+    if isinstance(absorbing, int):
+        absorbing = (absorbing,) * n_dims
+    else:
+        absorbing = tuple(absorbing)
+
+    space = stride.Space(shape=shape, extra=extra, absorbing=absorbing, spacing=dx)
+    return stride.Grid(space=space, time=None)
+
+
 def make_grid(
     extent: npt.NDArray[np.float_],
     dx: float,
@@ -32,21 +69,9 @@ def make_grid(
     Returns:
         The stride Grid object.
     """
-    n_dims = len(extent)
     shape = compute_shape(extent, dx)
 
-    if isinstance(extra, int):
-        extra = (extra,) * n_dims
-    else:
-        extra = tuple(extra)
-    if isinstance(absorbing, int):
-        absorbing = (absorbing,) * n_dims
-    else:
-        absorbing = tuple(absorbing)
-
-    print(f"creating a grid with shape: {shape} for extent: {extent} m")
-    space = stride.Space(shape=shape, extra=extra, absorbing=absorbing, spacing=dx)
-    return stride.Grid(space=space, time=None)
+    return make_grid_with_shape(shape, dx, extra, absorbing)
 
 
 def compute_shape(extent: npt.NDArray[np.float_], dx: float) -> tuple[int, ...]:
