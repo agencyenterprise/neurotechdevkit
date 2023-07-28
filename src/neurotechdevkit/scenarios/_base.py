@@ -915,13 +915,7 @@ class Scenario2D(Scenario):
         if show_sources:
             self._ensure_source()
             for source in self.sources:
-                drawing_params = rendering.SourceDrawingParams(
-                    position=source.position,
-                    direction=source.unit_direction,
-                    aperture=source.aperture,
-                    focal_length=source.focal_length,
-                    source_is_flat=rendering.source_should_be_flat(source),
-                )
+                drawing_params = rendering.SourceDrawingParams.from_source(source)
                 rendering.draw_source(ax, drawing_params)
 
         rendering.configure_layout_plot(
@@ -1100,7 +1094,7 @@ class Scenario3D(Scenario):
                     direction=drop_element(source.unit_direction, slice_axis),
                     aperture=source.aperture,
                     focal_length=source.focal_length,
-                    source_is_flat=rendering.source_should_be_flat(source),
+                    source_type=rendering.SourceRenderType.from_source(source),
                 )
                 rendering.draw_source(ax, drawing_params)
 
