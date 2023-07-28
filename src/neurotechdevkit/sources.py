@@ -153,6 +153,90 @@ class Source(abc.ABC):
         pass
 
 
+class PointSource(Source):
+    """Theoretical point source.
+
+    Automatically sets `aperture`, `focal_length`, and `direction`, and `num_points`.
+    """
+
+    def __init__(
+        self,
+        *,
+        position: npt.NDArray[np.float_],
+        num_dim: int = 2,
+        delay: float = 0.0,
+    ) -> None:
+        """Initialize a new point source."""
+        super().__init__(
+            position=position,
+            direction=np.full(shape=num_dim, fill_value=np.nan),
+            aperture=0.0,
+            focal_length=0.0,
+            num_points=1,
+            delay=delay,
+        )
+
+    def _calculate_coordinates(self) -> npt.NDArray[np.float_]:
+        """Calculate the coordinates of the point source cloud for the 2D source.
+
+        Returns:
+            An array containing the coordinates (in meters) of the point source.
+        """
+        return np.array([self.position])
+
+    def calculate_waveform_scale(self, dx: float) -> float:
+        """Calculate the scale factor to apply to waveforms from point source.
+
+        The scale is equal to the ratio between the density of source points
+        and the density of grid points (2D: 1 / dx; 3D: 1 / dx**2).
+        Because the aperture is technically zero, we approximate the source
+        density as the smallest grid (2D: 1 / dx; 3D: 1 / dx**2).
+
+        Args:
+            dx: the separation between gridpoints (in meters). Assumed to be the same in
+                both directions.
+                Unused.
+
+        Returns:
+            The scale factor to apply to the waveform.
+        """
+        return 1
+
+
+class PointSource2D(PointSource):
+    """A point source in 2D."""
+
+    def __init__(
+        self,
+        *,
+        position: npt.NDArray[np.float_],
+        delay: float = 0.0,
+    ) -> None:
+        """Initialize a new 2-D point source."""
+        super().__init__(
+            position=position,
+            num_dim=2,
+            delay=delay,
+        )
+
+
+class PointSource3D(PointSource):
+    """A point source in 3D."""
+
+    def __init__(
+        self,
+        *,
+        position: npt.NDArray[np.float_],
+        delay: float = 0.0,
+    ) -> None:
+        """Initialize a new 2-D point source."""
+        super().__init__(
+            position=position,
+            num_dim=3,
+            delay=delay,
+        )
+
+
 class FocusedSource2D(Source):
     """A focused source in 2D.
 
@@ -393,8 +477,8 @@ class FocusedSource3D(Source):
         return axis, theta
 
 
-class UnfocusedSource(Source):
-    """A base class for unfocused sources.
+class UnfocusedSource(Source, abc.ABC):
+    """An abstract base class for unfocused sources.
 
     Automatically sets `focal_length` to `np.inf`
     """
