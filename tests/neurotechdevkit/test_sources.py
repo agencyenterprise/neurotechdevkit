@@ -12,6 +12,8 @@ from neurotechdevkit.sources import (
     PhasedArraySource3D,
     PlanarSource2D,
     PlanarSource3D,
+    PointSource2D,
+    PointSource3D,
     _rotate_2d,
     _rotate_3d,
 )
@@ -1719,3 +1721,55 @@ class TestPhasedArraySource3D(Source3DTestMixin):
         grid_density = 1 / dx**2
         point_density = quotient * num_elements / (length * height)
         np.testing.assert_allclose(scale, grid_density / point_density)
+
+
+class TestPointSource2D:
+    def test_init_properties(self):
+        """Verify that .position and .delay match the value received in the
+        constructor.
+        """
+        position = np.array([-2.0, 3.0])
+        delay = 123
+        source = PointSource2D(position=position, delay=delay)
+        np.testing.assert_allclose(source.position, position)
+        assert source.delay == delay
+
+    def test_calculate_coordinates(self):
+        """Verify that the calculated coordinates match the specified position."""
+        position = np.array([-2.0, 3.0])
+        source = PointSource2D(position=position)
+        np.testing.assert_allclose(
+            source._calculate_coordinates(), np.array([position])
+        )
+
+    def test_calculate_waveform_scale(self):
+        """Verify that calculate_waveform_scale returns 1."""
+        dx = 0.01
+        source = PointSource2D(position=np.array([-2.0, 3.0]))
+        assert source.calculate_waveform_scale(dx=dx) == 1
+
+
+class TestPointSource3D:
+    def test_init_properties(self):
+        """Verify that .position and .delay match the value received in the
+        constructor.
+        """
+        position = np.array([1.0, -2.0, 3.0])
+        delay = 123
+        source = PointSource3D(position=position, delay=delay)
+        np.testing.assert_allclose(source.position, position)
+        assert source.delay == delay
+
+    def test_calculate_coordinates(self):
+        """Verify that the calculated coordinates match the specified position."""
+        position = np.array([1.0, -2.0, 3.0])
+        source = PointSource3D(position=position)
+        np.testing.assert_allclose(
+            source._calculate_coordinates(), np.array([position])
+        )
+
+    def test_calculate_waveform_scale(self):
+        """Verify that calculate_waveform_scale returns 1."""
+        dx = 0.01
+        source = PointSource3D(position=np.array([1.0, -2.0, 3.0]))
+        assert source.calculate_waveform_scale(dx=dx) == 1

@@ -25,6 +25,7 @@ downsampling
 dt
 dx
 eg
+Enum
 et
 ffmpeg
 fft
