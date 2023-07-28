@@ -1,4 +1,4 @@
-"""Functions for loading and preprocessing CT scans."""
+"""Functions for loading CT scans."""
 import glob
 import os
 from collections import namedtuple
