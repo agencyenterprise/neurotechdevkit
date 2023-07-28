@@ -35,7 +35,7 @@ _ANGLE_OPTION_FILENAMES = {
 
 
 @enum.unique
-class SourceType(enum.Enum):
+class SourceRenderType(enum.Enum):
     """Enum for the type of source to render.
 
     For examples:
@@ -47,8 +47,8 @@ class SourceType(enum.Enum):
     CONCAVE = enum.auto()
 
     @classmethod
-    def from_source(cls, source: Source) -> "SourceType":
-        """Initialize SourceType from neurotechdevkit.Source instance."""
+    def from_source(cls, source: Source) -> "SourceRenderType":
+        """Initialize SourceRenderType from neurotechdevkit.Source instance."""
         if isinstance(source, PointSource):
             return cls.POINT
         elif source_should_be_flat(source):
@@ -57,7 +57,7 @@ class SourceType(enum.Enum):
             return cls.CONCAVE
         else:
             raise NotImplementedError(
-                f"SourceType inference for {type(source)} not implemented"
+                f"SourceRenderType inference for {type(source)} not implemented"
             )
 
 
@@ -76,17 +76,17 @@ class SourceDrawingParams(NamedTuple):
     direction: npt.NDArray[np.float_]
     aperture: float
     focal_length: float
-    source_type: SourceType
+    source_type: SourceRenderType
 
     @classmethod
     def from_source(cls, source: Source) -> "SourceDrawingParams":
-        """Initialize SourceType from neurotechdevkit.Source instance."""
+        """Initialize SourceRenderType from neurotechdevkit.Source instance."""
         return cls(
             position=source.position,
             direction=source.unit_direction,
             aperture=source.aperture,
             focal_length=source.focal_length,
-            source_type=SourceType.from_source(source),
+            source_type=SourceRenderType.from_source(source),
         )
 
 
@@ -106,7 +106,7 @@ def create_source_drawing_artist(
     Returns:
         A matplotlib artist containing the rendered source.
     """
-    if source_params.source_type == SourceType.POINT:
+    if source_params.source_type == SourceRenderType.POINT:
         return create_point_source_artist(source_params, transform)
 
     raw_img = _load_most_similar_source_image(
@@ -118,11 +118,11 @@ def create_source_drawing_artist(
     # now the center of the img corresponds to the source position, and it is
     # rotated in the correct direction
 
-    if source_params.source_type == SourceType.LINEAR:
+    if source_params.source_type == SourceRenderType.LINEAR:
         data_width = (
             source_params.aperture * transformed_img.shape[1] / raw_img.shape[1]
         )
-    elif source_params.source_type == SourceType.CONCAVE:
+    elif source_params.source_type == SourceRenderType.CONCAVE:
         data_width = source_params.focal_length * transformed_img.shape[0] / 360
     else:
         raise NotImplementedError(
@@ -191,7 +191,7 @@ def create_source_legend_artist(
     Returns:
         A matplotlib artist containing the source icon for the legend.
     """
-    raw_img = _load_most_similar_source_image(0.7, 1.0, SourceType.CONCAVE)  # 40°
+    raw_img = _load_most_similar_source_image(0.7, 1.0, SourceRenderType.CONCAVE)  # 40°
 
     # we don't need to do any rotation here, just crop it appropriately
     cropped_img = raw_img[260:]
@@ -215,7 +215,7 @@ def create_source_legend_artist(
 def _load_most_similar_source_image(
     aperture: float,
     focal_length: float,
-    source_type: SourceType,
+    source_type: SourceRenderType,
 ) -> npt.NDArray[np.float_]:
     """Load the source image which best matches the specified aperture and focus.
 
@@ -223,7 +223,7 @@ def _load_most_similar_source_image(
         aperture: the aperture of the source (in meters).
         focal_length: the focal length of the source (in meters). For planar sources,
             this value should equal np.inf.
-        source_type: SourceType indicating how the source should be represented.
+        source_type: SourceRenderType indicating how the source should be represented.
 
     Returns:
         A numpy array containing the source image data.
@@ -262,7 +262,7 @@ def source_should_be_flat(source: Source) -> bool:
 
 
 def _select_image_file(
-    aperture: float, focal_length: float, source_type: SourceType
+    aperture: float, focal_length: float, source_type: SourceRenderType
 ) -> pathlib.Path:
     """Select the image file to load based on aperture and focal length.
 
@@ -273,15 +273,15 @@ def _select_image_file(
         aperture: the aperture of the source (in meters).
         focal_length: the focal length of the source (in meters). For planar sources,
             this value should equal np.inf.
-        source_type: SourceType indicating how the source should be represented.
+        source_type: SourceRenderType indicating how the source should be represented.
 
     Returns:
         The path to the file containing the selected image.
     """
-    if source_type == SourceType.LINEAR:
+    if source_type == SourceRenderType.LINEAR:
         return _COMPONENT_DIR / "Angle=Flat.png"
 
-    elif source_type == SourceType.CONCAVE:
+    elif source_type == SourceRenderType.CONCAVE:
         angle_subtended = 2 * np.arcsin(aperture / (2 * focal_length)) * 180 / np.pi
 
         options = list(_ANGLE_OPTION_FILENAMES.keys())

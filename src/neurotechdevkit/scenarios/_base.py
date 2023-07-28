@@ -1094,7 +1094,7 @@ class Scenario3D(Scenario):
                     direction=drop_element(source.unit_direction, slice_axis),
                     aperture=source.aperture,
                     focal_length=source.focal_length,
-                    source_type=rendering.SourceType.from_source(source),
+                    source_type=rendering.SourceRenderType.from_source(source),
                 )
                 rendering.draw_source(ax, drawing_params)
 
