@@ -4,12 +4,12 @@ from typing import Mapping
 
 import numpy as np
 import numpy.typing as npt
-import stride
 
 from .. import rendering, sources
 from ..materials import Material
+from ..problem import Problem
 from ._base import Scenario, Scenario2D, Scenario3D, Target
-from ._utils import add_material_fields_to_problem, make_grid
+from ._utils import make_grid
 
 
 class Scenario1(Scenario):
@@ -45,7 +45,7 @@ class Scenario1(Scenario):
     }
 
     def _get_material_masks(
-        self, problem: stride.Problem
+        self, problem: Problem
     ) -> Mapping[str, npt.NDArray[np.bool_]]:
         return {
             name: _create_scenario_1_mask(name, problem.grid)
@@ -54,7 +54,7 @@ class Scenario1(Scenario):
 
     def _compile_scenario_1_problem(
         self, extent: npt.NDArray[np.float_], center_frequency: float
-    ) -> stride.Problem:
+    ) -> Problem:
         # scenario constants
         speed_water = 1500  # m/s
 
@@ -65,9 +65,8 @@ class Scenario1(Scenario):
         dx = speed_water / center_frequency / ppw  # m
 
         grid = make_grid(extent=extent, dx=dx)
-        problem = stride.Problem(name=f"{self.scenario_id}", grid=grid)
-        problem = add_material_fields_to_problem(
-            problem=problem,
+        problem = Problem(center_frequency=center_frequency, grid=grid)
+        problem.add_material_fields(
             materials=self.get_materials(center_frequency),
             layer_ids=self.layer_ids,
             masks=self._get_material_masks(problem),
@@ -102,7 +101,7 @@ class Scenario1_2D(Scenario1, Scenario2D):
     origin = np.array([0.0, -0.035])
     material_outline_upsample_factor = 8
 
-    def compile_problem(self, center_frequency: float) -> stride.Problem:
+    def compile_problem(self, center_frequency: float) -> Problem:
         """
         Compile the problem for scenario 1.
 
@@ -110,7 +109,7 @@ class Scenario1_2D(Scenario1, Scenario2D):
             center_frequency (float): the center frequency of the transducer
 
         Returns:
-            stride.Problem: the compiled problem
+            Problem: the compiled problem
         """
         extent = np.array([0.12, 0.07])  # m
         self.problem = self._compile_scenario_1_problem(extent, center_frequency)
@@ -171,7 +170,7 @@ class Scenario1_3D(Scenario1, Scenario3D):
     slice_position = 0.0
     material_outline_upsample_factor = 8
 
-    def compile_problem(self, center_frequency: float) -> stride.Problem:
+    def compile_problem(self, center_frequency: float) -> Problem:
         """
         Compile the problem for scenario 1.
 
@@ -179,7 +178,7 @@ class Scenario1_3D(Scenario1, Scenario3D):
             center_frequency (float): the center frequency of the transducer
 
         Returns:
-            stride.Problem: the compiled problem
+            Problem: the compiled problem
         """
         extent = np.array([0.12, 0.07, 0.07])  # m
         self.problem = self._compile_scenario_1_problem(extent, center_frequency)

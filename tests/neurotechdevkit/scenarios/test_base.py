@@ -5,6 +5,7 @@ import numpy.typing as npt
 import pytest
 import stride
 
+from neurotechdevkit.problem import Problem
 from neurotechdevkit.results import PulsedResult, SteadyStateResult
 from neurotechdevkit.scenarios._base import Scenario, Target
 from neurotechdevkit.scenarios._utils import make_grid, wavelet_helper
@@ -45,11 +46,11 @@ class ScenarioBaseTester(Scenario):
     def __init__(self):
         self.problem = self._compile_problem(center_frequency=5e5)
 
-    def _compile_problem(self, center_frequency: float) -> stride.Problem:
+    def _compile_problem(self, center_frequency: float) -> Problem:
         extent = np.array([2.0, 3.0, 4.0])
         dx = 0.1
         grid = make_grid(extent=extent, dx=dx)
-        problem = stride.Problem(name="test-problem", grid=grid)
+        problem = Problem(center_frequency=center_frequency, grid=grid)
         problem.medium.add(stride.ScalarField(name="vp", grid=grid))
         problem.medium.add(stride.ScalarField(name="rho", grid=grid))
         problem.medium.add(stride.ScalarField(name="alpha", grid=grid))

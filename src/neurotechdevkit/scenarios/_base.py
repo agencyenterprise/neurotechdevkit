@@ -16,6 +16,7 @@ from stride.problem import StructuredData
 
 from .. import rendering, results
 from ..materials import Material, get_material, get_render_color
+from ..problem import Problem
 from ..sources import Source
 from ._resources import budget_time_and_memory_resources
 from ._shots import create_shot
@@ -68,7 +69,7 @@ class Scenario(abc.ABC):
     # The list of sources in the scenario.
     sources: list[Source]
 
-    problem: stride.Problem
+    problem: Problem
 
     grid: stride.Grid
 
@@ -275,7 +276,6 @@ class Scenario(abc.ABC):
 
     def simulate_steady_state(
         self,
-        center_frequency: float = 5.0e5,
         points_per_period: int = 24,
         n_cycles_steady_state: int = 10,
         time_to_steady_state: float | None = None,
@@ -295,8 +295,6 @@ class Scenario(abc.ABC):
             values other than the default if you chose to do so.
 
         Args:
-            center_frequency: the center frequency (in hertz) to use for the
-                continuous-wave source output.
             points_per_period: the number of points in time to simulate for each cycle
                 of the wave.
             n_cycles_steady_state: the number of complete cycles to use when calculating
@@ -316,6 +314,7 @@ class Scenario(abc.ABC):
             An object containing the result of the steady-state simulation.
         """
         problem = self.problem
+        center_frequency = problem.center_frequency
         sim_time = select_simulation_time_for_steady_state(
             grid=problem.grid,
             materials=self.get_materials(center_frequency),
@@ -366,7 +365,6 @@ class Scenario(abc.ABC):
 
     def simulate_pulse(
         self,
-        center_frequency: float = 5.0e5,
         points_per_period: int = 24,
         simulation_time: float | None = None,
         recording_time_undersampling: int = 4,
@@ -383,8 +381,6 @@ class Scenario(abc.ABC):
             values other than the default if you chose to do so.
 
         Args:
-            center_frequency: the center frequency (in hertz) to use for the
-                continuous-wave source output.
             points_per_period: the number of points in time to simulate for each cycle
                 of the wave.
             simulation_time: the amount of time (in seconds) the simulation should run.
@@ -401,7 +397,6 @@ class Scenario(abc.ABC):
             An object containing the result of the 2D pulsed simulation.
         """
         return self._simulate_pulse(
-            center_frequency=center_frequency,
             points_per_period=points_per_period,
             simulation_time=simulation_time,
             recording_time_undersampling=recording_time_undersampling,
@@ -412,7 +407,6 @@ class Scenario(abc.ABC):
 
     def _simulate_pulse(
         self,
-        center_frequency: float = 5.0e5,
         points_per_period: int = 24,
         simulation_time: float | None = None,
         recording_time_undersampling: int = 4,
@@ -430,8 +424,6 @@ class Scenario(abc.ABC):
         other than the default if you chose to do so.
 
         Args:
-            center_frequency: the center frequency (in hertz) to use for the
-                continuous-wave source output.
             points_per_period: the number of points in time to simulate for each cycle
                 of the wave.
             simulation_time: the amount of time (in seconds) the simulation should run.
@@ -454,6 +446,8 @@ class Scenario(abc.ABC):
             An object containing the result of the pulsed simulation.
         """
         problem = self.problem
+        center_frequency = problem.center_frequency
+
         if simulation_time is None:
             simulation_time = select_simulation_time_for_pulsed(
                 grid=problem.grid,
@@ -770,7 +764,6 @@ class Scenario2D(Scenario):
         show_sources: bool = True,
         show_target: bool = True,
         show_material_outlines: bool = False,
-        center_frequency: float = 5.0e5,
     ) -> None:
         """Create a matplotlib figure showing the 2D scenario layout.
 
@@ -781,8 +774,6 @@ class Scenario2D(Scenario):
             show_target: whether or not to show the target layer.
             show_material_outlines: whether or not to display a thin white outline of
                 the transition between different materials.
-            center_frequency: the center frequency (in hertz) to use for the
-                continuous-wave source output.
         """
         color_sequence = list(self.material_colors.values())
         field = self.get_field_data("layer").astype(int)
@@ -836,7 +827,6 @@ class Scenario3D(Scenario):
 
     def simulate_pulse(
         self,
-        center_frequency: float = 5.0e5,
         points_per_period: int = 24,
         simulation_time: float | None = None,
         recording_time_undersampling: int = 4,
@@ -855,8 +845,6 @@ class Scenario3D(Scenario):
             values other than the default if you chose to do so.
 
         Args:
-            center_frequency: the center frequency (in hertz) to use for the
-                continuous-wave source output.
             points_per_period: the number of points in time to simulate for each cycle
                 of the wave.
             simulation_time: the amount of time (in seconds) the simulation should run.
@@ -879,7 +867,6 @@ class Scenario3D(Scenario):
             An object containing the result of the 3D pulsed simulation.
         """
         return self._simulate_pulse(
-            center_frequency=center_frequency,
             points_per_period=points_per_period,
             simulation_time=simulation_time,
             recording_time_undersampling=recording_time_undersampling,
@@ -893,7 +880,6 @@ class Scenario3D(Scenario):
         show_sources: bool = True,
         show_target: bool = True,
         show_material_outlines: bool = False,
-        center_frequency: float = 5.0e5,
     ) -> None:
         """Create a matplotlib figure showing a 2D slice of the scenario layout.
 
@@ -908,8 +894,6 @@ class Scenario3D(Scenario):
             show_target: whether or not to show the target layer.
             show_material_outlines: whether or not to display a thin white outline of
                 the transition between different materials.
-            center_frequency: the center frequency (in hertz) to use for the
-                continuous-wave source output.
         """
         slice_axis = self.slice_axis
         slice_position = self.slice_position
