@@ -29,6 +29,7 @@ import neurotechdevkit as ndk
 
 # Parameters
 SCENARIO_NAME = "scenario-2-2d-v0"
+CENTER_FREQUENCY = 5e5
 NUM_ELEMENTS = 20
 ELEMENT_WIDTH = 1.2e-3
 
@@ -39,7 +40,7 @@ def make_scenario(element_delays=None) -> ndk.scenarios.Scenario:
     true_scenario = ndk.make(SCENARIO_NAME)
 
     # define a phased-array source
-    default_source = true_scenario.get_default_source()
+    default_source = true_scenario.sources[0]
     true_source = ndk.sources.PhasedArraySource2D(
         element_delays=element_delays,
         position=default_source.position,
@@ -50,7 +51,7 @@ def make_scenario(element_delays=None) -> ndk.scenarios.Scenario:
         num_points=1000,
     )
 
-    true_scenario.add_source(true_source)
+    true_scenario.sources = [true_source]
     return true_scenario
 
 
@@ -58,6 +59,7 @@ def make_scenario(element_delays=None) -> ndk.scenarios.Scenario:
 # ## Set up and visualize the forward scenario
 true_scenario = make_scenario()
 assert isinstance(true_scenario, ndk.scenarios.Scenario2D)
+true_scenario.compile_problem(center_frequency=CENTER_FREQUENCY)
 true_scenario.render_layout()
 
 
@@ -75,6 +77,7 @@ point_source = ndk.sources.PointSource2D(
 reversed_scenario.add_source(point_source)
 
 assert isinstance(reversed_scenario, ndk.scenarios.Scenario2D)
+reversed_scenario.compile_problem(center_frequency=CENTER_FREQUENCY)
 reversed_scenario.render_layout()
 
 
@@ -134,6 +137,7 @@ plt.ylabel("delay [s]")
 element_delays = element_reverse_delays.max() - element_reverse_delays
 
 true_scenario = make_scenario(element_delays=element_delays)
+true_scenario.compile_problem(center_frequency=CENTER_FREQUENCY)
 result = true_scenario.simulate_pulse()
 assert isinstance(result, ndk.results.PulsedResult2D)
 result.render_pulsed_simulation_animation()
@@ -150,6 +154,7 @@ result.render_pulsed_simulation_animation()
 
 # Re-initialize scenario to clear previous simulation
 true_scenario = make_scenario(element_delays=element_delays)
+true_scenario.compile_problem(center_frequency=CENTER_FREQUENCY)
 steady_state_result = true_scenario.simulate_steady_state()
 assert isinstance(steady_state_result, ndk.results.SteadyStateResult2D)
 steady_state_result.render_steady_state_amplitudes()

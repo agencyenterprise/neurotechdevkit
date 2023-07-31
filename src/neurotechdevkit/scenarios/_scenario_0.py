@@ -1,15 +1,10 @@
 import numpy as np
-import stride
 
 from ..materials import Material
+from ..problem import Problem
 from ..sources import FocusedSource2D
 from ._base import Scenario2D, Target
-from ._utils import (
-    add_material_fields_to_problem,
-    create_grid_circular_mask,
-    create_grid_elliptical_mask,
-    make_grid,
-)
+from ._utils import create_grid_circular_mask, create_grid_elliptical_mask, make_grid
 
 
 class Scenario0(Scenario2D):
@@ -53,7 +48,7 @@ class Scenario0(Scenario2D):
             for name in self.material_layers
         }
 
-    def compile_problem(self, center_frequency: float) -> stride.Problem:
+    def compile_problem(self, center_frequency: float) -> Problem:
         """
         Compile the problem for scenario 0.
 
@@ -61,7 +56,7 @@ class Scenario0(Scenario2D):
             center_frequency (float): the center frequency of the transducer
 
         Returns:
-            stride.Problem: the compiled problem
+            Problem: the compiled problem
         """
         extent = np.array([0.05, 0.04])  # m
 
@@ -75,9 +70,8 @@ class Scenario0(Scenario2D):
         dx = speed_water / center_frequency / ppw  # m
 
         self.grid = make_grid(extent=extent, dx=dx)
-        self.problem = stride.Problem(name=f"{self.scenario_id}", grid=self.grid)
-        self.problem = add_material_fields_to_problem(
-            problem=self.problem,
+        self.problem = Problem(center_frequency=center_frequency, grid=self.grid)
+        self.problem.add_material_fields(
             materials=self.get_materials(center_frequency),
             layer_ids=self.layer_ids,
             masks=self._get_material_masks(self.problem),

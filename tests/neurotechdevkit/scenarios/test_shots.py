@@ -2,6 +2,7 @@ import numpy as np
 import pytest
 import stride
 
+from neurotechdevkit.problem import Problem
 from neurotechdevkit.scenarios import _shots
 from neurotechdevkit.scenarios._shots import (
     _add_points_for_source_to_geometry,
@@ -57,7 +58,7 @@ def a_problem():
     """A minimal problem which can be used for tests."""
     grid = make_grid(extent=np.array([1.5, 0.6]), dx=0.1)
     grid.time = stride.Time(0.0, step=1e-3, num=100)
-    problem = stride.Problem(name="fake", grid=grid)
+    problem = Problem(center_frequency=5e5, grid=grid)
     return problem
 
 

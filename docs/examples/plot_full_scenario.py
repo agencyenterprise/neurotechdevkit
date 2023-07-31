@@ -12,16 +12,11 @@ The following code is a simplified implementation of NDK's Scenario 1.
 # %%
 # ## Implementing a Scenario
 import numpy as np
-import stride
 
 from neurotechdevkit import sources
+from neurotechdevkit.problem import Problem
 from neurotechdevkit.results import SteadyStateResult2D
-from neurotechdevkit.scenarios import (
-    Scenario2D,
-    Target,
-    add_material_fields_to_problem,
-    make_grid,
-)
+from neurotechdevkit.scenarios import Scenario2D, Target, make_grid
 
 
 class FullScenario(Scenario2D):
@@ -67,7 +62,7 @@ class FullScenario(Scenario2D):
     ]
     material_outline_upsample_factor = 8
 
-    def compile_problem(self, center_frequency) -> stride.Problem:
+    def compile_problem(self, center_frequency) -> Problem:
         """The problem definition for the scenario."""
         extent = np.array([0.12, 0.07])  # m
         # scenario constants
@@ -80,13 +75,12 @@ class FullScenario(Scenario2D):
         dx = speed_water / center_frequency / ppw  # m
 
         grid = make_grid(extent=extent, dx=dx)
-        problem = stride.Problem(name=f"{self.scenario_id}", grid=grid)
-        self.problem = add_material_fields_to_problem(
-            problem=problem,
+        self.problem = Problem(center_frequency=center_frequency, grid=grid)
+        self.problem.add_material_fields(
             materials=self.get_materials(center_frequency),
             layer_ids=self.layer_ids,
             masks={
-                name: _create_scenario_1_mask(name, problem.grid)
+                name: _create_scenario_1_mask(name, self.problem.grid)
                 for name in self.material_layers
             },
         )

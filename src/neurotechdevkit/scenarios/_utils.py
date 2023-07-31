@@ -1,11 +1,10 @@
 from __future__ import annotations
 
-from typing import Iterable, Mapping
+from typing import Iterable
 
 import numpy as np
 import numpy.typing as npt
 import stride
-from mosaic.types import Struct
 from stride.utils import wavelets
 
 
@@ -44,7 +43,6 @@ def make_grid(
     else:
         absorbing = tuple(absorbing)
 
-    print(f"creating a grid with shape: {shape} for extent: {extent} m")
     space = stride.Space(shape=shape, extra=extra, absorbing=absorbing, spacing=dx)
     return stride.Grid(space=space, time=None)
 
@@ -56,57 +54,6 @@ def compute_shape(extent: npt.NDArray[np.float_], dx: float) -> tuple[int, ...]:
     # numerical error
     n_steps = [int(np.round(ext / dx)) for ext in extent]
     return tuple(steps + 1 for steps in n_steps)
-
-
-def add_material_fields_to_problem(
-    problem: stride.Problem,
-    materials: Mapping[str, Struct],
-    layer_ids: Mapping[str, int],
-    masks: Mapping[str, npt.NDArray[np.bool_]],
-) -> stride.Problem:
-    """Add material fields as media to the problem.
-
-    Included fields are:
-
-    - the speed of sound (in m/s)
-    - density (in kg/m^3)
-    - absorption (in dB/cm)
-
-    Args:
-        problem (stride.Problem): the stride Problem object to which the
-            media should be added.
-        materials (Mapping[str, Struct]): a mapping from material names
-            to Structs containing the material properties.
-        layer_ids (Mapping[str, int]): a mapping from material names to
-            integers representing the layer number for each material.
-        masks (Mapping[str, npt.NDArray[np.bool_]]): a mapping from material
-            names to boolean masks indicating the gridpoints.
-    """
-    grid = problem.grid
-
-    vp = stride.ScalarField(name="vp", grid=grid)  # [m/s]
-    rho = stride.ScalarField(name="rho", grid=grid)  # [kg/m^3]
-    alpha = stride.ScalarField(name="alpha", grid=grid)  # [dB/cm]
-    layer = stride.ScalarField(name="layer", grid=grid)  # integers
-
-    for name, material in materials.items():
-        material_mask = masks[name]
-        vp.data[material_mask] = material.vp
-        rho.data[material_mask] = material.rho
-        alpha.data[material_mask] = material.alpha
-        layer.data[material_mask] = layer_ids[name]
-
-    vp.pad()
-    rho.pad()
-    alpha.pad()
-    layer.pad()
-
-    problem.medium.add(vp)
-    problem.medium.add(rho)
-    problem.medium.add(alpha)
-    problem.medium.add(layer)
-
-    return problem
 
 
 def choose_wavelet_for_mode(simulation_mode: str) -> str:
