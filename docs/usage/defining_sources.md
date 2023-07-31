@@ -6,6 +6,7 @@ import neurotechdevkit as ndk
 import numpy as np
 
 scenario = ndk.BUILTIN_SCENARIOS.SCENARIO_2_2D.value()
+scenario.sources.clear()
 
 source = ndk.sources.FocusedSource2D(
     position=np.array([0.19, 0.07]),
@@ -50,6 +51,7 @@ import neurotechdevkit as ndk
 import numpy as np
 
 scenario = ndk.BUILTIN_SCENARIOS.SCENARIO_2_2D.value()
+scenario.sources.clear()
 
 source_position = np.array([0.19, 0.07])
 source = ndk.sources.PlanarSource2D(
