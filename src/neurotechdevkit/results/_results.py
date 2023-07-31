@@ -10,7 +10,7 @@ import shutil
 import tarfile
 from dataclasses import dataclass
 from io import BytesIO
-from typing import Any
+from typing import Any, Union
 
 import numpy as np
 import numpy.typing as npt
@@ -57,7 +57,7 @@ class Result(abc.ABC):
             pde.
     """
 
-    scenario: scenarios.Scenario
+    scenario: Union[scenarios.Scenario2D, scenarios.Scenario3D]
     center_frequency: float
     effective_dt: float
     pde: stride.Operator
@@ -1085,7 +1085,7 @@ class PulsedResult3D(PulsedResult):
 
 
 def create_steady_state_result(
-    scenario: scenarios.Scenario,
+    scenario: Union[scenarios.Scenario2D, scenarios.Scenario3D],
     center_frequency: float,
     effective_dt: float,
     pde: stride.Operator,
@@ -1148,7 +1148,7 @@ def create_steady_state_result(
 
 
 def create_pulsed_result(
-    scenario: scenarios.Scenario,
+    scenario: Union[scenarios.Scenario2D, scenarios.Scenario3D],
     center_frequency: float,
     effective_dt: float,
     pde: stride.Operator,
