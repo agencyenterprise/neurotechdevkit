@@ -123,7 +123,6 @@ def _create_napari_3d(
     add_material_layers(viewer, scenario, viewer_config)
     add_target(viewer, scenario)
 
-    assert hasattr(scenario, "sources")
     for source in scenario.sources:
         add_source(viewer, scenario, source)
 

@@ -79,24 +79,6 @@ class Scenario(abc.ABC):
     slice_position: float
     material_outline_upsample_factor: int = 16
 
-    def render_layout(
-        self,
-        show_sources: bool = True,
-        show_target: bool = True,
-        show_material_outlines: bool = False,
-    ) -> None:
-        """Render the layout of the scenario. Is implemented by subclasses."""
-        raise NotImplementedError()
-
-    @abc.abstractmethod
-    def get_target_mask(self) -> npt.NDArray[np.bool_]:
-        """Return the mask for the target region.
-
-        Returns:
-            A boolean array indicating which gridpoints correspond to the target region.
-        """
-        pass
-
     @property
     def extent(self) -> npt.NDArray[np.float_]:
         """The extent of the spatial grid (in meters)."""
@@ -349,7 +331,7 @@ class Scenario(abc.ABC):
         wavefield = np.moveaxis(pde.wavefield.data[:-1], 0, -1)
 
         return results.create_steady_state_result(
-            scenario=self,
+            scenario=self,  # type: ignore
             center_frequency=center_frequency,
             effective_dt=self.dt * recording_time_undersampling,
             pde=pde,
@@ -482,7 +464,7 @@ class Scenario(abc.ABC):
         wavefield = np.moveaxis(pde.wavefield.data[:-1], 0, -1)
 
         return results.create_pulsed_result(
-            scenario=self,
+            scenario=self,  # type: ignore
             center_frequency=center_frequency,
             effective_dt=self.dt * recording_time_undersampling,
             pde=pde,
