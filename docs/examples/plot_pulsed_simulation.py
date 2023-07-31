@@ -9,7 +9,7 @@ using ndk
 # %%
 import neurotechdevkit as ndk
 
-scenario = ndk.make("scenario-0-v0")
+scenario = ndk.BUILTIN_SCENARIOS.SCENARIO_0.value()
 scenario.compile_problem(center_frequency=5e5)
 result = scenario.simulate_pulse()
 assert isinstance(result, ndk.results.PulsedResult2D)

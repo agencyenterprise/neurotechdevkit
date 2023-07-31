@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import os
+from enum import Enum
 
 from . import materials, scenarios, sources
 from .results import load_result_from_disk
@@ -11,9 +12,8 @@ __all__ = [
     "scenarios",
     "materials",
     "sources",
-    "make",
-    "ScenarioNotFoundError",
     "load_result_from_disk",
+    "BUILTIN_SCENARIOS",
 ]
 
 if "DEVITO_ARCH" not in os.environ:
@@ -23,50 +23,11 @@ if "DEVITO_ARCH" not in os.environ:
     )
 
 
-class ScenarioNotFoundError(Exception):
-    """Exception raised when a scenario is not found."""
+class BUILTIN_SCENARIOS(Enum):
+    """Enum of built-in scenarios."""
 
-    pass
-
-
-def make(scenario_id: str) -> scenarios.Scenario:
-    """
-    Initialize a scenario and return an object which represents the simulation.
-
-    Args:
-        scenario_id (str): the id of the scenario to load. Supported
-            scenarios are:
-
-            - [Scenario 0][neurotechdevkit.scenarios.Scenario0.scenario_id]
-            - [Scenario 1 2D][neurotechdevkit.scenarios.Scenario1_2D.scenario_id]
-            - [Scenario 1 3D][neurotechdevkit.scenarios.Scenario1_3D.scenario_id]
-            - [Scenario 2 2D][neurotechdevkit.scenarios.Scenario2_2D.scenario_id]
-            - [Scenario 2 3D][neurotechdevkit.scenarios.Scenario2_3D.scenario_id]
-
-        complexity (str, optional): allow the user to choose from a few
-            pre-selected options for parameters such as PPP and PPW that
-            determine the compute, memory, and time requirements of a
-            simulation as well as the accuracy of the simulation results.
-            Defaults to "fast".
-
-    Raises:
-        ScenarioNotFoundError: Raised when the scenario id is not found.
-
-    Returns:
-        An object representing the simulation.
-    """
-    if scenario_id not in _scenario_map:
-        raise ScenarioNotFoundError(
-            f"Scenario '{scenario_id}' does not exist. Please refer to documentation"
-            " for the list of provided scenarios."
-        )
-    return _scenario_map[scenario_id]()  # type: ignore
-
-
-_scenario_map = {
-    scenarios.Scenario0.scenario_id: scenarios.Scenario0,
-    scenarios.Scenario1_2D.scenario_id: scenarios.Scenario1_2D,
-    scenarios.Scenario1_3D.scenario_id: scenarios.Scenario1_3D,
-    scenarios.Scenario2_2D.scenario_id: scenarios.Scenario2_2D,
-    scenarios.Scenario2_3D.scenario_id: scenarios.Scenario2_3D,
-}
+    SCENARIO_0 = scenarios.Scenario0
+    SCENARIO_1_2D = scenarios.Scenario1_2D
+    SCENARIO_1_3D = scenarios.Scenario1_3D
+    SCENARIO_2_2D = scenarios.Scenario2_2D
+    SCENARIO_2_3D = scenarios.Scenario2_3D

@@ -75,7 +75,6 @@ class Scenario(abc.ABC):
 
     target: Target
 
-    scenario_id: str
     slice_axis: int
     slice_position: float
     material_outline_upsample_factor: int = 16
@@ -269,10 +268,6 @@ class Scenario(abc.ABC):
             source: the source to add to the scenario.
         """
         self.sources.append(source)
-
-    def compile_problem(self, center_frequency: float):
-        """Compile the problem for the scenario. Can be implemented by subclasses."""
-        raise NotImplementedError()
 
     def simulate_steady_state(
         self,

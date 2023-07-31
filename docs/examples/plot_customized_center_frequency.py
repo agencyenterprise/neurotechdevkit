@@ -11,7 +11,7 @@ import neurotechdevkit as ndk
 
 CENTER_FREQUENCY = 6e5
 
-scenario = ndk.make("scenario-0-v0")
+scenario = ndk.BUILTIN_SCENARIOS.SCENARIO_0.value()
 
 # using default material layers
 scenario.material_layers = ["water", "cortical_bone", "brain", "tumor"]
