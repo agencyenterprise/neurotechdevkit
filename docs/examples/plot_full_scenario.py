@@ -29,7 +29,6 @@ class FullScenario(Scenario2D):
     https://asa.scitation.org/doi/pdf/10.1121/10.0013426
     """
 
-    scenario_id = "the_id_for_this_scenario"
     """
     Target attributes:
         target_id: the string id of the target.

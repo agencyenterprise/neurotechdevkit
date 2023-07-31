@@ -5,7 +5,7 @@ Running a simulation takes just a single function call.
 ```py
 import neurotechdevkit as ndk
 
-scenario = ndk.make('scenario-2-2d-v0')
+scenario = ndk.BUILTIN_SCENARIOS.SCENARIO_2_2D.value()
 result = scenario.simulate_steady_state()
 result.render_steady_state_amplitudes()
 ```

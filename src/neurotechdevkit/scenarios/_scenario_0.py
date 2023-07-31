@@ -10,7 +10,6 @@ from ._utils import create_grid_circular_mask, create_grid_elliptical_mask, make
 class Scenario0(Scenario2D):
     """Scenario 0."""
 
-    scenario_id = "scenario-0-v0"
     target = Target(
         target_id="target_1",
         center=np.array([0.0285, 0.0024]),

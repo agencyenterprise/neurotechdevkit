@@ -28,7 +28,6 @@ import numpy as np
 import neurotechdevkit as ndk
 
 # Parameters
-SCENARIO_NAME = "scenario-2-2d-v0"
 CENTER_FREQUENCY = 5e5
 NUM_ELEMENTS = 20
 ELEMENT_WIDTH = 1.2e-3
@@ -36,8 +35,8 @@ ELEMENT_WIDTH = 1.2e-3
 
 # %%
 # Helper function to make the scenario with a PhasedArraySource
-def make_scenario(element_delays=None) -> ndk.scenarios.Scenario:
-    true_scenario = ndk.make(SCENARIO_NAME)
+def make_scenario(element_delays=None):
+    true_scenario = ndk.BUILTIN_SCENARIOS.SCENARIO_2_2D.value()
 
     # define a phased-array source
     default_source = true_scenario.sources[0]
@@ -58,7 +57,6 @@ def make_scenario(element_delays=None) -> ndk.scenarios.Scenario:
 # %%
 # ## Set up and visualize the forward scenario
 true_scenario = make_scenario()
-assert isinstance(true_scenario, ndk.scenarios.Scenario2D)
 true_scenario.compile_problem(center_frequency=CENTER_FREQUENCY)
 true_scenario.render_layout()
 
@@ -69,14 +67,13 @@ true_scenario.render_layout()
 # The point source is visualized as a gray dot.
 
 # Reinitialize the scenario
-reversed_scenario = ndk.make(SCENARIO_NAME)
+reversed_scenario = ndk.BUILTIN_SCENARIOS.SCENARIO_2_2D.value()
 # and reverse the source
 point_source = ndk.sources.PointSource2D(
     position=true_scenario.target.center,
 )
 reversed_scenario.add_source(point_source)
 
-assert isinstance(reversed_scenario, ndk.scenarios.Scenario2D)
 reversed_scenario.compile_problem(center_frequency=CENTER_FREQUENCY)
 reversed_scenario.render_layout()
 

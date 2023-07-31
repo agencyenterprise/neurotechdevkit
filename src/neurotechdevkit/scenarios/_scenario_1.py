@@ -87,7 +87,6 @@ class Scenario1_2D(Scenario1, Scenario2D):
         https://asa.scitation.org/doi/pdf/10.1121/10.0013426
     """
 
-    scenario_id = "scenario-1-2d-v0"
     target = Target("target_1", np.array([0.064, 0.0]), 0.004, "")
     sources = [
         sources.FocusedSource2D(
@@ -129,7 +128,6 @@ class Scenario1_3D(Scenario1, Scenario3D):
         https://asa.scitation.org/doi/pdf/10.1121/10.0013426
     """
 
-    scenario_id = "scenario-1-3d-v0"
     target = Target(
         target_id="target_1",
         center=np.array([0.064, 0.0, 0.0]),

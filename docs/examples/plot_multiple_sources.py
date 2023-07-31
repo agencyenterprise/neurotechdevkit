@@ -19,7 +19,7 @@ import numpy as np
 
 import neurotechdevkit as ndk
 
-scenario = ndk.make("scenario-0-v0")
+scenario = ndk.BUILTIN_SCENARIOS.SCENARIO_0.value()
 
 s1 = ndk.sources.FocusedSource2D(
     position=np.array([0.01, 0.0]),

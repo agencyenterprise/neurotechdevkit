@@ -120,6 +120,25 @@ class Result(abc.ABC):
         ...
 
 
+def get_scenario_id(scenario: scenarios.Scenario) -> str:
+    """
+    Get the scenario id from a scenario based on the scenario class.
+
+    Args:
+        scenario (scenarios.Scenario): the instance of the scenario.
+
+    Raises:
+        ValueError: raised if the scenario is not found in ndk.BUILTIN_SCENARIOS
+
+    Returns:
+        str: the scenario id.
+    """
+    for builtin_scenario in neurotechdevkit.BUILTIN_SCENARIOS:
+        if isinstance(scenario, builtin_scenario.value):
+            return builtin_scenario.name
+    raise ValueError("Scenario not found in neurotechdevkit.BUILTIN_SCENARIOS")
+
+
 @dataclass
 class SteadyStateResult(Result):
     """A base container for holding the results of a steady-state simulation.
@@ -203,7 +222,7 @@ class SteadyStateResult(Result):
         """
         save_data = {
             "result_type": type(self).__name__,
-            "scenario_id": self.scenario.scenario_id,
+            "scenario_id": get_scenario_id(self.scenario),
             "sources": self.scenario.sources,
             "problem": self.scenario.problem,
             "center_frequency": self.center_frequency,
@@ -559,7 +578,7 @@ class PulsedResult(Result):
         """
         save_data = {
             "result_type": type(self).__name__,
-            "scenario_id": self.scenario.scenario_id,
+            "scenario_id": get_scenario_id(self.scenario),
             "sources": self.scenario.sources,
             "problem": self.scenario.problem,
             "center_frequency": self.center_frequency,
@@ -1245,7 +1264,7 @@ def load_result_from_disk(filepath: str | pathlib.Path) -> Result:
         import neurotechdevkit as ndk
 
         print("Recreating the scenario for the result from saved metadata...")
-        scenario = ndk.make(save_data["scenario_id"])
+        scenario = ndk.BUILTIN_SCENARIOS[save_data["scenario_id"]].value()
 
         for source in save_data["sources"]:
             scenario.add_source(source)

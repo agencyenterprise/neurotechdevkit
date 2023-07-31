@@ -15,7 +15,6 @@ from neurotechdevkit.sources import FocusedSource3D, PlanarSource3D, Source
 class ScenarioBaseTester(Scenario):
     """A class which can be used to test attributes and methods of Scenario."""
 
-    scenario_id = "scenario-tester"
     _TARGET_OPTIONS = {
         "target_1": Target(
             target_id="target_1",

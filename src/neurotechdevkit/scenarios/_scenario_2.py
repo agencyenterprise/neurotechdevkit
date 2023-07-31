@@ -65,7 +65,7 @@ class Scenario2(Scenario):
         return problem
 
 
-class Scenario2_2D(Scenario2, Scenario2D):
+class Scenario2_2D(Scenario2D, Scenario2):
     """A 2D implementation of scenario 2.
 
     Scenario 2 is based on benchmark 8 of the following paper:
@@ -78,7 +78,6 @@ class Scenario2_2D(Scenario2, Scenario2D):
         https://asa.scitation.org/doi/pdf/10.1121/10.0013426
     """
 
-    scenario_id = "scenario-2-2d-v0"
     target = Target(
         target_id="primary-visual-cortex",
         center=np.array([0.047, 0.002]),
@@ -136,7 +135,6 @@ class Scenario2_3D(Scenario2, Scenario3D):
         https://asa.scitation.org/doi/pdf/10.1121/10.0013426
     """
 
-    scenario_id = "scenario-2-3d-v0"
     target = Target(
         target_id="primary-visual-cortex",
         center=np.array([0.047, 0.002, 0.005]),
