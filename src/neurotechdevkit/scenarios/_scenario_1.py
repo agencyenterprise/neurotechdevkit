@@ -88,7 +88,7 @@ class Scenario1(Scenario):
 
         self.problem = Problem(center_frequency=self.center_frequency, grid=self.grid)
         self.problem.add_material_fields(
-            materials=self.get_materials(self.center_frequency),
+            materials=self.materials,
             layer_ids=self.layer_ids,
             masks=self.material_masks,
         )
