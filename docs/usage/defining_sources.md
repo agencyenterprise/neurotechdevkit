@@ -15,7 +15,7 @@ source = ndk.sources.FocusedSource2D(
     focal_length=0.08,
     num_points=3000
 )
-scenario.add_source(source)
+scenario.sources.append(source)
 
 scenario.render_layout()
 ```
@@ -33,16 +33,16 @@ In the future, we plan to implement constraints to avoid overlapping with solid 
 If a source is not specified before the scenario is rendered or simulated, then a default source will be used. So you should add the source to the scenario before doing either of these operations (rendering or simulating).
 
 !!! note
-    The visualization of the source in 2D plots currently has some scaling limitations, and transducers with short focal lengths can appear very small. This only affects the visualization and not the simulation, and will be improved in future versions.
+The visualization of the source in 2D plots currently has some scaling limitations, and transducers with short focal lengths can appear very small. This only affects the visualization and not the simulation, and will be improved in future versions.
 
 The implemented source options are:
 
-* `FocusedSource2D`
-* `FocusedSource3D`
-* `PlanarSource2D`
-* `PlanarSource3D`
-* `PhasedArraySource2D`
-* `PhasedArraySource3D`
+- `FocusedSource2D`
+- `FocusedSource3D`
+- `PlanarSource2D`
+- `PlanarSource3D`
+- `PhasedArraySource2D`
+- `PhasedArraySource3D`
 
 The 2D sources are for 2D scenarios and the 3D sources for 3D scenarios. The parameters to configure the sources are identical between focused and planar sources, except that planar sources have a pre-defined focal length of `np.inf`.
 
@@ -60,7 +60,7 @@ source = ndk.sources.PlanarSource2D(
     aperture=0.06,
     num_points=3000
 )
-scenario.add_source(source)
+scenario.sources.append(source)
 
 scenario.render_layout()
 ```

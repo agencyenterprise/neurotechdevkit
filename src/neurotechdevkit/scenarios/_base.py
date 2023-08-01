@@ -236,18 +236,6 @@ class Scenario(abc.ABC):
         assert hasattr(self, "problem")
         return self.problem.medium.fields[field].data
 
-    def add_source(self, source: Source) -> None:
-        """Add the specified source to the scenario.
-
-        Sources can also be added or removed by modifying the Scenario.sources list.
-
-        Changes can only be made to sources before a simulation has started.
-
-        Args:
-            source: the source to add to the scenario.
-        """
-        self.sources.append(source)
-
     def _get_material_layer(self) -> npt.NDArray[np.int_]:
         """Return the layer id for each grid point in the scenario."""
         assert hasattr(self, "material_layers")
