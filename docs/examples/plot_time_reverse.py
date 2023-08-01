@@ -74,7 +74,7 @@ reversed_scenario = ndk.BUILTIN_SCENARIOS.SCENARIO_2_2D.value()
 point_source = ndk.sources.PointSource2D(
     position=true_scenario.target.center,
 )
-reversed_scenario.add_source(point_source)
+reversed_scenario.sources.append(point_source)
 
 reversed_scenario.center_frequency = CENTER_FREQUENCY
 reversed_scenario.make_grid()

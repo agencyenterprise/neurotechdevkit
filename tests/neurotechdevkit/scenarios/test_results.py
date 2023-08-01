@@ -109,7 +109,7 @@ def pulsed_data_2d():
 def a_test_scenario_2d():
     """A real 2D scenario that can be saved to disk and reloaded."""
     scenario = scenarios.Scenario1_2D()
-    scenario.add_source(
+    scenario.sources.append(
         sources.FocusedSource2D(
             position=np.array([0.02, 0.02]),
             direction=np.array([1.0, -1.0]),
@@ -128,7 +128,7 @@ def a_test_scenario_2d():
 def a_test_scenario_3d():
     """A real 3D scenario that can be saved to disk and reloaded."""
     scenario = scenarios.Scenario1_3D()
-    scenario.add_source(
+    scenario.sources.append(
         sources.FocusedSource3D(
             position=np.array([0.02, 0.02, 0.0]),
             direction=np.array([1.0, -1.0, 0.0]),
