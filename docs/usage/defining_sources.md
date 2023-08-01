@@ -17,7 +17,7 @@ source = ndk.sources.FocusedSource2D(
 )
 scenario.sources.append(source)
 
-scenario.center_frequency=5e5
+scenario.center_frequency = 5e5
 scenario.make_grid()
 scenario.render_layout()
 ```
@@ -35,7 +35,7 @@ In the future, we plan to implement constraints to avoid overlapping with solid 
 If a source is not specified before the scenario is rendered or simulated, then a default source will be used. So you should add the source to the scenario before doing either of these operations (rendering or simulating).
 
 !!! note
-The visualization of the source in 2D plots currently has some scaling limitations, and transducers with short focal lengths can appear very small. This only affects the visualization and not the simulation, and will be improved in future versions.
+    The visualization of the source in 2D plots currently has some scaling limitations, and transducers with short focal lengths can appear very small. This only affects the visualization and not the simulation, and will be improved in future versions.
 
 The implemented source options are:
 
@@ -64,7 +64,7 @@ source = ndk.sources.PlanarSource2D(
 )
 scenario.sources.append(source)
 
-scenario.center_frequency=5e5
+scenario.center_frequency = 5e5
 scenario.make_grid()
 
 scenario.render_layout()

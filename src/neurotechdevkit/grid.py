@@ -7,6 +7,15 @@ import numpy.typing as npt
 import stride
 
 
+def _compute_grid_shape(extent: npt.NDArray[np.float_], dx: float) -> tuple[int, ...]:
+    """Compute the shape of the grid for a given extent and dx."""
+    # TODO: verify that extent is a multiple of dx
+    # but using modulus doesn't work due to floating point
+    # numerical error
+    n_steps = [int(np.round(ext / dx)) for ext in extent]
+    return tuple(steps + 1 for steps in n_steps)
+
+
 class Grid(stride.Grid):
     """Grid class for neurotechdevkit. It is a subclass of stride.Grid."""
 
@@ -17,7 +26,7 @@ class Grid(stride.Grid):
         extra: Union[int, Iterable[int]] = 50,
         absorbing: Union[int, Iterable[int]] = 40,
     ) -> "Grid":
-        """Create a stride Grid.
+        """Create a NDK Grid.
 
         Note that the time component of the grid is not defined here. That is created
         at simulation time because it depends on simulation parameters.
@@ -35,17 +44,8 @@ class Grid(stride.Grid):
         Returns:
             The Grid object.
         """
-
-        def compute_shape(extent: npt.NDArray[np.float_], dx: float) -> tuple[int, ...]:
-            """Compute the shape of the grid for a given extent and dx."""
-            # TODO: verify that extent is a multiple of dx
-            # but using modulus doesn't work due to floating point
-            # numerical error
-            n_steps = [int(np.round(ext / dx)) for ext in extent]
-            return tuple(steps + 1 for steps in n_steps)
-
         n_dims = len(extent)
-        shape = compute_shape(extent, dx)
+        shape = _compute_grid_shape(extent, dx)
 
         if isinstance(extra, int):
             extra = (extra,) * n_dims
