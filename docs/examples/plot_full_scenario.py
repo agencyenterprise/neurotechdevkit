@@ -9,10 +9,10 @@ Implementing a full scenario
 
 The following code is a simplified implementation of NDK's Scenario 1.
 """
-from typing import Mapping
-
 # %%
 # ## Implementing a Scenario
+from typing import Mapping
+
 import numpy as np
 from numpy import typing as npt
 
