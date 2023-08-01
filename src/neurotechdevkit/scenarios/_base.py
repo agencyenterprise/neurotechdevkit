@@ -59,9 +59,6 @@ class Target:
 class Scenario(abc.ABC):
     """The base scenario."""
 
-    # The list of material layers in the scenario.
-    material_layers: list[str]
-
     # The customization to the material layers.
     material_properties: dict[str, Material]
 
@@ -72,29 +69,27 @@ class Scenario(abc.ABC):
     # The list of sources in the scenario.
     sources: list[Source]
 
-    problem: Problem
-
-    grid: Grid
-
-    target: Target
-
     slice_axis: int
     slice_position: float
     material_outline_upsample_factor: int = 16
 
     _center_frequency: float
+    _problem: Problem
+    _target: Target
+    _grid: Grid
+
+    # The list of material layers in the scenario.
+    _material_layers: list[str]
 
     @property
     def extent(self) -> npt.NDArray[np.float_]:
         """The extent of the spatial grid (in meters)."""
-        assert hasattr(self, "grid")
         assert self.grid.space is not None
         return np.array(self.grid.space.size, dtype=float)
 
     @property
     def shape(self) -> npt.NDArray[np.int_]:
         """The shape of the spatial grid (in number of grid points)."""
-        assert hasattr(self, "grid")
         assert self.grid.space is not None
         return np.array(self.grid.space.shape, dtype=int)
 
@@ -104,7 +99,6 @@ class Scenario(abc.ABC):
 
         Spacing is the same in each spatial direction.
         """
-        assert hasattr(self, "grid")
         assert self.grid.space is not None
         return self.grid.space.spacing[0]
 
@@ -114,7 +108,6 @@ class Scenario(abc.ABC):
 
         Only available once a simulation has been completed.
         """
-        assert hasattr(self, "problem")
         if self.problem.time is None:
             raise ValueError(
                 "t_min is not defined until the simulation frequency is defined."
@@ -127,7 +120,6 @@ class Scenario(abc.ABC):
 
         Only available once a simulation has been completed.
         """
-        assert hasattr(self, "problem")
         if self.problem.time is None:
             raise ValueError(
                 "t_max is not defined until the simulation frequency is defined."
@@ -140,7 +132,6 @@ class Scenario(abc.ABC):
 
         Only available once a simulation has been completed.
         """
-        assert hasattr(self, "problem")
         if self.problem.time is None:
             raise ValueError(
                 "dt is not defined until the simulation frequency is defined."
@@ -150,13 +141,11 @@ class Scenario(abc.ABC):
     @property
     def target_center(self) -> npt.NDArray[np.float_]:
         """The coordinates of the center of the target region (in meters)."""
-        assert hasattr(self, "target")
         return self.target.center
 
     @property
     def target_radius(self) -> float:
         """The radius of the target region (in meters)."""
-        assert hasattr(self, "target")
         return self.target.radius
 
     def get_materials(self, center_frequency=float) -> Mapping[str, Struct]:
@@ -168,7 +157,6 @@ class Scenario(abc.ABC):
         - render_color: the color used when rendering this material in the
         scenario layout plot.
         """
-        assert hasattr(self, "material_layers")
         materials = {}
         for layer in self.material_layers:
             if layer not in self.material_properties:
@@ -186,7 +174,6 @@ class Scenario(abc.ABC):
         Returns:
             dict[str, str]: keys are material names and values are the hex color
         """
-        assert hasattr(self, "material_layers")
         material_colors = {}
         for material in self.material_layers:
             if material in self.material_properties:
@@ -199,8 +186,79 @@ class Scenario(abc.ABC):
     @property
     def layer_ids(self) -> Mapping[str, int]:
         """A map between material names and their layer id."""
-        assert hasattr(self, "material_layers")
         return {name: n for n, name in enumerate(self.material_layers)}
+
+    @property
+    def material_layers(self) -> list[str]:
+        """The list of material layers in the scenario."""
+        assert hasattr(self, "_material_layers")
+        return self._material_layers
+
+    @material_layers.setter
+    def material_layers(self, material_layers: list[str]) -> None:
+        """Set the list of material layers in the scenario.
+
+        Args:
+            material_layers: the list of material layers in the scenario.
+        """
+        self._material_layers = material_layers
+
+    @property
+    def target(self) -> Target:
+        """The target in the scenario."""
+        assert hasattr(self, "_target")
+        return self._target
+
+    @target.setter
+    def target(self, target: Target) -> None:
+        """Set the target in the scenario.
+
+        Args:
+            target: the target in the scenario.
+        """
+        self._target = target
+
+    @property
+    def problem(self) -> Problem:
+        """The problem definition for the scenario."""
+        assert hasattr(self, "_problem")
+        return self._problem
+
+    @problem.setter
+    def problem(self, problem: Problem) -> None:
+        """Set the problem definition for the scenario.
+
+        Args:
+            problem: the problem definition for the scenario.
+        """
+        self._problem = problem
+
+    @problem.deleter
+    def problem(self) -> None:
+        """Delete the problem definition for the scenario."""
+        if hasattr(self, "_problem"):
+            del self._problem
+
+    @property
+    def grid(self) -> Grid:
+        """The grid for the scenario."""
+        assert hasattr(self, "_grid")
+        return self._grid
+
+    @grid.setter
+    def grid(self, grid: Grid) -> None:
+        """Set the grid for the scenario.
+
+        Args:
+            grid: the grid for the scenario.
+        """
+        self._grid = grid
+
+    @grid.deleter
+    def grid(self) -> None:
+        """Delete the grid for the scenario."""
+        if hasattr(self, "_grid"):
+            del self._grid
 
     @property
     def center_frequency(self) -> float:
@@ -215,6 +273,13 @@ class Scenario(abc.ABC):
         Args:
             center_frequency: the center frequency (in hertz) of the scenario.
         """
+        if hasattr(self, "_center_frequency"):
+            if self._center_frequency != center_frequency:
+                # Invalidating problem and grid as they should be re-generated
+                # with the new center frequency
+                del self.problem
+                del self.grid
+
         self._center_frequency = center_frequency
 
     def get_field_data(self, field: str) -> npt.NDArray[np.float_]:
@@ -233,14 +298,11 @@ class Scenario(abc.ABC):
         Returns:
             An array containing the field data.
         """
-        assert hasattr(self, "problem")
         return self.problem.medium.fields[field].data
 
     def _get_material_layer(self) -> npt.NDArray[np.int_]:
         """Return the layer id for each grid point in the scenario."""
-        assert hasattr(self, "material_layers")
         assert hasattr(self, "layer_ids")
-        assert hasattr(self, "grid")
         assert hasattr(self, "material_masks")
         assert self.grid.space is not None
 
