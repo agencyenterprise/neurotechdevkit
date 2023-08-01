@@ -57,7 +57,8 @@ def make_scenario(element_delays=None):
 # %%
 # ## Set up and visualize the forward scenario
 true_scenario = make_scenario()
-true_scenario.make_grid(center_frequency=CENTER_FREQUENCY)
+true_scenario.center_frequency = CENTER_FREQUENCY
+true_scenario.make_grid()
 true_scenario.compile_problem()
 true_scenario.render_layout()
 
@@ -75,7 +76,8 @@ point_source = ndk.sources.PointSource2D(
 )
 reversed_scenario.add_source(point_source)
 
-reversed_scenario.make_grid(center_frequency=CENTER_FREQUENCY)
+reversed_scenario.center_frequency = CENTER_FREQUENCY
+reversed_scenario.make_grid()
 reversed_scenario.compile_problem()
 reversed_scenario.render_layout()
 
@@ -136,7 +138,8 @@ plt.ylabel("delay [s]")
 element_delays = element_reverse_delays.max() - element_reverse_delays
 
 true_scenario = make_scenario(element_delays=element_delays)
-true_scenario.make_grid(center_frequency=CENTER_FREQUENCY)
+true_scenario.center_frequency = CENTER_FREQUENCY
+true_scenario.make_grid()
 true_scenario.compile_problem()
 result = true_scenario.simulate_pulse()
 assert isinstance(result, ndk.results.PulsedResult2D)
@@ -154,7 +157,8 @@ result.render_pulsed_simulation_animation()
 
 # Re-initialize scenario to clear previous simulation
 true_scenario = make_scenario(element_delays=element_delays)
-true_scenario.make_grid(center_frequency=CENTER_FREQUENCY)
+true_scenario.center_frequency = CENTER_FREQUENCY
+true_scenario.make_grid()
 true_scenario.compile_problem()
 steady_state_result = true_scenario.simulate_steady_state()
 assert isinstance(steady_state_result, ndk.results.SteadyStateResult2D)

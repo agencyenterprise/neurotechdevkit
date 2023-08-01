@@ -4,7 +4,6 @@ from typing import Mapping
 
 import numpy as np
 import numpy.typing as npt
-import stride
 
 from .. import rendering, sources
 from ..grid import Grid
@@ -54,20 +53,26 @@ class Scenario1(Scenario):
         }
         return material_masks
 
-    def _make_grid(
-        self, center_frequency: float, extent: npt.NDArray[np.float_]
-    ) -> stride.Grid:
+    def _make_grid(self, extent: npt.NDArray[np.float_]) -> Grid:
         """
         Make the grid for scenario 1.
 
         Args:
-            center_frequency (float): the center frequency of the transducer
             extent (npt.NDArray[np.float_]): the extent of the grid
 
         Returns:
             stride.Grid: the grid
         """
-        grid = Grid.make_grid(center_frequency=center_frequency, extent=extent)
+        # scenario constants
+        speed_water = 1500  # m/s
+
+        # desired resolution for complexity=fast
+        ppw = 6
+
+        # compute resolution
+        dx = speed_water / self.center_frequency / ppw  # m
+
+        grid = Grid.make_grid(extent=extent, dx=dx)
         return grid
 
     def compile_problem(self) -> Problem:
@@ -81,11 +86,9 @@ class Scenario1(Scenario):
         assert self.layer_ids is not None
         assert self.material_masks is not None
 
-        self.problem = Problem(
-            center_frequency=self.grid.center_frequency, grid=self.grid
-        )
+        self.problem = Problem(center_frequency=self.center_frequency, grid=self.grid)
         self.problem.add_material_fields(
-            materials=self.get_materials(self.grid.center_frequency),
+            materials=self.get_materials(self.center_frequency),
             layer_ids=self.layer_ids,
             masks=self.material_masks,
         )
@@ -118,15 +121,10 @@ class Scenario1_2D(Scenario1, Scenario2D):
     origin = np.array([0.0, -0.035])
     material_outline_upsample_factor = 8
 
-    def make_grid(self, center_frequency: float):
-        """
-        Make the grid for scenario 1 2D.
-
-        Args:
-            center_frequency (float): the center frequency of the transducer
-        """
+    def make_grid(self):
+        """Make the grid for scenario 1 2D."""
         extent = np.array([0.12, 0.07])
-        self.grid = self._make_grid(center_frequency, extent)
+        self.grid = self._make_grid(extent)
         self.material_masks = self._make_material_masks()
 
 
@@ -183,15 +181,10 @@ class Scenario1_3D(Scenario1, Scenario3D):
     slice_position = 0.0
     material_outline_upsample_factor = 8
 
-    def make_grid(self, center_frequency: float):
-        """
-        Make the grid for scenario 1 3D.
-
-        Args:
-            center_frequency (float): the center frequency of the transducer
-        """
+    def make_grid(self):
+        """Make the grid for scenario 1 3D."""
         extent = np.array([0.12, 0.07, 0.07])
-        self.grid = self._make_grid(center_frequency, extent)
+        self.grid = self._make_grid(extent)
         self.material_masks = self._make_material_masks()
 
 

@@ -10,7 +10,8 @@ using ndk
 import neurotechdevkit as ndk
 
 scenario = ndk.BUILTIN_SCENARIOS.SCENARIO_0.value()
-scenario.make_grid(center_frequency=5e5)
+scenario.center_frequency = 5e5
+scenario.make_grid()
 scenario.compile_problem()
 result = scenario.simulate_pulse()
 assert isinstance(result, ndk.results.PulsedResult2D)

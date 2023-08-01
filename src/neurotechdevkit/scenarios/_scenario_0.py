@@ -54,7 +54,7 @@ class Scenario0(Scenario2D):
         }
         return material_masks
 
-    def make_grid(self, center_frequency: float):
+    def make_grid(self):
         """
         Make the grid for scenario 0.
 
@@ -63,7 +63,15 @@ class Scenario0(Scenario2D):
         """
         extent = np.array([0.05, 0.04])  # m
 
-        self.grid = Grid.make_grid(center_frequency=center_frequency, extent=extent)
+        # scenario constants
+        speed_water = 1500  # m/s
+
+        # desired resolution for complexity=fast
+        ppw = 6
+        # compute resolution
+        dx = speed_water / self.center_frequency / ppw  # m
+
+        self.grid = Grid.make_grid(extent=extent, dx=dx)
         self.material_masks = self._make_material_masks()
 
     def compile_problem(self) -> Problem:
@@ -77,11 +85,9 @@ class Scenario0(Scenario2D):
         assert self.layer_ids is not None
         assert self.material_masks is not None
 
-        self.problem = Problem(
-            center_frequency=self.grid.center_frequency, grid=self.grid
-        )
+        self.problem = Problem(center_frequency=self.center_frequency, grid=self.grid)
         self.problem.add_material_fields(
-            materials=self.get_materials(self.grid.center_frequency),
+            materials=self.get_materials(self.center_frequency),
             layer_ids=self.layer_ids,
             masks=self.material_masks,
         )

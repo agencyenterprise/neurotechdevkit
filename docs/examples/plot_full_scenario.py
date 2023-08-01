@@ -65,11 +65,20 @@ class FullScenario(Scenario2D):
     ]
     material_outline_upsample_factor = 8
 
-    def make_grid(self, center_frequency):
+    def make_grid(self):
         """Make the grid for scenario 1 2D."""
         extent = np.array([0.12, 0.07])  # m
 
-        self.grid = Grid.make_grid(center_frequency=center_frequency, extent=extent)
+        # scenario constants
+        speed_water = 1500  # m/s
+
+        # desired resolution for complexity=fast
+        ppw = 6
+
+        # compute resolution
+        dx = speed_water / self.center_frequency / ppw  # m
+
+        self.grid = Grid.make_grid(extent=extent, dx=dx)
         self.material_masks = self._make_material_masks()
 
     def _make_material_masks(self) -> Mapping[str, npt.NDArray[np.bool_]]:
@@ -82,11 +91,9 @@ class FullScenario(Scenario2D):
 
     def compile_problem(self) -> Problem:
         """The problem definition for the scenario."""
-        self.problem = Problem(
-            center_frequency=self.grid.center_frequency, grid=self.grid
-        )
+        self.problem = Problem(center_frequency=self.center_frequency, grid=self.grid)
         self.problem.add_material_fields(
-            materials=self.get_materials(self.grid.center_frequency),
+            materials=self.get_materials(self.center_frequency),
             layer_ids=self.layer_ids,
             masks=self.material_masks,
         )
@@ -147,7 +154,8 @@ def _fill_mask(mask, start, end, dx):
 # %%
 # ## Creating the scenario
 scenario = FullScenario()
-scenario.make_grid(center_frequency=5e5)
+scenario.center_frequency = 5e5
+scenario.make_grid()
 scenario.render_layout()
 
 # %%

@@ -130,7 +130,8 @@ source = ndk.sources.PhasedArraySource2D(
 
 scenario = ndk.BUILTIN_SCENARIOS.SCENARIO_1_2D.value()
 scenario.sources = [source]
-scenario.make_grid(center_frequency=5e5)
+scenario.center_frequency = 5e5
+scenario.make_grid()
 scenario.compile_problem()
 result = scenario.simulate_steady_state()
 assert isinstance(result, ndk.results.SteadyStateResult2D)
@@ -159,7 +160,8 @@ scenario.add_source(phased_array)
 print(f"Focal point is: {phased_array.focal_point}")
 # %%
 # `focal_point` shows the coordinates (in meters) where the array focuses.
-scenario.make_grid(center_frequency=5e5)
+scenario.center_frequency = 5e5
+scenario.make_grid()
 scenario.compile_problem()
 result = scenario.simulate_steady_state()
 assert isinstance(result, ndk.results.SteadyStateResult2D)
@@ -190,7 +192,8 @@ phased_array = ndk.sources.PhasedArraySource2D(
 )
 scenario.sources.clear()
 scenario.add_source(phased_array)
-scenario.make_grid(center_frequency=5e5)
+scenario.center_frequency = 5e5
+scenario.make_grid()
 scenario.compile_problem()
 result = scenario.simulate_steady_state()
 assert isinstance(result, ndk.results.SteadyStateResult2D)
@@ -225,7 +228,8 @@ phased_3d = ndk.sources.PhasedArraySource3D(
 )
 scenario_3d.sources.clear()
 scenario_3d.add_source(phased_3d)
-scenario_3d.make_grid(center_frequency=5e5)
+scenario_3d.center_frequency = 5e5
+scenario_3d.make_grid()
 scenario_3d.compile_problem()
 results = scenario_3d.simulate_steady_state()
 assert isinstance(results, ndk.results.SteadyStateResult3D)

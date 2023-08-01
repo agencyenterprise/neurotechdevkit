@@ -118,7 +118,8 @@ def a_test_scenario_2d():
             num_points=100,
         )
     )
-    scenario.make_grid(5e5)
+    scenario.center_frequency = 5e5
+    scenario.make_grid()
     scenario.compile_problem()
     return scenario
 
@@ -136,7 +137,8 @@ def a_test_scenario_3d():
             num_points=100,
         )
     )
-    scenario.make_grid(5e5)
+    scenario.center_frequency = 5e5
+    scenario.make_grid()
     scenario.compile_problem()
     return scenario
 

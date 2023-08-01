@@ -7,7 +7,8 @@ import neurotechdevkit as ndk
 def test_compilation():
     """Will run a simulation requiring compilation."""
     scenario = ndk.BUILTIN_SCENARIOS.SCENARIO_0.value()
-    scenario.make_grid(center_frequency=5e5)
+    scenario.center_frequency = 5e5
+    scenario.make_grid()
     scenario.compile_problem()
     result = scenario.simulate_steady_state()
     assert result.wavefield.shape == (101, 81, 59)
