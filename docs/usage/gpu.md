@@ -15,7 +15,7 @@ Now when running NDK simulations you should be able to see `platform=nvidiaX` in
 import neurotechdevkit as ndk
 
 scenario = ndk.BUILTIN_SCENARIOS.SCENARIO_2_2D.value()
-scenario.center_frequency=5e5
+scenario.center_frequency = 5e5
 scenario.make_grid()
 scenario.compile_problem()
 result = scenario.simulate_steady_state()

@@ -37,7 +37,8 @@ nav:
       - GPU support: usage/gpu.md
   - API:
       - Scenarios: api/scenarios.md
-      - Utils: api/utils.md
+      - Grid: api/grid.md
+      - Problem: api/problem.md
       - Sources: api/sources.md
       - Results: api/results.md
   - Examples: generated/gallery
