@@ -119,7 +119,7 @@ def a_test_scenario_2d():
         )
     )
     scenario.make_grid(5e5)
-    scenario.compile_problem(5e5)
+    scenario.compile_problem()
     return scenario
 
 
@@ -137,7 +137,7 @@ def a_test_scenario_3d():
         )
     )
     scenario.make_grid(5e5)
-    scenario.compile_problem(5e5)
+    scenario.compile_problem()
     return scenario
 
 

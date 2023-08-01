@@ -5,10 +5,11 @@ import numpy.typing as npt
 import pytest
 import stride
 
+from neurotechdevkit.grid import Grid
 from neurotechdevkit.problem import Problem
 from neurotechdevkit.results import PulsedResult, SteadyStateResult
 from neurotechdevkit.scenarios._base import Scenario
-from neurotechdevkit.scenarios._utils import make_grid, wavelet_helper
+from neurotechdevkit.scenarios._utils import wavelet_helper
 from neurotechdevkit.sources import FocusedSource3D, PlanarSource3D, Source
 
 
@@ -29,17 +30,16 @@ class ScenarioBaseTester(Scenario):
     origin = np.array([-0.1, -0.1, 0.0])
 
     def __init__(self):
-        self._make_grid()
-        self.problem = self._compile_problem(center_frequency=5e5)
+        self._make_grid(center_frequency=5e5)
+        self.problem = self._compile_problem()
 
-    def _make_grid(self):
+    def _make_grid(self, center_frequency):
         extent = np.array([2.0, 3.0, 4.0])
-        dx = 0.1
-        grid = make_grid(extent=extent, dx=dx)
+        grid = Grid.make_grid(center_frequency=center_frequency, extent=extent, dx=0.1)
         self.grid = grid
 
-    def _compile_problem(self, center_frequency: float) -> Problem:
-        problem = Problem(center_frequency=center_frequency, grid=self.grid)
+    def _compile_problem(self) -> Problem:
+        problem = Problem(center_frequency=self.grid.center_frequency, grid=self.grid)
         problem.medium.add(stride.ScalarField(name="vp", grid=self.grid))
         problem.medium.add(stride.ScalarField(name="rho", grid=self.grid))
         problem.medium.add(stride.ScalarField(name="alpha", grid=self.grid))
