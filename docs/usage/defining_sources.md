@@ -17,6 +17,8 @@ source = ndk.sources.FocusedSource2D(
 )
 scenario.sources.append(source)
 
+scenario.center_frequency=5e5
+scenario.make_grid()
 scenario.render_layout()
 ```
 
@@ -61,6 +63,9 @@ source = ndk.sources.PlanarSource2D(
     num_points=3000
 )
 scenario.sources.append(source)
+
+scenario.center_frequency=5e5
+scenario.make_grid()
 
 scenario.render_layout()
 ```

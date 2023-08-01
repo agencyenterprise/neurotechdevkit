@@ -10,6 +10,8 @@ The following is all that's needed to load a pre-defined scenario:
 import neurotechdevkit as ndk
 
 scenario = ndk.BUILTIN_SCENARIOS.SCENARIO_2_2D.value()
+scenario.center_frequency = 5e5
+scenario.make_grid()
 ```
 
 The existing scenario ids are:
