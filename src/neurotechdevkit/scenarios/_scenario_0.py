@@ -3,11 +3,12 @@ from typing import Mapping
 import numpy as np
 import numpy.typing as npt
 
+from ..grid import Grid
 from ..materials import Material
 from ..problem import Problem
 from ..sources import FocusedSource2D
 from ._base import Scenario2D, Target
-from ._utils import create_grid_circular_mask, create_grid_elliptical_mask, make_grid
+from ._utils import create_grid_circular_mask, create_grid_elliptical_mask
 
 
 class Scenario0(Scenario2D):
@@ -62,24 +63,12 @@ class Scenario0(Scenario2D):
         """
         extent = np.array([0.05, 0.04])  # m
 
-        # scenario constants
-        speed_water = 1500  # m/s
-
-        # desired resolution for complexity=fast
-        ppw = 6
-
-        # compute resolution
-        dx = speed_water / center_frequency / ppw  # m
-
-        self.grid = make_grid(extent=extent, dx=dx)
+        self.grid = Grid.make_grid(center_frequency=center_frequency, extent=extent)
         self.material_masks = self._make_material_masks()
 
-    def compile_problem(self, center_frequency: float) -> Problem:
+    def compile_problem(self) -> Problem:
         """
         Compile the problem for scenario 0.
-
-        Args:
-            center_frequency (float): the center frequency of the transducer
 
         Returns:
             Problem: the compiled problem
@@ -88,9 +77,11 @@ class Scenario0(Scenario2D):
         assert self.layer_ids is not None
         assert self.material_masks is not None
 
-        self.problem = Problem(center_frequency=center_frequency, grid=self.grid)
+        self.problem = Problem(
+            center_frequency=self.grid.center_frequency, grid=self.grid
+        )
         self.problem.add_material_fields(
-            materials=self.get_materials(center_frequency),
+            materials=self.get_materials(self.grid.center_frequency),
             layer_ids=self.layer_ids,
             masks=self.material_masks,
         )

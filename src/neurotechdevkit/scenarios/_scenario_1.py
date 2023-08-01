@@ -7,10 +7,10 @@ import numpy.typing as npt
 import stride
 
 from .. import rendering, sources
+from ..grid import Grid
 from ..materials import Material
 from ..problem import Problem
 from ._base import Scenario, Scenario2D, Scenario3D, Target
-from ._utils import make_grid
 
 
 class Scenario1(Scenario):
@@ -67,24 +67,12 @@ class Scenario1(Scenario):
         Returns:
             stride.Grid: the grid
         """
-        # scenario constants
-        speed_water = 1500  # m/s
-
-        # desired resolution for complexity=fast
-        ppw = 6
-
-        # compute resolution
-        dx = speed_water / center_frequency / ppw  # m
-
-        grid = make_grid(extent=extent, dx=dx)
+        grid = Grid.make_grid(center_frequency=center_frequency, extent=extent)
         return grid
 
-    def compile_problem(self, center_frequency: float) -> Problem:
+    def compile_problem(self) -> Problem:
         """
         Compile the problem for scenario 1.
-
-        Args:
-            center_frequency (float): the center frequency of the transducer
 
         Returns:
             Problem: the compiled problem
@@ -93,9 +81,11 @@ class Scenario1(Scenario):
         assert self.layer_ids is not None
         assert self.material_masks is not None
 
-        self.problem = Problem(center_frequency=center_frequency, grid=self.grid)
+        self.problem = Problem(
+            center_frequency=self.grid.center_frequency, grid=self.grid
+        )
         self.problem.add_material_fields(
-            materials=self.get_materials(center_frequency),
+            materials=self.get_materials(self.grid.center_frequency),
             layer_ids=self.layer_ids,
             masks=self.material_masks,
         )

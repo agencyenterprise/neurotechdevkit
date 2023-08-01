@@ -6,7 +6,7 @@ Running a simulation takes just a single function call.
 import neurotechdevkit as ndk
 
 scenario = ndk.BUILTIN_SCENARIOS.SCENARIO_2_2D.value()
-scenario.compile_problem(center_frequency=5e5)
+scenario.compile_problem()
 result = scenario.simulate_steady_state()
 result.render_steady_state_amplitudes()
 ```

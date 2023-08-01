@@ -23,7 +23,7 @@ scenario.material_properties = {
     ),
 }
 scenario.make_grid(center_frequency=CENTER_FREQUENCY)
-scenario.compile_problem(center_frequency=CENTER_FREQUENCY)
+scenario.compile_problem()
 result = scenario.simulate_steady_state()
 assert isinstance(result, ndk.results.SteadyStateResult2D)
 result.render_steady_state_amplitudes(show_material_outlines=False)

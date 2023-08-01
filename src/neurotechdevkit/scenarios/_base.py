@@ -15,6 +15,7 @@ from mosaic.types import Struct
 from stride.problem import StructuredData
 
 from .. import rendering, results
+from ..grid import Grid
 from ..materials import Material, get_material, get_render_color
 from ..problem import Problem
 from ..sources import Source
@@ -73,7 +74,7 @@ class Scenario(abc.ABC):
 
     problem: Problem
 
-    grid: stride.Grid
+    grid: Grid
 
     target: Target
 

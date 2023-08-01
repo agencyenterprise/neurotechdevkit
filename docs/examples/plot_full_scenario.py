@@ -17,9 +17,10 @@ import numpy as np
 from numpy import typing as npt
 
 from neurotechdevkit import sources
+from neurotechdevkit.grid import Grid
 from neurotechdevkit.problem import Problem
 from neurotechdevkit.results import SteadyStateResult2D
-from neurotechdevkit.scenarios import Scenario2D, Target, make_grid
+from neurotechdevkit.scenarios import Scenario2D, Target
 
 
 class FullScenario(Scenario2D):
@@ -67,16 +68,8 @@ class FullScenario(Scenario2D):
     def make_grid(self, center_frequency):
         """Make the grid for scenario 1 2D."""
         extent = np.array([0.12, 0.07])  # m
-        # scenario constants
-        speed_water = 1500  # m/s
 
-        # desired resolution for complexity=fast
-        ppw = 6
-
-        # compute resolution
-        dx = speed_water / center_frequency / ppw  # m
-
-        self.grid = make_grid(extent=extent, dx=dx)
+        self.grid = Grid.make_grid(center_frequency=center_frequency, extent=extent)
         self.material_masks = self._make_material_masks()
 
     def _make_material_masks(self) -> Mapping[str, npt.NDArray[np.bool_]]:
@@ -87,11 +80,13 @@ class FullScenario(Scenario2D):
         }
         return material_masks
 
-    def compile_problem(self, center_frequency) -> Problem:
+    def compile_problem(self) -> Problem:
         """The problem definition for the scenario."""
-        self.problem = Problem(center_frequency=center_frequency, grid=self.grid)
+        self.problem = Problem(
+            center_frequency=self.grid.center_frequency, grid=self.grid
+        )
         self.problem.add_material_fields(
-            materials=self.get_materials(center_frequency),
+            materials=self.get_materials(self.grid.center_frequency),
             layer_ids=self.layer_ids,
             masks=self.material_masks,
         )
@@ -157,7 +152,7 @@ scenario.render_layout()
 
 # %%
 # ## Rendering the simulation
-scenario.compile_problem(center_frequency=5e5)
+scenario.compile_problem()
 result = scenario.simulate_steady_state()
 assert isinstance(result, SteadyStateResult2D)
 result.render_steady_state_amplitudes(show_material_outlines=False)
