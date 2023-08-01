@@ -1,4 +1,7 @@
+from typing import Mapping
+
 import numpy as np
+import numpy.typing as npt
 
 from ..materials import Material
 from ..problem import Problem
@@ -41,21 +44,21 @@ class Scenario0(Scenario2D):
         "tumor": Material(vp=1650.0, rho=1150.0, alpha=0.8, render_color="#94332F"),
     }
 
-    def _get_material_masks(self, problem):
-        return {
-            name: _create_scenario_0_mask(name, problem.grid, self.origin)
+    def _make_material_masks(self) -> Mapping[str, npt.NDArray[np.bool_]]:
+        """Make the material masks for scenario 0."""
+        assert self.origin is not None
+        material_masks = {
+            name: _create_scenario_0_mask(name, self.grid, self.origin)
             for name in self.material_layers
         }
+        return material_masks
 
-    def compile_problem(self, center_frequency: float) -> Problem:
+    def make_grid(self, center_frequency: float):
         """
-        Compile the problem for scenario 0.
+        Make the grid for scenario 0.
 
         Args:
             center_frequency (float): the center frequency of the transducer
-
-        Returns:
-            Problem: the compiled problem
         """
         extent = np.array([0.05, 0.04])  # m
 
@@ -69,11 +72,27 @@ class Scenario0(Scenario2D):
         dx = speed_water / center_frequency / ppw  # m
 
         self.grid = make_grid(extent=extent, dx=dx)
+        self.material_masks = self._make_material_masks()
+
+    def compile_problem(self, center_frequency: float) -> Problem:
+        """
+        Compile the problem for scenario 0.
+
+        Args:
+            center_frequency (float): the center frequency of the transducer
+
+        Returns:
+            Problem: the compiled problem
+        """
+        assert self.grid is not None
+        assert self.layer_ids is not None
+        assert self.material_masks is not None
+
         self.problem = Problem(center_frequency=center_frequency, grid=self.grid)
         self.problem.add_material_fields(
             materials=self.get_materials(center_frequency),
             layer_ids=self.layer_ids,
-            masks=self._get_material_masks(self.problem),
+            masks=self.material_masks,
         )
         return self.problem
 

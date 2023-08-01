@@ -39,6 +39,7 @@ s2 = ndk.sources.FocusedSource2D(
 )
 
 scenario.sources = [s1, s2]
+scenario.make_grid(center_frequency=5e5)
 scenario.compile_problem(center_frequency=5e5)
 result = scenario.simulate_pulse()
 assert isinstance(result, ndk.results.PulsedResult2D)

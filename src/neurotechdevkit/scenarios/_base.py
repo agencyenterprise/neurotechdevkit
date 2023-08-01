@@ -64,6 +64,8 @@ class Scenario(abc.ABC):
     # The customization to the material layers.
     material_properties: dict[str, Material]
 
+    material_masks: Mapping[str, npt.NDArray[np.bool_]]
+
     origin: npt.NDArray[np.float_]
 
     # The list of sources in the scenario.
@@ -82,16 +84,16 @@ class Scenario(abc.ABC):
     @property
     def extent(self) -> npt.NDArray[np.float_]:
         """The extent of the spatial grid (in meters)."""
-        assert hasattr(self, "problem")
-        assert self.problem.space is not None
-        return np.array(self.problem.space.size, dtype=float)
+        assert hasattr(self, "grid")
+        assert self.grid.space is not None
+        return np.array(self.grid.space.size, dtype=float)
 
     @property
     def shape(self) -> npt.NDArray[np.int_]:
         """The shape of the spatial grid (in number of grid points)."""
-        assert hasattr(self, "problem")
-        assert self.problem.space is not None
-        return np.array(self.problem.space.shape, dtype=int)
+        assert hasattr(self, "grid")
+        assert self.grid.space is not None
+        return np.array(self.grid.space.shape, dtype=int)
 
     @property
     def dx(self) -> float:
@@ -99,9 +101,9 @@ class Scenario(abc.ABC):
 
         Spacing is the same in each spatial direction.
         """
-        assert hasattr(self, "problem")
-        assert self.problem.space is not None
-        return self.problem.space.spacing[0]
+        assert hasattr(self, "grid")
+        assert self.grid.space is not None
+        return self.grid.space.spacing[0]
 
     @property
     def t_min(self) -> float:
@@ -197,29 +199,6 @@ class Scenario(abc.ABC):
         assert hasattr(self, "material_layers")
         return {name: n for n, name in enumerate(self.material_layers)}
 
-    def get_layer_mask(self, layer_name: str) -> npt.NDArray[np.bool_]:
-        """Return the mask for the desired layer.
-
-        The mask is `True` at each gridpoint where the requested layer exists,
-        and `False` elsewhere.
-
-        Args:
-            layer_name: the name of the desired layer.
-
-        Raises:
-            ValueError: if `layer_name` does not match the name of one of the existing
-                layers.
-
-        Returns:
-            A boolean array indicating which gridpoints correspond to the desired
-                layer.
-        """
-        if layer_name not in self.layer_ids:
-            raise ValueError(f"Layer '{layer_name}' does not exist.")
-        layer = self.layer_ids[layer_name]
-        layers_field = self.get_field_data("layer")
-        return layers_field == layer
-
     def get_field_data(self, field: str) -> npt.NDArray[np.float_]:
         """Return the array of field values across the scenario for a particular field.
 
@@ -250,6 +229,23 @@ class Scenario(abc.ABC):
             source: the source to add to the scenario.
         """
         self.sources.append(source)
+
+    def _get_material_layer(self) -> npt.NDArray[np.int_]:
+        """Return the layer id for each grid point in the scenario."""
+        assert hasattr(self, "material_layers")
+        assert hasattr(self, "layer_ids")
+        assert hasattr(self, "grid")
+        assert hasattr(self, "material_masks")
+        assert self.grid.space is not None
+
+        layer = np.zeros(self.grid.space.shape, dtype=int)
+
+        for layer_name in self.material_layers:
+            material_mask = self.material_masks[layer_name]
+            layer_id = self.layer_ids[layer_name]
+
+            layer[material_mask] = layer_id
+        return layer
 
     def simulate_steady_state(
         self,
@@ -753,7 +749,7 @@ class Scenario2D(Scenario):
                 the transition between different materials.
         """
         color_sequence = list(self.material_colors.values())
-        field = self.get_field_data("layer").astype(int)
+        field = self._get_material_layer()
         fig, ax = rendering.create_layout_fig(
             self.extent, self.origin, color_sequence, field
         )
@@ -875,7 +871,7 @@ class Scenario3D(Scenario):
         slice_axis = self.slice_axis
         slice_position = self.slice_position
         color_sequence = list(self.material_colors.values())
-        field = self.get_field_data("layer").astype(int)
+        field = self._get_material_layer()
         field = slice_field(field, self, slice_axis, slice_position)
         extent = drop_element(self.extent, slice_axis)
         origin = drop_element(self.origin, slice_axis)

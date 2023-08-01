@@ -22,6 +22,7 @@ scenario.material_properties = {
         vp=1850.0, rho=1250.0, alpha=0.8, render_color="#94332F"
     ),
 }
+scenario.make_grid(center_frequency=CENTER_FREQUENCY)
 scenario.compile_problem(center_frequency=CENTER_FREQUENCY)
 result = scenario.simulate_steady_state()
 assert isinstance(result, ndk.results.SteadyStateResult2D)

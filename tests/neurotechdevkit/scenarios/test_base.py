@@ -7,7 +7,7 @@ import stride
 
 from neurotechdevkit.problem import Problem
 from neurotechdevkit.results import PulsedResult, SteadyStateResult
-from neurotechdevkit.scenarios._base import Scenario, Target
+from neurotechdevkit.scenarios._base import Scenario
 from neurotechdevkit.scenarios._utils import make_grid, wavelet_helper
 from neurotechdevkit.sources import FocusedSource3D, PlanarSource3D, Source
 
@@ -15,20 +15,6 @@ from neurotechdevkit.sources import FocusedSource3D, PlanarSource3D, Source
 class ScenarioBaseTester(Scenario):
     """A class which can be used to test attributes and methods of Scenario."""
 
-    _TARGET_OPTIONS = {
-        "target_1": Target(
-            target_id="target_1",
-            center=np.array([0.5, 1.2, 3.1]),
-            radius=0.3,
-            description="foo",
-        ),
-        "target_2": Target(
-            target_id="target_2",
-            center=np.array([0.1, 0.1, 0.1]),
-            radius=0.1,
-            description="bar",
-        ),
-    }
     material_layers = ["brain", "skin"]
     material_properties = {}
 
@@ -43,17 +29,21 @@ class ScenarioBaseTester(Scenario):
     origin = np.array([-0.1, -0.1, 0.0])
 
     def __init__(self):
+        self._make_grid()
         self.problem = self._compile_problem(center_frequency=5e5)
 
-    def _compile_problem(self, center_frequency: float) -> Problem:
+    def _make_grid(self):
         extent = np.array([2.0, 3.0, 4.0])
         dx = 0.1
         grid = make_grid(extent=extent, dx=dx)
-        problem = Problem(center_frequency=center_frequency, grid=grid)
-        problem.medium.add(stride.ScalarField(name="vp", grid=grid))
-        problem.medium.add(stride.ScalarField(name="rho", grid=grid))
-        problem.medium.add(stride.ScalarField(name="alpha", grid=grid))
-        problem.medium.add(stride.ScalarField(name="layer", grid=grid))
+        self.grid = grid
+
+    def _compile_problem(self, center_frequency: float) -> Problem:
+        problem = Problem(center_frequency=center_frequency, grid=self.grid)
+        problem.medium.add(stride.ScalarField(name="vp", grid=self.grid))
+        problem.medium.add(stride.ScalarField(name="rho", grid=self.grid))
+        problem.medium.add(stride.ScalarField(name="alpha", grid=self.grid))
+        problem.medium.add(stride.ScalarField(name="layer", grid=self.grid))
         return problem
 
     def get_default_source(self) -> Source:
@@ -407,28 +397,6 @@ def test_simulate_pulse_result_wavefield(base_tester, fake_pde, monkeypatch):
     # drop the final timestep, then swap axes
     expected_wavefield = np.expand_dims(np.arange(8).reshape((2, 4)).T, 1)
     np.testing.assert_array_equal(result.wavefield, expected_wavefield)
-
-
-def test_get_layer_mask_with_wrong_layer_name(tester_with_layers):
-    """Verify an exception is raised when the layer doesn't exist."""
-    with pytest.raises(ValueError):
-        tester_with_layers.get_layer_mask("not_a_layer")
-
-
-def test_get_layer_mask_with_first_layer(tester_with_layers):
-    """Verify that get_layer_mask returns the expected mask for the first layer."""
-    mask = tester_with_layers.get_layer_mask("brain")
-    expected = np.zeros_like(mask, dtype=bool)
-    expected[:5] = True
-    np.testing.assert_allclose(mask, expected)
-
-
-def test_get_layer_mask_with_last_layer(tester_with_layers):
-    """Verify that get_layer_mask returns the expected mask for the last layer."""
-    mask = tester_with_layers.get_layer_mask("skin")
-    expected = np.zeros_like(mask, dtype=bool)
-    expected[5:] = True
-    np.testing.assert_allclose(mask, expected)
 
 
 def test_get_field_data(base_tester):
