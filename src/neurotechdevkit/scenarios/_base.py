@@ -82,6 +82,8 @@ class Scenario(abc.ABC):
     slice_position: float
     material_outline_upsample_factor: int = 16
 
+    _center_frequency: float
+
     @property
     def extent(self) -> npt.NDArray[np.float_]:
         """The extent of the spatial grid (in meters)."""
@@ -199,6 +201,21 @@ class Scenario(abc.ABC):
         """A map between material names and their layer id."""
         assert hasattr(self, "material_layers")
         return {name: n for n, name in enumerate(self.material_layers)}
+
+    @property
+    def center_frequency(self) -> float:
+        """The center frequency (in hertz) of the scenario."""
+        assert hasattr(self, "_center_frequency")
+        return self._center_frequency
+
+    @center_frequency.setter
+    def center_frequency(self, center_frequency: float) -> None:
+        """Set the center frequency of the scenario.
+
+        Args:
+            center_frequency: the center frequency (in hertz) of the scenario.
+        """
+        self._center_frequency = center_frequency
 
     def get_field_data(self, field: str) -> npt.NDArray[np.float_]:
         """Return the array of field values across the scenario for a particular field.

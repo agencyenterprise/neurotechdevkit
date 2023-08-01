@@ -30,16 +30,17 @@ class ScenarioBaseTester(Scenario):
     origin = np.array([-0.1, -0.1, 0.0])
 
     def __init__(self):
-        self._make_grid(center_frequency=5e5)
+        self.center_frequency = 5e5
+        self._make_grid()
         self.problem = self._compile_problem()
 
-    def _make_grid(self, center_frequency):
+    def _make_grid(self):
         extent = np.array([2.0, 3.0, 4.0])
-        grid = Grid.make_grid(center_frequency=center_frequency, extent=extent, dx=0.1)
+        grid = Grid.make_grid(extent=extent, dx=0.1)
         self.grid = grid
 
     def _compile_problem(self) -> Problem:
-        problem = Problem(center_frequency=self.grid.center_frequency, grid=self.grid)
+        problem = Problem(center_frequency=self.center_frequency, grid=self.grid)
         problem.medium.add(stride.ScalarField(name="vp", grid=self.grid))
         problem.medium.add(stride.ScalarField(name="rho", grid=self.grid))
         problem.medium.add(stride.ScalarField(name="alpha", grid=self.grid))
