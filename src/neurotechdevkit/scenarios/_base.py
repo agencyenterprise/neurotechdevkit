@@ -148,7 +148,8 @@ class Scenario(abc.ABC):
         """The radius of the target region (in meters)."""
         return self.target.radius
 
-    def get_materials(self, center_frequency=float) -> Mapping[str, Struct]:
+    @property
+    def materials(self) -> Mapping[str, Struct]:
         """Return a map between material name and material properties.
 
         - vp: the speed of sound (in m/s).
@@ -160,7 +161,7 @@ class Scenario(abc.ABC):
         materials = {}
         for layer in self.material_layers:
             if layer not in self.material_properties:
-                material_properties = get_material(layer, center_frequency)
+                material_properties = get_material(layer, self.center_frequency)
             else:
                 material_properties = self.material_properties[layer]
             materials[layer] = material_properties.to_struct()
@@ -358,7 +359,7 @@ class Scenario(abc.ABC):
         center_frequency = problem.center_frequency
         sim_time = select_simulation_time_for_steady_state(
             grid=problem.grid,
-            materials=self.get_materials(center_frequency),
+            materials=self.materials,
             freq_hz=center_frequency,
             time_to_steady_state=time_to_steady_state,
             n_cycles_steady_state=n_cycles_steady_state,
@@ -492,7 +493,7 @@ class Scenario(abc.ABC):
         if simulation_time is None:
             simulation_time = select_simulation_time_for_pulsed(
                 grid=problem.grid,
-                materials=self.get_materials(center_frequency),
+                materials=self.materials,
                 delay=find_largest_delay_in_sources(self.sources),
             )
         problem.grid.time = create_time_grid(

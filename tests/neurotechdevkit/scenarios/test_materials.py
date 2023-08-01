@@ -23,9 +23,10 @@ def test_custom_material_property():
         }
 
     scenario = ScenarioWithCustomMaterialProperties()
+    scenario.center_frequency = 500e3
     assert scenario.material_colors == {"brain": "#2E86AB"}
 
-    materials = scenario.get_materials(500e3)
+    materials = scenario.materials
     assert list(materials.keys()) == ["brain"]
     compare_structs(
         materials["brain"],
@@ -43,9 +44,10 @@ def test_new_material():
         }
 
     scenario = ScenarioWithCustomMaterial()
+    scenario.center_frequency = 500e3
     assert scenario.material_colors == {"brain": "#DB504A", "eye": "#2E86AB"}
 
-    materials = scenario.get_materials(500e3)
+    materials = scenario.materials
 
     assert list(materials.keys()) == ["brain", "eye"]
     compare_structs(
@@ -62,8 +64,9 @@ def test_material_absorption_is_calculated():
         material_properties = {}
 
     scenario = ScenarioWithBrainMaterial()
+    scenario.center_frequency = 600e3
 
-    materials = scenario.get_materials(600e3)
+    materials = scenario.materials
 
     assert list(materials.keys()) == ["brain"]
     assert materials["brain"].alpha == 0.3041793231753331
@@ -77,7 +80,8 @@ def test_unknown_material_without_properties():
         material_properties = {}
 
     scenario = ScenarioWithCustomMaterial()
+    scenario.center_frequency = 500e3
     with pytest.raises(ValueError):
         scenario.material_colors
     with pytest.raises(ValueError):
-        scenario.get_materials(500e3)
+        scenario.materials
