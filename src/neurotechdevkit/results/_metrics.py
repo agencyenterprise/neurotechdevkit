@@ -138,7 +138,7 @@ def calculate_mechanical_index(
     if layer is None:
         mask = np.ones_like(result.get_steady_state(), dtype=bool)
     else:
-        mask = result.scenario.get_layer_mask(layer)
+        mask = result.scenario.material_masks[layer]
     ss_amp_in_brain: npt.NDArray[np.float_] = np.ma.masked_array(
         result.get_steady_state(), mask=~mask
     )
@@ -160,7 +160,7 @@ def calculate_focal_gain(result: results.SteadyStateResult) -> float:
         The focal gain (in dB)
     """
     target_mask = result.scenario.get_target_mask()
-    brain_mask = result.scenario.get_layer_mask("brain")
+    brain_mask = result.scenario.material_masks["brain"]
 
     ss_in_target: npt.NDArray[np.float_] = np.ma.masked_array(
         result.get_steady_state(), mask=~target_mask
@@ -241,7 +241,7 @@ def calculate_i_ta_off_target(result: results.SteadyStateResult) -> float:
             region (in W/m^2).
     """
     target_mask = result.scenario.get_target_mask()
-    brain_mask = result.scenario.get_layer_mask("brain")
+    brain_mask = result.scenario.material_masks["brain"]
 
     i_spta = calculate_i_ta(result)
     i_spta_outside_target: npt.NDArray[np.float_] = np.ma.masked_array(

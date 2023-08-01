@@ -4,6 +4,7 @@ from typing import Mapping
 
 import numpy as np
 import numpy.typing as npt
+import stride
 
 from .. import rendering, sources
 from ..materials import Material
@@ -44,17 +45,28 @@ class Scenario1(Scenario):
         "brain": Material(vp=1560.0, rho=1040.0, alpha=0.3, render_color="#DB504A"),
     }
 
-    def _get_material_masks(
-        self, problem: Problem
-    ) -> Mapping[str, npt.NDArray[np.bool_]]:
-        return {
-            name: _create_scenario_1_mask(name, problem.grid)
+    def _make_material_masks(self) -> Mapping[str, npt.NDArray[np.bool_]]:
+        """Make the material masks for scenario 1."""
+        assert self.material_layers is not None
+        material_masks = {
+            name: _create_scenario_1_mask(name, self.grid)
             for name in self.material_layers
         }
+        return material_masks
 
-    def _compile_scenario_1_problem(
-        self, extent: npt.NDArray[np.float_], center_frequency: float
-    ) -> Problem:
+    def _make_grid(
+        self, center_frequency: float, extent: npt.NDArray[np.float_]
+    ) -> stride.Grid:
+        """
+        Make the grid for scenario 1.
+
+        Args:
+            center_frequency (float): the center frequency of the transducer
+            extent (npt.NDArray[np.float_]): the extent of the grid
+
+        Returns:
+            stride.Grid: the grid
+        """
         # scenario constants
         speed_water = 1500  # m/s
 
@@ -65,13 +77,29 @@ class Scenario1(Scenario):
         dx = speed_water / center_frequency / ppw  # m
 
         grid = make_grid(extent=extent, dx=dx)
-        problem = Problem(center_frequency=center_frequency, grid=grid)
-        problem.add_material_fields(
+        return grid
+
+    def compile_problem(self, center_frequency: float) -> Problem:
+        """
+        Compile the problem for scenario 1.
+
+        Args:
+            center_frequency (float): the center frequency of the transducer
+
+        Returns:
+            Problem: the compiled problem
+        """
+        assert self.grid is not None
+        assert self.layer_ids is not None
+        assert self.material_masks is not None
+
+        self.problem = Problem(center_frequency=center_frequency, grid=self.grid)
+        self.problem.add_material_fields(
             materials=self.get_materials(center_frequency),
             layer_ids=self.layer_ids,
-            masks=self._get_material_masks(problem),
+            masks=self.material_masks,
         )
-        return problem
+        return self.problem
 
 
 class Scenario1_2D(Scenario1, Scenario2D):
@@ -100,19 +128,16 @@ class Scenario1_2D(Scenario1, Scenario2D):
     origin = np.array([0.0, -0.035])
     material_outline_upsample_factor = 8
 
-    def compile_problem(self, center_frequency: float) -> Problem:
+    def make_grid(self, center_frequency: float):
         """
-        Compile the problem for scenario 1.
+        Make the grid for scenario 1 2D.
 
         Args:
             center_frequency (float): the center frequency of the transducer
-
-        Returns:
-            Problem: the compiled problem
         """
-        extent = np.array([0.12, 0.07])  # m
-        self.problem = self._compile_scenario_1_problem(extent, center_frequency)
-        return self.problem
+        extent = np.array([0.12, 0.07])
+        self.grid = self._make_grid(center_frequency, extent)
+        self.material_masks = self._make_material_masks()
 
 
 class Scenario1_3D(Scenario1, Scenario3D):
@@ -168,19 +193,16 @@ class Scenario1_3D(Scenario1, Scenario3D):
     slice_position = 0.0
     material_outline_upsample_factor = 8
 
-    def compile_problem(self, center_frequency: float) -> Problem:
+    def make_grid(self, center_frequency: float):
         """
-        Compile the problem for scenario 1.
+        Make the grid for scenario 1 3D.
 
         Args:
             center_frequency (float): the center frequency of the transducer
-
-        Returns:
-            Problem: the compiled problem
         """
-        extent = np.array([0.12, 0.07, 0.07])  # m
-        self.problem = self._compile_scenario_1_problem(extent, center_frequency)
-        return self.problem
+        extent = np.array([0.12, 0.07, 0.07])
+        self.grid = self._make_grid(center_frequency, extent)
+        self.material_masks = self._make_material_masks()
 
 
 def _create_scenario_1_mask(material, grid):

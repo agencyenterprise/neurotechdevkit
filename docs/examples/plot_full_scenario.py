@@ -9,9 +9,12 @@ Implementing a full scenario
 
 The following code is a simplified implementation of NDK's Scenario 1.
 """
+from typing import Mapping
+
 # %%
 # ## Implementing a Scenario
 import numpy as np
+from numpy import typing as npt
 
 from neurotechdevkit import sources
 from neurotechdevkit.problem import Problem
@@ -61,8 +64,8 @@ class FullScenario(Scenario2D):
     ]
     material_outline_upsample_factor = 8
 
-    def compile_problem(self, center_frequency) -> Problem:
-        """The problem definition for the scenario."""
+    def make_grid(self, center_frequency):
+        """Make the grid for scenario 1 2D."""
         extent = np.array([0.12, 0.07])  # m
         # scenario constants
         speed_water = 1500  # m/s
@@ -73,15 +76,24 @@ class FullScenario(Scenario2D):
         # compute resolution
         dx = speed_water / center_frequency / ppw  # m
 
-        grid = make_grid(extent=extent, dx=dx)
-        self.problem = Problem(center_frequency=center_frequency, grid=grid)
+        self.grid = make_grid(extent=extent, dx=dx)
+        self.material_masks = self._make_material_masks()
+
+    def _make_material_masks(self) -> Mapping[str, npt.NDArray[np.bool_]]:
+        """Make the material masks for scenario 1."""
+        material_masks = {
+            name: _create_scenario_1_mask(name, self.grid)
+            for name in self.material_layers
+        }
+        return material_masks
+
+    def compile_problem(self, center_frequency) -> Problem:
+        """The problem definition for the scenario."""
+        self.problem = Problem(center_frequency=center_frequency, grid=self.grid)
         self.problem.add_material_fields(
             materials=self.get_materials(center_frequency),
             layer_ids=self.layer_ids,
-            masks={
-                name: _create_scenario_1_mask(name, self.problem.grid)
-                for name in self.material_layers
-            },
+            masks=self.material_masks,
         )
         return self.problem
 
@@ -140,14 +152,12 @@ def _fill_mask(mask, start, end, dx):
 # %%
 # ## Creating the scenario
 scenario = FullScenario()
-scenario.compile_problem(center_frequency=5e5)
-
-# %%
-# ## Rendering the scenario layout
+scenario.make_grid(center_frequency=5e5)
 scenario.render_layout()
 
 # %%
 # ## Rendering the simulation
+scenario.compile_problem(center_frequency=5e5)
 result = scenario.simulate_steady_state()
 assert isinstance(result, SteadyStateResult2D)
 result.render_steady_state_amplitudes(show_material_outlines=False)

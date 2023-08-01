@@ -16,6 +16,7 @@ or another one.
 import neurotechdevkit as ndk
 
 scenario = ndk.BUILTIN_SCENARIOS.SCENARIO_0.value()
+scenario.make_grid(center_frequency=5e5)
 scenario.compile_problem(center_frequency=5e5)
 result = scenario.simulate_steady_state()
 result.save_to_disk("scenario-0-results.tar.gz")
