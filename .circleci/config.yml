@@ -21,7 +21,7 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            poetry install --no-ansi
+            poetry install --no-ansi --extras examples
 
       - run:
           name: Install stride
@@ -68,7 +68,7 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            poetry install --no-ansi
+            poetry install --no-ansi --extras examples
 
       - run:
           name: Install stride
