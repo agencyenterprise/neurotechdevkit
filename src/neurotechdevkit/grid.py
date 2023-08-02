@@ -1,5 +1,5 @@
-"""Grid class for neurotechdevkit."""
-
+# noqa: D100
+# preventing package docstring to be rendered in documentation
 from typing import Iterable, Union
 
 import numpy as np
@@ -17,7 +17,12 @@ def _compute_grid_shape(extent: npt.NDArray[np.float_], dx: float) -> tuple[int,
 
 
 class Grid(stride.Grid):
-    """Grid class for neurotechdevkit. It is a subclass of stride.Grid."""
+    """
+    Grid class for neurotechdevkit. It is a subclass of stride.Grid.
+
+    The grid is a container for the spatial and temporal grids. It is used to define
+    the simulation domain and the grid spacing.
+    """
 
     @staticmethod
     def make_grid(

@@ -40,7 +40,7 @@ class ScenarioBaseTester(Scenario):
         self.grid = grid
 
     def _compile_problem(self) -> Problem:
-        problem = Problem(center_frequency=self.center_frequency, grid=self.grid)
+        problem = Problem(grid=self.grid)
         problem.medium.add(stride.ScalarField(name="vp", grid=self.grid))
         problem.medium.add(stride.ScalarField(name="rho", grid=self.grid))
         problem.medium.add(stride.ScalarField(name="alpha", grid=self.grid))
@@ -191,9 +191,7 @@ def test_setup_sub_problem(tester_with_time, sim_mode):
     """
     problem = tester_with_time.problem
     assert problem.acquisitions.num_shots == 0
-    sub_problem = tester_with_time._setup_sub_problem(
-        center_frequency=50.0, simulation_mode=sim_mode
-    )
+    sub_problem = tester_with_time._setup_sub_problem(simulation_mode=sim_mode)
     assert len(tester_with_time.sources) == 1
     assert problem.acquisitions.num_shots == 1
     assert sub_problem.shot_id == problem.acquisitions.shot_ids[0]
@@ -211,9 +209,7 @@ def test_create_pde(tester_with_time):
 @pytest.mark.parametrize("sim_mode", ["steady-state", "pulsed"])
 def test_execute_pde(tester_with_time, fake_pde, sim_mode):
     """Verify the parameters of the call to the pde."""
-    sub_problem = tester_with_time._setup_sub_problem(
-        center_frequency=50.0, simulation_mode=sim_mode
-    )
+    sub_problem = tester_with_time._setup_sub_problem(simulation_mode=sim_mode)
     test_save_bounds = (1, 100)
     test_undersampling = 7
     test_wavefield_slice = (slice(2, 1000),)

@@ -1,4 +1,5 @@
-"""Materials for the neurotechdevkit scenarios."""
+# noqa: D100
+# preventing package docstring to be rendered in documentation
 from dataclasses import dataclass
 
 from mosaic.types import Struct

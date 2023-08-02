@@ -58,7 +58,7 @@ def a_problem():
     """A minimal problem which can be used for tests."""
     grid = Grid.make_grid(extent=np.array([1.5, 0.6]), dx=0.1)
     grid.time = stride.Time(0.0, step=1e-3, num=100)
-    problem = Problem(center_frequency=5e5, grid=grid)
+    problem = Problem(grid=grid)
     return problem
 
 

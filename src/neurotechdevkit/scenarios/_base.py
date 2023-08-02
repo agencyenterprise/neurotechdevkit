@@ -356,17 +356,16 @@ class Scenario(abc.ABC):
             An object containing the result of the steady-state simulation.
         """
         problem = self.problem
-        center_frequency = problem.center_frequency
         sim_time = select_simulation_time_for_steady_state(
             grid=problem.grid,
             materials=self.materials,
-            freq_hz=center_frequency,
+            freq_hz=self.center_frequency,
             time_to_steady_state=time_to_steady_state,
             n_cycles_steady_state=n_cycles_steady_state,
             delay=find_largest_delay_in_sources(self.sources),
         )
         problem.grid.time = create_time_grid(
-            freq_hz=center_frequency, ppp=points_per_period, sim_time=sim_time
+            freq_hz=self.center_frequency, ppp=points_per_period, sim_time=sim_time
         )
 
         budget_time_and_memory_resources(
@@ -377,7 +376,7 @@ class Scenario(abc.ABC):
             is_pulsed=False,
         )
 
-        sub_problem = self._setup_sub_problem(center_frequency, "steady-state")
+        sub_problem = self._setup_sub_problem("steady-state")
         pde = self._create_pde()
         traces = self._execute_pde(
             pde=pde,
@@ -397,7 +396,7 @@ class Scenario(abc.ABC):
 
         return results.create_steady_state_result(
             scenario=self,  # type: ignore
-            center_frequency=center_frequency,
+            center_frequency=self.center_frequency,
             effective_dt=self.dt * recording_time_undersampling,
             pde=pde,
             shot=sub_problem.shot,
@@ -488,7 +487,6 @@ class Scenario(abc.ABC):
             An object containing the result of the pulsed simulation.
         """
         problem = self.problem
-        center_frequency = problem.center_frequency
 
         if simulation_time is None:
             simulation_time = select_simulation_time_for_pulsed(
@@ -497,7 +495,9 @@ class Scenario(abc.ABC):
                 delay=find_largest_delay_in_sources(self.sources),
             )
         problem.grid.time = create_time_grid(
-            freq_hz=center_frequency, ppp=points_per_period, sim_time=simulation_time
+            freq_hz=self.center_frequency,
+            ppp=points_per_period,
+            sim_time=simulation_time,
         )
 
         if slice_axis is not None and slice_position is not None:
@@ -512,7 +512,7 @@ class Scenario(abc.ABC):
             is_pulsed=True,
         )
 
-        sub_problem = self._setup_sub_problem(center_frequency, "pulsed")
+        sub_problem = self._setup_sub_problem("pulsed")
         pde = self._create_pde()
         traces = self._execute_pde(
             pde=pde,
@@ -530,7 +530,7 @@ class Scenario(abc.ABC):
 
         return results.create_pulsed_result(
             scenario=self,  # type: ignore
-            center_frequency=center_frequency,
+            center_frequency=self.center_frequency,
             effective_dt=self.dt * recording_time_undersampling,
             pde=pde,
             shot=sub_problem.shot,
@@ -539,22 +539,19 @@ class Scenario(abc.ABC):
             recorded_slice=recorded_slice,
         )
 
-    def _setup_sub_problem(
-        self, center_frequency: float, simulation_mode: str
-    ) -> stride.SubProblem:
+    def _setup_sub_problem(self, simulation_mode: str) -> stride.SubProblem:
         """Set up a stride `SubProblem` for the simulation.
 
         A SubProblem requires at least one source transducer. If no source is defined, a
         default source is used.
 
         Args:
-            center_frequency: the center frequency (in hertz) of the source transducer.
             simulation_mode: the type of simulation which will be run.
 
         Returns:
             The `SubProblem` to use for the simulation.
         """
-        shot = self._setup_shot(self.sources, center_frequency, simulation_mode)
+        shot = self._setup_shot(self.sources, self.center_frequency, simulation_mode)
         return self.problem.sub_problem(shot.id)
 
     def _setup_shot(

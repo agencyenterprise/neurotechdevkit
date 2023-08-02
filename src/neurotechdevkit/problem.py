@@ -1,4 +1,5 @@
-"""Problem class for neurotechdevkit."""
+# noqa: D100
+# preventing package docstring to be rendered in documentation
 from typing import Mapping
 
 import numpy as np
@@ -8,17 +9,17 @@ from mosaic.types import Struct
 
 
 class Problem(stride.Problem):
-    """Problem class for neurotechdevkit. It is a subclass of stride.Problem."""
+    """
+    Problem class for neurotechdevkit. It is a subclass of stride.Problem.
 
-    def __init__(self, center_frequency: float, *args, **kwargs):
-        """
-        Initialize a Problem.
+    The problem defines a medium with a set of fields (such as Vp or density), some
+    transducers (such as a series of scalar point transducers), a geometry where those
+    transducers are located in space, and the acquisitions that happen given that
+    geometry.
+    """
 
-        Args:
-            center_frequency (float): the center frequency of the simulation
-                in Hz.
-        """
-        self.center_frequency = center_frequency
+    def __init__(self, *args, **kwargs):
+        """Initialize a Problem."""
         super().__init__(name="neurotechdevkit", *args, **kwargs)
 
     def add_material_fields(
