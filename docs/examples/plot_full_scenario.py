@@ -125,7 +125,7 @@ scenario.render_layout()
 # %%
 # Creating problem
 
-problem = Problem(center_frequency=scenario.center_frequency, grid=grid)
+problem = Problem(grid=grid)
 problem.add_material_fields(
     materials=scenario.materials,
     layer_ids=scenario.layer_ids,

@@ -55,12 +55,7 @@ class Scenario0(Scenario2D):
         return material_masks
 
     def make_grid(self):
-        """
-        Make the grid for scenario 0.
-
-        Args:
-            center_frequency (float): the center frequency of the transducer
-        """
+        """Make the grid for scenario 0."""
         extent = np.array([0.05, 0.04])  # m
 
         # scenario constants
@@ -85,7 +80,7 @@ class Scenario0(Scenario2D):
         assert self.layer_ids is not None
         assert self.material_masks is not None
 
-        self.problem = Problem(center_frequency=self.center_frequency, grid=self.grid)
+        self.problem = Problem(grid=self.grid)
         self.problem.add_material_fields(
             materials=self.materials,
             layer_ids=self.layer_ids,

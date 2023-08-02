@@ -39,6 +39,7 @@ nav:
       - Scenarios: api/scenarios.md
       - Grid: api/grid.md
       - Problem: api/problem.md
+      - Materials: api/materials.md
       - Sources: api/sources.md
       - Results: api/results.md
   - Examples: generated/gallery

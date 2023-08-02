@@ -86,7 +86,7 @@ class Scenario1(Scenario):
         assert self.layer_ids is not None
         assert self.material_masks is not None
 
-        self.problem = Problem(center_frequency=self.center_frequency, grid=self.grid)
+        self.problem = Problem(grid=self.grid)
         self.problem.add_material_fields(
             materials=self.materials,
             layer_ids=self.layer_ids,
