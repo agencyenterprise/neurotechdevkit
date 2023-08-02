@@ -34,6 +34,8 @@ psutil = "^5.9.0"
 nest-asyncio = "^1.5.6"
 frozenlist = "^1.3.3"
 mkdocs-gallery = "0.7.6"
+# optional dependencies
+napari = {extras = ["pyqt6_experimental"], version = "^0.4.17", optional = true}
 
 [tool.poetry.group.dev.dependencies]
 black = "^22.8.0"
@@ -51,6 +53,9 @@ pydocstyle = "^6.3.0"
 pyright = "^1.1.306"
 pooch = "^1.7.0"
 pylint = {extras = ["spelling"], version = "^2.17.4"}
+
+[tool.poetry.extras]
+examples = ["napari"]
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
