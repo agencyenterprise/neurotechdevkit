@@ -89,6 +89,7 @@ upsampling
 viridis
 vmax
 vmin
+voxel
 vp
 wavefield
 waveforms
