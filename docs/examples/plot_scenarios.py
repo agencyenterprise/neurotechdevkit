@@ -10,9 +10,9 @@ using ndk
 import neurotechdevkit as ndk
 
 
-def plot_scenario(scenario):
-    print(f"Simulating scenario: {scenario.name}")
-    scenario = scenario.value()
+def plot_scenario(chosen_scenario):
+    print(f"Simulating scenario: {chosen_scenario.name}")
+    scenario = chosen_scenario.value()
     scenario.center_frequency = 5e5
     scenario.make_grid()
     scenario.compile_problem()
