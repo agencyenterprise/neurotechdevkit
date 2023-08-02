@@ -51,7 +51,7 @@ jobs:
         run: poetry run pip install git+https://github.com/trustimaging/stride
 
       - name: Install neurotechdevkit
-        run: poetry install --only-root
+        run: poetry install --only-root --extras examples
 
       - name: Run linting
         run: |
