@@ -52,10 +52,12 @@ class Scenario2(Scenario):
         grid = Grid.make_grid(extent=extent, dx=dx)
         return grid
 
-    def _make_material_masks(self) -> Mapping[str, npt.NDArray[np.bool_]]:
+    def _make_material_masks(
+        self, convert_2d: bool
+    ) -> Mapping[str, npt.NDArray[np.bool_]]:
         """Make the material masks for scenario 2."""
         material_masks = {
-            name: _create_scenario_2_mask(name, convert_2d=True)
+            name: _create_scenario_2_mask(name, convert_2d=convert_2d)
             for name in self.material_layers
         }
         return material_masks
@@ -120,7 +122,7 @@ class Scenario2_2D(Scenario2D, Scenario2):
     def make_grid(self):
         """Make the grid for scenario 2 2D."""
         self.grid = self._make_grid(np.array([0.225, 0.170]))
-        self.material_masks = self._make_material_masks()
+        self.material_masks = self._make_material_masks(convert_2d=True)
 
 
 class Scenario2_3D(Scenario2, Scenario3D):
@@ -180,7 +182,7 @@ class Scenario2_3D(Scenario2, Scenario3D):
     def make_grid(self):
         """Make the grid for scenario 2 3D."""
         self.grid = self._make_grid(np.array([0.225, 0.170, 0.190]))
-        self.material_masks = self._make_material_masks()
+        self.material_masks = self._make_material_masks(convert_2d=False)
 
 
 def _create_scenario_2_mask(material, convert_2d=False) -> npt.NDArray[np.bool_]:
