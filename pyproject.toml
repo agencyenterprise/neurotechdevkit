@@ -29,6 +29,7 @@ imageio = "^2.21.2"
 jupyterlab = "^3.4.6"
 devito = "4.7.1"
 scipy = "^1.9.1"
+stride = {git = "https://github.com/trustimaging/stride.git"}
 hdf5storage = "^0.1.18"
 psutil = "^5.9.0"
 nest-asyncio = "^1.5.6"
