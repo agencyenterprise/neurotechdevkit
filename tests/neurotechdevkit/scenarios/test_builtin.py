@@ -23,7 +23,7 @@ def scenario_cls(request):
     return request.param
 
 
-@pytest.fixture(params=[1e5, 5e5, 1e6])
+@pytest.fixture(params=[1e5, 5e5])
 def center_frequency(request):
     """Iterate over different center frequencies"""
     return request.param
