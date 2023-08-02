@@ -1,5 +1,5 @@
 Scenarios provide a convenient structure to describe the environment, transducers, and sensors.
-A collection of preconfigured scenarios are provided with NDK, and can be loaded using a scenario id.
+A collection of preconfigured scenarios are provided with NDK, and can be easily loaded.
 
 There are currently three scenarios provided with NDK, two of which have both a 2D and 3D version.
 2D versions are quick to simulate and are great for testing out ideas quickly before transferring to a 3D simulation.
@@ -14,7 +14,7 @@ scenario.center_frequency = 5e5
 scenario.make_grid()
 ```
 
-The existing scenario ids are:
+The existing scenarios are:
 
 - `SCENARIO_0` (2D) - a simple quickstart toy scenario that enables users to dive in and experiment with their first simulation immediately.
 - `SCENARIO_1_3D` (3D) - a scenario containing a flat 3-layer bone covered by skin, with water above the skin and brain below the bone. This is based on benchmark 4 of [Jean-Francois Aubry, et al.](https://doi.org/10.1121/10.0013426).

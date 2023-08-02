@@ -6,7 +6,6 @@ import neurotechdevkit as ndk
 import numpy as np
 
 scenario = ndk.BUILTIN_SCENARIOS.SCENARIO_2_2D.value()
-scenario.sources.clear()
 
 source = ndk.sources.FocusedSource2D(
     position=np.array([0.19, 0.07]),
@@ -15,7 +14,7 @@ source = ndk.sources.FocusedSource2D(
     focal_length=0.08,
     num_points=3000
 )
-scenario.sources.append(source)
+scenario.sources = [source]
 
 scenario.center_frequency = 5e5
 scenario.make_grid()
@@ -53,7 +52,6 @@ import neurotechdevkit as ndk
 import numpy as np
 
 scenario = ndk.BUILTIN_SCENARIOS.SCENARIO_2_2D.value()
-scenario.sources.clear()
 
 source_position = np.array([0.19, 0.07])
 source = ndk.sources.PlanarSource2D(
@@ -62,7 +60,7 @@ source = ndk.sources.PlanarSource2D(
     aperture=0.06,
     num_points=3000
 )
-scenario.sources.append(source)
+scenario.sources = [source]
 
 scenario.center_frequency = 5e5
 scenario.make_grid()

@@ -155,8 +155,7 @@ phased_array = ndk.sources.PhasedArraySource2D(
     num_points=1000,
 )
 
-scenario.sources.clear()
-scenario.sources.append(phased_array)
+scenario.sources = [phased_array]
 print(f"Focal point is: {phased_array.focal_point}")
 # %%
 # `focal_point` shows the coordinates (in meters) where the array focuses.
@@ -190,8 +189,7 @@ phased_array = ndk.sources.PhasedArraySource2D(
     element_delays=np.linspace(0, 1e-5, 20),
     num_points=1000,
 )
-scenario.sources.clear()
-scenario.sources.append(phased_array)
+scenario.sources = [phased_array]
 scenario.center_frequency = 5e5
 scenario.make_grid()
 scenario.compile_problem()
