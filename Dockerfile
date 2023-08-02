@@ -16,8 +16,7 @@ RUN python3 -m venv ./venv && \
     ./venv/bin/pip install poetry
 
 ENV POETRY_VIRTUALENVS_CREATE=false
-RUN ./venv/bin/poetry install && \
-    ./venv/bin/pip install git+https://github.com/trustimaging/stride
+RUN ./venv/bin/poetry install
 
 FROM python:3.10.0-slim
 

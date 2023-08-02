@@ -56,13 +56,6 @@ poetry install
 
 This will resolve and install the dependencies from `poetry.lock` and will install the `neurotechdevkit` package in editable mode.
 
-
-Install stride with:
-
-```bash
-$ poetry run pip install git+https://github.com/trustimaging/stride
-```
-
 Follow the steps described in [Setting up a compiler](installation.md#setting-up-a-compiler).
 
 ### Using the environment
