@@ -1266,9 +1266,6 @@ def load_result_from_disk(filepath: str | pathlib.Path) -> Result:
         print("Recreating the scenario for the result from saved metadata...")
         scenario = ndk.BUILTIN_SCENARIOS[save_data["scenario_id"]].value()
 
-        for source in save_data["sources"]:
-            scenario.sources.append(source)
-
         result_type = getattr(ndk.results, save_data["result_type"])
 
         fields_kwargs = dict(
@@ -1280,6 +1277,7 @@ def load_result_from_disk(filepath: str | pathlib.Path) -> Result:
             wavefield=save_data.get("wavefield"),
             traces=None,
         )
+        scenario.center_frequency = save_data["center_frequency"]
         scenario.problem = save_data["problem"]
         scenario.grid = scenario.problem.grid
 
