@@ -141,13 +141,7 @@ def calculate_focal_pressure(
     Returns:
         The focal pressure (in Pa)
     """
-    if layer is None:
-        mask = np.ones_like(result.get_steady_state(), dtype=bool)
-    else:
-        mask = result.scenario.material_masks[layer]
-    ss_amp_in_layer: npt.NDArray[np.float_] = np.ma.masked_array(
-        result.get_steady_state(), mask=~mask
-    )
+    ss_amp_in_layer = _get_steady_state_in_layer(result, layer=layer)
     focal_pressure = np.max(ss_amp_in_layer)
     return focal_pressure
 
@@ -168,13 +162,7 @@ def calculate_focal_position(
     Returns:
         The focal position (in grid index)
     """
-    if layer is None:
-        mask = np.ones_like(result.get_steady_state(), dtype=bool)
-    else:
-        mask = result.scenario.material_masks[layer]
-    ss_amp_in_layer: npt.NDArray[np.float_] = np.ma.masked_array(
-        result.get_steady_state(), mask=~mask
-    )
+    ss_amp_in_layer = _get_steady_state_in_layer(result, layer=layer)
     focal_position = np.unravel_index(
         np.argmax(ss_amp_in_layer, axis=None),
         ss_amp_in_layer.shape
@@ -199,14 +187,8 @@ def calculate_mechanical_index(
     Returns:
         The mechanical index (in Pa √s̅)
     """
-    if layer is None:
-        mask = np.ones_like(result.get_steady_state(), dtype=bool)
-    else:
-        mask = result.scenario.material_masks[layer]
-    ss_amp_in_brain: npt.NDArray[np.float_] = np.ma.masked_array(
-        result.get_steady_state(), mask=~mask
-    )
-    peak_neg_pressure = np.max(ss_amp_in_brain)
+    ss_amp_in_layer = _get_steady_state_in_layer(result, layer=layer)
+    peak_neg_pressure = np.max(ss_amp_in_layer)
     return peak_neg_pressure / np.sqrt(result.center_frequency)
 
 
@@ -391,3 +373,25 @@ class Conversions:
             return value * 1e-4
 
         raise ValueError(f"Unsupported conversion: from '{from_uom}' to '{to_uom}'")
+
+
+def _get_steady_state_in_layer(
+    result: results.SteadyStateResult, layer: str | None = None,
+) -> npt.NDArray[np.float_]:
+    """Get the steady-state pressure amplitude within a particular layer.
+
+    Args:
+        result: the Result object containing the simulation results.
+        layer: the layer to extract
+
+    Returns:
+        The steady-state pressure amplitude, with non-layer values masked.
+    """
+    steady_state = result.get_steady_state()
+    if layer is None:
+        return steady_state
+    else:
+        return np.ma.masked_array(
+            steady_state,
+            mask=~result.scenario.material_masks[layer],
+        )
