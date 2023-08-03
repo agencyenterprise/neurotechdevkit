@@ -118,6 +118,63 @@ def calculate_all_metrics(
     }
 
 
+def calculate_focal_pressure(
+    result: results.SteadyStateResult, layer: str | None = None
+) -> float:
+    """Calculate the focal pressure of the simulation result for a particular layer.
+
+    Focal pressure is also known as peak pressure.
+
+    Args:
+        result: the Result object containing the simulation results.
+        layer: the layer within which to calculate the focal pressure. If None, the
+            default, the focal pressure is calculated over the entire simulation
+            space.
+
+    Returns:
+        The focal pressure (in Pa)
+    """
+    if layer is None:
+        mask = np.ones_like(result.get_steady_state(), dtype=bool)
+    else:
+        mask = result.scenario.material_masks[layer]
+    ss_amp_in_layer: npt.NDArray[np.float_] = np.ma.masked_array(
+        result.get_steady_state(), mask=~mask
+    )
+    focal_pressure = np.max(ss_amp_in_layer)
+    return focal_pressure
+
+
+def calculate_focal_position(
+    result: results.SteadyStateResult, layer: str | None = None
+) -> float:
+    """Calculate the focal position of the simulation result for a particular layer.
+
+    The focal position is the position of peak pressure.
+
+    Args:
+        result: the Result object containing the simulation results.
+        layer: the layer within which to calculate the focal position. If None, the
+            default, the focal position is calculated over the entire simulation
+            space.
+    
+    Returns:
+        The focal position (in grid index)
+    """
+    if layer is None:
+        mask = np.ones_like(result.get_steady_state(), dtype=bool)
+    else:
+        mask = result.scenario.material_masks[layer]
+    ss_amp_in_layer: npt.NDArray[np.float_] = np.ma.masked_array(
+        result.get_steady_state(), mask=~mask
+    )
+    focal_position = np.unravel_index(
+        np.argmax(ss_amp_in_layer, axis=None),
+        ss_amp_in_layer.shape
+    )
+    return focal_position
+
+
 def calculate_mechanical_index(
     result: results.SteadyStateResult, layer: str | None = None
 ) -> float:
