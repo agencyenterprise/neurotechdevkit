@@ -53,12 +53,13 @@ class Scenario1(Scenario):
         }
         return material_masks
 
-    def _make_grid(self, extent: npt.NDArray[np.float_]) -> Grid:
+    def _make_grid(self, extent: npt.NDArray[np.float_], points_per_wavelength: int = 6) -> Grid:
         """
         Make the grid for scenario 1.
 
         Args:
             extent (npt.NDArray[np.float_]): the extent of the grid
+            points_per_wavelength (int): desired spatial resolution
 
         Returns:
             stride.Grid: the grid
@@ -66,11 +67,8 @@ class Scenario1(Scenario):
         # scenario constants
         speed_water = 1500  # m/s
 
-        # desired resolution for complexity=fast
-        ppw = 6
-
         # compute resolution
-        dx = speed_water / self.center_frequency / ppw  # m
+        dx = speed_water / self.center_frequency / points_per_wavelength  # m
 
         grid = Grid.make_grid(extent=extent, dx=dx)
         return grid
@@ -121,10 +119,10 @@ class Scenario1_2D(Scenario1, Scenario2D):
     origin = np.array([0.0, -0.035])
     material_outline_upsample_factor = 8
 
-    def make_grid(self):
+    def make_grid(self, **kwargs):
         """Make the grid for scenario 1 2D."""
         extent = np.array([0.12, 0.07])
-        self.grid = self._make_grid(extent)
+        self.grid = self._make_grid(extent, **kwargs)
         self.material_masks = self._make_material_masks()
 
 
@@ -181,10 +179,10 @@ class Scenario1_3D(Scenario1, Scenario3D):
     slice_position = 0.0
     material_outline_upsample_factor = 8
 
-    def make_grid(self):
+    def make_grid(self, **kwargs):
         """Make the grid for scenario 1 3D."""
         extent = np.array([0.12, 0.07, 0.07])
-        self.grid = self._make_grid(extent)
+        self.grid = self._make_grid(extent, **kwargs)
         self.material_masks = self._make_material_masks()
 
 
