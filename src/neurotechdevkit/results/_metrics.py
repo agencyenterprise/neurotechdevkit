@@ -25,6 +25,13 @@ def calculate_all_metrics(
         The dictionary structure containing metrics and their descriptions.
     """
     return {
+        "focal_pressure": {
+            "value": calculate_focal_pressure(result, layer="brain"),
+            "unit-of-measurement": "Pa",
+            "description": (
+                "The peak pressure amplitude within the brain."
+            ),
+        },
         "focal_gain": {
             "value": calculate_focal_gain(result),
             "unit-of-measurement": "dB",
