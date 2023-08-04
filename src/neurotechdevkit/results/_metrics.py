@@ -54,6 +54,19 @@ def calculate_all_metrics(
                 " amplitude inside the brain but excluding the target."
             ),
         },
+        **{
+            f"FWHM_{axis}": {
+                "value": calculate_focal_fwhm(result, axis=axis, layer="brain"),
+                "unit-of-measurement": "grid steps",
+                "description": (
+                    "The full-width at half-maximum-pressure (FWHM) along the"
+                    f" {axis}-axis. The FWHM is calculated by taking a 1-D"
+                    " profile through the focal point. Also called the -6 dB"
+                    " focal width."
+                ),
+            }
+            for axis in ("x", "y", "z")[:result.steady_state.ndim]
+        },
         "I_ta_target": {
             "value": Conversions.convert(
                 from_uom="W/m²", to_uom="mW/cm²", value=calculate_i_ta_target(result)
@@ -376,6 +389,48 @@ def calculate_focal_volume(
     assert label_counts.sum(), "Expected >=1 connected regions above 50% threshold"
     # Get size of largest connected component
     return label_counts.max()
+
+
+def calculate_focal_fwhm(
+    result: results.SteadyStateResult,
+    *,
+    axis: str | int,
+    layer: str | None = "brain",
+) -> float:
+    """Calculate the full-width at half-maximum-pressure (FWHM) along an axis.
+
+    Uses the 1-D profile through the focal position.
+
+    Args:
+        result: the Result object containing the simulation results.
+        axis: the axis along which to calculate the FWHM. Can be specified as a string
+            ("x", "y", or "z") or as an integer (0, 1, or 2).
+        layer: the layer within which to calculate the FWHM
+            If None, the FWHM is calculated over the entire grid.
+
+    Returns:
+        The full-width at half-maximum (in integer grid steps).
+    """
+    if isinstance(axis, str):
+        # Convert axis to index
+        axis = ["x", "y", "z"].index(axis.lower())
+
+    # Extract slice going through the focal position
+    focal_position_idx = calculate_focal_position(result, layer=layer)
+    ss_amp_in_layer = _get_steady_state_in_layer(result, layer=layer)
+    slicer = list(focal_position_idx)
+    slicer[axis] = slice(None)
+    focal_slice = ss_amp_in_layer[tuple(slicer)]
+
+    # Find which indices are above the half-maximum-pressure
+    focal_position_axis_idx = focal_position_idx[axis]
+    above_half_max = focal_slice >= (0.5 * focal_slice[focal_position_axis_idx])
+    labeled_mask, _ = scipy.ndimage.label(above_half_max)
+    # We only care about the connected region containing the focal position
+    fwhm_group_label = labeled_mask[focal_position_axis_idx]
+    fwhm = np.sum(labeled_mask == fwhm_group_label)
+
+    return fwhm
 
 
 class Conversions:
