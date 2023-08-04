@@ -3,6 +3,7 @@
 import pytest
 
 from neurotechdevkit.scenarios import (
+    Scenario0,
     Scenario1_2D,
     Scenario1_3D,
     Scenario2_2D,
@@ -12,6 +13,7 @@ from neurotechdevkit.scenarios import (
 
 @pytest.fixture(
     params=[
+        Scenario0,
         Scenario1_2D,
         Scenario1_3D,
         Scenario2_2D,
