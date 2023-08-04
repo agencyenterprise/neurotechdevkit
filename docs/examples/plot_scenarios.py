@@ -12,7 +12,7 @@ import neurotechdevkit as ndk
 
 def plot_scenario(chosen_scenario):
     print(f"Simulating scenario: {chosen_scenario.__class__.__name__}")
-    scenario = chosen_scenario
+    scenario = chosen_scenario()
     scenario.center_frequency = 5e5
     scenario.make_grid()
     scenario.compile_problem()
