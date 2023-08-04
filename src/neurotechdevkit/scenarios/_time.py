@@ -1,10 +1,12 @@
 from __future__ import annotations
 
-from typing import Mapping
+from typing import List, Mapping
 
 import numpy as np
 import stride
 from mosaic.types import Struct
+
+from ..sources import Source
 
 
 def select_simulation_time_for_steady_state(
@@ -102,7 +104,7 @@ def create_time_grid(*, freq_hz: float, ppp: int, sim_time: float) -> stride.Tim
     return stride.Time(start=t_min, stop=sim_time, step=dt)
 
 
-def find_largest_delay_in_sources(sources) -> float:
+def find_largest_delay_in_sources(sources: List[Source]) -> float:
     """Find the largest delay (in seconds) among all sources.
 
     Args:
