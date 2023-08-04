@@ -16,8 +16,11 @@ from neurotechdevkit.sources import FocusedSource3D, PlanarSource3D, Source
 class ScenarioBaseTester(Scenario):
     """A class which can be used to test attributes and methods of Scenario."""
 
-    material_layers = ["brain", "skin"]
     material_properties = {}
+    material_masks = {
+        "brain": np.zeros((20, 30, 40), dtype=bool),
+        "skin": np.zeros((20, 30, 40), dtype=bool),
+    }
 
     sources = [
         PlanarSource3D(
@@ -44,7 +47,7 @@ class ScenarioBaseTester(Scenario):
         problem.medium.add(stride.ScalarField(name="vp", grid=self.grid))
         problem.medium.add(stride.ScalarField(name="rho", grid=self.grid))
         problem.medium.add(stride.ScalarField(name="alpha", grid=self.grid))
-        problem.medium.add(stride.ScalarField(name="layer", grid=self.grid))
+        # problem.medium.add(stride.ScalarField(name="layer", grid=self.grid))
         return problem
 
     def get_default_source(self) -> Source:

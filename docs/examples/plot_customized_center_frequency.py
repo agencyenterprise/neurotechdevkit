@@ -13,9 +13,6 @@ CENTER_FREQUENCY = 6e5
 
 scenario = ndk.scenarios.built_in.Scenario0()
 
-# using default material layers
-scenario.material_layers = ["water", "cortical_bone", "brain", "tumor"]
-
 # Customizing material properties
 scenario.material_properties = {
     "tumor": ndk.materials.Material(

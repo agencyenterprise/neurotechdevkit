@@ -78,9 +78,6 @@ class Scenario(abc.ABC):
     _target: Target
     _grid: Grid
 
-    # The list of material layers in the scenario.
-    _material_layers: list[str]
-
     @property
     def extent(self) -> npt.NDArray[np.float_]:
         """The extent of the spatial grid (in meters)."""
@@ -192,17 +189,7 @@ class Scenario(abc.ABC):
     @property
     def material_layers(self) -> list[str]:
         """The list of material layers in the scenario."""
-        assert hasattr(self, "_material_layers")
-        return self._material_layers
-
-    @material_layers.setter
-    def material_layers(self, material_layers: list[str]) -> None:
-        """Set the list of material layers in the scenario.
-
-        Args:
-            material_layers: the list of material layers in the scenario.
-        """
-        self._material_layers = material_layers
+        return list(self.material_masks.keys())
 
     @property
     def target(self) -> Target:
@@ -301,7 +288,8 @@ class Scenario(abc.ABC):
         """
         return self.problem.medium.fields[field].data
 
-    def _get_material_layer(self) -> npt.NDArray[np.int_]:
+    @property
+    def material_layer_ids(self) -> npt.NDArray[np.int_]:
         """Return the layer id for each grid point in the scenario."""
         assert hasattr(self, "layer_ids")
         assert hasattr(self, "material_masks")
@@ -815,16 +803,15 @@ class Scenario2D(Scenario):
                 the transition between different materials.
         """
         color_sequence = list(self.material_colors.values())
-        field = self._get_material_layer()
         fig, ax = rendering.create_layout_fig(
-            self.extent, self.origin, color_sequence, field
+            self.extent, self.origin, color_sequence, self.material_layer_ids
         )
 
         # add layers
         if show_material_outlines:
             rendering.draw_material_outlines(
                 ax=ax,
-                material_field=field,
+                material_field=self.material_layer_ids,
                 dx=self.dx,
                 origin=self.origin,
                 upsample_factor=self.material_outline_upsample_factor,
@@ -937,8 +924,7 @@ class Scenario3D(Scenario):
         slice_axis = self.slice_axis
         slice_position = self.slice_position
         color_sequence = list(self.material_colors.values())
-        field = self._get_material_layer()
-        field = slice_field(field, self, slice_axis, slice_position)
+        field = slice_field(self.material_layer_ids, self, slice_axis, slice_position)
         extent = drop_element(self.extent, slice_axis)
         origin = drop_element(self.origin, slice_axis)
         fig, ax = rendering.create_layout_fig(extent, origin, color_sequence, field)

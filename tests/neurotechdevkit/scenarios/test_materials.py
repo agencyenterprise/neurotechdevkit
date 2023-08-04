@@ -1,3 +1,4 @@
+import numpy as np
 import pytest
 from mosaic.types import Struct
 
@@ -38,7 +39,10 @@ def test_new_material():
     """Test that a new material is used."""
 
     class ScenarioWithCustomMaterial(Scenario2D):
-        material_layers = ["brain", "eye"]
+        material_masks = {
+            "brain": np.zeros((20, 30, 40), dtype=bool),
+            "eye": np.zeros((20, 30, 40), dtype=bool),
+        }
         material_properties = {
             "eye": Material(vp=1600.0, rho=1100.0, alpha=0.0, render_color="#2E86AB")
         }

@@ -154,7 +154,7 @@ def add_material_layers(
     """
     colormaps = viewer_config.colormaps
     opacities = viewer_config.opacities
-    layer_data = scenario.get_field_data("layer")
+    layer_data = scenario.material_layer_ids
 
     for name, layer_id in scenario.layer_ids.items():
         viewer.add_image(

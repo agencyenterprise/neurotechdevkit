@@ -25,7 +25,6 @@ class Problem(stride.Problem):
     def add_material_fields(
         self,
         materials: Mapping[str, Struct],
-        layer_ids: Mapping[str, int],
         masks: Mapping[str, npt.NDArray[np.bool_]],
     ):
         """Add material fields as media to the problem.
@@ -39,29 +38,23 @@ class Problem(stride.Problem):
         Args:
             materials (Mapping[str, Struct]): a mapping from material names
                 to Structs containing the material properties.
-            layer_ids (Mapping[str, int]): a mapping from material names to
-                integers representing the layer number for each material.
             masks (Mapping[str, npt.NDArray[np.bool_]]): a mapping from material
                 names to boolean masks indicating the gridpoints.
         """
         vp = stride.ScalarField(name="vp", grid=self.grid)  # [m/s]
         rho = stride.ScalarField(name="rho", grid=self.grid)  # [kg/m^3]
         alpha = stride.ScalarField(name="alpha", grid=self.grid)  # [dB/cm]
-        layer = stride.ScalarField(name="layer", grid=self.grid)  # integers
 
         for name, material in materials.items():
             material_mask = masks[name]
             vp.data[material_mask] = material.vp
             rho.data[material_mask] = material.rho
             alpha.data[material_mask] = material.alpha
-            layer.data[material_mask] = layer_ids[name]
 
         vp.pad()
         rho.pad()
         alpha.pad()
-        layer.pad()
 
         self.medium.add(vp)
         self.medium.add(rho)
         self.medium.add(alpha)
-        self.medium.add(layer)

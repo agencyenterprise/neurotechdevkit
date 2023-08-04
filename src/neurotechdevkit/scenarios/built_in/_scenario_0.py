@@ -30,12 +30,7 @@ class Scenario0(Scenario2D):
         )
     ]
     origin = np.array([0.0, -0.02])
-    material_layers = [
-        "water",
-        "cortical_bone",
-        "brain",
-        "tumor",
-    ]
+
     material_properties = {
         "water": Material(vp=1500.0, rho=1000.0, alpha=0.0, render_color="#2E86AB"),
         "cortical_bone": Material(
@@ -48,9 +43,15 @@ class Scenario0(Scenario2D):
     def _make_material_masks(self) -> Mapping[str, npt.NDArray[np.bool_]]:
         """Make the material masks for scenario 0."""
         assert self.origin is not None
+        material_layers = [
+            "water",
+            "cortical_bone",
+            "brain",
+            "tumor",
+        ]
         material_masks = {
             name: _create_scenario_0_mask(name, self.grid, self.origin)
-            for name in self.material_layers
+            for name in material_layers
         }
         return material_masks
 
@@ -77,13 +78,11 @@ class Scenario0(Scenario2D):
             Problem: the compiled problem
         """
         assert self.grid is not None
-        assert self.layer_ids is not None
         assert self.material_masks is not None
 
         self.problem = Problem(grid=self.grid)
         self.problem.add_material_fields(
             materials=self.materials,
-            layer_ids=self.layer_ids,
             masks=self.material_masks,
         )
         return self.problem

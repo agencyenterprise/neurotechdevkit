@@ -27,11 +27,6 @@ class Scenario2(Scenario):
         https://asa.scitation.org/doi/pdf/10.1121/10.0013426
     """
 
-    material_layers = [
-        "water",
-        "cortical_bone",
-        "brain",
-    ]
     material_properties = {
         "water": Material(vp=1500.0, rho=1000.0, alpha=0.0, render_color="#2E86AB"),
         "cortical_bone": Material(
@@ -56,9 +51,14 @@ class Scenario2(Scenario):
         self, convert_2d: bool
     ) -> Mapping[str, npt.NDArray[np.bool_]]:
         """Make the material masks for scenario 2."""
+        material_layers = [
+            "water",
+            "cortical_bone",
+            "brain",
+        ]
         material_masks = {
             name: _create_scenario_2_mask(name, convert_2d=convert_2d)
-            for name in self.material_layers
+            for name in material_layers
         }
         return material_masks
 
@@ -70,13 +70,11 @@ class Scenario2(Scenario):
             Problem: the compiled problem
         """
         assert self.grid is not None
-        assert self.layer_ids is not None
         assert self.material_masks is not None
 
         self.problem = Problem(grid=self.grid)
         self.problem.add_material_fields(
             materials=self.materials,
-            layer_ids=self.layer_ids,
             masks=self.material_masks,
         )
 

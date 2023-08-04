@@ -27,13 +27,6 @@ scenario.center_frequency = 5e5
 scenario.target = Target(
     target_id="target_1", center=np.array([0.064, 0.0]), radius=0.004, description=""
 )
-scenario.material_layers = [
-    "water",
-    "skin",
-    "cortical_bone",
-    "trabecular_bone",
-    "brain",
-]
 scenario.material_properties = {}
 scenario.origin = np.array([0.0, -0.035])
 scenario.sources = [
@@ -113,9 +106,14 @@ def create_mask(material, grid):
     return mask
 
 
-scenario.material_masks = {
-    name: create_mask(name, grid) for name in scenario.material_layers
-}
+material_layers = [
+    "water",
+    "skin",
+    "cortical_bone",
+    "trabecular_bone",
+    "brain",
+]
+scenario.material_masks = {name: create_mask(name, grid) for name in material_layers}
 
 
 # %%
@@ -128,7 +126,6 @@ scenario.render_layout()
 problem = Problem(grid=grid)
 problem.add_material_fields(
     materials=scenario.materials,
-    layer_ids=scenario.layer_ids,
     masks=scenario.material_masks,
 )
 scenario.problem = problem

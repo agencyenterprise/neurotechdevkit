@@ -283,7 +283,7 @@ class SteadyStateResult2D(SteadyStateResult):
 
         # add layers
         if show_material_outlines:
-            material_field = self.scenario.get_field_data("layer").astype(int)
+            material_field = self.scenario.material_layer_ids
             rendering.draw_material_outlines(
                 ax=ax,
                 material_field=material_field,
@@ -366,7 +366,7 @@ class SteadyStateResult3D(SteadyStateResult):
 
         # add layers
         if show_material_outlines:
-            material_field = self.scenario.get_field_data("layer").astype(int)
+            material_field = self.scenario.material_layer_ids
             material_field_2d = slice_field(
                 material_field, self.scenario, slice_axis, slice_position
             )
@@ -764,7 +764,7 @@ class PulsedResult2D(PulsedResult):
 
         # add layers
         if show_material_outlines:
-            material_field = self.scenario.get_field_data("layer").astype(int)
+            material_field = self.scenario.material_layer_ids
             rendering.draw_material_outlines(
                 ax=ax,
                 material_field=material_field,
@@ -1033,7 +1033,7 @@ class PulsedResult3D(PulsedResult):
 
         # add layers
         if show_material_outlines:
-            material_field = self.scenario.get_field_data("layer").astype(int)
+            material_field = self.scenario.material_layer_ids
             material_field_2d = slice_field(
                 material_field, self.scenario, slice_axis, slice_position
             )
