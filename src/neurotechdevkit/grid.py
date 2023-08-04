@@ -9,10 +9,9 @@ import stride
 
 def _compute_grid_shape(extent: npt.NDArray[np.float_], dx: float) -> tuple[int, ...]:
     """Compute the shape of the grid for a given extent and dx."""
-    # TODO: verify that extent is a multiple of dx
-    # but using modulus doesn't work due to floating point
-    # numerical error
-    n_steps = [int(np.round(ext / dx)) for ext in extent]
+    n_steps_float = ext / dx
+    n_steps = n_steps_float.round().astype(int)
+    np.testing.assert_allclose(n_steps_float, n_steps, rtol=1e-5)
     return tuple(steps + 1 for steps in n_steps)
 
 
