@@ -25,14 +25,14 @@ scenario = Scenario2D()
 scenario.center_frequency = 5e5
 
 scenario.target = Target(
-    target_id="target_1", center=np.array([0.064, 0.0]), radius=0.004, description=""
+    target_id="target_1", center=[0.064, 0.0], radius=0.004, description=""
 )
 scenario.material_properties = {}
-scenario.origin = np.array([0.0, -0.035])
+scenario.origin = [0.0, -0.035]
 scenario.sources = [
     sources.FocusedSource2D(
-        position=np.array([0.0, 0.0]),
-        direction=np.array([1.0, 0.0]),
+        position=[0.0, 0.0],
+        direction=[1.0, 0.0],
         aperture=0.064,
         focal_length=0.064,
         num_points=1000,

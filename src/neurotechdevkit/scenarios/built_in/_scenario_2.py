@@ -96,7 +96,7 @@ class Scenario2_2D(Scenario2D, Scenario2):
 
     target = Target(
         target_id="primary-visual-cortex",
-        center=np.array([0.047, 0.002]),
+        center=[0.047, 0.002],
         radius=0.010,
         description=(
             "A region of the primary visual cortex (approximate 2D location and"
@@ -105,11 +105,11 @@ class Scenario2_2D(Scenario2D, Scenario2):
             " See for more details: https://doi.org/10.1038/srep34026"
         ),
     )
-    origin = np.array([0.0, -0.085])
+    origin = [0.0, -0.085]
     sources = [
         sources.FocusedSource2D(
-            position=np.array([0.0, 0.0]),
-            direction=np.array([1.0, 0.0]),
+            position=[0.0, 0.0],
+            direction=[1.0, 0.0],
             aperture=0.064,
             focal_length=0.064,
             num_points=1000,
@@ -138,7 +138,7 @@ class Scenario2_3D(Scenario2, Scenario3D):
 
     target = Target(
         target_id="primary-visual-cortex",
-        center=np.array([0.047, 0.002, 0.005]),
+        center=[0.047, 0.002, 0.005],
         radius=0.010,
         description=(
             "A region of the primary visual cortex (estimated location and size)."
@@ -148,11 +148,11 @@ class Scenario2_3D(Scenario2, Scenario3D):
         ),
     )
 
-    origin = np.array([0.0, -0.085, -0.095])
+    origin = [0.0, -0.085, -0.095]
     sources = [
         sources.FocusedSource3D(
-            position=np.array([0.0, 0.0, 0.0]),
-            direction=np.array([1.0, 0.0, 0.0]),
+            position=[0.0, 0.0, 0.0],
+            direction=[1.0, 0.0, 0.0],
             aperture=0.064,
             focal_length=0.064,
             num_points=20_000,

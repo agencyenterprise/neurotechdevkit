@@ -104,17 +104,17 @@ class Scenario1_2D(Scenario1, Scenario2D):
         https://asa.scitation.org/doi/pdf/10.1121/10.0013426
     """
 
-    target = Target("target_1", np.array([0.064, 0.0]), 0.004, "")
+    target = Target("target_1", [0.064, 0.0], 0.004, "")
     sources = [
         sources.FocusedSource2D(
-            position=np.array([0.0, 0.0]),
-            direction=np.array([1.0, 0.0]),
+            position=[0.0, 0.0],
+            direction=[1.0, 0.0],
             aperture=0.064,
             focal_length=0.064,
             num_points=1000,
         )
     ]
-    origin = np.array([0.0, -0.035])
+    origin = [0.0, -0.035]
     material_outline_upsample_factor = 8
 
     def make_grid(self):
@@ -139,17 +139,17 @@ class Scenario1_3D(Scenario1, Scenario3D):
 
     target = Target(
         target_id="target_1",
-        center=np.array([0.064, 0.0, 0.0]),
+        center=[0.064, 0.0, 0.0],
         radius=0.004,
         description=(
             "A centered location below the skull at approximately the focal point."
         ),
     )
-    origin = np.array([0.0, -0.035, -0.035])
+    origin = [0.0, -0.035, -0.035]
     sources = [
         sources.FocusedSource3D(
-            position=np.array([0.0, 0.0, 0.0]),
-            direction=np.array([1.0, 0.0, 0.0]),
+            position=[0.0, 0.0, 0.0],
+            direction=[1.0, 0.0, 0.0],
             aperture=0.064,
             focal_length=0.064,
             num_points=20_000,

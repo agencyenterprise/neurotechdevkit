@@ -27,13 +27,11 @@ This example demonstrates how to add a source to the simulation.
 # - delay `(float, optional)`: the delay (in seconds) that the source will wait before
 #   emitting. Defaults to 0.0.
 
-import numpy as np
-
 import neurotechdevkit as ndk
 
 source = ndk.sources.FocusedSource2D(
-    position=np.array([0.00, 0.0]),
-    direction=np.array([0.9, 0.0]),
+    position=[0.00, 0.0],
+    direction=[0.9, 0.0],
     aperture=0.01,
     focal_length=0.01,
     num_points=1000,

@@ -15,23 +15,21 @@ can be created that is focused on the desired target precisely. This allows
 for complex wave patterns that open up new possibilities for therapies.
 """
 # %%
-import numpy as np
-
 import neurotechdevkit as ndk
 
 scenario = ndk.built_in.Scenario0()
 
 s1 = ndk.sources.FocusedSource2D(
-    position=np.array([0.01, 0.0]),
-    direction=np.array([0.92, 0.25]),
+    position=[0.01, 0.0],
+    direction=[0.92, 0.25],
     aperture=0.01,
     focal_length=0.022,
     num_points=1000,
 )
 
 s2 = ndk.sources.FocusedSource2D(
-    position=np.array([0.04, -0.002]),
-    direction=np.array([-0.85, 0.35]),
+    position=[0.04, -0.002],
+    direction=[-0.85, 0.35],
     aperture=0.01,
     focal_length=0.011,
     num_points=1000,

@@ -51,7 +51,7 @@ class Target:
     """
 
     target_id: str
-    center: npt.NDArray[np.float_]
+    center: list[float]
     radius: float
     description: str
 
@@ -64,7 +64,7 @@ class Scenario(abc.ABC):
 
     material_masks: Mapping[str, npt.NDArray[np.bool_]]
 
-    origin: npt.NDArray[np.float_]
+    origin: list[float]
 
     # The list of sources in the scenario.
     sources: list[Source]
@@ -138,7 +138,7 @@ class Scenario(abc.ABC):
     @property
     def target_center(self) -> npt.NDArray[np.float_]:
         """The coordinates of the center of the target region (in meters)."""
-        return self.target.center
+        return np.array(self.target.center, dtype=float)
 
     @property
     def target_radius(self) -> float:
@@ -278,7 +278,6 @@ class Scenario(abc.ABC):
         - vp: the speed of sound (in m/s)
         - rho: the density (in kg/m³)
         - alpha: absorption (in dB/cm)
-        - layer: the layer id at each point over the grid
 
         Args:
             field: the name of the field to return.
@@ -562,7 +561,13 @@ class Scenario(abc.ABC):
         wavelet = wavelet_helper(
             name=wavelet_name, freq_hz=freq_hz, time=problem.grid.time
         )
-        return create_shot(problem, sources, self.origin, wavelet, self.dx)
+        return create_shot(
+            problem,
+            sources,
+            np.array(np.array(self.origin, dtype=float), dtype=float),
+            wavelet,
+            self.dx,
+        )
 
     def _create_pde(self) -> stride.IsoAcousticDevito:
         """Instantiate the stride `Operator` representing the PDE for the scenario.
@@ -625,7 +630,9 @@ class Scenario(abc.ABC):
         assert slice_position is not None
         assert slice_axis is not None
 
-        offset_distance = slice_position - self.origin[slice_axis]
+        offset_distance = (
+            slice_position - np.array(self.origin, dtype=float)[slice_axis]
+        )
         slice_idx = np.clip(
             int(offset_distance / self.dx), 0, self.shape[slice_axis] - 1
         )
@@ -674,7 +681,7 @@ class Scenario(abc.ABC):
                 "to correctly define how to slice the field. "
             )
 
-        origin = self.origin
+        origin = np.array(self.origin, dtype=float)
         extent = self.extent
 
         current_range = (origin[slice_axis], origin[slice_axis] + extent[slice_axis])
@@ -780,7 +787,7 @@ class Scenario2D(Scenario):
         """Return the mask for the target region."""
         target_mask = create_grid_circular_mask(
             grid=self.problem.grid,
-            origin=self.origin,
+            origin=np.array(self.origin, dtype=float),
             center=self.target_center,
             radius=self.target_radius,
         )
@@ -804,7 +811,10 @@ class Scenario2D(Scenario):
         """
         color_sequence = list(self.material_colors.values())
         fig, ax = rendering.create_layout_fig(
-            self.extent, self.origin, color_sequence, self.material_layer_ids
+            self.extent,
+            np.array(self.origin, dtype=float),
+            color_sequence,
+            self.material_layer_ids,
         )
 
         # add layers
@@ -813,7 +823,7 @@ class Scenario2D(Scenario):
                 ax=ax,
                 material_field=self.material_layer_ids,
                 dx=self.dx,
-                origin=self.origin,
+                origin=np.array(self.origin, dtype=float),
                 upsample_factor=self.material_outline_upsample_factor,
             )
         if show_target:
@@ -832,7 +842,7 @@ class Scenario2D(Scenario):
             show_sources=show_sources,
             show_target=show_target,
             extent=self.extent,
-            origin=self.origin,
+            origin=np.array(self.origin, dtype=float),
         )
 
 
@@ -845,7 +855,7 @@ class Scenario3D(Scenario):
         """Return the mask for the target region."""
         target_mask = create_grid_spherical_mask(
             grid=self.problem.grid,
-            origin=self.origin,
+            origin=np.array(self.origin, dtype=float),
             center=self.target_center,
             radius=self.target_radius,
         )
@@ -926,7 +936,7 @@ class Scenario3D(Scenario):
         color_sequence = list(self.material_colors.values())
         field = slice_field(self.material_layer_ids, self, slice_axis, slice_position)
         extent = drop_element(self.extent, slice_axis)
-        origin = drop_element(self.origin, slice_axis)
+        origin = drop_element(np.array(self.origin, dtype=float), slice_axis)
         fig, ax = rendering.create_layout_fig(extent, origin, color_sequence, field)
 
         # add layers

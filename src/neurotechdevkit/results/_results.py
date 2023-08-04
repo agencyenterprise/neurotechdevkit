@@ -277,7 +277,7 @@ class SteadyStateResult2D(SteadyStateResult):
 
         fig, ax = rendering.create_steady_state_figure(
             self.scenario.extent,
-            self.scenario.origin,
+            np.array(self.scenario.origin, dtype=float),
             field,
         )
 
@@ -288,7 +288,7 @@ class SteadyStateResult2D(SteadyStateResult):
                 ax=ax,
                 material_field=material_field,
                 dx=self.scenario.dx,
-                origin=self.scenario.origin,
+                origin=np.array(self.scenario.origin, dtype=float),
                 upsample_factor=self.scenario.material_outline_upsample_factor,
             )
         if show_target:
@@ -306,7 +306,7 @@ class SteadyStateResult2D(SteadyStateResult):
             show_sources=show_sources,
             show_target=show_target,
             extent=self.scenario.extent,
-            origin=self.scenario.origin,
+            origin=np.array(self.scenario.origin, dtype=float),
             vertical_label="X",
             horizontal_label="Y",
             title="Steady-State Wave Amplitude",
@@ -360,7 +360,7 @@ class SteadyStateResult3D(SteadyStateResult):
 
         field = slice_field(field, self.scenario, slice_axis, slice_position)
         extent = drop_element(self.scenario.extent, slice_axis)
-        origin = drop_element(self.scenario.origin, slice_axis)
+        origin = drop_element(np.array(self.scenario.origin, dtype=float), slice_axis)
 
         fig, ax = rendering.create_steady_state_figure(extent, origin, field)
 
@@ -745,7 +745,7 @@ class PulsedResult2D(PulsedResult):
             A matplotlib animation object.
         """
         extent = self.scenario.extent
-        origin = self.scenario.origin
+        origin = np.array(self.scenario.origin, dtype=float)
         wavefield = self.wavefield
 
         assert len(extent) == 2, "The rendering only supports 2D fields."
@@ -769,7 +769,7 @@ class PulsedResult2D(PulsedResult):
                 ax=ax,
                 material_field=material_field,
                 dx=self.scenario.dx,
-                origin=self.scenario.origin,
+                origin=np.array(self.scenario.origin, dtype=float),
                 upsample_factor=self.scenario.material_outline_upsample_factor,
             )
 
@@ -1024,7 +1024,7 @@ class PulsedResult3D(PulsedResult):
             wavefield = wavefield[..., time_slice]
 
         extent = drop_element(self.scenario.extent, slice_axis)
-        origin = drop_element(self.scenario.origin, slice_axis)
+        origin = drop_element(np.array(self.scenario.origin, dtype=float), slice_axis)
 
         min_pressure = wavefield.min()
         max_pressure = wavefield.max()

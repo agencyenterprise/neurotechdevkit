@@ -16,20 +16,20 @@ class Scenario0(Scenario2D):
 
     target = Target(
         target_id="target_1",
-        center=np.array([0.0285, 0.0024]),
+        center=[0.0285, 0.0024],
         radius=0.0017,
         description="Represents a simulated tumor.",
     )
     sources = [
         FocusedSource2D(
-            position=np.array([0.01, 0.0]),
-            direction=np.array([1.0, 0.0]),
+            position=[0.01, 0.0],
+            direction=[1.0, 0.0],
             aperture=0.01,
             focal_length=0.01,
             num_points=1000,
         )
     ]
-    origin = np.array([0.0, -0.02])
+    origin = [0.0, -0.02]
 
     material_properties = {
         "water": Material(vp=1500.0, rho=1000.0, alpha=0.0, render_color="#2E86AB"),
@@ -42,7 +42,6 @@ class Scenario0(Scenario2D):
 
     def _make_material_masks(self) -> Mapping[str, npt.NDArray[np.bool_]]:
         """Make the material masks for scenario 0."""
-        assert self.origin is not None
         material_layers = [
             "water",
             "cortical_bone",
@@ -50,7 +49,9 @@ class Scenario0(Scenario2D):
             "tumor",
         ]
         material_masks = {
-            name: _create_scenario_0_mask(name, self.grid, self.origin)
+            name: _create_scenario_0_mask(
+                name, self.grid, np.array(self.origin, dtype=float)
+            )
             for name in material_layers
         }
         return material_masks
