@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import numpy as np
 import numpy.typing as npt
+import scipy.ndimage
 
 from . import _results as results
 
@@ -31,6 +32,17 @@ def calculate_all_metrics(
             "description": (
                 "The peak pressure amplitude within the brain."
             ),
+        },
+        "focal_volume": {
+            "value": calculate_focal_volume(result, layer="brain"),
+            "unit-of-measurement": "voxels",
+            "description": {
+                "The region of the brain where the pressure amplitude is above"
+                " 50%% of the maximum pressure amplitude. If more than one"
+                " region is above 50%% of the maximum pressure amplitude, the"
+                " volume of largest connected region is returned. Also called"
+                " the -6 dB focal volume."
+            }
         },
         "focal_gain": {
             "value": calculate_focal_gain(result),
@@ -160,7 +172,7 @@ def calculate_focal_position(
             space.
     
     Returns:
-        The focal position (in grid index)
+        The focal position (as grid index tuple)
     """
     ss_amp_in_layer = _get_steady_state_in_layer(result, layer=layer)
     focal_position = np.unravel_index(
@@ -333,6 +345,37 @@ def calculate_i_pa_off_target(result: results.SteadyStateResult) -> float:
             region (in W/m^2).
     """
     return calculate_i_ta_off_target(result)
+
+
+def calculate_focal_volume(
+    result: results.SteadyStateResult, layer: str | None = "brain",
+) -> float:
+    """Calculate the focal volume of the simulation result.
+
+    From https://doi.org/10.1121/10.0013426:
+    > The focal volume is calculated by thresholding the pressure field inside
+    > the brain to 50% of the maximum value and then counting the voxels in the
+    > largest connected component.
+
+    Args:
+        result: the Result object containing the simulation results.
+        layer: the layer within which to calculate the focal volume.
+            If None, the focal volume is calculated over the entire grid.
+
+    Returns:
+        The focal volume (in voxels).
+    """
+    ss_amp_in_brain = _get_steady_state_in_layer(result, layer=layer)
+    above_threshold = ss_amp_in_brain >= (0.5 * ss_amp_in_brain.max())
+    # Get contiguous regions
+    labeled_mask, _ = scipy.ndimage.label(above_threshold)
+    # Count the occurrences of each label in the labeled array
+    unique_labels, label_counts = np.unique(labeled_mask, return_counts=True)
+    # Exclude background, which scipy.ndimage.label() labels as 0
+    label_counts = label_counts[unique_labels != 0]
+    assert label_counts.sum(), "Expected >=1 connected regions above 50% threshold"
+    # Get size of largest connected component
+    return label_counts.max()
 
 
 class Conversions:
