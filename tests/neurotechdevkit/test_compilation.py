@@ -6,7 +6,7 @@ import neurotechdevkit as ndk
 @pytest.mark.integration
 def test_compilation():
     """Will run a simulation requiring compilation."""
-    scenario = ndk.BUILTIN_SCENARIOS.SCENARIO_0.value()
+    scenario = ndk.scenarios.built_in.Scenario0()
     scenario.center_frequency = 5e5
     scenario.make_grid()
     scenario.compile_problem()

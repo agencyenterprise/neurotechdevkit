@@ -128,7 +128,7 @@ source = ndk.sources.PhasedArraySource2D(
     num_points=1000,
 )
 
-scenario = ndk.BUILTIN_SCENARIOS.SCENARIO_1_2D.value()
+scenario = ndk.scenarios.built_in.Scenario1_2D()
 scenario.sources = [source]
 scenario.center_frequency = 5e5
 scenario.make_grid()
@@ -143,7 +143,7 @@ result.render_steady_state_amplitudes()
 # delays are automatically computed when `focal_length` is defined. Let's explore how
 # the API looks like:
 
-scenario = ndk.BUILTIN_SCENARIOS.SCENARIO_1_2D.value()
+scenario = ndk.scenarios.built_in.Scenario1_2D()
 
 phased_array = ndk.sources.PhasedArraySource2D(
     position=np.array([0.0, 0.0]),
@@ -178,7 +178,7 @@ result.render_steady_state_amplitudes()
 # In the example below we apply monotonically increasing delays to mimic a
 # counter-clockwise angle.
 
-scenario = ndk.BUILTIN_SCENARIOS.SCENARIO_1_2D.value()
+scenario = ndk.scenarios.built_in.Scenario1_2D()
 
 phased_array = ndk.sources.PhasedArraySource2D(
     position=np.array([0.0, 0.0]),
@@ -211,7 +211,7 @@ result.render_steady_state_amplitudes()
 #
 # The rest of the API is identical for both 2D and 3D scenarios.
 
-scenario_3d = ndk.BUILTIN_SCENARIOS.SCENARIO_1_3D.value()
+scenario_3d = ndk.scenarios.built_in.Scenario1_3D()
 
 phased_3d = ndk.sources.PhasedArraySource3D(
     position=np.array([0.0, 0.0, 0.0]),

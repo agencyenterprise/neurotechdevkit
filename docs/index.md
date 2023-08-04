@@ -49,7 +49,7 @@ To install and run **neurotechdevkit** locally check the [installation](https://
 ```python
 import neurotechdevkit as ndk
 
-scenario = ndk.BUILTIN_SCENARIOS.SCENARIO_0.value()
+scenario = ndk.scenarios.built_in.Scenario0()
 scenario.center_frequency = 5e5
 scenario.make_grid()
 scenario.compile_problem()

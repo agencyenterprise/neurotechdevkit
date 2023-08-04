@@ -11,8 +11,8 @@ import neurotechdevkit as ndk
 
 
 def plot_scenario(chosen_scenario):
-    print(f"Simulating scenario: {chosen_scenario.name}")
-    scenario = chosen_scenario.value()
+    print(f"Simulating scenario: {chosen_scenario.__class__.__name__}")
+    scenario = chosen_scenario
     scenario.center_frequency = 5e5
     scenario.make_grid()
     scenario.compile_problem()
@@ -23,16 +23,16 @@ def plot_scenario(chosen_scenario):
 # %%
 # Simulating scenario: scenario 0
 # ===================================
-plot_scenario(ndk.BUILTIN_SCENARIOS.SCENARIO_0)
+plot_scenario(ndk.scenarios.built_in.Scenario0)
 
 # %%
 # Simulating scenario: scenario 1 2D
 # ===================================
-plot_scenario(ndk.BUILTIN_SCENARIOS.SCENARIO_1_2D)
+plot_scenario(ndk.scenarios.built_in.Scenario1_2D)
 
 # %%
 # Simulating scenario: scenario 2 2D
 # ===================================
-plot_scenario(ndk.BUILTIN_SCENARIOS.SCENARIO_2_2D)
+plot_scenario(ndk.scenarios.built_in.Scenario2_2D)
 
 # %%

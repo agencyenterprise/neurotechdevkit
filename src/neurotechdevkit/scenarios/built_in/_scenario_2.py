@@ -7,11 +7,11 @@ import hdf5storage
 import numpy as np
 import numpy.typing as npt
 
-from .. import rendering, sources
-from ..grid import Grid
-from ..materials import Material
-from ..problem import Problem
-from ._base import Scenario, Scenario2D, Scenario3D, Target
+from ... import rendering, sources
+from ...grid import Grid
+from ...materials import Material
+from ...problem import Problem
+from .._base import Scenario, Scenario2D, Scenario3D, Target
 
 
 class Scenario2(Scenario):

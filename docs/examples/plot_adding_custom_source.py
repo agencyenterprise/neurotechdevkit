@@ -39,7 +39,7 @@ source = ndk.sources.FocusedSource2D(
     num_points=1000,
 )
 
-scenario = ndk.BUILTIN_SCENARIOS.SCENARIO_0.value()
+scenario = ndk.built_in.Scenario0()
 scenario.sources = [source]
 scenario.center_frequency = 5e5
 scenario.make_grid()

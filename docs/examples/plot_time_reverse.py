@@ -37,7 +37,7 @@ ELEMENT_WIDTH = 1.2e-3
 # %%
 # Helper function to make the scenario with a PhasedArraySource
 def make_scenario(element_delays=None):
-    true_scenario = ndk.BUILTIN_SCENARIOS.SCENARIO_2_2D.value()
+    true_scenario = ndk.scenarios.built_in.Scenario2_2D()
 
     # define a phased-array source
     default_source = true_scenario.sources[0]
@@ -70,7 +70,7 @@ true_scenario.render_layout()
 # The point source is visualized as a gray dot.
 
 # Reinitialize the scenario
-reversed_scenario = ndk.BUILTIN_SCENARIOS.SCENARIO_2_2D.value()
+reversed_scenario = ndk.scenarios.built_in.Scenario2_2D()
 # and reverse the source
 point_source = ndk.sources.PointSource2D(
     position=true_scenario.target.center,

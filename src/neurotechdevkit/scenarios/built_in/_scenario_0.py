@@ -3,12 +3,12 @@ from typing import Mapping
 import numpy as np
 import numpy.typing as npt
 
-from ..grid import Grid
-from ..materials import Material
-from ..problem import Problem
-from ..sources import FocusedSource2D
-from ._base import Scenario2D, Target
-from ._utils import create_grid_circular_mask, create_grid_elliptical_mask
+from ...grid import Grid
+from ...materials import Material
+from ...problem import Problem
+from ...sources import FocusedSource2D
+from .._base import Scenario2D, Target
+from .._utils import create_grid_circular_mask, create_grid_elliptical_mask
 
 
 class Scenario0(Scenario2D):

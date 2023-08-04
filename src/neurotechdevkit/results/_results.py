@@ -128,15 +128,18 @@ def get_scenario_id(scenario: scenarios.Scenario) -> str:
         scenario (scenarios.Scenario): the instance of the scenario.
 
     Raises:
-        ValueError: raised if the scenario is not found in ndk.BUILTIN_SCENARIOS
+        ValueError: raised if the scenario is not found in ndk.scenarios.built_in
 
     Returns:
         str: the scenario id.
     """
-    for builtin_scenario in neurotechdevkit.BUILTIN_SCENARIOS:
-        if isinstance(scenario, builtin_scenario.value):
-            return builtin_scenario.name
-    raise ValueError("Scenario not found in neurotechdevkit.BUILTIN_SCENARIOS")
+    for (
+        scenario_id,
+        scenario_class,
+    ) in neurotechdevkit.scenarios.built_in.BUILT_IN_SCENARIOS.items():
+        if isinstance(scenario, scenario_class):
+            return scenario_id
+    raise ValueError("Scenario not found in neurotechdevkit.scenarios.built_in")
 
 
 @dataclass
@@ -1264,7 +1267,9 @@ def load_result_from_disk(filepath: str | pathlib.Path) -> Result:
         import neurotechdevkit as ndk
 
         print("Recreating the scenario for the result from saved metadata...")
-        scenario = ndk.BUILTIN_SCENARIOS[save_data["scenario_id"]].value()
+        scenario = neurotechdevkit.scenarios.built_in.BUILT_IN_SCENARIOS[
+            save_data["scenario_id"]
+        ]()
 
         result_type = getattr(ndk.results, save_data["result_type"])
 
