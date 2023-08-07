@@ -226,6 +226,8 @@ class SteadyStateResult(Result):
         save_data = {
             "result_type": type(self).__name__,
             "scenario_id": get_scenario_id(self.scenario),
+            "material_masks": self.scenario.material_masks,
+            "origin": self.scenario.origin,
             "sources": self.scenario.sources,
             "problem": self.scenario.problem,
             "center_frequency": self.center_frequency,
@@ -582,6 +584,8 @@ class PulsedResult(Result):
         save_data = {
             "result_type": type(self).__name__,
             "scenario_id": get_scenario_id(self.scenario),
+            "material_masks": self.scenario.material_masks,
+            "origin": self.scenario.origin,
             "sources": self.scenario.sources,
             "problem": self.scenario.problem,
             "center_frequency": self.center_frequency,
@@ -1285,6 +1289,8 @@ def load_result_from_disk(filepath: str | pathlib.Path) -> Result:
         scenario.center_frequency = save_data["center_frequency"]
         scenario.problem = save_data["problem"]
         scenario.grid = scenario.problem.grid
+        scenario.material_masks = save_data["material_masks"]
+        scenario.origin = save_data["origin"]
 
         if save_data.get("steady_state") is not None:
             fields_kwargs.update(steady_state=save_data["steady_state"])

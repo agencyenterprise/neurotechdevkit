@@ -26,7 +26,9 @@ class Grid(stride.Grid):
     @staticmethod
     def make_grid(
         extent: npt.NDArray[np.float_],
-        dx: float,
+        speed_water=float,
+        center_frequency=float,
+        ppw=int,
         extra: Union[int, Iterable[int]] = 50,
         absorbing: Union[int, Iterable[int]] = 40,
     ) -> "Grid":
@@ -38,8 +40,9 @@ class Grid(stride.Grid):
         Args:
             extent: a 2-tuple or 3-tuple containing the dimensions (in meters) of the
                 simulation.
-            dx: the grid spacing in meters. If None, it is computed based on the
-                center frequency and the desired resolution.
+            speed_water: the speed of sound in water (in m/s).
+            center_frequency: the center frequency of the source (in Hz).
+            ppw: the number of points per wavelength.
             extra: the number of gridpoints to add as boundary layers on each side of
                 the grid. extras are added both before and after the grid on each axis.
             absorbing: the number of gridpoints within the boundary layers that are
@@ -49,6 +52,7 @@ class Grid(stride.Grid):
             The Grid object.
         """
         n_dims = len(extent)
+        dx = speed_water / center_frequency / ppw  # m
         shape = _compute_grid_shape(extent, dx)
 
         if isinstance(extra, int):

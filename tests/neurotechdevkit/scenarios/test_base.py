@@ -38,8 +38,12 @@ class ScenarioBaseTester(Scenario):
         self.problem = self._compile_problem()
 
     def _make_grid(self):
-        extent = np.array([2.0, 3.0, 4.0])
-        grid = Grid.make_grid(extent=extent, dx=0.1)
+        grid = Grid.make_grid(
+            extent=np.array([2.0, 3.0, 4.0]),
+            speed_water=100000,
+            ppw=2,
+            center_frequency=self.center_frequency,
+        )
         self.grid = grid
 
     def _compile_problem(self) -> Problem:
@@ -47,7 +51,6 @@ class ScenarioBaseTester(Scenario):
         problem.medium.add(stride.ScalarField(name="vp", grid=self.grid))
         problem.medium.add(stride.ScalarField(name="rho", grid=self.grid))
         problem.medium.add(stride.ScalarField(name="alpha", grid=self.grid))
-        # problem.medium.add(stride.ScalarField(name="layer", grid=self.grid))
         return problem
 
     def get_default_source(self) -> Source:

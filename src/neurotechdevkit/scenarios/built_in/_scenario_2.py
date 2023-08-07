@@ -36,15 +36,15 @@ class Scenario2(Scenario):
     }
 
     def _make_grid(self, extent: npt.NDArray[np.float_]) -> Grid:
-        # scenario constants
         speed_water = 1500  # m/s
+        ppw = 6  # desired resolution for complexity=fast
 
-        # desired resolution for complexity=fast
-        ppw = 6
-        # compute resolution
-        dx = speed_water / self.center_frequency / ppw  # m
-
-        grid = Grid.make_grid(extent=extent, dx=dx)
+        grid = Grid.make_grid(
+            extent=extent,
+            speed_water=speed_water,
+            ppw=ppw,
+            center_frequency=self.center_frequency,
+        )
         return grid
 
     def _make_material_masks(

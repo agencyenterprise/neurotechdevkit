@@ -61,16 +61,15 @@ class Scenario1(Scenario):
         Returns:
             stride.Grid: the grid
         """
-        # scenario constants
         speed_water = 1500  # m/s
+        ppw = 6  # desired resolution for complexity=fast
 
-        # desired resolution for complexity=fast
-        ppw = 6
-
-        # compute resolution
-        dx = speed_water / self.center_frequency / ppw  # m
-
-        grid = Grid.make_grid(extent=extent, dx=dx)
+        grid = Grid.make_grid(
+            extent=extent,
+            speed_water=speed_water,
+            ppw=ppw,
+            center_frequency=self.center_frequency,
+        )
         return grid
 
     def compile_problem(self) -> Problem:

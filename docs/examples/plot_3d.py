@@ -20,7 +20,7 @@ import pooch
 import neurotechdevkit as ndk
 
 URL = "https://neurotechdevkit.s3.us-west-2.amazonaws.com/result-scenario-2-3d-v3.tz"
-known_hash = "3f7e27dd37582d371adef52cae7ffcdee01da04e6c09b6b68ae231d184e77830"
+known_hash = "358a42c4f1db463009712198b47fe2bbe73fa4c947256f051070fda4e5638cef"
 downloaded_file_path = pooch.retrieve(url=URL, known_hash=known_hash, progressbar=True)
 result = ndk.load_result_from_disk(downloaded_file_path)
 
