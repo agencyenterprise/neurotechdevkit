@@ -166,8 +166,8 @@ def calculate_focal_pressure(
     Returns:
         The focal pressure (in Pa)
     """
-    ss_amp_in_layer = _get_steady_state_in_layer(result, layer=layer)
-    focal_pressure = np.max(ss_amp_in_layer)
+    ss_amp_masked = _get_steady_state_in_layer(result, layer=layer)
+    focal_pressure = np.max(ss_amp_masked)
     return focal_pressure
 
 
@@ -187,10 +187,10 @@ def calculate_focal_position(
     Returns:
         The focal position (as grid index tuple)
     """
-    ss_amp_in_layer = _get_steady_state_in_layer(result, layer=layer)
+    ss_amp_masked = _get_steady_state_in_layer(result, layer=layer)
     focal_position = np.unravel_index(
-        np.argmax(ss_amp_in_layer, axis=None),
-        ss_amp_in_layer.shape
+        np.argmax(ss_amp_masked, axis=None),
+        ss_amp_masked.shape
     )
     return focal_position
 
@@ -212,8 +212,8 @@ def calculate_mechanical_index(
     Returns:
         The mechanical index (in Pa √s̅)
     """
-    ss_amp_in_layer = _get_steady_state_in_layer(result, layer=layer)
-    peak_neg_pressure = np.max(ss_amp_in_layer)
+    ss_amp_masked = _get_steady_state_in_layer(result, layer=layer)
+    peak_neg_pressure = np.max(ss_amp_masked)
     return peak_neg_pressure / np.sqrt(result.center_frequency)
 
 
@@ -378,8 +378,11 @@ def calculate_focal_volume(
     Returns:
         The focal volume (in voxels).
     """
-    ss_amp_in_brain = _get_steady_state_in_layer(result, layer=layer)
-    above_threshold = ss_amp_in_brain >= (0.5 * ss_amp_in_brain.max())
+    ss_amp_brain_masked = _get_steady_state_in_layer(result, layer=layer)
+    above_threshold = ss_amp_brain_masked >= (0.5 * ss_amp_brain_masked.max())
+    # scipy.ndimage.label expects a normal numpy array, so let's fill the masked array
+    if isinstance(above_threshold, np.ma.MaskedArray):
+        above_threshold = above_threshold.filled(False)
     # Get contiguous regions
     labeled_mask, _ = scipy.ndimage.label(above_threshold)
     # Count the occurrences of each label in the labeled array
@@ -417,14 +420,18 @@ def calculate_focal_fwhm(
 
     # Extract slice going through the focal position
     focal_position_idx = calculate_focal_position(result, layer=layer)
-    ss_amp_in_layer = _get_steady_state_in_layer(result, layer=layer)
+    ss_amp_masked = _get_steady_state_in_layer(result, layer=layer)
     slicer = list(focal_position_idx)
     slicer[axis] = slice(None)
-    focal_slice = ss_amp_in_layer[tuple(slicer)]
+    focal_slice = ss_amp_masked[tuple(slicer)]
 
     # Find which indices are above the half-maximum-pressure
     focal_position_axis_idx = focal_position_idx[axis]
     above_half_max = focal_slice >= (0.5 * focal_slice[focal_position_axis_idx])
+
+    # scipy.ndimage.label expects a normal numpy array, so let's fill the masked array
+    if isinstance(above_half_max, np.ma.MaskedArray):
+        above_half_max = above_half_max.filled(False)
     labeled_mask, _ = scipy.ndimage.label(above_half_max)
     # We only care about the connected region containing the focal position
     fwhm_group_label = labeled_mask[focal_position_axis_idx]
