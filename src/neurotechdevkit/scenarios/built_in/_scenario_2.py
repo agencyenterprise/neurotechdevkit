@@ -75,6 +75,41 @@ class Scenario2_2D(Scenario2D, Scenario2):
         https://asa.scitation.org/doi/pdf/10.1121/10.0013426
     """
 
+    PREDEFINED_TARGET_OPTIONS = {
+        "primary-visual-cortex": Target(
+            target_id="primary-visual-cortex",
+            center=[0.047, 0.002],
+            radius=0.010,
+            description=(
+                "A region of the primary visual cortex (approximate 2D location and"
+                " size). Studies suggest that transcranial focused ultrasound"
+                " stimulation of this brain region can lead to phosphene perception."
+                " See for more details: https://doi.org/10.1038/srep34026"
+            ),
+        ),
+        "right-inferior-frontal-gyrus": Target(
+            target_id="right-inferior-frontal-gyrus",
+            center=[0.175, 0.048],
+            radius=0.008,
+            description=(
+                "The right inferior frontal gyrus (approximate 2D location and size)."
+                " Studies suggest that transcranial focused ultrasound stimulation of"
+                " this region can be used to improve mood."
+                " See for more details: https://doi.org/10.3389/fnhum.2020.00052"
+            ),
+        ),
+        "posterior-cingulate-cortex": Target(
+            target_id="posterior-cingulate-cortex",
+            center=[0.10, 0.005],
+            radius=0.01,
+            description=(
+                "The posterior cingulate cortex (approximate 2D location and size)."
+                " Studies suggest this brain region could be linked with meditation"
+                " and mindfulness."
+                " See for more details: https://doi.org/10.1111/nyas.12246"
+            ),
+        ),
+    }
     target = Target(
         target_id="primary-visual-cortex",
         center=[0.047, 0.002],
@@ -116,6 +151,66 @@ class Scenario2_3D(Scenario2, Scenario3D):
         doi: 10.1121/10.0013426
         https://asa.scitation.org/doi/pdf/10.1121/10.0013426
     """
+
+    PREDEFINED_TARGET_OPTIONS = {
+        "primary-visual-cortex": Target(
+            target_id="primary-visual-cortex",
+            center=[0.047, 0.002, 0.005],
+            radius=0.010,
+            description=(
+                "A region of the primary visual cortex (estimated location and size)."
+                " Studies suggest that transcranial focused ultrasound stimulation of"
+                " this brain region can lead to phosphene perception."
+                " See for more details: https://doi.org/10.1038/srep34026"
+            ),
+        ),
+        "right-inferior-frontal-gyrus": Target(
+            target_id="right-inferior-frontal-gyrus",
+            center=[0.175, 0.048, -0.010],
+            radius=0.008,
+            description=(
+                "The right inferior frontal gyrus (estimated location and size)."
+                " Studies suggest that transcranial focused ultrasound stimulation of"
+                " this region can be used to improve mood."
+                " See for more details: https://doi.org/10.3389/fnhum.2020.00052"
+            ),
+        ),
+        "posterior-cingulate-cortex": Target(
+            target_id="posterior-cingulate-cortex",
+            center=[0.10, 0.005, 0.020],
+            radius=0.01,
+            description=(
+                "The posterior cingulate cortex (estimated location and size). Studies"
+                " suggest this brain region could be linked with meditation and"
+                " mindfulness."
+                " See for more details: https://doi.org/10.1111/nyas.12246"
+            ),
+        ),
+        "ventral-intermediate-nucleus": Target(
+            target_id="ventral-intermediate-nucleus",
+            center=[0.12, 0.01, -0.015],
+            radius=0.005,
+            description=(
+                "The right ventral intermediate nucleus of the thalamus (estimated"
+                " location and size). Studies are being conducted on the use of"
+                " transcranial ultrasound therapy to help treat essential tremor."
+                " See for more details:"
+                " https://clinicaltrials.gov/ct2/show/NCT04074031"
+            ),
+        ),
+        "left-temporal-lobe": Target(
+            target_id="left-temporal-lobe",
+            center=[0.14, -0.03, -0.03],
+            radius=0.015,
+            description=(
+                "The left temporal lobe (estimated location and size). Studies are"
+                " being conducted on the use of low-intensity ultrasound targeting the"
+                " temporal lobe to help treat drug-resistant epilepsy."
+                " See for more details:"
+                " https://clinicaltrials.gov/ct2/show/NCT03868293"
+            ),
+        ),
+    }
 
     target = Target(
         target_id="primary-visual-cortex",
