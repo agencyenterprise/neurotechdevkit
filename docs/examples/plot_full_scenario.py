@@ -65,7 +65,7 @@ def fill_mask(mask, start, end, dx):
         mask[n:m] = True
 
 
-def create_mask(material, grid):
+def create_masks(grid):
     # layers are defined by X position
     dx = grid.space.spacing[0]
 
@@ -79,40 +79,24 @@ def create_mask(material, grid):
             0.0835,  # brain
         ]
     )
+    layers = np.array(
+        ["water", "skin", "cortical_bone", "trabecular_bone", "cortical_bone", "brain"]
+    )
     interfaces = np.cumsum(layers_m)
 
-    mask = np.zeros(grid.space.shape, dtype=bool)
+    mask_materials = {}
 
-    if material == "water":
-        fill_mask(mask, start=0, end=interfaces[0], dx=dx)
-
-    elif material == "skin":
-        fill_mask(mask, start=interfaces[0], end=interfaces[1], dx=dx)
-
-    elif material == "cortical_bone":
-        fill_mask(mask, start=interfaces[1], end=interfaces[2], dx=dx)
-        fill_mask(mask, start=interfaces[3], end=interfaces[4], dx=dx)
-
-    elif material == "trabecular_bone":
-        fill_mask(mask, start=interfaces[2], end=interfaces[3], dx=dx)
-
-    elif material == "brain":
-        fill_mask(mask, start=interfaces[4], end=None, dx=dx)
-
-    else:
-        raise ValueError(material)
-
-    return mask
+    for material in np.unique(layers):
+        mask = np.zeros(grid.space.shape, dtype=bool)
+        for index in np.where(layers == material)[0]:
+            start = interfaces[index - 1] if material != "water" else 0
+            end = interfaces[index] if material != "brain" else None
+            fill_mask(mask, start=start, end=end, dx=dx)
+        mask_materials[material] = mask
+    return mask_materials
 
 
-material_layers = [
-    "water",
-    "skin",
-    "cortical_bone",
-    "trabecular_bone",
-    "brain",
-]
-scenario.material_masks = {name: create_mask(name, grid) for name in material_layers}
+scenario.material_masks = create_masks(grid)
 
 
 # %%
