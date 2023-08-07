@@ -5,7 +5,6 @@ import numpy.typing as npt
 
 from ...grid import Grid
 from ...materials import Material
-from ...problem import Problem
 from ...sources import FocusedSource2D
 from .._base import Scenario2D, Target
 from .._utils import create_grid_circular_mask, create_grid_elliptical_mask
@@ -69,23 +68,6 @@ class Scenario0(Scenario2D):
             center_frequency=self.center_frequency,
         )
         self.material_masks = self._make_material_masks()
-
-    def compile_problem(self) -> Problem:
-        """
-        Compile the problem for scenario 0.
-
-        Returns:
-            Problem: the compiled problem
-        """
-        assert self.grid is not None
-        assert self.material_masks is not None
-
-        self.problem = Problem(grid=self.grid)
-        self.problem.add_material_fields(
-            materials=self.materials,
-            masks=self.material_masks,
-        )
-        return self.problem
 
 
 def _create_scenario_0_mask(material, grid, origin):

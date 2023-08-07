@@ -10,7 +10,6 @@ import numpy.typing as npt
 from ... import rendering, sources
 from ...grid import Grid
 from ...materials import Material
-from ...problem import Problem
 from .._base import Scenario, Scenario2D, Scenario3D, Target
 
 
@@ -61,24 +60,6 @@ class Scenario2(Scenario):
             for name in material_layers
         }
         return material_masks
-
-    def compile_problem(self) -> Problem:
-        """
-        Compile the problem for scenario 2.
-
-        Returns:
-            Problem: the compiled problem
-        """
-        assert self.grid is not None
-        assert self.material_masks is not None
-
-        self.problem = Problem(grid=self.grid)
-        self.problem.add_material_fields(
-            materials=self.materials,
-            masks=self.material_masks,
-        )
-
-        return self.problem
 
 
 class Scenario2_2D(Scenario2D, Scenario2):

@@ -35,7 +35,7 @@ class ScenarioBaseTester(Scenario):
     def __init__(self):
         self.center_frequency = 5e5
         self._make_grid()
-        self.problem = self._compile_problem()
+        self.compile_problem()
 
     def _make_grid(self):
         grid = Grid.make_grid(
@@ -46,12 +46,11 @@ class ScenarioBaseTester(Scenario):
         )
         self.grid = grid
 
-    def _compile_problem(self) -> Problem:
-        problem = Problem(grid=self.grid)
-        problem.medium.add(stride.ScalarField(name="vp", grid=self.grid))
-        problem.medium.add(stride.ScalarField(name="rho", grid=self.grid))
-        problem.medium.add(stride.ScalarField(name="alpha", grid=self.grid))
-        return problem
+    def compile_problem(self):
+        self.problem = Problem(grid=self.grid)
+        self.problem.medium.add(stride.ScalarField(name="vp", grid=self.grid))
+        self.problem.medium.add(stride.ScalarField(name="rho", grid=self.grid))
+        self.problem.medium.add(stride.ScalarField(name="alpha", grid=self.grid))
 
     def get_default_source(self) -> Source:
         return self.default_source

@@ -5,7 +5,7 @@ import asyncio
 import os
 from dataclasses import dataclass
 from types import SimpleNamespace
-from typing import Mapping
+from typing import Mapping, Optional
 
 import nest_asyncio
 import numpy as np
@@ -77,6 +77,77 @@ class Scenario(abc.ABC):
     _problem: Problem
     _target: Target
     _grid: Grid
+
+    def __init__(
+        self,
+        center_frequency: Optional[float] = None,
+        material_properties: Optional[dict[str, Material]] = None,
+        material_masks: Optional[Mapping[str, npt.NDArray[np.bool_]]] = None,
+        origin: Optional[list[float]] = None,
+        sources: Optional[list[Source]] = None,
+        slice_axis: Optional[int] = None,
+        slice_position: Optional[float] = None,
+        material_outline_upsample_factor: Optional[int] = None,
+        target: Optional[Target] = None,
+        problem: Optional[Problem] = None,
+        grid: Optional[Grid] = None,
+    ) -> None:
+        """
+        Initialize a scenario.
+
+        All arguments are optional and can be set after initialization.
+
+        Args:
+            center_frequency (Optional[float], optional): The center frequency (in
+                hertz) of the scenario. Defaults to None.
+            material_properties (Optional[dict[str, Material]], optional): A map
+                between material name and material properties. Defaults to None.
+            material_masks (Optional[Mapping[str, npt.NDArray[np.bool_]]], optional):
+                A map between material name and a boolean mask indicating which grid
+                points are in that material. Defaults to None.
+            origin (Optional[list[float]], optional): The location of the origin of the
+                scenario (in meters). Defaults to None.
+            sources (Optional[list[Source]], optional): The list of sources in the
+                scenario. Defaults to None.
+            slice_axis (Optional[int], optional): The axis along which to slice the 3D
+                field to be recorded. If None, then the complete field will be
+                recorded. Use 0 for X axis, 1 for Y axis and 2 for Z axis. Only valid
+                if `slice_position` is not None. Defaults to None.
+            slice_position (Optional[float], optional): The position (in meters) along
+                the slice axis at which the slice of the 3D field should be made. Only
+                valid if `slice_axis` is not None. Defaults to None.
+            material_outline_upsample_factor (Optional[int], optional): The factor by
+                which to upsample the material outline when rendering the scenario.
+                Defaults to None.
+            target (Optional[Target], optional): The target in the scenario. Defaults
+                to None.
+            problem (Optional[Problem], optional): The problem definition for the
+                scenario. Defaults to None.
+            grid (Optional[Grid], optional): The grid for the scenario. Defaults to
+                None.
+        """
+        if center_frequency is not None:
+            self.center_frequency = center_frequency
+        if material_properties is not None:
+            self.material_properties = material_properties
+        if material_masks is not None:
+            self.material_masks = material_masks
+        if origin is not None:
+            self.origin = origin
+        if sources is not None:
+            self.sources = sources
+        if slice_axis is not None:
+            self.slice_axis = slice_axis
+        if slice_position is not None:
+            self.slice_position = slice_position
+        if material_outline_upsample_factor is not None:
+            self.material_outline_upsample_factor = material_outline_upsample_factor
+        if target is not None:
+            self.target = target
+        if problem is not None:
+            self.problem = problem
+        if grid is not None:
+            self.grid = grid
 
     @property
     def extent(self) -> npt.NDArray[np.float_]:
@@ -269,6 +340,17 @@ class Scenario(abc.ABC):
                 del self.grid
 
         self._center_frequency = center_frequency
+
+    def compile_problem(self):
+        """Compiles the problem for the scenario."""
+        assert self.grid is not None
+        assert self.material_masks is not None
+
+        self.problem = Problem(grid=self.grid)
+        self.problem.add_material_fields(
+            materials=self.materials,
+            masks=self.material_masks,
+        )
 
     def get_field_data(self, field: str) -> npt.NDArray[np.float_]:
         """Return the array of field values across the scenario for a particular field.

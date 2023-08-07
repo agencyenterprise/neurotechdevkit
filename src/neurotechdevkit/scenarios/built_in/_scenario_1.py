@@ -8,7 +8,6 @@ import numpy.typing as npt
 from ... import rendering, sources
 from ...grid import Grid
 from ...materials import Material
-from ...problem import Problem
 from .._base import Scenario, Scenario2D, Scenario3D, Target
 
 
@@ -71,23 +70,6 @@ class Scenario1(Scenario):
             center_frequency=self.center_frequency,
         )
         return grid
-
-    def compile_problem(self) -> Problem:
-        """
-        Compile the problem for scenario 1.
-
-        Returns:
-            Problem: the compiled problem
-        """
-        assert self.grid is not None
-        assert self.material_masks is not None
-
-        self.problem = Problem(grid=self.grid)
-        self.problem.add_material_fields(
-            materials=self.materials,
-            masks=self.material_masks,
-        )
-        return self.problem
 
 
 class Scenario1_2D(Scenario1, Scenario2D):
