@@ -4,6 +4,7 @@ import abc
 import asyncio
 import os
 from dataclasses import dataclass
+from enum import IntEnum
 from types import SimpleNamespace
 from typing import Mapping, Optional
 
@@ -39,6 +40,14 @@ from ._utils import (
 nest_asyncio.apply()
 
 
+class SliceAxis(IntEnum):
+    """Axis along which to slice the 3D field to be recorded."""
+
+    X = 0
+    Y = 1
+    Z = 2
+
+
 @dataclass
 class Target:
     """A class for containing metadata for a target.
@@ -69,8 +78,6 @@ class Scenario(abc.ABC):
     # The list of sources in the scenario.
     sources: list[Source]
 
-    slice_axis: int
-    slice_position: float
     material_outline_upsample_factor: int = 16
 
     _center_frequency: float
@@ -85,8 +92,6 @@ class Scenario(abc.ABC):
         material_masks: Optional[Mapping[str, npt.NDArray[np.bool_]]] = None,
         origin: Optional[list[float]] = None,
         sources: Optional[list[Source]] = None,
-        slice_axis: Optional[int] = None,
-        slice_position: Optional[float] = None,
         material_outline_upsample_factor: Optional[int] = None,
         target: Optional[Target] = None,
         problem: Optional[Problem] = None,
@@ -109,13 +114,6 @@ class Scenario(abc.ABC):
                 scenario (in meters). Defaults to None.
             sources (Optional[list[Source]], optional): The list of sources in the
                 scenario. Defaults to None.
-            slice_axis (Optional[int], optional): The axis along which to slice the 3D
-                field to be recorded. If None, then the complete field will be
-                recorded. Use 0 for X axis, 1 for Y axis and 2 for Z axis. Only valid
-                if `slice_position` is not None. Defaults to None.
-            slice_position (Optional[float], optional): The position (in meters) along
-                the slice axis at which the slice of the 3D field should be made. Only
-                valid if `slice_axis` is not None. Defaults to None.
             material_outline_upsample_factor (Optional[int], optional): The factor by
                 which to upsample the material outline when rendering the scenario.
                 Defaults to None.
@@ -136,10 +134,6 @@ class Scenario(abc.ABC):
             self.origin = origin
         if sources is not None:
             self.sources = sources
-        if slice_axis is not None:
-            self.slice_axis = slice_axis
-        if slice_position is not None:
-            self.slice_position = slice_position
         if material_outline_upsample_factor is not None:
             self.material_outline_upsample_factor = material_outline_upsample_factor
         if target is not None:
@@ -471,48 +465,6 @@ class Scenario(abc.ABC):
             shot=sub_problem.shot,
             wavefield=wavefield,
             traces=traces,
-        )
-
-    def simulate_pulse(
-        self,
-        points_per_period: int = 24,
-        simulation_time: float | None = None,
-        recording_time_undersampling: int = 4,
-        n_jobs: int | None = None,
-    ) -> results.PulsedResult:
-        """Execute a pulsed simulation in 2D.
-
-        In this simulation, the sources will emit a pulse containing a few cycles of
-        oscillation and then let the pulse propagate out to all edges of the scenario.
-
-        !!! warning
-            A poor choice of arguments to this function can lead to a failed
-            simulation. Make sure you understand the impact of supplying parameter
-            values other than the default if you chose to do so.
-
-        Args:
-            points_per_period: the number of points in time to simulate for each cycle
-                of the wave.
-            simulation_time: the amount of time (in seconds) the simulation should run.
-                If the value is None, this time will automatically be set to the amount
-                of time it would take to propagate from one corner to the opposite in
-                the medium with the slowest speed of sound in the scenario.
-            recording_time_undersampling: the undersampling factor to apply to the time
-                axis when recording simulation results. One out of every this many
-                consecutive time points will be recorded and all others will be dropped.
-            n_jobs: the number of threads to be used for the computation. Use None to
-                leverage Devito automatic tuning.
-
-        Returns:
-            An object containing the result of the 2D pulsed simulation.
-        """
-        return self._simulate_pulse(
-            points_per_period=points_per_period,
-            simulation_time=simulation_time,
-            recording_time_undersampling=recording_time_undersampling,
-            n_jobs=n_jobs,
-            slice_axis=None,
-            slice_position=None,
         )
 
     def _simulate_pulse(
@@ -875,6 +827,48 @@ class Scenario2D(Scenario):
         )
         return target_mask
 
+    def simulate_pulse(
+        self,
+        points_per_period: int = 24,
+        simulation_time: float | None = None,
+        recording_time_undersampling: int = 4,
+        n_jobs: int | None = None,
+    ) -> results.PulsedResult:
+        """Execute a pulsed simulation in 2D.
+
+        In this simulation, the sources will emit a pulse containing a few cycles of
+        oscillation and then let the pulse propagate out to all edges of the scenario.
+
+        !!! warning
+            A poor choice of arguments to this function can lead to a failed
+            simulation. Make sure you understand the impact of supplying parameter
+            values other than the default if you chose to do so.
+
+        Args:
+            points_per_period: the number of points in time to simulate for each cycle
+                of the wave.
+            simulation_time: the amount of time (in seconds) the simulation should run.
+                If the value is None, this time will automatically be set to the amount
+                of time it would take to propagate from one corner to the opposite in
+                the medium with the slowest speed of sound in the scenario.
+            recording_time_undersampling: the undersampling factor to apply to the time
+                axis when recording simulation results. One out of every this many
+                consecutive time points will be recorded and all others will be dropped.
+            n_jobs: the number of threads to be used for the computation. Use None to
+                leverage Devito automatic tuning.
+
+        Returns:
+            An object containing the result of the 2D pulsed simulation.
+        """
+        return self._simulate_pulse(
+            points_per_period=points_per_period,
+            simulation_time=simulation_time,
+            recording_time_undersampling=recording_time_undersampling,
+            n_jobs=n_jobs,
+            slice_axis=None,
+            slice_position=None,
+        )
+
     def render_layout(
         self,
         show_sources: bool = True,
@@ -931,7 +925,77 @@ class Scenario2D(Scenario):
 class Scenario3D(Scenario):
     """A 3D scenario."""
 
+    slice_axis: SliceAxis
+    slice_position: float
     viewer_config_3d: rendering.ViewerConfig3D
+
+    def __init__(
+        self,
+        center_frequency: Optional[float] = None,
+        material_properties: Optional[dict[str, Material]] = None,
+        material_masks: Optional[Mapping[str, npt.NDArray[np.bool_]]] = None,
+        origin: Optional[list[float]] = None,
+        sources: Optional[list[Source]] = None,
+        material_outline_upsample_factor: Optional[int] = None,
+        target: Optional[Target] = None,
+        problem: Optional[Problem] = None,
+        grid: Optional[Grid] = None,
+        slice_axis: Optional[SliceAxis] = None,
+        slice_position: Optional[float] = None,
+        viewer_config_3d: Optional[rendering.ViewerConfig3D] = None,
+    ):
+        """Initialize a 3D Scenario.
+
+        All arguments are optional and can be set after initialization.
+
+        Args:
+            center_frequency (Optional[float], optional): The center frequency (in
+                hertz) of the scenario. Defaults to None.
+            material_properties (Optional[dict[str, Material]], optional): A map
+                between material name and material properties. Defaults to None.
+            material_masks (Optional[Mapping[str, npt.NDArray[np.bool_]]], optional):
+                A map between material name and a boolean mask indicating which grid
+                points are in that material. Defaults to None.
+            origin (Optional[list[float]], optional): The location of the origin of the
+                scenario (in meters). Defaults to None.
+            sources (Optional[list[Source]], optional): The list of sources in the
+                scenario. Defaults to None.
+            material_outline_upsample_factor (Optional[int], optional): The factor by
+                which to upsample the material outline when rendering the scenario.
+                Defaults to None.
+            target (Optional[Target], optional): The target in the scenario. Defaults
+                to None.
+            problem (Optional[Problem], optional): The problem definition for the
+                scenario. Defaults to None.
+            grid (Optional[Grid], optional): The grid for the scenario. Defaults to
+                None.
+            slice_axis (Optional[SliceAxis], optional): The axis along which to slice
+                the 3D field to be recorded. If None, then the complete field will be
+                recorded. Use 0 for X axis, 1 for Y axis and 2 for Z axis. Defaults to
+                None.
+            slice_position (Optional[float], optional): The position (in meters) along
+                the slice axis at which the slice of the 3D field should be made.
+                Defaults to None.
+            viewer_config_3d (Optional[rendering.ViewerConfig3D], optional): The
+                configuration to use when rendering the 3D scenario. Defaults to None.
+        """
+        if slice_axis is not None:
+            self.slice_axis = slice_axis
+        if slice_position is not None:
+            self.slice_position = slice_position
+        if viewer_config_3d is not None:
+            self.viewer_config_3d = viewer_config_3d
+        super().__init__(
+            center_frequency=center_frequency,
+            material_properties=material_properties,
+            material_masks=material_masks,
+            origin=origin,
+            sources=sources,
+            material_outline_upsample_factor=material_outline_upsample_factor,
+            target=target,
+            problem=problem,
+            grid=grid,
+        )
 
     def get_target_mask(self) -> npt.NDArray[np.bool_]:
         """Return the mask for the target region."""

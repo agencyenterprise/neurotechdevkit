@@ -8,14 +8,16 @@ import stride
 from neurotechdevkit.grid import Grid
 from neurotechdevkit.problem import Problem
 from neurotechdevkit.results import PulsedResult, SteadyStateResult
-from neurotechdevkit.scenarios._base import Scenario
+from neurotechdevkit.scenarios._base import Scenario3D, SliceAxis
 from neurotechdevkit.scenarios._utils import wavelet_helper
 from neurotechdevkit.sources import FocusedSource3D, PlanarSource3D, Source
 
 
-class ScenarioBaseTester(Scenario):
+class ScenarioBaseTester(Scenario3D):
     """A class which can be used to test attributes and methods of Scenario."""
 
+    slice_axis = SliceAxis.Z
+    slice_position = 0.0
     material_properties = {}
     material_masks = {
         "brain": np.zeros((20, 30, 40), dtype=bool),

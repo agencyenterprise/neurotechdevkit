@@ -10,7 +10,7 @@ import numpy.typing as npt
 from ... import rendering, sources
 from ...grid import Grid
 from ...materials import Material
-from .._base import Scenario, Scenario2D, Scenario3D, Target
+from .._base import Scenario, Scenario2D, Scenario3D, SliceAxis, Target
 
 
 class Scenario2(Scenario):
@@ -154,7 +154,7 @@ class Scenario2_3D(Scenario2, Scenario3D):
             "brain": 0.2,
         },
     )
-    slice_axis = 2
+    slice_axis = SliceAxis.Z
     slice_position = 0.0
     material_outline_upsample_factor = 4
 
