@@ -33,7 +33,7 @@ class Grid(stride.Grid):
 
         Args:
             shape: The shape of the grid.
-            spacing: Axis-wise spacing of the grid, in metres.
+            spacing: Axis-wise spacing of the grid, in meters.
 
         Returns:
             Grid: The Grid object.
