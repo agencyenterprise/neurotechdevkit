@@ -13,6 +13,7 @@ from .._utils import create_grid_circular_mask, create_grid_elliptical_mask
 class Scenario0(Scenario2D):
     """Scenario 0."""
 
+    center_frequency = 5e5  # Hz
     target = Target(
         target_id="target_1",
         center=[0.0285, 0.0024],

@@ -29,7 +29,6 @@ import numpy as np
 import neurotechdevkit as ndk
 
 # Parameters
-CENTER_FREQUENCY = 5e5
 NUM_ELEMENTS = 20
 ELEMENT_WIDTH = 1.2e-3
 
@@ -58,7 +57,6 @@ def make_scenario(element_delays=None):
 # %%
 # ## Set up and visualize the forward scenario
 true_scenario = make_scenario()
-true_scenario.center_frequency = CENTER_FREQUENCY
 true_scenario.make_grid()
 true_scenario.compile_problem()
 true_scenario.render_layout()
@@ -77,7 +75,6 @@ point_source = ndk.sources.PointSource2D(
 )
 reversed_scenario.sources.append(point_source)
 
-reversed_scenario.center_frequency = CENTER_FREQUENCY
 reversed_scenario.make_grid()
 reversed_scenario.compile_problem()
 reversed_scenario.render_layout()
@@ -139,7 +136,6 @@ plt.ylabel("delay [s]")
 element_delays = element_reverse_delays.max() - element_reverse_delays
 
 true_scenario = make_scenario(element_delays=element_delays)
-true_scenario.center_frequency = CENTER_FREQUENCY
 true_scenario.make_grid()
 true_scenario.compile_problem()
 result = true_scenario.simulate_pulse()
@@ -158,7 +154,6 @@ result.render_pulsed_simulation_animation()
 
 # Re-initialize scenario to clear previous simulation
 true_scenario = make_scenario(element_delays=element_delays)
-true_scenario.center_frequency = CENTER_FREQUENCY
 true_scenario.make_grid()
 true_scenario.compile_problem()
 steady_state_result = true_scenario.simulate_steady_state()

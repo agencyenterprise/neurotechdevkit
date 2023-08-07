@@ -130,7 +130,6 @@ source = ndk.sources.PhasedArraySource2D(
 
 scenario = ndk.scenarios.built_in.Scenario1_2D()
 scenario.sources = [source]
-scenario.center_frequency = 5e5
 scenario.make_grid()
 scenario.compile_problem()
 result = scenario.simulate_steady_state()
@@ -159,7 +158,6 @@ scenario.sources = [phased_array]
 print(f"Focal point is: {phased_array.focal_point}")
 # %%
 # `focal_point` shows the coordinates (in meters) where the array focuses.
-scenario.center_frequency = 5e5
 scenario.make_grid()
 scenario.compile_problem()
 result = scenario.simulate_steady_state()
@@ -190,7 +188,6 @@ phased_array = ndk.sources.PhasedArraySource2D(
     num_points=1000,
 )
 scenario.sources = [phased_array]
-scenario.center_frequency = 5e5
 scenario.make_grid()
 scenario.compile_problem()
 result = scenario.simulate_steady_state()
@@ -226,7 +223,6 @@ phased_3d = ndk.sources.PhasedArraySource3D(
 )
 scenario_3d.sources.clear()
 scenario_3d.sources.append(phased_3d)
-scenario_3d.center_frequency = 5e5
 scenario_3d.make_grid()
 scenario_3d.compile_problem()
 results = scenario_3d.simulate_steady_state()

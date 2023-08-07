@@ -26,6 +26,7 @@ class Scenario2(Scenario):
         https://asa.scitation.org/doi/pdf/10.1121/10.0013426
     """
 
+    center_frequency = 5e5  # Hz
     material_properties = {
         "water": Material(vp=1500.0, rho=1000.0, alpha=0.0, render_color="#2E86AB"),
         "cortical_bone": Material(

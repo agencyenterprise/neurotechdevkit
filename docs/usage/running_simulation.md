@@ -6,7 +6,6 @@ The following code shows how to run a simulation.
 import neurotechdevkit as ndk
 
 scenario = ndk.scenarios.built_in.Scenario2_2D()
-scenario.center_frequency = 5e5
 scenario.make_grid()
 scenario.compile_problem()
 result = scenario.simulate_steady_state()

@@ -13,7 +13,6 @@ import neurotechdevkit as ndk
 def plot_scenario(chosen_scenario):
     print(f"Simulating scenario: {chosen_scenario.__name__}")
     scenario = chosen_scenario()
-    scenario.center_frequency = 5e5
     scenario.make_grid()
     scenario.compile_problem()
     result = scenario.simulate_steady_state()

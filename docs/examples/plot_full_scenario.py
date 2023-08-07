@@ -22,8 +22,7 @@ from neurotechdevkit.scenarios import Scenario2D, Target
 # %%
 # Creating the scenario
 scenario = Scenario2D()
-scenario.center_frequency = 5e5
-
+scenario.center_frequency = 5e5  # Hz
 scenario.target = Target(
     target_id="target_1", center=[0.064, 0.0], radius=0.004, description=""
 )

@@ -7,7 +7,6 @@ import neurotechdevkit as ndk
 def test_compilation():
     """Will run a simulation requiring compilation."""
     scenario = ndk.scenarios.built_in.Scenario0()
-    scenario.center_frequency = 5e5
     scenario.make_grid()
     scenario.compile_problem()
     result = scenario.simulate_steady_state()

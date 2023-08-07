@@ -50,7 +50,6 @@ To install and run **neurotechdevkit** locally check the [installation](https://
 import neurotechdevkit as ndk
 
 scenario = ndk.scenarios.built_in.Scenario0()
-scenario.center_frequency = 5e5
 scenario.make_grid()
 scenario.compile_problem()
 result = scenario.simulate_steady_state()
