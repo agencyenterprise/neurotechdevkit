@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Mapping
+from typing import Mapping, Tuple, Union
 
 import numpy as np
 import numpy.typing as npt
@@ -51,23 +51,22 @@ class Scenario1(Scenario):
         }
         return material_masks
 
-    def _make_grid(self, extent: npt.NDArray[np.float_]) -> Grid:
+    def _make_grid(
+        self, extent: Union[Tuple[float, float], Tuple[float, float, float]]
+    ) -> Grid:
         """
         Make the grid for scenario 1.
 
         Args:
-            extent (npt.NDArray[np.float_]): the extent of the grid
+            extent: the extent of the grid
 
         Returns:
             stride.Grid: the grid
         """
-        speed_water = 1500  # m/s
-        ppw = 6  # desired resolution for complexity=fast
-
         grid = Grid.make_grid(
             extent=extent,
-            speed_water=speed_water,
-            ppw=ppw,
+            speed_water=1500,  # m/s
+            ppw=6,  # desired resolution for complexity=fast
             center_frequency=self.center_frequency,
         )
         return grid
@@ -101,7 +100,7 @@ class Scenario1_2D(Scenario1, Scenario2D):
 
     def make_grid(self):
         """Make the grid for scenario 1 2D."""
-        extent = np.array([0.12, 0.07])
+        extent = (0.12, 0.07)
         self.grid = self._make_grid(extent)
         self.material_masks = self._make_material_masks()
 
@@ -161,7 +160,7 @@ class Scenario1_3D(Scenario1, Scenario3D):
 
     def make_grid(self):
         """Make the grid for scenario 1 3D."""
-        extent = np.array([0.12, 0.07, 0.07])
+        extent = (0.12, 0.07, 0.07)
         self.grid = self._make_grid(extent)
         self.material_masks = self._make_material_masks()
 

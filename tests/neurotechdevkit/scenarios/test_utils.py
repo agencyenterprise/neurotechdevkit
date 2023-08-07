@@ -93,7 +93,7 @@ def test_drop_column(idx):
 def test_create_grid_elliptical_mask():
     """Verify that the returned mask has the expected elements turned on."""
     grid = Grid.make_grid(
-        extent=np.array([0.6, 0.8]),
+        extent=(0.6, 0.8),
         speed_water=100000,
         ppw=2,
         center_frequency=5e5,
@@ -113,7 +113,7 @@ def test_create_grid_elliptical_mask():
 def test_create_grid_circular_mask():
     """Verify that the returned mask has the expected elements turned on."""
     grid = Grid.make_grid(
-        extent=np.array([0.6, 0.8]),
+        extent=(0.6, 0.8),
         speed_water=100000,
         ppw=2,
         center_frequency=5e5,
@@ -133,7 +133,7 @@ def test_create_grid_circular_mask():
 def test_create_grid_spherical_mask():
     """Verify that the returned mask has the expected elements turned on."""
     grid = Grid.make_grid(
-        extent=np.array([0.6, 0.8, 1.0]),
+        extent=(0.6, 0.8, 1.0),
         speed_water=100000,
         ppw=2,
         center_frequency=5e5,

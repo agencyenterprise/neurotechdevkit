@@ -75,7 +75,7 @@ def test_scenario_with_all_parameters():
         )
     ]
     grid = Grid.make_grid(
-        extent=np.array([0.12, 0.07]),
+        extent=(0.12, 0.07),
         speed_water=1500,
         center_frequency=center_frequency,
         ppw=6,

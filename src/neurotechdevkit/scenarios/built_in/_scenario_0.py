@@ -58,14 +58,10 @@ class Scenario0(Scenario2D):
 
     def make_grid(self):
         """Make the grid for scenario 0."""
-        extent = np.array([0.05, 0.04])  # m
-        speed_water = 1500  # m/s
-        ppw = 6  # desired resolution for complexity=fast
-
         self.grid = Grid.make_grid(
-            extent=extent,
-            speed_water=speed_water,
-            ppw=ppw,
+            extent=(0.05, 0.04),  # m
+            speed_water=1500,  # m/s
+            ppw=6,  # desired resolution for complexity=fast
             center_frequency=self.center_frequency,
         )
         self.material_masks = self._make_material_masks()

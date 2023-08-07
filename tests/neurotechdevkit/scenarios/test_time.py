@@ -33,8 +33,7 @@ def scenario_fake():
 
     class FakeScenario:
         origin = np.array([0.0, -0.3, -0.2])
-        shape = np.array([3, 4, 5])
-        extent = np.array([0.3, 0.4, 0.5])
+        extent = (0.3, 0.4, 0.5)
 
     return FakeScenario()
 

@@ -41,7 +41,7 @@ class ScenarioBaseTester(Scenario3D):
 
     def _make_grid(self):
         grid = Grid.make_grid(
-            extent=np.array([2.0, 3.0, 4.0]),
+            extent=(2.0, 3.0, 4.0),
             speed_water=100000,
             ppw=2,
             center_frequency=self.center_frequency,

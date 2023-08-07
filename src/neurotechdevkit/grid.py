@@ -1,6 +1,6 @@
 # noqa: D100
 # preventing package docstring to be rendered in documentation
-from typing import Iterable, Union
+from typing import Iterable, Tuple, Union
 
 import numpy as np
 import numpy.typing as npt
@@ -24,8 +24,26 @@ class Grid(stride.Grid):
     """
 
     @staticmethod
+    def make_shaped_grid(
+        shape: Tuple[int, int],
+        spacing: float,
+    ) -> "Grid":
+        """
+        Create a NDK Grid with the given shape.
+
+        Args:
+            shape: The shape of the grid.
+            spacing: Axis-wise spacing of the grid, in metres.
+
+        Returns:
+            Grid: The Grid object.
+        """
+        space = stride.Space(shape=shape, spacing=spacing)
+        return Grid(space=space, time=None)
+
+    @staticmethod
     def make_grid(
-        extent: npt.NDArray[np.float_],
+        extent: Union[Tuple[float, float], Tuple[float, float, float]],
         speed_water=float,
         center_frequency=float,
         ppw=int,
@@ -51,9 +69,10 @@ class Grid(stride.Grid):
         Returns:
             The Grid object.
         """
-        n_dims = len(extent)
+        _extent = np.array(extent, dtype=float)
+        n_dims = len(_extent)
         dx = speed_water / center_frequency / ppw  # m
-        shape = _compute_grid_shape(extent, dx)
+        shape = _compute_grid_shape(_extent, dx)
 
         if isinstance(extra, int):
             extra = (extra,) * n_dims

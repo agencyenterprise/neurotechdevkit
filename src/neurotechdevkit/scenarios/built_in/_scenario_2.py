@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import pathlib
-from typing import Mapping
+from typing import Mapping, Tuple, Union
 
 import hdf5storage
 import numpy as np
@@ -35,14 +35,13 @@ class Scenario2(Scenario):
         "brain": Material(vp=1560.0, rho=1040.0, alpha=0.3, render_color="#DB504A"),
     }
 
-    def _make_grid(self, extent: npt.NDArray[np.float_]) -> Grid:
-        speed_water = 1500  # m/s
-        ppw = 6  # desired resolution for complexity=fast
-
+    def _make_grid(
+        self, extent: Union[Tuple[float, float], Tuple[float, float, float]]
+    ) -> Grid:
         grid = Grid.make_grid(
             extent=extent,
-            speed_water=speed_water,
-            ppw=ppw,
+            speed_water=1500,  # m/s
+            ppw=6,  # desired resolution for complexity=fast
             center_frequency=self.center_frequency,
         )
         return grid
@@ -101,7 +100,7 @@ class Scenario2_2D(Scenario2D, Scenario2):
 
     def make_grid(self):
         """Make the grid for scenario 2 2D."""
-        self.grid = self._make_grid(np.array([0.225, 0.170]))
+        self.grid = self._make_grid((0.225, 0.170))
         self.material_masks = self._make_material_masks(convert_2d=True)
 
 
@@ -161,7 +160,7 @@ class Scenario2_3D(Scenario2, Scenario3D):
 
     def make_grid(self):
         """Make the grid for scenario 2 3D."""
-        self.grid = self._make_grid(np.array([0.225, 0.170, 0.190]))
+        self.grid = self._make_grid((0.225, 0.170, 0.190))
         self.material_masks = self._make_material_masks(convert_2d=False)
 
 

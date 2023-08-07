@@ -41,14 +41,11 @@ scenario.material_outline_upsample_factor = 8
 
 # %%
 # Creating grid
-extent = np.array([0.12, 0.07])  # m
-speed_water = 1500  # m/s
-ppw = 6
 grid = Grid.make_grid(
-    extent=extent,
-    speed_water=speed_water,
+    extent=(0.12, 0.07),  # m
+    speed_water=1500,
     center_frequency=scenario.center_frequency,
-    ppw=ppw,
+    ppw=6,
 )
 
 scenario.grid = grid

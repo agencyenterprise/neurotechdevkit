@@ -7,6 +7,8 @@ import numpy.typing as npt
 import stride
 from mosaic.types import Struct
 
+from neurotechdevkit.grid import Grid
+
 
 class Problem(stride.Problem):
     """
@@ -18,9 +20,14 @@ class Problem(stride.Problem):
     geometry.
     """
 
-    def __init__(self, *args, **kwargs):
-        """Initialize a Problem."""
-        super().__init__(name="neurotechdevkit", *args, **kwargs)
+    def __init__(self, grid: Grid, *args, **kwargs):
+        """
+        Initialize a problem with a grid.
+
+        Args:
+            grid (Grid): the grid to use for the problem.
+        """
+        super().__init__(name="neurotechdevkit", grid=grid, *args, **kwargs)
 
     def add_material_fields(
         self,
