@@ -1254,12 +1254,12 @@ def _get_scenario_params(save_data: dict) -> dict:
         "problem": save_data["problem"],
         "center_frequency": save_data["center_frequency"],
     }
-    if slice_axis := save_data.get("slice_axis"):
-        scenario_params["slice_axis"] = slice_axis
-    if slice_position := save_data.get("slice_position"):
-        scenario_params["slice_position"] = slice_position
-    if viewer_config_3d := save_data.get("viewer_config_3d"):
-        scenario_params["viewer_config_3d"] = viewer_config_3d
+    if "slice_axis" in save_data:
+        scenario_params["slice_axis"] = save_data["slice_axis"]
+    if "slice_position" in save_data:
+        scenario_params["slice_position"] = save_data["slice_position"]
+    if "viewer_config_3d" in save_data:
+        scenario_params["viewer_config_3d"] = save_data["viewer_config_3d"]
     return scenario_params
 
 
