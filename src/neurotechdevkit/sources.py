@@ -20,17 +20,16 @@ class Source(abc.ABC):
     appropriate source geometry.
 
     Args:
-        position (npt.ArrayLike): a numpy float array indicating the
-            coordinates (in meters) of the point at the center of the source.
-        direction (list[float]): a numpy float array representing a vector
-            located at position and pointing towards the focal point. Only the
-            orientation of `direction` affects the source, the length of the vector has
-            no affect. See the `unit_direction` property.
-        aperture (float): the width (in meters) of the source.
-        focal_length (float): the distance (in meters) from `position` to the focal
-            point.
-        num_points (int): the number of point sources to use when simulating the source.
-        delay (float, optional): the delay (in seconds) that the source will wait before
+        position: a float array indicating the coordinates (in meters) of the
+            point at the center of the source.
+        direction: a float array representing a vector located at position and pointing
+            towards the focal point. Only the orientation of `direction` affects the
+            source, the length of the vector has no affect. See the `unit_direction`
+            property.
+        aperture: the width (in meters) of the source.
+        focal_length: the distance (in meters) from `position` to the focal point.
+        num_points: the number of point sources to use when simulating the source.
+        delay: the delay (in seconds) that the source will wait before
             emitting. Defaults to 0.0.
     """
 
