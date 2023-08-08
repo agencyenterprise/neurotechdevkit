@@ -207,9 +207,6 @@ class SteadyStateResult(Result):
             "material_masks": self.scenario.material_masks,
             "material_properties": self.scenario.material_properties,
             "material_outline_upsample_factor": material_outline,
-            "slice_axis": getattr(self.scenario, "slice_axis", None),
-            "slice_position": getattr(self.scenario, "slice_position", None),
-            "viewer_config_3d": getattr(self.scenario, "viewer_config_3d", None),
             "target": self.scenario.target,
             "is_3d": isinstance(self.scenario, scenarios.Scenario3D),
             "origin": self.scenario.origin,
@@ -220,6 +217,10 @@ class SteadyStateResult(Result):
             "effective_dt": self.effective_dt,
             "steady_state": self.get_steady_state(),
         }
+        if isinstance(self.scenario, scenarios.Scenario3D):
+            save_data["slice_axis"] = self.scenario.slice_axis
+            save_data["slice_position"] = self.scenario.slice_position
+            save_data["viewer_config_3d"] = self.scenario.viewer_config_3d
 
         return save_data
 
@@ -573,9 +574,6 @@ class PulsedResult(Result):
             "material_masks": self.scenario.material_masks,
             "material_properties": self.scenario.material_properties,
             "material_outline_upsample_factor": material_outline,
-            "slice_axis": getattr(self.scenario, "slice_axis", None),
-            "slice_position": getattr(self.scenario, "slice_position", None),
-            "viewer_config_3d": getattr(self.scenario, "viewer_config_3d", None),
             "target": self.scenario.target,
             "is_3d": isinstance(self.scenario, scenarios.Scenario3D),
             "origin": self.scenario.origin,
@@ -586,6 +584,10 @@ class PulsedResult(Result):
             "effective_dt": self.effective_dt,
             "wavefield": self.wavefield,
         }
+        if isinstance(self.scenario, scenarios.Scenario3D):
+            save_data["slice_axis"] = self.scenario.slice_axis
+            save_data["slice_position"] = self.scenario.slice_position
+            save_data["viewer_config_3d"] = self.scenario.viewer_config_3d
 
         return save_data
 
