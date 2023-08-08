@@ -36,13 +36,13 @@ def calculate_all_metrics(
         "focal_volume": {
             "value": calculate_focal_volume(result, layer="brain"),
             "unit-of-measurement": "voxels",
-            "description": {
+            "description": (
                 "The region of the brain where the pressure amplitude is above"
                 " 50%% of the maximum pressure amplitude. If more than one"
                 " region is above 50%% of the maximum pressure amplitude, the"
                 " volume of largest connected region is returned. Also called"
                 " the -6 dB focal volume."
-            }
+            )
         },
         "focal_gain": {
             "value": calculate_focal_gain(result),
