@@ -221,8 +221,7 @@ phased_3d = ndk.sources.PhasedArraySource3D(
     tilt_angle=30,
     height=5.0e-3,
 )
-scenario_3d.sources.clear()
-scenario_3d.sources.append(phased_3d)
+scenario_3d.sources = [phased_3d]
 scenario_3d.make_grid()
 scenario_3d.compile_problem()
 results = scenario_3d.simulate_steady_state()

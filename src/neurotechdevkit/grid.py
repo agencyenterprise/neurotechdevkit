@@ -44,9 +44,9 @@ class Grid(stride.Grid):
     @staticmethod
     def make_grid(
         extent: Union[Tuple[float, float], Tuple[float, float, float]],
-        speed_water=float,
-        center_frequency=float,
-        ppw=int,
+        speed_water: float,
+        center_frequency: float,
+        ppw: int,
         extra: Union[int, Iterable[int]] = 50,
         absorbing: Union[int, Iterable[int]] = 40,
     ) -> "Grid":

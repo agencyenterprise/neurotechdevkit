@@ -6,7 +6,7 @@ import os
 from dataclasses import dataclass
 from enum import IntEnum
 from types import SimpleNamespace
-from typing import Mapping, Optional
+from typing import Mapping, Optional, Union
 
 import nest_asyncio
 import numpy as np
@@ -475,7 +475,7 @@ class Scenario(abc.ABC):
         n_jobs: int | None = None,
         slice_axis: int | None = None,
         slice_position: float | None = None,
-    ) -> results.PulsedResult:
+    ) -> Union[results.PulsedResult2D, results.PulsedResult3D]:
         """Execute a pulsed simulation.
 
         In this simulation, the sources will emit a pulse containing a few cycles of
@@ -833,7 +833,7 @@ class Scenario2D(Scenario):
         simulation_time: float | None = None,
         recording_time_undersampling: int = 4,
         n_jobs: int | None = None,
-    ) -> results.PulsedResult:
+    ) -> results.PulsedResult2D:
         """Execute a pulsed simulation in 2D.
 
         In this simulation, the sources will emit a pulse containing a few cycles of
@@ -860,7 +860,7 @@ class Scenario2D(Scenario):
         Returns:
             An object containing the result of the 2D pulsed simulation.
         """
-        return self._simulate_pulse(
+        result = self._simulate_pulse(
             points_per_period=points_per_period,
             simulation_time=simulation_time,
             recording_time_undersampling=recording_time_undersampling,
@@ -868,6 +868,8 @@ class Scenario2D(Scenario):
             slice_axis=None,
             slice_position=None,
         )
+        assert isinstance(result, results.PulsedResult2D)
+        return result
 
     def render_layout(
         self,
@@ -1015,7 +1017,7 @@ class Scenario3D(Scenario):
         n_jobs: int | None = None,
         slice_axis: int | None = None,
         slice_position: float | None = None,
-    ) -> results.PulsedResult:
+    ) -> results.PulsedResult3D:
         """Execute a pulsed simulation in 3D.
 
         In this simulation, the sources will emit a pulse containing a few cycles of
@@ -1048,7 +1050,7 @@ class Scenario3D(Scenario):
         Returns:
             An object containing the result of the 3D pulsed simulation.
         """
-        return self._simulate_pulse(
+        result = self._simulate_pulse(
             points_per_period=points_per_period,
             simulation_time=simulation_time,
             recording_time_undersampling=recording_time_undersampling,
@@ -1056,6 +1058,8 @@ class Scenario3D(Scenario):
             slice_axis=slice_axis,
             slice_position=slice_position,
         )
+        assert isinstance(result, results.PulsedResult3D)
+        return result
 
     def render_layout(
         self,

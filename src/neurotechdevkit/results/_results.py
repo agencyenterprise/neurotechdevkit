@@ -1163,7 +1163,7 @@ def create_pulsed_result(
     wavefield: npt.NDArray[np.float_],
     traces: stride.Traces,
     recorded_slice: tuple[int, float] | None = None,
-) -> PulsedResult:
+) -> Union[PulsedResult2D, PulsedResult3D]:
     """Create results from pulsed simulations.
 
     Creates a PulsedResult2D or PulsedResult3D depending on the number of wavefield

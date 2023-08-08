@@ -106,7 +106,7 @@ def fake_pde():
             self.return_value = "I'll be back"
             self.last_args = None
             self.last_kwargs = None
-            fake_wf = np.arange(12).reshape((3, 4, 1))
+            fake_wf = np.arange(12).reshape((3, 4, 1, 1))
             self.wavefield = SimpleNamespace(data=fake_wf)
 
         async def __call__(self, *args, **kwargs):
@@ -349,8 +349,7 @@ def test_simulate_steady_state_result_wavefield(base_tester, fake_pde, monkeypat
         points_per_period=9, n_cycles_steady_state=4, recording_time_undersampling=7
     )
 
-    # drop the final timestep, then swap axes
-    expected_wavefield = np.expand_dims(np.arange(8).reshape((2, 4)).T, 1)
+    expected_wavefield = np.expand_dims(np.arange(8).reshape((2, 4)).T, (1, 2))
     np.testing.assert_array_equal(result.wavefield, expected_wavefield)
 
 
@@ -398,8 +397,7 @@ def test_simulate_pulse_result_wavefield(base_tester, fake_pde, monkeypatch):
         points_per_period=9, simulation_time=3e-4, recording_time_undersampling=7
     )
 
-    # drop the final timestep, then swap axes
-    expected_wavefield = np.expand_dims(np.arange(8).reshape((2, 4)).T, 1)
+    expected_wavefield = np.expand_dims(np.arange(8).reshape((2, 4)).T, (1, 2))
     np.testing.assert_array_equal(result.wavefield, expected_wavefield)
 
 

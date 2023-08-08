@@ -21,15 +21,15 @@ def test_add_material_fields():
             "brain": np.array([[1, 0], [0, 1]], dtype=bool),
         },
     )
-    assert np.array_equal(
+    np.testing.assert_array_equal(
         problem.medium.vp.data,
         np.array([[brain.vp, water.vp], [water.vp, brain.vp]], dtype=np.float32),
     )
-    assert np.array_equal(
+    np.testing.assert_array_equal(
         problem.medium.rho.data,
         np.array([[brain.rho, water.rho], [water.rho, brain.rho]], dtype=np.float32),
     )
-    assert np.array_equal(
+    np.testing.assert_array_equal(
         problem.medium.alpha.data,
         np.array(
             [[brain.alpha, water.alpha], [water.alpha, brain.alpha]], dtype=np.float32

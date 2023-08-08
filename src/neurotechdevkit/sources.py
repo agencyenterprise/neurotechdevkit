@@ -20,7 +20,7 @@ class Source(abc.ABC):
     appropriate source geometry.
 
     Args:
-        position (list[float]): a numpy float array indicating the
+        position (npt.ArrayLike): a numpy float array indicating the
             coordinates (in meters) of the point at the center of the source.
         direction (list[float]): a numpy float array representing a vector
             located at position and pointing towards the focal point. Only the
@@ -37,7 +37,7 @@ class Source(abc.ABC):
     def __init__(
         self,
         *,
-        position: list[float],
+        position: npt.ArrayLike,
         direction: list[float],
         aperture: float,
         focal_length: float,
