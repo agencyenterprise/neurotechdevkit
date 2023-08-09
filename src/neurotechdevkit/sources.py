@@ -1402,7 +1402,7 @@ class PhasedArraySource3D(PhasedArraySource):
         coords: npt.NDArray[np.float_],
     ) -> npt.NDArray[np.float_]:
         """
-        Aligns a the coordinates to the desired direction for the unit center line.
+        Align the coordinates to the desired direction of the unit center line.
 
         The first and last element centers are calculated and the direction vector from
         the first element to the last element is computed.

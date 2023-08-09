@@ -11,8 +11,7 @@ from neurotechdevkit.grid import Grid
 
 
 class Problem(stride.Problem):
-    """
-    Problem class for neurotechdevkit. It is a subclass of stride.Problem.
+    """Problem class for NDK. It is a subclass of stride.Problem.
 
     The problem defines a medium with a set of fields (such as Vp or density), some
     transducers (such as a series of scalar point transducers), a geometry where those
