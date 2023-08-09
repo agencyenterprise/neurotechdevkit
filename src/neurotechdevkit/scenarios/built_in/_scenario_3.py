@@ -27,7 +27,6 @@ from .._time import (
 
 class Scenario3(Scenario2D):
     """Imaging Scenario: grainy phantoms in water."""
-    """Overwrite simulate_pulse to also record traces"""
 
     _PHANTOM_RADIUS = 0.01  # m
 
@@ -186,7 +185,7 @@ class Scenario3(Scenario2D):
             # Add PointTrasnducers to the geometry at our element locations
             source_element_positions = np.vstack([
                 source.element_positions for source in self.sources
-            ]) - self.origin[np.newaxis, :]
+            ]) - np.asarray(self.origin)[np.newaxis, :]
 
             assert sub_problem.acquisitions.shots[0].num_receivers == 0
             offset = sub_problem.geometry.num_locations
