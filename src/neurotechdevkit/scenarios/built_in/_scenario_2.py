@@ -281,7 +281,7 @@ def _create_scenario_2_mask(material, convert_2d=False) -> npt.NDArray[np.bool_]
         raise ValueError(material)
 
     if convert_2d:
-        mask = mask[:, :, 185]
+        mask = mask[:, :, 190]
         # slice through the center of the transducer
 
     return mask
