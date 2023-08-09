@@ -4,19 +4,21 @@ import abc
 import asyncio
 import os
 from dataclasses import dataclass
+from enum import IntEnum
 from types import SimpleNamespace
-from typing import Mapping
+from typing import Mapping, Optional, Union
 
 import nest_asyncio
 import numpy as np
 import numpy.typing as npt
 import stride
-from frozenlist import FrozenList
 from mosaic.types import Struct
 from stride.problem import StructuredData
 
 from .. import rendering, results
+from ..grid import Grid
 from ..materials import Material, get_material, get_render_color
+from ..problem import Problem
 from ..sources import Source
 from ._resources import budget_time_and_memory_resources
 from ._shots import create_shot
@@ -38,6 +40,14 @@ from ._utils import (
 nest_asyncio.apply()
 
 
+class SliceAxis(IntEnum):
+    """Axis along which to slice the 3D field to be recorded."""
+
+    X = 0
+    Y = 1
+    Z = 2
+
+
 @dataclass
 class Target:
     """A class for containing metadata for a target.
@@ -50,7 +60,7 @@ class Target:
     """
 
     target_id: str
-    center: npt.NDArray[np.float_]
+    center: list[float]
     radius: float
     description: str
 
@@ -58,73 +68,92 @@ class Target:
 class Scenario(abc.ABC):
     """The base scenario."""
 
-    _SCENARIO_ID: str
-    _TARGET_OPTIONS: dict[str, Target]
-
-    # The list of material layers in the scenario.
-    material_layers: list[str]
-
     # The customization to the material layers.
-    material_properties: dict[str, Material] = {}
+    material_properties: dict[str, Material]
+
+    material_masks: Mapping[str, npt.NDArray[np.bool_]]
+
+    origin: list[float]
+
+    # The list of sources in the scenario.
+    sources: list[Source]
+
+    material_outline_upsample_factor: int = 16
+
+    _center_frequency: float
+    _problem: Problem
+    _target: Target
+    _grid: Grid
 
     def __init__(
         self,
-        origin: npt.NDArray[np.float_],
-        complexity: str = "fast",
-    ):
-        """Initialize the scenario."""
-        self._complexity = complexity
-        if self._complexity != "fast":
-            raise ValueError("the only complexity currently supported is 'fast'")
-
-        self._origin = origin
-        self._sources: FrozenList[Source] = FrozenList()
-        self._target_id: str
-
-    @property
-    def scenario_id(self) -> str:
-        """The ID for this scenario."""
-        return self._SCENARIO_ID
-
-    @property
-    def complexity(self) -> str:
-        """The complexity level to use when simulating this scenario.
-
-        !!! note
-            The only currently supported complexity is `fast`.
-
-        Options are:
-
-        - `fast`: uses a small grid size (large grid spacing) so that simulations are
-        fast.
-        - `accurate`: uses a large grid size (small grid spacing) so that simulation
-        results are accurate.
-        - `balanced`: a grid size and grid spacing balanced between `fast` and
-        `accurate`.
+        center_frequency: Optional[float] = None,
+        material_properties: Optional[dict[str, Material]] = None,
+        material_masks: Optional[Mapping[str, npt.NDArray[np.bool_]]] = None,
+        origin: Optional[list[float]] = None,
+        sources: Optional[list[Source]] = None,
+        material_outline_upsample_factor: Optional[int] = None,
+        target: Optional[Target] = None,
+        problem: Optional[Problem] = None,
+        grid: Optional[Grid] = None,
+    ) -> None:
         """
-        return self._complexity
+        Initialize a scenario.
 
-    @property
-    def problem(self) -> stride.Problem:
-        """The stride Problem object."""
-        return self._problem
+        All arguments are optional and can be set after initialization.
+
+        Args:
+            center_frequency (Optional[float], optional): The center frequency (in
+                hertz) of the scenario. Defaults to None.
+            material_properties (Optional[dict[str, Material]], optional): A map
+                between material name and material properties. Defaults to None.
+            material_masks (Optional[Mapping[str, npt.NDArray[np.bool_]]], optional):
+                A map between material name and a boolean mask indicating which grid
+                points are in that material. Defaults to None.
+            origin (Optional[list[float]], optional): The location of the origin of the
+                scenario (in meters). Defaults to None.
+            sources (Optional[list[Source]], optional): The list of sources in the
+                scenario. Defaults to None.
+            material_outline_upsample_factor (Optional[int], optional): The factor by
+                which to upsample the material outline when rendering the scenario.
+                Defaults to None.
+            target (Optional[Target], optional): The target in the scenario. Defaults
+                to None.
+            problem (Optional[Problem], optional): The problem definition for the
+                scenario. Defaults to None.
+            grid (Optional[Grid], optional): The grid for the scenario. Defaults to
+                None.
+        """
+        if center_frequency is not None:
+            self.center_frequency = center_frequency
+        if material_properties is not None:
+            self.material_properties = material_properties
+        if material_masks is not None:
+            self.material_masks = material_masks
+        if origin is not None:
+            self.origin = origin
+        if sources is not None:
+            self.sources = sources
+        if material_outline_upsample_factor is not None:
+            self.material_outline_upsample_factor = material_outline_upsample_factor
+        if target is not None:
+            self.target = target
+        if problem is not None:
+            self.problem = problem
+        if grid is not None:
+            self.grid = grid
 
     @property
     def extent(self) -> npt.NDArray[np.float_]:
         """The extent of the spatial grid (in meters)."""
-        assert self.problem.space is not None
-        return np.array(self.problem.space.size, dtype=float)
-
-    @property
-    def origin(self) -> npt.NDArray[np.float_]:
-        """The spatial coordinates of grid position (0, 0, 0)."""
-        return self._origin
+        assert self.grid.space is not None
+        return np.array(self.grid.space.size, dtype=float)
 
     @property
     def shape(self) -> npt.NDArray[np.int_]:
         """The shape of the spatial grid (in number of grid points)."""
-        assert self.problem.space is not None
-        return np.array(self.problem.space.shape, dtype=int)
+        assert self.grid.space is not None
+        return np.array(self.grid.space.shape, dtype=int)
 
     @property
     def dx(self) -> float:
@@ -132,14 +161,8 @@ class Scenario(abc.ABC):
 
         Spacing is the same in each spatial direction.
         """
-        assert self.problem.space is not None
-        return self.problem.space.spacing[0]
-
-    @property
-    def ppw(self) -> float:
-        """The number of points per wavelength."""
-        # maybe choose lowest speed of sound?
-        raise NotImplementedError()
+        assert self.grid.space is not None
+        return self.grid.space.spacing[0]
 
     @property
     def t_min(self) -> float:
@@ -178,49 +201,17 @@ class Scenario(abc.ABC):
         return self.problem.time.step
 
     @property
-    def ppp(self) -> float:
-        """The number of points per period."""
-        raise NotImplementedError()
-
-    @property
-    def current_target_id(self) -> str:
-        """Get or set the id of the currently selected target."""
-        return self._target_id
-
-    @current_target_id.setter
-    def current_target_id(self, target_id: str) -> None:
-        """Set the id of the currently selected target."""
-        if target_id not in self._TARGET_OPTIONS:
-            raise ValueError(
-                f"{target_id} is not a valid target id."
-                f" Options are: {self._TARGET_OPTIONS.keys()}."
-            )
-        self._target_id = target_id
-
-    @property
-    def target_options(self) -> dict[str, str]:
-        """Information about each of the available targets for the scenario."""
-        return {
-            scenario_id: target.description
-            for scenario_id, target in self._TARGET_OPTIONS.items()
-        }
-
-    @property
-    def target(self) -> Target:
-        """Details about the current target."""
-        return self._TARGET_OPTIONS[self._target_id]
-
-    @property
     def target_center(self) -> npt.NDArray[np.float_]:
         """The coordinates of the center of the target region (in meters)."""
-        return self.target.center
+        return np.array(self.target.center, dtype=float)
 
     @property
     def target_radius(self) -> float:
         """The radius of the target region (in meters)."""
         return self.target.radius
 
-    def get_materials(self, center_frequency=float) -> Mapping[str, Struct]:
+    @property
+    def materials(self) -> Mapping[str, Struct]:
         """Return a map between material name and material properties.
 
         - vp: the speed of sound (in m/s).
@@ -232,7 +223,7 @@ class Scenario(abc.ABC):
         materials = {}
         for layer in self.material_layers:
             if layer not in self.material_properties:
-                material_properties = get_material(layer, center_frequency)
+                material_properties = get_material(layer, self.center_frequency)
             else:
                 material_properties = self.material_properties[layer]
             materials[layer] = material_properties.to_struct()
@@ -261,64 +252,99 @@ class Scenario(abc.ABC):
         return {name: n for n, name in enumerate(self.material_layers)}
 
     @property
-    @abc.abstractmethod
-    def _material_outline_upsample_factor(self) -> int:
-        """Upsample_factor to use for this scenario when drawing material outlines.
-
-        This parameter is internal to ndk, is not intended to be used directly.
-        """
-        pass
+    def material_layers(self) -> list[str]:
+        """The list of material layers in the scenario."""
+        return list(self.material_masks.keys())
 
     @property
-    def sources(self) -> FrozenList[Source]:
-        """The list of sources currently defined.
+    def target(self) -> Target:
+        """The target in the scenario."""
+        assert hasattr(self, "_target")
+        return self._target
 
-        The source list can be edited only before a simulation is run. Once a simulation
-        is run, the source list will be frozen and can no longer be modified.
-        """
-        return self._sources
-
-    def _freeze_sources(self) -> None:
-        """Freeze the sources list so that it can no longer be modified.
-
-        This should be done before any simulation is run because the scenario and
-        simulation are highly coupled and any changes to sources after the simulation
-        could cause problems.
-        """
-        if not self._sources.frozen:
-            self._sources.freeze()
-
-    def get_layer_mask(self, layer_name: str) -> npt.NDArray[np.bool_]:
-        """Return the mask for the desired layer.
-
-        The mask is `True` at each gridpoint where the requested layer exists,
-        and `False` elsewhere.
+    @target.setter
+    def target(self, target: Target) -> None:
+        """Set the target in the scenario.
 
         Args:
-            layer_name: the name of the desired layer.
-
-        Raises:
-            ValueError: if `layer_name` does not match the name of one of the existing
-                layers.
-
-        Returns:
-            A boolean array indicating which gridpoints correspond to the desired
-                layer.
+            target: the target in the scenario.
         """
-        if layer_name not in self.layer_ids:
-            raise ValueError(f"Layer '{layer_name}' does not exist.")
-        layer = self.layer_ids[layer_name]
-        layers_field = self.get_field_data("layer")
-        return layers_field == layer
+        self._target = target
 
-    @abc.abstractmethod
-    def get_target_mask(self) -> npt.NDArray[np.bool_]:
-        """Return the mask for the target region.
+    @property
+    def problem(self) -> Problem:
+        """The problem definition for the scenario."""
+        assert hasattr(self, "_problem")
+        return self._problem
 
-        Returns:
-            A boolean array indicating which gridpoints correspond to the target region.
+    @problem.setter
+    def problem(self, problem: Problem) -> None:
+        """Set the problem definition for the scenario.
+
+        Args:
+            problem: the problem definition for the scenario.
         """
-        pass
+        self._problem = problem
+
+    @problem.deleter
+    def problem(self) -> None:
+        """Delete the problem definition for the scenario."""
+        if hasattr(self, "_problem"):
+            del self._problem
+
+    @property
+    def grid(self) -> Grid:
+        """The grid for the scenario."""
+        assert hasattr(self, "_grid")
+        return self._grid
+
+    @grid.setter
+    def grid(self, grid: Grid) -> None:
+        """Set the grid for the scenario.
+
+        Args:
+            grid: the grid for the scenario.
+        """
+        self._grid = grid
+
+    @grid.deleter
+    def grid(self) -> None:
+        """Delete the grid for the scenario."""
+        if hasattr(self, "_grid"):
+            del self._grid
+
+    @property
+    def center_frequency(self) -> float:
+        """The center frequency (in hertz) of the scenario."""
+        assert hasattr(self, "_center_frequency")
+        return self._center_frequency
+
+    @center_frequency.setter
+    def center_frequency(self, center_frequency: float) -> None:
+        """Set the center frequency of the scenario.
+
+        Args:
+            center_frequency: the center frequency (in hertz) of the scenario.
+        """
+        if hasattr(self, "_center_frequency"):
+            if self._center_frequency != center_frequency:
+                # Invalidating problem and grid as they should be re-generated
+                # with the new center frequency
+                del self.problem
+                del self.grid
+
+        self._center_frequency = center_frequency
+
+    def compile_problem(self):
+        """Compiles the problem for the scenario."""
+        assert self.grid is not None
+        assert self.material_masks is not None
+
+        self.problem = Problem(grid=self.grid)
+        self.problem.add_material_fields(
+            materials=self.materials,
+            masks=self.material_masks,
+        )
 
     def get_field_data(self, field: str) -> npt.NDArray[np.float_]:
         """Return the array of field values across the scenario for a particular field.
@@ -328,7 +354,6 @@ class Scenario(abc.ABC):
         - vp: the speed of sound (in m/s)
         - rho: the density (in kg/m³)
         - alpha: absorption (in dB/cm)
-        - layer: the layer id at each point over the grid
 
         Args:
             field: the name of the field to return.
@@ -338,46 +363,24 @@ class Scenario(abc.ABC):
         """
         return self.problem.medium.fields[field].data
 
-    @abc.abstractmethod
-    def _compile_problem(self, center_frequency: float) -> stride.Problem:
-        pass
+    @property
+    def material_layer_ids(self) -> npt.NDArray[np.int_]:
+        """Return the layer id for each grid point in the scenario."""
+        assert hasattr(self, "layer_ids")
+        assert hasattr(self, "material_masks")
+        assert self.grid.space is not None
 
-    def reset(self) -> None:
-        """Reset the scenario to initial state."""
-        raise NotImplementedError()
+        layer = np.zeros(self.grid.space.shape, dtype=int)
 
-    def add_source(self, source: Source) -> None:
-        """Add the specified source to the scenario.
+        for layer_name in self.material_layers:
+            material_mask = self.material_masks[layer_name]
+            layer_id = self.layer_ids[layer_name]
 
-        Sources can also be added or removed by modifying the Scenario.sources list.
-
-        Changes can only be made to sources before a simulation has started.
-
-        Args:
-            source: the source to add to the scenario.
-        """
-        self._sources.append(source)
-
-    @abc.abstractmethod
-    def get_default_source(self) -> Source:
-        """Create and returns a default source for this scenario.
-
-        Returns:
-            The default source.
-        """
-        pass
-
-    def _ensure_source(self) -> None:
-        """Ensure the scenario includes at least one source.
-
-        If no source is pre-defined, the default source is included.
-        """
-        if len(self.sources) == 0:
-            self.add_source(self.get_default_source())
+            layer[material_mask] = layer_id
+        return layer
 
     def simulate_steady_state(
         self,
-        center_frequency: float = 5.0e5,
         points_per_period: int = 24,
         n_cycles_steady_state: int = 10,
         time_to_steady_state: float | None = None,
@@ -397,8 +400,6 @@ class Scenario(abc.ABC):
             values other than the default if you chose to do so.
 
         Args:
-            center_frequency: the center frequency (in hertz) to use for the
-                continuous-wave source output.
             points_per_period: the number of points in time to simulate for each cycle
                 of the wave.
             n_cycles_steady_state: the number of complete cycles to use when calculating
@@ -417,18 +418,17 @@ class Scenario(abc.ABC):
         Returns:
             An object containing the result of the steady-state simulation.
         """
-        self._problem = self._compile_problem(center_frequency)
         problem = self.problem
         sim_time = select_simulation_time_for_steady_state(
             grid=problem.grid,
-            materials=self.get_materials(center_frequency),
-            freq_hz=center_frequency,
+            materials=self.materials,
+            freq_hz=self.center_frequency,
             time_to_steady_state=time_to_steady_state,
             n_cycles_steady_state=n_cycles_steady_state,
             delay=find_largest_delay_in_sources(self.sources),
         )
         problem.grid.time = create_time_grid(
-            freq_hz=center_frequency, ppp=points_per_period, sim_time=sim_time
+            freq_hz=self.center_frequency, ppp=points_per_period, sim_time=sim_time
         )
 
         budget_time_and_memory_resources(
@@ -439,7 +439,7 @@ class Scenario(abc.ABC):
             is_pulsed=False,
         )
 
-        sub_problem = self._setup_sub_problem(center_frequency, "steady-state")
+        sub_problem = self._setup_sub_problem("steady-state")
         pde = self._create_pde()
         traces = self._execute_pde(
             pde=pde,
@@ -458,8 +458,8 @@ class Scenario(abc.ABC):
         wavefield = np.moveaxis(pde.wavefield.data[:-1], 0, -1)
 
         return results.create_steady_state_result(
-            scenario=self,
-            center_frequency=center_frequency,
+            scenario=self,  # type: ignore
+            center_frequency=self.center_frequency,
             effective_dt=self.dt * recording_time_undersampling,
             pde=pde,
             shot=sub_problem.shot,
@@ -467,62 +467,15 @@ class Scenario(abc.ABC):
             traces=traces,
         )
 
-    def simulate_pulse(
-        self,
-        center_frequency: float = 5.0e5,
-        points_per_period: int = 24,
-        simulation_time: float | None = None,
-        recording_time_undersampling: int = 4,
-        n_jobs: int | None = None,
-    ) -> results.PulsedResult:
-        """Execute a pulsed simulation in 2D.
-
-        In this simulation, the sources will emit a pulse containing a few cycles of
-        oscillation and then let the pulse propagate out to all edges of the scenario.
-
-        !!! warning
-            A poor choice of arguments to this function can lead to a failed
-            simulation. Make sure you understand the impact of supplying parameter
-            values other than the default if you chose to do so.
-
-        Args:
-            center_frequency: the center frequency (in hertz) to use for the
-                continuous-wave source output.
-            points_per_period: the number of points in time to simulate for each cycle
-                of the wave.
-            simulation_time: the amount of time (in seconds) the simulation should run.
-                If the value is None, this time will automatically be set to the amount
-                of time it would take to propagate from one corner to the opposite in
-                the medium with the slowest speed of sound in the scenario.
-            recording_time_undersampling: the undersampling factor to apply to the time
-                axis when recording simulation results. One out of every this many
-                consecutive time points will be recorded and all others will be dropped.
-            n_jobs: the number of threads to be used for the computation. Use None to
-                leverage Devito automatic tuning.
-
-        Returns:
-            An object containing the result of the 2D pulsed simulation.
-        """
-        return self._simulate_pulse(
-            center_frequency=center_frequency,
-            points_per_period=points_per_period,
-            simulation_time=simulation_time,
-            recording_time_undersampling=recording_time_undersampling,
-            n_jobs=n_jobs,
-            slice_axis=None,
-            slice_position=None,
-        )
-
     def _simulate_pulse(
         self,
-        center_frequency: float = 5.0e5,
         points_per_period: int = 24,
         simulation_time: float | None = None,
         recording_time_undersampling: int = 4,
         n_jobs: int | None = None,
         slice_axis: int | None = None,
         slice_position: float | None = None,
-    ) -> results.PulsedResult:
+    ) -> Union[results.PulsedResult2D, results.PulsedResult3D]:
         """Execute a pulsed simulation.
 
         In this simulation, the sources will emit a pulse containing a few cycles of
@@ -533,8 +486,6 @@ class Scenario(abc.ABC):
         other than the default if you chose to do so.
 
         Args:
-            center_frequency: the center frequency (in hertz) to use for the
-                continuous-wave source output.
             points_per_period: the number of points in time to simulate for each cycle
                 of the wave.
             simulation_time: the amount of time (in seconds) the simulation should run.
@@ -556,16 +507,18 @@ class Scenario(abc.ABC):
         Returns:
             An object containing the result of the pulsed simulation.
         """
-        self._problem = self._compile_problem(center_frequency)
         problem = self.problem
+
         if simulation_time is None:
             simulation_time = select_simulation_time_for_pulsed(
                 grid=problem.grid,
-                materials=self.get_materials(center_frequency),
+                materials=self.materials,
                 delay=find_largest_delay_in_sources(self.sources),
             )
         problem.grid.time = create_time_grid(
-            freq_hz=center_frequency, ppp=points_per_period, sim_time=simulation_time
+            freq_hz=self.center_frequency,
+            ppp=points_per_period,
+            sim_time=simulation_time,
         )
 
         if slice_axis is not None and slice_position is not None:
@@ -580,7 +533,7 @@ class Scenario(abc.ABC):
             is_pulsed=True,
         )
 
-        sub_problem = self._setup_sub_problem(center_frequency, "pulsed")
+        sub_problem = self._setup_sub_problem("pulsed")
         pde = self._create_pde()
         traces = self._execute_pde(
             pde=pde,
@@ -597,8 +550,8 @@ class Scenario(abc.ABC):
         wavefield = np.moveaxis(pde.wavefield.data[:-1], 0, -1)
 
         return results.create_pulsed_result(
-            scenario=self,
-            center_frequency=center_frequency,
+            scenario=self,  # type: ignore
+            center_frequency=self.center_frequency,
             effective_dt=self.dt * recording_time_undersampling,
             pde=pde,
             shot=sub_problem.shot,
@@ -607,27 +560,19 @@ class Scenario(abc.ABC):
             recorded_slice=recorded_slice,
         )
 
-    def _setup_sub_problem(
-        self, center_frequency: float, simulation_mode: str
-    ) -> stride.SubProblem:
+    def _setup_sub_problem(self, simulation_mode: str) -> stride.SubProblem:
         """Set up a stride `SubProblem` for the simulation.
 
         A SubProblem requires at least one source transducer. If no source is defined, a
         default source is used.
 
         Args:
-            center_frequency: the center frequency (in hertz) of the source transducer.
             simulation_mode: the type of simulation which will be run.
 
         Returns:
             The `SubProblem` to use for the simulation.
         """
-        self._ensure_source()
-        self._freeze_sources()
-
-        # create an actual list to avoid needing to use FrozenList as the type
-        source_list = list(self.sources)
-        shot = self._setup_shot(source_list, center_frequency, simulation_mode)
+        shot = self._setup_shot(self.sources, self.center_frequency, simulation_mode)
         return self.problem.sub_problem(shot.id)
 
     def _setup_shot(
@@ -650,7 +595,13 @@ class Scenario(abc.ABC):
         wavelet = wavelet_helper(
             name=wavelet_name, freq_hz=freq_hz, time=problem.grid.time
         )
-        return create_shot(problem, sources, self.origin, wavelet, self.dx)
+        return create_shot(
+            problem,
+            sources,
+            np.array(np.array(self.origin, dtype=float), dtype=float),
+            wavelet,
+            self.dx,
+        )
 
     def _create_pde(self) -> stride.IsoAcousticDevito:
         """Instantiate the stride `Operator` representing the PDE for the scenario.
@@ -713,7 +664,9 @@ class Scenario(abc.ABC):
         assert slice_position is not None
         assert slice_axis is not None
 
-        offset_distance = slice_position - self.origin[slice_axis]
+        offset_distance = (
+            slice_position - np.array(self.origin, dtype=float)[slice_axis]
+        )
         slice_idx = np.clip(
             int(offset_distance / self.dx), 0, self.shape[slice_axis] - 1
         )
@@ -762,7 +715,7 @@ class Scenario(abc.ABC):
                 "to correctly define how to slice the field. "
             )
 
-        origin = self.origin
+        origin = np.array(self.origin, dtype=float)
         extent = self.extent
 
         current_range = (origin[slice_axis], origin[slice_axis] + extent[slice_axis])
@@ -868,18 +821,61 @@ class Scenario2D(Scenario):
         """Return the mask for the target region."""
         target_mask = create_grid_circular_mask(
             grid=self.problem.grid,
-            origin=self.origin,
+            origin=np.array(self.origin, dtype=float),
             center=self.target_center,
             radius=self.target_radius,
         )
         return target_mask
+
+    def simulate_pulse(
+        self,
+        points_per_period: int = 24,
+        simulation_time: float | None = None,
+        recording_time_undersampling: int = 4,
+        n_jobs: int | None = None,
+    ) -> results.PulsedResult2D:
+        """Execute a pulsed simulation in 2D.
+
+        In this simulation, the sources will emit a pulse containing a few cycles of
+        oscillation and then let the pulse propagate out to all edges of the scenario.
+
+        !!! warning
+            A poor choice of arguments to this function can lead to a failed
+            simulation. Make sure you understand the impact of supplying parameter
+            values other than the default if you chose to do so.
+
+        Args:
+            points_per_period: the number of points in time to simulate for each cycle
+                of the wave.
+            simulation_time: the amount of time (in seconds) the simulation should run.
+                If the value is None, this time will automatically be set to the amount
+                of time it would take to propagate from one corner to the opposite in
+                the medium with the slowest speed of sound in the scenario.
+            recording_time_undersampling: the undersampling factor to apply to the time
+                axis when recording simulation results. One out of every this many
+                consecutive time points will be recorded and all others will be dropped.
+            n_jobs: the number of threads to be used for the computation. Use None to
+                leverage Devito automatic tuning.
+
+        Returns:
+            An object containing the result of the 2D pulsed simulation.
+        """
+        result = self._simulate_pulse(
+            points_per_period=points_per_period,
+            simulation_time=simulation_time,
+            recording_time_undersampling=recording_time_undersampling,
+            n_jobs=n_jobs,
+            slice_axis=None,
+            slice_position=None,
+        )
+        assert isinstance(result, results.PulsedResult2D)
+        return result
 
     def render_layout(
         self,
         show_sources: bool = True,
         show_target: bool = True,
         show_material_outlines: bool = False,
-        center_frequency: float = 5.0e5,
     ) -> None:
         """Create a matplotlib figure showing the 2D scenario layout.
 
@@ -890,30 +886,28 @@ class Scenario2D(Scenario):
             show_target: whether or not to show the target layer.
             show_material_outlines: whether or not to display a thin white outline of
                 the transition between different materials.
-            center_frequency: the center frequency (in hertz) to use for the
-                continuous-wave source output.
         """
-        if not hasattr(self, "_problem") or not self.problem:
-            self._problem = self._compile_problem(center_frequency)
         color_sequence = list(self.material_colors.values())
-        field = self.get_field_data("layer").astype(int)
         fig, ax = rendering.create_layout_fig(
-            self.extent, self.origin, color_sequence, field
+            self.extent,
+            np.array(self.origin, dtype=float),
+            color_sequence,
+            self.material_layer_ids,
         )
 
         # add layers
         if show_material_outlines:
             rendering.draw_material_outlines(
                 ax=ax,
-                material_field=field,
+                material_field=self.material_layer_ids,
                 dx=self.dx,
-                origin=self.origin,
-                upsample_factor=self._material_outline_upsample_factor,
+                origin=np.array(self.origin, dtype=float),
+                upsample_factor=self.material_outline_upsample_factor,
             )
         if show_target:
             rendering.draw_target(ax, self.target_center, self.target_radius)
         if show_sources:
-            self._ensure_source()
+            assert self.sources
             for source in self.sources:
                 drawing_params = rendering.SourceDrawingParams.from_source(source)
                 rendering.draw_source(ax, drawing_params)
@@ -926,51 +920,90 @@ class Scenario2D(Scenario):
             show_sources=show_sources,
             show_target=show_target,
             extent=self.extent,
-            origin=self.origin,
+            origin=np.array(self.origin, dtype=float),
         )
 
 
 class Scenario3D(Scenario):
     """A 3D scenario."""
 
-    @abc.abstractmethod
-    def get_default_slice_axis(self) -> int:
-        """Return the default slice_axis for this scenario.
+    slice_axis: SliceAxis
+    slice_position: float
+    viewer_config_3d: rendering.ViewerConfig3D
 
-        This field is used if the slice_axis is not specified when plotting 3D data in
-        2D.
+    def __init__(
+        self,
+        center_frequency: Optional[float] = None,
+        material_properties: Optional[dict[str, Material]] = None,
+        material_masks: Optional[Mapping[str, npt.NDArray[np.bool_]]] = None,
+        origin: Optional[list[float]] = None,
+        sources: Optional[list[Source]] = None,
+        material_outline_upsample_factor: Optional[int] = None,
+        target: Optional[Target] = None,
+        problem: Optional[Problem] = None,
+        grid: Optional[Grid] = None,
+        slice_axis: Optional[SliceAxis] = None,
+        slice_position: Optional[float] = None,
+        viewer_config_3d: Optional[rendering.ViewerConfig3D] = None,
+    ):
+        """Initialize a 3D Scenario.
 
-        Returns:
-            The default slice_axis for this scenario.
-        """
-        pass
-
-    @abc.abstractmethod
-    def get_default_slice_position(self, axis: int) -> float:
-        """Return the default slice_position (in meters) for this scenario.
-
-        This field is used if the slice_position is not specified when plotting 3D data
-        in 2D.
+        All arguments are optional and can be set after initialization.
 
         Args:
-            axis: the slice axis.
-
-        Returns:
-            The default slice_position for this scenario along the given axis.
+            center_frequency (Optional[float], optional): The center frequency (in
+                hertz) of the scenario. Defaults to None.
+            material_properties (Optional[dict[str, Material]], optional): A map
+                between material name and material properties. Defaults to None.
+            material_masks (Optional[Mapping[str, npt.NDArray[np.bool_]]], optional):
+                A map between material name and a boolean mask indicating which grid
+                points are in that material. Defaults to None.
+            origin (Optional[list[float]], optional): The location of the origin of the
+                scenario (in meters). Defaults to None.
+            sources (Optional[list[Source]], optional): The list of sources in the
+                scenario. Defaults to None.
+            material_outline_upsample_factor (Optional[int], optional): The factor by
+                which to upsample the material outline when rendering the scenario.
+                Defaults to None.
+            target (Optional[Target], optional): The target in the scenario. Defaults
+                to None.
+            problem (Optional[Problem], optional): The problem definition for the
+                scenario. Defaults to None.
+            grid (Optional[Grid], optional): The grid for the scenario. Defaults to
+                None.
+            slice_axis (Optional[SliceAxis], optional): The axis along which to slice
+                the 3D field to be recorded. If None, then the complete field will be
+                recorded. Use 0 for X axis, 1 for Y axis and 2 for Z axis. Defaults to
+                None.
+            slice_position (Optional[float], optional): The position (in meters) along
+                the slice axis at which the slice of the 3D field should be made.
+                Defaults to None.
+            viewer_config_3d (Optional[rendering.ViewerConfig3D], optional): The
+                configuration to use when rendering the 3D scenario. Defaults to None.
         """
-        pass
-
-    @property
-    @abc.abstractmethod
-    def viewer_config_3d(self) -> rendering.ViewerConfig3D:
-        """Configuration parameters for 3D visualization of this scenario."""
-        pass
+        if slice_axis is not None:
+            self.slice_axis = slice_axis
+        if slice_position is not None:
+            self.slice_position = slice_position
+        if viewer_config_3d is not None:
+            self.viewer_config_3d = viewer_config_3d
+        super().__init__(
+            center_frequency=center_frequency,
+            material_properties=material_properties,
+            material_masks=material_masks,
+            origin=origin,
+            sources=sources,
+            material_outline_upsample_factor=material_outline_upsample_factor,
+            target=target,
+            problem=problem,
+            grid=grid,
+        )
 
     def get_target_mask(self) -> npt.NDArray[np.bool_]:
         """Return the mask for the target region."""
         target_mask = create_grid_spherical_mask(
             grid=self.problem.grid,
-            origin=self.origin,
+            origin=np.array(self.origin, dtype=float),
             center=self.target_center,
             radius=self.target_radius,
         )
@@ -978,14 +1011,13 @@ class Scenario3D(Scenario):
 
     def simulate_pulse(
         self,
-        center_frequency: float = 5.0e5,
         points_per_period: int = 24,
         simulation_time: float | None = None,
         recording_time_undersampling: int = 4,
         n_jobs: int | None = None,
         slice_axis: int | None = None,
         slice_position: float | None = None,
-    ) -> results.PulsedResult:
+    ) -> results.PulsedResult3D:
         """Execute a pulsed simulation in 3D.
 
         In this simulation, the sources will emit a pulse containing a few cycles of
@@ -997,8 +1029,6 @@ class Scenario3D(Scenario):
             values other than the default if you chose to do so.
 
         Args:
-            center_frequency: the center frequency (in hertz) to use for the
-                continuous-wave source output.
             points_per_period: the number of points in time to simulate for each cycle
                 of the wave.
             simulation_time: the amount of time (in seconds) the simulation should run.
@@ -1020,8 +1050,7 @@ class Scenario3D(Scenario):
         Returns:
             An object containing the result of the 3D pulsed simulation.
         """
-        return self._simulate_pulse(
-            center_frequency=center_frequency,
+        result = self._simulate_pulse(
             points_per_period=points_per_period,
             simulation_time=simulation_time,
             recording_time_undersampling=recording_time_undersampling,
@@ -1029,15 +1058,14 @@ class Scenario3D(Scenario):
             slice_axis=slice_axis,
             slice_position=slice_position,
         )
+        assert isinstance(result, results.PulsedResult3D)
+        return result
 
     def render_layout(
         self,
-        slice_axis: int | None = None,
-        slice_position: float | None = None,
         show_sources: bool = True,
         show_target: bool = True,
         show_material_outlines: bool = False,
-        center_frequency: float = 5.0e5,
     ) -> None:
         """Create a matplotlib figure showing a 2D slice of the scenario layout.
 
@@ -1048,30 +1076,17 @@ class Scenario3D(Scenario):
         The grid can be turned on via: `plt.grid(True)`
 
         Args:
-            slice_axis: the axis along which to slice. If None, then the value returned
-                by `scenario.get_default_slice_axis()` is used.
-            slice_position: the position (in meters) along the slice axis at
-                which the slice should be made. If None, then the value returned by
-                `scenario.get_default_slice_position()` is used.
             show_sources: whether or not to show the source transducer layer.
             show_target: whether or not to show the target layer.
             show_material_outlines: whether or not to display a thin white outline of
                 the transition between different materials.
-            center_frequency: the center frequency (in hertz) to use for the
-                continuous-wave source output.
         """
-        if not hasattr(self, "_problem") or not self.problem:
-            self._problem = self._compile_problem(center_frequency)
-        if slice_axis is None:
-            slice_axis = self.get_default_slice_axis()
-        if slice_position is None:
-            slice_position = self.get_default_slice_position(slice_axis)
-
+        slice_axis = self.slice_axis
+        slice_position = self.slice_position
         color_sequence = list(self.material_colors.values())
-        field = self.get_field_data("layer").astype(int)
-        field = slice_field(field, self, slice_axis, slice_position)
+        field = slice_field(self.material_layer_ids, self, slice_axis, slice_position)
         extent = drop_element(self.extent, slice_axis)
-        origin = drop_element(self.origin, slice_axis)
+        origin = drop_element(np.array(self.origin, dtype=float), slice_axis)
         fig, ax = rendering.create_layout_fig(extent, origin, color_sequence, field)
 
         # add layers
@@ -1081,13 +1096,13 @@ class Scenario3D(Scenario):
                 material_field=field,
                 dx=self.dx,
                 origin=origin,
-                upsample_factor=self._material_outline_upsample_factor,
+                upsample_factor=self.material_outline_upsample_factor,
             )
         if show_target:
             target_loc = drop_element(self.target_center, slice_axis)
             rendering.draw_target(ax, target_loc, self.target_radius)
         if show_sources:
-            self._ensure_source()
+            assert self.sources
             for source in self.sources:
                 drawing_params = rendering.SourceDrawingParams(
                     position=drop_element(source.position, slice_axis),

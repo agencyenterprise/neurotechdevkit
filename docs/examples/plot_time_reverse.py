@@ -6,18 +6,19 @@ Time-reverse simulation for phased array
 The skull adds aberrations to the beam propagation; phased arrays can compensate
 for those by having different delays for each element, but estimating these
 delays can be challenging.
-One method to estimate the delays is a "time reverse" simulation:
-https://koreascience.kr/article/JAKO200612242715181.pdf
+One method to estimate the delays is a "time reverse" simulation as described in
+this [Article](https://koreascience.kr/article/JAKO200612242715181.pdf).
 This notebook demonstrates the "time reverse" method to estimate the delays. The
 notebook sets up a scenario with a phased array source and a target and then
 runs a simulation with the source and target reversed to calculate the delays.
 Finally, it uses the calculated delays to perform a forward-time simulation.
 
-Note: In this notebook, we refer to the "true" target as the eventual brain
-region we would like to stimulate, and the "true" source as the placement of
-the ultrasound probes. We refer to the "reversed" or "simulated" target and
-point-source as the values defined in our simulation, which are reversed from
-the physical setup to help calculate values.
+!!! note
+    In this notebook, we refer to the "true" target as the eventual brain
+    region we would like to stimulate, and the "true" source as the placement of
+    the ultrasound probes. We refer to the "reversed" or "simulated" target and
+    point-source as the values defined in our simulation, which are reversed from
+    the physical setup to help calculate values.
 """
 
 # %%
@@ -28,18 +29,17 @@ import numpy as np
 import neurotechdevkit as ndk
 
 # Parameters
-SCENARIO_NAME = "scenario-2-2d-v0"
 NUM_ELEMENTS = 20
 ELEMENT_WIDTH = 1.2e-3
 
 
 # %%
 # Helper function to make the scenario with a PhasedArraySource
-def make_scenario(element_delays=None) -> ndk.scenarios.Scenario:
-    true_scenario = ndk.make(SCENARIO_NAME)
+def make_scenario(element_delays=None):
+    true_scenario = ndk.scenarios.built_in.Scenario2_2D()
 
     # define a phased-array source
-    default_source = true_scenario.get_default_source()
+    default_source = true_scenario.sources[0]
     true_source = ndk.sources.PhasedArraySource2D(
         element_delays=element_delays,
         position=default_source.position,
@@ -50,14 +50,15 @@ def make_scenario(element_delays=None) -> ndk.scenarios.Scenario:
         num_points=1000,
     )
 
-    true_scenario.add_source(true_source)
+    true_scenario.sources = [true_source]
     return true_scenario
 
 
 # %%
 # ## Set up and visualize the forward scenario
 true_scenario = make_scenario()
-assert isinstance(true_scenario, ndk.scenarios.Scenario2D)
+true_scenario.make_grid()
+true_scenario.compile_problem()
 true_scenario.render_layout()
 
 
@@ -67,14 +68,15 @@ true_scenario.render_layout()
 # The point source is visualized as a gray dot.
 
 # Reinitialize the scenario
-reversed_scenario = ndk.make(SCENARIO_NAME)
+reversed_scenario = ndk.scenarios.built_in.Scenario2_2D()
 # and reverse the source
 point_source = ndk.sources.PointSource2D(
     position=true_scenario.target.center,
 )
-reversed_scenario.add_source(point_source)
+reversed_scenario.sources.append(point_source)
 
-assert isinstance(reversed_scenario, ndk.scenarios.Scenario2D)
+reversed_scenario.make_grid()
+reversed_scenario.compile_problem()
 reversed_scenario.render_layout()
 
 
@@ -134,6 +136,8 @@ plt.ylabel("delay [s]")
 element_delays = element_reverse_delays.max() - element_reverse_delays
 
 true_scenario = make_scenario(element_delays=element_delays)
+true_scenario.make_grid()
+true_scenario.compile_problem()
 result = true_scenario.simulate_pulse()
 assert isinstance(result, ndk.results.PulsedResult2D)
 result.render_pulsed_simulation_animation()
@@ -150,6 +154,8 @@ result.render_pulsed_simulation_animation()
 
 # Re-initialize scenario to clear previous simulation
 true_scenario = make_scenario(element_delays=element_delays)
+true_scenario.make_grid()
+true_scenario.compile_problem()
 steady_state_result = true_scenario.simulate_steady_state()
 assert isinstance(steady_state_result, ndk.results.SteadyStateResult2D)
 steady_state_result.render_steady_state_amplitudes()
@@ -160,7 +166,7 @@ steady_state_result.render_steady_state_amplitudes()
 # mask out everything else.
 steady_state_pressure = steady_state_result.get_steady_state()
 # Only consider the brain region
-steady_state_pressure[~true_scenario.get_layer_mask("brain")] = np.nan
+steady_state_pressure[~true_scenario.material_masks["brain"]] = np.nan
 steady_state_result.steady_state = steady_state_pressure
 
 steady_state_result.render_steady_state_amplitudes()

@@ -1,13 +1,11 @@
 NDK provides a simple but flexible API to control the parameters of sources.
 Users can specify the parameters and placement of sources, and add them to their simulation.
 
-
 ```py
 import neurotechdevkit as ndk
 import numpy as np
 
-scenario = ndk.make('scenario-2-2d-v0')
-scenario.current_target_id = 'right-inferior-frontal-gyrus'
+scenario = ndk.scenarios.built_in.Scenario2_2D()
 
 source = ndk.sources.FocusedSource2D(
     position=np.array([0.19, 0.07]),
@@ -16,10 +14,12 @@ source = ndk.sources.FocusedSource2D(
     focal_length=0.08,
     num_points=3000
 )
-scenario.add_source(source)
+scenario.sources = [source]
 
+scenario.make_grid()
 scenario.render_layout()
 ```
+
 <figure markdown>
   ![Scenario Layout](../images/sources_scenario_layout.png){ width="600" }
 </figure>
@@ -37,12 +37,12 @@ If a source is not specified before the scenario is rendered or simulated, then 
 
 The implemented source options are:
 
-* `FocusedSource2D`
-* `FocusedSource3D`
-* `PlanarSource2D`
-* `PlanarSource3D`
-* `PhasedArraySource2D`
-* `PhasedArraySource3D`
+- `FocusedSource2D`
+- `FocusedSource3D`
+- `PlanarSource2D`
+- `PlanarSource3D`
+- `PhasedArraySource2D`
+- `PhasedArraySource3D`
 
 The 2D sources are for 2D scenarios and the 3D sources for 3D scenarios. The parameters to configure the sources are identical between focused and planar sources, except that planar sources have a pre-defined focal length of `np.inf`.
 
@@ -50,8 +50,7 @@ The 2D sources are for 2D scenarios and the 3D sources for 3D scenarios. The par
 import neurotechdevkit as ndk
 import numpy as np
 
-scenario = ndk.make('scenario-2-2d-v0')
-scenario.current_target_id = 'right-inferior-frontal-gyrus'
+scenario = ndk.scenarios.built_in.Scenario2_2D()
 
 source_position = np.array([0.19, 0.07])
 source = ndk.sources.PlanarSource2D(
@@ -60,7 +59,9 @@ source = ndk.sources.PlanarSource2D(
     aperture=0.06,
     num_points=3000
 )
-scenario.add_source(source)
+scenario.sources = [source]
+
+scenario.make_grid()
 
 scenario.render_layout()
 ```
@@ -68,4 +69,3 @@ scenario.render_layout()
 <figure markdown>
   ![Scenario Layout](../images/planar_source_scenario_layout.png){ width="600" }
 </figure>
-
