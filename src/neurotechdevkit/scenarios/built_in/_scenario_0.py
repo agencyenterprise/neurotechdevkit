@@ -101,8 +101,6 @@ def _create_skull_interface_mask(grid, origin):
     outer_skull_mask = create_grid_elliptical_mask(
         grid, origin, skull_center, skull_a, skull_b
     )
-    outer_skull_mask[50, 20] = False
-    outer_skull_mask[50, 60] = False
     return outer_skull_mask
 
 
@@ -118,8 +116,6 @@ def _create_brain_interface_mask(grid, origin):
     outer_brain_mask = create_grid_elliptical_mask(
         grid, origin, brain_center, brain_a, brain_b
     )
-    outer_brain_mask[50, 22] = False
-    outer_brain_mask[50, 58] = False
     return outer_brain_mask
 
 
