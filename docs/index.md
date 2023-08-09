@@ -49,7 +49,9 @@ To install and run **neurotechdevkit** locally check the [installation](https://
 ```python
 import neurotechdevkit as ndk
 
-scenario = ndk.make('scenario-0-v0')
+scenario = ndk.scenarios.built_in.Scenario0()
+scenario.make_grid()
+scenario.compile_problem()
 result = scenario.simulate_steady_state()
 result.render_steady_state_amplitudes(show_material_outlines=False)
 ```

@@ -1,11 +1,13 @@
 The Neurotech Development Kit provides support for a range of simulation modes, including pulsed simulation and steady-state simulation.
 
-Running a simulation takes just a single function call.
+The following code shows how to run a simulation.
 
 ```py
 import neurotechdevkit as ndk
 
-scenario = ndk.make('scenario-2-2d-v0')
+scenario = ndk.scenarios.built_in.Scenario2_2D()
+scenario.make_grid()
+scenario.compile_problem()
 result = scenario.simulate_steady_state()
 result.render_steady_state_amplitudes()
 ```

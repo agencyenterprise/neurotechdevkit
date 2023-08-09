@@ -3,7 +3,7 @@ import pytest
 from mosaic.types import Struct
 
 from neurotechdevkit.materials import Material
-from neurotechdevkit.scenarios import Scenario
+from neurotechdevkit.scenarios import Scenario2D
 
 
 def compare_structs(struct1: Struct, struct2: Struct):
@@ -14,45 +14,20 @@ def compare_structs(struct1: Struct, struct2: Struct):
     assert struct1.render_color == struct2.render_color
 
 
-class BaseScenario(Scenario):
-    """A scenario for testing the materials module."""
-
-    _SCENARIO_ID = "scenario-tester"
-    _TARGET_OPTIONS = {}
-
-    def __init__(self, complexity="fast"):
-        self._target_id = "target_1"
-        super().__init__(
-            origin=np.array([-0.1, -0.1, 0.0]),
-            complexity=complexity,
-        )
-
-    def _compile_problem(self, center_frequency: float):
-        pass
-
-    def _material_outline_upsample_factor(self):
-        pass
-
-    def get_default_source(self):
-        pass
-
-    def get_target_mask(self):
-        pass
-
-
 def test_custom_material_property():
     """Test that a custom material property is used."""
 
-    class ScenarioWithCustomMaterialProperties(BaseScenario):
+    class ScenarioWithCustomMaterialProperties(Scenario2D):
         material_layers = ["brain"]
         material_properties = {
             "brain": Material(vp=1600.0, rho=1100.0, alpha=0.0, render_color="#2E86AB")
         }
 
     scenario = ScenarioWithCustomMaterialProperties()
+    scenario.center_frequency = 500e3
     assert scenario.material_colors == {"brain": "#2E86AB"}
 
-    materials = scenario.get_materials(500e3)
+    materials = scenario.materials
     assert list(materials.keys()) == ["brain"]
     compare_structs(
         materials["brain"],
@@ -63,16 +38,20 @@ def test_custom_material_property():
 def test_new_material():
     """Test that a new material is used."""
 
-    class ScenarioWithCustomMaterial(BaseScenario):
-        material_layers = ["brain", "eye"]
+    class ScenarioWithCustomMaterial(Scenario2D):
+        material_masks = {
+            "brain": np.zeros((20, 30, 40), dtype=bool),
+            "eye": np.zeros((20, 30, 40), dtype=bool),
+        }
         material_properties = {
             "eye": Material(vp=1600.0, rho=1100.0, alpha=0.0, render_color="#2E86AB")
         }
 
     scenario = ScenarioWithCustomMaterial()
+    scenario.center_frequency = 500e3
     assert scenario.material_colors == {"brain": "#DB504A", "eye": "#2E86AB"}
 
-    materials = scenario.get_materials(500e3)
+    materials = scenario.materials
 
     assert list(materials.keys()) == ["brain", "eye"]
     compare_structs(
@@ -84,12 +63,14 @@ def test_new_material():
 def test_material_absorption_is_calculated():
     """Test that the material absorption is calculated for a frequency !=500e3."""
 
-    class ScenarioWithBrainMaterial(BaseScenario):
+    class ScenarioWithBrainMaterial(Scenario2D):
         material_layers = ["brain"]
+        material_properties = {}
 
     scenario = ScenarioWithBrainMaterial()
+    scenario.center_frequency = 600e3
 
-    materials = scenario.get_materials(600e3)
+    materials = scenario.materials
 
     assert list(materials.keys()) == ["brain"]
     assert materials["brain"].alpha == 0.3041793231753331
@@ -98,11 +79,13 @@ def test_material_absorption_is_calculated():
 def test_unknown_material_without_properties():
     """Test that an unknown material without properties raises an error."""
 
-    class ScenarioWithCustomMaterial(BaseScenario):
+    class ScenarioWithCustomMaterial(Scenario2D):
         material_layers = ["unknown_material"]
+        material_properties = {}
 
     scenario = ScenarioWithCustomMaterial()
+    scenario.center_frequency = 500e3
     with pytest.raises(ValueError):
         scenario.material_colors
     with pytest.raises(ValueError):
-        scenario.get_materials(500e3)
+        scenario.materials

@@ -119,8 +119,8 @@ import neurotechdevkit as ndk
 
 # define the source
 source = ndk.sources.PhasedArraySource2D(
-    position=np.array([0.0, 0.0]),
-    direction=np.array([1.0, 0.0]),
+    position=[0.0, 0.0],
+    direction=[1.0, 0.0],
     num_elements=20,
     pitch=1.5e-3,
     element_width=1.2e-3,
@@ -128,8 +128,10 @@ source = ndk.sources.PhasedArraySource2D(
     num_points=1000,
 )
 
-scenario = ndk.make("scenario-1-2d-v0")
-scenario.add_source(source)
+scenario = ndk.scenarios.built_in.Scenario1_2D()
+scenario.sources = [source]
+scenario.make_grid()
+scenario.compile_problem()
 result = scenario.simulate_steady_state()
 assert isinstance(result, ndk.results.SteadyStateResult2D)
 result.render_steady_state_amplitudes()
@@ -140,11 +142,11 @@ result.render_steady_state_amplitudes()
 # delays are automatically computed when `focal_length` is defined. Let's explore how
 # the API looks like:
 
-scenario = ndk.make("scenario-1-2d-v0")
+scenario = ndk.scenarios.built_in.Scenario1_2D()
 
 phased_array = ndk.sources.PhasedArraySource2D(
-    position=np.array([0.0, 0.0]),
-    direction=np.array([1.0, 0.0]),
+    position=[0.0, 0.0],
+    direction=[1.0, 0.0],
     num_elements=20,
     pitch=1.5e-3,
     element_width=1.2e-3,
@@ -152,11 +154,12 @@ phased_array = ndk.sources.PhasedArraySource2D(
     num_points=1000,
 )
 
-scenario.add_source(phased_array)
+scenario.sources = [phased_array]
 print(f"Focal point is: {phased_array.focal_point}")
 # %%
 # `focal_point` shows the coordinates (in meters) where the array focuses.
-
+scenario.make_grid()
+scenario.compile_problem()
 result = scenario.simulate_steady_state()
 assert isinstance(result, ndk.results.SteadyStateResult2D)
 result.render_steady_state_amplitudes()
@@ -173,19 +176,20 @@ result.render_steady_state_amplitudes()
 # In the example below we apply monotonically increasing delays to mimic a
 # counter-clockwise angle.
 
-scenario = ndk.make("scenario-1-2d-v0")
+scenario = ndk.scenarios.built_in.Scenario1_2D()
 
 phased_array = ndk.sources.PhasedArraySource2D(
-    position=np.array([0.0, 0.0]),
-    direction=np.array([1.0, 0.0]),
+    position=[0.0, 0.0],
+    direction=[1.0, 0.0],
     num_elements=20,
     pitch=1.5e-3,
     element_width=1.2e-3,
     element_delays=np.linspace(0, 1e-5, 20),
     num_points=1000,
 )
-
-scenario.add_source(phased_array)
+scenario.sources = [phased_array]
+scenario.make_grid()
+scenario.compile_problem()
 result = scenario.simulate_steady_state()
 assert isinstance(result, ndk.results.SteadyStateResult2D)
 result.render_steady_state_amplitudes()
@@ -204,11 +208,11 @@ result.render_steady_state_amplitudes()
 #
 # The rest of the API is identical for both 2D and 3D scenarios.
 
-scenario = ndk.make("scenario-1-3d-v0")
+scenario_3d = ndk.scenarios.built_in.Scenario1_3D()
 
 phased_3d = ndk.sources.PhasedArraySource3D(
-    position=np.array([0.0, 0.0, 0.0]),
-    direction=np.array([1.0, 0.0, 0.0]),
+    position=[0.0, 0.0, 0.0],
+    direction=[1.0, 0.0, 0.0],
     center_line=np.array([0.0, 0.0, 1.0]),
     num_points=20_000,
     num_elements=16,
@@ -217,10 +221,11 @@ phased_3d = ndk.sources.PhasedArraySource3D(
     tilt_angle=30,
     height=5.0e-3,
 )
-
-scenario.add_source(phased_3d)
-results = scenario.simulate_steady_state()
+scenario_3d.sources = [phased_3d]
+scenario_3d.make_grid()
+scenario_3d.compile_problem()
+results = scenario_3d.simulate_steady_state()
 assert isinstance(results, ndk.results.SteadyStateResult3D)
-results.render_steady_state_amplitudes(slice_axis=1, slice_position=0.0)
+results.render_steady_state_amplitudes()
 
 # %%

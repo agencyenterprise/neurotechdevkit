@@ -54,8 +54,11 @@ def fake_result(fake_steady_state_matrix):
     """Returns a fake SteadyStateResult2D that can be used for testing."""
     return SteadyStateResult2D(
         scenario=SimpleNamespace(
+            material_masks={
+                "water": fake_layer_masks("water"),
+                "brain": fake_layer_masks("brain"),
+            },
             material_layers=["water", "brain"],
-            get_layer_mask=fake_layer_masks,
             get_target_mask=lambda: fake_layer_masks("target"),
             get_field_data=fake_fields,
         ),
