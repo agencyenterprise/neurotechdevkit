@@ -10,14 +10,15 @@ import stride
 from stride.problem import StructuredData
 
 from ... import results
-from .._resources import budget_time_and_memory_resources
-from .._utils import create_grid_circular_mask
 from ...grid import Grid
 from ...materials import Material
 from ...problem import Problem
 from ...results import PulsedResult2D
-from ...scenarios import Scenario2D, Target
-from ...scenarios._time import (
+from .._base import Scenario2D, Target
+
+from .._resources import budget_time_and_memory_resources
+from .._utils import create_grid_circular_mask
+from .._time import (
     create_time_grid,
     find_largest_delay_in_sources,
     select_simulation_time_for_pulsed,
@@ -93,9 +94,7 @@ class Scenario3(Scenario2D):
             rng=rng,
         )
 
-    def _make_material_masks(
-        self, convert_2d: bool
-    ) -> Mapping[str, npt.NDArray[np.bool_]]:
+    def _make_material_masks(self) -> Mapping[str, npt.NDArray[np.bool_]]:
         """Make the material masks for the scenario."""
         material_layers = [
             "water",
@@ -183,12 +182,12 @@ class Scenario3(Scenario2D):
             # Standard is for NDK to populate the geometry with many copies of the
             # same Transducer type
             transducer = sub_problem.geometry.transducers.get(0)
-            
+
             # Add PointTrasnducers to the geometry at our element locations
             source_element_positions = np.vstack([
                 source.element_positions for source in self.sources
             ]) - self.origin[np.newaxis, :]
-            
+
             assert sub_problem.acquisitions.shots[0].num_receivers == 0
             offset = sub_problem.geometry.num_locations
             for idx, element_position in enumerate(source_element_positions):
