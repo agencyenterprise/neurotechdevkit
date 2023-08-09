@@ -1,4 +1,4 @@
-"""Helper functions to modify the scenario class to record traces at the source elements"""
+"""Imaging scenario: grainy phantoms in water."""
 
 from types import SimpleNamespace
 from typing import Mapping, Optional
