@@ -2,7 +2,7 @@
 
 import pytest
 
-from neurotechdevkit.scenarios import (
+from neurotechdevkit.scenarios.built_in import (
     Scenario0,
     Scenario1_2D,
     Scenario1_3D,
@@ -36,5 +36,4 @@ def test_compile_problem(scenario_cls, center_frequency):
     scenario = scenario_cls()
     scenario.center_frequency = center_frequency
     scenario.make_grid()
-    problem = scenario.compile_problem()
-    assert problem == scenario.problem
+    scenario.compile_problem()
