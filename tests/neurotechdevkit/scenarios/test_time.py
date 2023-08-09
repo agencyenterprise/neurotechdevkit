@@ -1,6 +1,7 @@
 import numpy as np
 import pytest
 
+from neurotechdevkit.grid import Grid
 from neurotechdevkit.scenarios import materials
 from neurotechdevkit.scenarios._time import (
     create_time_grid,
@@ -8,7 +9,6 @@ from neurotechdevkit.scenarios._time import (
     select_simulation_time_for_pulsed,
     select_simulation_time_for_steady_state,
 )
-from neurotechdevkit.scenarios._utils import make_grid
 from neurotechdevkit.sources import PhasedArraySource2D
 
 
@@ -33,9 +33,7 @@ def scenario_fake():
 
     class FakeScenario:
         origin = np.array([0.0, -0.3, -0.2])
-        dx = 0.1
-        shape = np.array([3, 4, 5])
-        extent = np.array([0.3, 0.4, 0.5])
+        extent = (0.3, 0.4, 0.5)
 
     return FakeScenario()
 
@@ -43,7 +41,12 @@ def scenario_fake():
 @pytest.fixture
 def grid_fake(scenario_fake):
     """A grid built on top of scenario_fake that can be used for testing."""
-    return make_grid(scenario_fake.extent, scenario_fake.dx)
+    return Grid.make_grid(
+        extent=scenario_fake.extent,
+        speed_water=100000,
+        ppw=2,
+        center_frequency=5e5,
+    )
 
 
 def test_select_simulation_time_for_steady_state_with_defined_time_to_ss(grid_fake):

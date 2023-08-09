@@ -1,35 +1,36 @@
-import numpy as np
-import stride
+from typing import Mapping
 
-from ..materials import Material
-from ..sources import FocusedSource2D
-from ._base import Scenario2D, Target
-from ._utils import (
-    add_material_fields_to_problem,
-    create_grid_circular_mask,
-    create_grid_elliptical_mask,
-    make_grid,
-)
+import numpy as np
+import numpy.typing as npt
+
+from ...grid import Grid
+from ...materials import Material
+from ...sources import FocusedSource2D
+from .._base import Scenario2D, Target
+from .._utils import create_grid_circular_mask, create_grid_elliptical_mask
 
 
 class Scenario0(Scenario2D):
     """Scenario 0."""
 
-    _SCENARIO_ID = "scenario-0-v0"
-    _TARGET_OPTIONS = {
-        "target_1": Target(
-            target_id="target_1",
-            center=np.array([0.0285, 0.0024]),
-            radius=0.0017,
-            description="Represents a simulated tumor.",
-        ),
-    }
-    material_layers = [
-        "water",
-        "cortical_bone",
-        "brain",
-        "tumor",
+    center_frequency = 5e5  # Hz
+    target = Target(
+        target_id="target_1",
+        center=[0.0285, 0.0024],
+        radius=0.0017,
+        description="Represents a simulated tumor.",
+    )
+    sources = [
+        FocusedSource2D(
+            position=[0.01, 0.0],
+            direction=[1.0, 0.0],
+            aperture=0.01,
+            focal_length=0.01,
+            num_points=1000,
+        )
     ]
+    origin = [0.0, -0.02]
+
     material_properties = {
         "water": Material(vp=1500.0, rho=1000.0, alpha=0.0, render_color="#2E86AB"),
         "cortical_bone": Material(
@@ -39,60 +40,31 @@ class Scenario0(Scenario2D):
         "tumor": Material(vp=1650.0, rho=1150.0, alpha=0.8, render_color="#94332F"),
     }
 
-    def __init__(self, complexity="fast"):
-        """Create a new instance of scenario 0."""
-        self._target_id = "target_1"
-
-        super().__init__(
-            origin=np.array([0.0, -0.02]),
-            complexity=complexity,
-        )
-
-    @property
-    def _material_outline_upsample_factor(self) -> int:
-        return 16
-
-    def _get_material_masks(self, problem):
-        return {
-            name: _create_scenario_0_mask(name, problem.grid, self._origin)
-            for name in self.material_layers
+    def _make_material_masks(self) -> Mapping[str, npt.NDArray[np.bool_]]:
+        """Make the material masks for scenario 0."""
+        material_layers = [
+            "water",
+            "cortical_bone",
+            "brain",
+            "tumor",
+        ]
+        material_masks = {
+            name: _create_scenario_0_mask(
+                name, self.grid, np.array(self.origin, dtype=float)
+            )
+            for name in material_layers
         }
+        return material_masks
 
-    def _compile_problem(self, center_frequency: float) -> stride.Problem:
-        extent = np.array([0.05, 0.04])  # m
-        origin = self.origin  # m
-
-        # scenario constants
-        speed_water = 1500  # m/s
-
-        # desired resolution for complexity=fast
-        ppw = 6
-
-        # compute resolution
-        dx = speed_water / center_frequency / ppw  # m
-
-        grid = make_grid(extent=extent, dx=dx)
-        self._origin = origin
-        problem = stride.Problem(
-            name=f"{self.scenario_id}-{self.complexity}", grid=grid
+    def make_grid(self):
+        """Make the grid for scenario 0."""
+        self.grid = Grid.make_grid(
+            extent=(0.05, 0.04),  # m
+            speed_water=1500,  # m/s
+            ppw=6,  # desired resolution for complexity=fast
+            center_frequency=self.center_frequency,
         )
-        problem = add_material_fields_to_problem(
-            problem=problem,
-            materials=self.get_materials(center_frequency),
-            layer_ids=self.layer_ids,
-            masks=self._get_material_masks(problem),
-        )
-        return problem
-
-    def get_default_source(self):
-        """Return the default source for the scenario."""
-        return FocusedSource2D(
-            position=np.array([0.01, 0.0]),
-            direction=np.array([1.0, 0.0]),
-            aperture=0.01,
-            focal_length=0.01,
-            num_points=1000,
-        )
+        self.material_masks = self._make_material_masks()
 
 
 def _create_scenario_0_mask(material, grid, origin):

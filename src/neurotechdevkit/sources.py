@@ -20,25 +20,24 @@ class Source(abc.ABC):
     appropriate source geometry.
 
     Args:
-        position (npt.NDArray[np.float_]): a numpy float array indicating the
-            coordinates (in meters) of the point at the center of the source.
-        direction (npt.NDArray[np.float_]): a numpy float array representing a vector
-            located at position and pointing towards the focal point. Only the
-            orientation of `direction` affects the source, the length of the vector has
-            no affect. See the `unit_direction` property.
-        aperture (float): the width (in meters) of the source.
-        focal_length (float): the distance (in meters) from `position` to the focal
-            point.
-        num_points (int): the number of point sources to use when simulating the source.
-        delay (float, optional): the delay (in seconds) that the source will wait before
+        position: a float array indicating the coordinates (in meters) of the
+            point at the center of the source.
+        direction: a float array representing a vector located at position and pointing
+            towards the focal point. Only the orientation of `direction` affects the
+            source, the length of the vector has no affect. See the `unit_direction`
+            property.
+        aperture: the width (in meters) of the source.
+        focal_length: the distance (in meters) from `position` to the focal point.
+        num_points: the number of point sources to use when simulating the source.
+        delay: the delay (in seconds) that the source will wait before
             emitting. Defaults to 0.0.
     """
 
     def __init__(
         self,
         *,
-        position: npt.NDArray[np.float_],
-        direction: npt.NDArray[np.float_],
+        position: npt.ArrayLike,
+        direction: list[float],
         aperture: float,
         focal_length: float,
         num_points: int,
@@ -48,7 +47,7 @@ class Source(abc.ABC):
         self._validate_delay(delay)
 
         self._position = position
-        self._unit_direction = direction / np.linalg.norm(direction)
+        self._unit_direction = np.array(direction) / np.linalg.norm(direction)
         self._aperture = aperture
         self._focal_length = focal_length
         self._num_points = num_points
@@ -70,7 +69,7 @@ class Source(abc.ABC):
         The position of the source is defined as the coordinates of the point at the
         center of symmetry of the source.
         """
-        return self._position
+        return np.array(self._position)
 
     @property
     def unit_direction(self) -> npt.NDArray[np.float_]:
@@ -162,14 +161,14 @@ class PointSource(Source):
     def __init__(
         self,
         *,
-        position: npt.NDArray[np.float_],
+        position: list[float],
         num_dim: int = 2,
         delay: float = 0.0,
     ) -> None:
         """Initialize a new point source."""
         super().__init__(
             position=position,
-            direction=np.full(shape=num_dim, fill_value=np.nan),
+            direction=np.full(shape=num_dim, fill_value=np.nan).tolist(),
             aperture=0.0,
             focal_length=0.0,
             num_points=1,
@@ -209,7 +208,7 @@ class PointSource2D(PointSource):
     def __init__(
         self,
         *,
-        position: npt.NDArray[np.float_],
+        position: list[float],
         delay: float = 0.0,
     ) -> None:
         """Initialize a new 2-D point source."""
@@ -226,7 +225,7 @@ class PointSource3D(PointSource):
     def __init__(
         self,
         *,
-        position: npt.NDArray[np.float_],
+        position: list[float],
         delay: float = 0.0,
     ) -> None:
         """Initialize a new 2-D point source."""
@@ -486,8 +485,8 @@ class UnfocusedSource(Source, abc.ABC):
     def __init__(
         self,
         *,
-        position: npt.NDArray[np.float_],
-        direction: npt.NDArray[np.float_],
+        position: list[float],
+        direction: list[float],
         aperture: float,
         num_points: int,
         delay: float = 0.0,
@@ -592,10 +591,10 @@ class PhasedArraySource(Source):
     """A base class for phased array sources.
 
     Args:
-        position (npt.NDArray[np.float_]): a numpy float array indicating
+        position (list[float]): a float array indicating
             the coordinates (in meters) of the point at the center of the
             source, which is the point that bisects the line segment source.
-        direction (npt.NDArray[np.float_]): a numpy float array representing
+        direction (list[float]): a float array representing
             a vector located at position that is perpendicular to the plane
             of the source. Only the orientation of `direction` affects the
             source, the length of the vector has no affect. See the
@@ -624,8 +623,8 @@ class PhasedArraySource(Source):
     def __init__(
         self,
         *,
-        position: npt.NDArray[np.float_],
-        direction: npt.NDArray[np.float_],
+        position: list[float],
+        direction: list[float],
         num_points: int,
         num_elements: int,
         pitch: float,
@@ -1133,10 +1132,10 @@ class PhasedArraySource3D(PhasedArraySource):
     for detailed explanation.
 
     Args:
-        position (npt.NDArray[np.float_]): a numpy float array in 3D indicating the
+        position (list[float]): a float array in 3D indicating the
             coordinates (in meters) of the point at the center of the source, which is
             the point that bisects both the height and the aperture of the source.
-        direction (npt.NDArray[np.float_]): a numpy float array in 3D representing a
+        direction (list[float]): a float array in 3D representing a
             vector located at position that is perpendicular to the plane of the source.
             Only the orientation of `direction` affects the source, the length of
             the vector has no affect. See the `unit_direction` property.
@@ -1174,8 +1173,8 @@ class PhasedArraySource3D(PhasedArraySource):
     def __init__(
         self,
         *,
-        position: npt.NDArray[np.float_],
-        direction: npt.NDArray[np.float_],
+        position: list[float],
+        direction: list[float],
         center_line: npt.NDArray[np.float_],
         num_points: int,
         num_elements: int,
@@ -1189,7 +1188,9 @@ class PhasedArraySource3D(PhasedArraySource):
     ) -> None:
         """Initialize a new phased array source."""
         self._height = height
-        self._unit_center_line = self._validate_center_line(center_line, direction)
+        self._unit_center_line = self._validate_center_line(
+            center_line, np.array(direction, dtype=float)
+        )
 
         super().__init__(
             position=position,
@@ -1401,7 +1402,7 @@ class PhasedArraySource3D(PhasedArraySource):
         coords: npt.NDArray[np.float_],
     ) -> npt.NDArray[np.float_]:
         """
-        Aligns a the coordinates to the desired direction for the unit center line.
+        Align the coordinates to the desired direction of the unit center line.
 
         The first and last element centers are calculated and the direction vector from
         the first element to the last element is computed.

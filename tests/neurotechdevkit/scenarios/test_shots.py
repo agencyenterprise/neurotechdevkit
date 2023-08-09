@@ -2,6 +2,8 @@ import numpy as np
 import pytest
 import stride
 
+from neurotechdevkit.grid import Grid
+from neurotechdevkit.problem import Problem
 from neurotechdevkit.scenarios import _shots
 from neurotechdevkit.scenarios._shots import (
     _add_points_for_source_to_geometry,
@@ -11,7 +13,6 @@ from neurotechdevkit.scenarios._shots import (
     _get_wavelets_for_source,
     create_shot,
 )
-from neurotechdevkit.scenarios._utils import make_grid
 
 
 class FakeSource:
@@ -55,9 +56,14 @@ def fake_source_2():
 @pytest.fixture
 def a_problem():
     """A minimal problem which can be used for tests."""
-    grid = make_grid(extent=np.array([1.5, 0.6]), dx=0.1)
+    grid = Grid.make_grid(
+        extent=np.array([1.5, 0.6]),
+        speed_water=100000,
+        ppw=2,
+        center_frequency=5e5,
+    )
     grid.time = stride.Time(0.0, step=1e-3, num=100)
-    problem = stride.Problem(name="fake", grid=grid)
+    problem = Problem(grid=grid)
     return problem
 
 

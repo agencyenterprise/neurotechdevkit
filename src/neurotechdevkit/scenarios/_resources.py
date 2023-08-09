@@ -186,8 +186,7 @@ def budget_time_and_memory_resources(
     n_threads: int = get_available_cpus(),
     ram_available_gb: float = get_available_ram_memory(),
 ) -> None:
-    """
-    Inform the user of the time and memory resources needed to complete the simulation.
+    """Inform the user of the time and memory resources needed for the simulation.
 
     The default value for n_threads assumes that all CPUs in the computer are used.
     The default value for ram_available_gb assumes that all RAM memory in the computer

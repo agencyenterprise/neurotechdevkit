@@ -6,10 +6,11 @@ import stride
 from stride.problem.geometry import TransducerLocation
 
 from .. import sources
+from ..problem import Problem
 
 
 def create_shot(
-    problem: stride.Problem,
+    problem: Problem,
     sources: list[sources.Source],
     origin: npt.NDArray[np.float_],
     wavelet: npt.NDArray[np.float_],
@@ -59,7 +60,7 @@ def create_shot(
 
 
 def _add_sources_to_geometry(
-    problem: stride.Problem,
+    problem: Problem,
     sources: list[sources.Source],
     origin: npt.NDArray[np.float_],
 ) -> list[TransducerLocation]:
@@ -90,7 +91,7 @@ def _add_sources_to_geometry(
 
 
 def _add_points_for_source_to_geometry(
-    problem: stride.Problem, coords: npt.NDArray[np.float_]
+    problem: Problem, coords: npt.NDArray[np.float_]
 ) -> list[TransducerLocation]:
     """Add and return source transducers at locations specified by coords.
 

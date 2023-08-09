@@ -108,8 +108,8 @@ def pulsed_data_2d():
 @pytest.fixture
 def a_test_scenario_2d():
     """A real 2D scenario that can be saved to disk and reloaded."""
-    scenario = scenarios.Scenario1_2D()
-    scenario.add_source(
+    scenario = scenarios.built_in.Scenario1_2D()
+    scenario.sources.append(
         sources.FocusedSource2D(
             position=np.array([0.02, 0.02]),
             direction=np.array([1.0, -1.0]),
@@ -118,14 +118,17 @@ def a_test_scenario_2d():
             num_points=100,
         )
     )
+    scenario.center_frequency = 5e5
+    scenario.make_grid()
+    scenario.compile_problem()
     return scenario
 
 
 @pytest.fixture
 def a_test_scenario_3d():
     """A real 3D scenario that can be saved to disk and reloaded."""
-    scenario = scenarios.Scenario1_3D()
-    scenario.add_source(
+    scenario = scenarios.built_in.Scenario1_3D()
+    scenario.sources.append(
         sources.FocusedSource3D(
             position=np.array([0.02, 0.02, 0.0]),
             direction=np.array([1.0, -1.0, 0.0]),
@@ -134,7 +137,9 @@ def a_test_scenario_3d():
             num_points=100,
         )
     )
-    scenario.current_target_id = "target_2"
+    scenario.center_frequency = 5e5
+    scenario.make_grid()
+    scenario.compile_problem()
     return scenario
 
 
@@ -231,7 +236,6 @@ def assert_scenario_match(scenario, expected):
 
     The only parameters tested are those important for saving and reloading results.
     """
-    assert scenario.current_target_id == expected.current_target_id
     assert len(scenario.sources) == len(expected.sources)
     for source1, source2 in zip(scenario.sources, expected.sources):
         np.testing.assert_allclose(source1.position, source2.position)

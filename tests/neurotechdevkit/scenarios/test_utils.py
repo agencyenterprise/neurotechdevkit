@@ -2,6 +2,7 @@ import numpy as np
 import pytest
 import stride
 
+from neurotechdevkit.grid import Grid
 from neurotechdevkit.scenarios._utils import (
     choose_wavelet_for_mode,
     create_grid_circular_mask,
@@ -9,7 +10,6 @@ from neurotechdevkit.scenarios._utils import (
     create_grid_spherical_mask,
     drop_column,
     drop_element,
-    make_grid,
     slice_field,
     wavelet_helper,
 )
@@ -92,7 +92,12 @@ def test_drop_column(idx):
 
 def test_create_grid_elliptical_mask():
     """Verify that the returned mask has the expected elements turned on."""
-    grid = make_grid(extent=np.array([0.6, 0.8]), dx=0.1)
+    grid = Grid.make_grid(
+        extent=(0.6, 0.8),
+        speed_water=100000,
+        ppw=2,
+        center_frequency=5e5,
+    )
     origin = np.array([-0.2, -0.3])
     center = np.array([0.05, 0.15])
     mask = create_grid_elliptical_mask(grid, origin, center, a=0.2, b=0.3)
@@ -107,7 +112,12 @@ def test_create_grid_elliptical_mask():
 
 def test_create_grid_circular_mask():
     """Verify that the returned mask has the expected elements turned on."""
-    grid = make_grid(extent=np.array([0.6, 0.8]), dx=0.1)
+    grid = Grid.make_grid(
+        extent=(0.6, 0.8),
+        speed_water=100000,
+        ppw=2,
+        center_frequency=5e5,
+    )
     origin = np.array([-0.2, -0.3])
     center = np.array([0.05, 0.15])
     mask = create_grid_circular_mask(grid, origin, center, radius=0.2)
@@ -122,7 +132,12 @@ def test_create_grid_circular_mask():
 
 def test_create_grid_spherical_mask():
     """Verify that the returned mask has the expected elements turned on."""
-    grid = make_grid(extent=np.array([0.6, 0.8, 1.0]), dx=0.1)
+    grid = Grid.make_grid(
+        extent=(0.6, 0.8, 1.0),
+        speed_water=100000,
+        ppw=2,
+        center_frequency=5e5,
+    )
     origin = np.array([-0.2, -0.3, 0.0])
     center = np.array([0.05, 0.15, 0.45])
     mask = create_grid_spherical_mask(grid, origin, center, radius=0.2)

@@ -15,9 +15,11 @@ or another one.
 # Execute the following code in a computer with ndk installed
 import neurotechdevkit as ndk
 
-scenario = ndk.make("scenario-0-v0")
+scenario = ndk.built_in.Scenario0()
+scenario.make_grid()
+scenario.compile_problem()
 result = scenario.simulate_steady_state()
-result.save_to_disk("scenario-0-v0-results.tar.gz")
+result.save_to_disk("scenario-0-results.tar.gz")
 
 
 # %%
@@ -26,7 +28,7 @@ result.save_to_disk("scenario-0-v0-results.tar.gz")
 # be loaded running the following code:
 import neurotechdevkit as ndk  # noqa: E402
 
-result2 = ndk.load_result_from_disk("scenario-0-v0-results.tar.gz")
+result2 = ndk.load_result_from_disk("scenario-0-results.tar.gz")
 assert isinstance(result2, ndk.results.SteadyStateResult2D)
 result2.render_steady_state_amplitudes(show_material_outlines=False)
 # %%

@@ -1,17 +1,16 @@
 from __future__ import annotations
 
 import pathlib
-from typing import Mapping
+from typing import Mapping, Tuple, Union
 
 import hdf5storage
 import numpy as np
 import numpy.typing as npt
-import stride
 
-from .. import rendering, sources
-from ..materials import Material
-from ._base import Scenario, Scenario2D, Scenario3D, Target
-from ._utils import add_material_fields_to_problem, make_grid
+from ... import rendering, sources
+from ...grid import Grid
+from ...materials import Material
+from .._base import Scenario, Scenario2D, Scenario3D, SliceAxis, Target
 
 
 class Scenario2(Scenario):
@@ -27,11 +26,7 @@ class Scenario2(Scenario):
         https://asa.scitation.org/doi/pdf/10.1121/10.0013426
     """
 
-    material_layers = [
-        "water",
-        "cortical_bone",
-        "brain",
-    ]
+    center_frequency = 5e5  # Hz
     material_properties = {
         "water": Material(vp=1500.0, rho=1000.0, alpha=0.0, render_color="#2E86AB"),
         "cortical_bone": Material(
@@ -40,40 +35,34 @@ class Scenario2(Scenario):
         "brain": Material(vp=1560.0, rho=1040.0, alpha=0.3, render_color="#DB504A"),
     }
 
-    @property
-    def _material_outline_upsample_factor(self) -> int:
-        return 4
-
-    def _get_material_masks(self) -> Mapping[str, npt.NDArray[np.bool_]]:
-        """Will be implemented by the subclass."""
-        raise NotImplementedError()
-
-    def _compile_scenario_2_problem(
-        self, extent: npt.NDArray[np.float_], center_frequency: float
-    ) -> stride.Problem:
-        # scenario constants
-        speed_water = 1500  # m/s
-
-        # desired resolution for complexity=fast
-        ppw = 6
-
-        # compute resolution
-        dx = speed_water / center_frequency / ppw  # m
-
-        grid = make_grid(extent=extent, dx=dx)
-        problem = stride.Problem(
-            name=f"{self.scenario_id}-{self.complexity}", grid=grid
+    def _make_grid(
+        self, extent: Union[Tuple[float, float], Tuple[float, float, float]]
+    ) -> Grid:
+        grid = Grid.make_grid(
+            extent=extent,
+            speed_water=1500,  # m/s
+            ppw=6,  # desired resolution for complexity=fast
+            center_frequency=self.center_frequency,
         )
-        problem = add_material_fields_to_problem(
-            problem=problem,
-            materials=self.get_materials(center_frequency),
-            layer_ids=self.layer_ids,
-            masks=self._get_material_masks(),
-        )
-        return problem
+        return grid
+
+    def _make_material_masks(
+        self, convert_2d: bool
+    ) -> Mapping[str, npt.NDArray[np.bool_]]:
+        """Make the material masks for scenario 2."""
+        material_layers = [
+            "water",
+            "cortical_bone",
+            "brain",
+        ]
+        material_masks = {
+            name: _create_scenario_2_mask(name, convert_2d=convert_2d)
+            for name in material_layers
+        }
+        return material_masks
 
 
-class Scenario2_2D(Scenario2, Scenario2D):
+class Scenario2_2D(Scenario2D, Scenario2):
     """A 2D implementation of scenario 2.
 
     Scenario 2 is based on benchmark 8 of the following paper:
@@ -86,11 +75,10 @@ class Scenario2_2D(Scenario2, Scenario2D):
         https://asa.scitation.org/doi/pdf/10.1121/10.0013426
     """
 
-    _SCENARIO_ID = "scenario-2-2d-v0"
-    _TARGET_OPTIONS = {
+    PREDEFINED_TARGET_OPTIONS = {
         "primary-visual-cortex": Target(
             target_id="primary-visual-cortex",
-            center=np.array([0.047, 0.002]),
+            center=[0.047, 0.002],
             radius=0.010,
             description=(
                 "A region of the primary visual cortex (approximate 2D location and"
@@ -101,7 +89,7 @@ class Scenario2_2D(Scenario2, Scenario2D):
         ),
         "right-inferior-frontal-gyrus": Target(
             target_id="right-inferior-frontal-gyrus",
-            center=np.array([0.175, 0.048]),
+            center=[0.175, 0.048],
             radius=0.008,
             description=(
                 "The right inferior frontal gyrus (approximate 2D location and size)."
@@ -112,7 +100,7 @@ class Scenario2_2D(Scenario2, Scenario2D):
         ),
         "posterior-cingulate-cortex": Target(
             target_id="posterior-cingulate-cortex",
-            center=np.array([0.10, 0.005]),
+            center=[0.10, 0.005],
             radius=0.01,
             description=(
                 "The posterior cingulate cortex (approximate 2D location and size)."
@@ -122,35 +110,33 @@ class Scenario2_2D(Scenario2, Scenario2D):
             ),
         ),
     }
-
-    def __init__(self, complexity="fast"):
-        """Create a new instance of scenario 2."""
-        self._target_id = "primary-visual-cortex"
-
-        super().__init__(
-            origin=np.array([0.0, -0.085]),
-            complexity=complexity,
-        )
-
-    def _compile_problem(self, center_frequency: float) -> stride.Problem:
-        extent = np.array([0.225, 0.170])  # m
-        return self._compile_scenario_2_problem(extent, center_frequency)
-
-    def _get_material_masks(self) -> Mapping[str, npt.NDArray[np.bool_]]:
-        return {
-            name: _create_scenario_2_mask(name, convert_2d=True)
-            for name in self.material_layers
-        }
-
-    def get_default_source(self) -> sources.Source:
-        """Get the default source for the scenario."""
-        return sources.FocusedSource2D(
-            position=np.array([0.0, 0.0]),
-            direction=np.array([1.0, 0.0]),
+    target = Target(
+        target_id="primary-visual-cortex",
+        center=[0.047, 0.002],
+        radius=0.010,
+        description=(
+            "A region of the primary visual cortex (approximate 2D location and"
+            " size). Studies suggest that transcranial focused ultrasound"
+            " stimulation of this brain region can lead to phosphene perception."
+            " See for more details: https://doi.org/10.1038/srep34026"
+        ),
+    )
+    origin = [0.0, -0.085]
+    sources = [
+        sources.FocusedSource2D(
+            position=[0.0, 0.0],
+            direction=[1.0, 0.0],
             aperture=0.064,
             focal_length=0.064,
             num_points=1000,
         )
+    ]
+    material_outline_upsample_factor = 4
+
+    def make_grid(self):
+        """Make the grid for scenario 2 2D."""
+        self.grid = self._make_grid((0.225, 0.170))
+        self.material_masks = self._make_material_masks(convert_2d=True)
 
 
 class Scenario2_3D(Scenario2, Scenario3D):
@@ -166,11 +152,10 @@ class Scenario2_3D(Scenario2, Scenario3D):
         https://asa.scitation.org/doi/pdf/10.1121/10.0013426
     """
 
-    _SCENARIO_ID = "scenario-2-3d-v0"
-    _TARGET_OPTIONS = {
+    PREDEFINED_TARGET_OPTIONS = {
         "primary-visual-cortex": Target(
             target_id="primary-visual-cortex",
-            center=np.array([0.047, 0.002, 0.005]),
+            center=[0.047, 0.002, 0.005],
             radius=0.010,
             description=(
                 "A region of the primary visual cortex (estimated location and size)."
@@ -181,7 +166,7 @@ class Scenario2_3D(Scenario2, Scenario3D):
         ),
         "right-inferior-frontal-gyrus": Target(
             target_id="right-inferior-frontal-gyrus",
-            center=np.array([0.175, 0.048, -0.010]),
+            center=[0.175, 0.048, -0.010],
             radius=0.008,
             description=(
                 "The right inferior frontal gyrus (estimated location and size)."
@@ -192,7 +177,7 @@ class Scenario2_3D(Scenario2, Scenario3D):
         ),
         "posterior-cingulate-cortex": Target(
             target_id="posterior-cingulate-cortex",
-            center=np.array([0.10, 0.005, 0.020]),
+            center=[0.10, 0.005, 0.020],
             radius=0.01,
             description=(
                 "The posterior cingulate cortex (estimated location and size). Studies"
@@ -203,7 +188,7 @@ class Scenario2_3D(Scenario2, Scenario3D):
         ),
         "ventral-intermediate-nucleus": Target(
             target_id="ventral-intermediate-nucleus",
-            center=np.array([0.12, 0.01, -0.015]),
+            center=[0.12, 0.01, -0.015],
             radius=0.005,
             description=(
                 "The right ventral intermediate nucleus of the thalamus (estimated"
@@ -215,7 +200,7 @@ class Scenario2_3D(Scenario2, Scenario3D):
         ),
         "left-temporal-lobe": Target(
             target_id="left-temporal-lobe",
-            center=np.array([0.14, -0.03, -0.03]),
+            center=[0.14, -0.03, -0.03],
             radius=0.015,
             description=(
                 "The left temporal lobe (estimated location and size). Studies are"
@@ -227,61 +212,51 @@ class Scenario2_3D(Scenario2, Scenario3D):
         ),
     }
 
-    def __init__(self, complexity="fast"):
-        """Create a new instance of scenario 2 3D."""
-        self._target_id = "primary-visual-cortex"
+    target = Target(
+        target_id="primary-visual-cortex",
+        center=[0.047, 0.002, 0.005],
+        radius=0.010,
+        description=(
+            "A region of the primary visual cortex (estimated location and size)."
+            " Studies suggest that transcranial focused ultrasound stimulation of"
+            " this brain region can lead to phosphene perception."
+            " See for more details: https://doi.org/10.1038/srep34026"
+        ),
+    )
 
-        super().__init__(
-            origin=np.array([0.0, -0.085, -0.095]),
-            complexity=complexity,
-        )
-
-    @property
-    def viewer_config_3d(self) -> rendering.ViewerConfig3D:
-        """Get the default viewer configuration for the scenario."""
-        return rendering.ViewerConfig3D(
-            init_angles=(90, 10, -60),
-            init_zoom=2.0,
-            colormaps={
-                "water": "blue",
-                "cortical_bone": "magma",
-                "brain": "bop orange",
-            },
-            opacities={
-                "water": 0.8,
-                "cortical_bone": 0.2,
-                "brain": 0.2,
-            },
-        )
-
-    def get_default_slice_axis(self) -> int:
-        """Get the default slice axis for the scenario."""
-        return 2
-
-    def get_default_slice_position(self, axis: int) -> float:
-        """Get the default slice position for the scenario."""
-        default_positions = np.array([0.1, 0.0, 0.0])
-        return default_positions[axis]
-
-    def _compile_problem(self, center_frequency: float) -> stride.Problem:
-        extent = np.array([0.225, 0.170, 0.190])  # m
-        return self._compile_scenario_2_problem(extent, center_frequency)
-
-    def _get_material_masks(self):
-        return {
-            name: _create_scenario_2_mask(name, convert_2d=False)
-            for name in self.material_layers
-        }
-
-    def get_default_source(self):
-        """Get the default source for the scenario."""
-        return sources.FocusedSource3D(
-            position=np.array([0.0, 0.0, 0.0]),
-            direction=np.array([1.0, 0.0, 0.0]),
+    origin = [0.0, -0.085, -0.095]
+    sources = [
+        sources.FocusedSource3D(
+            position=[0.0, 0.0, 0.0],
+            direction=[1.0, 0.0, 0.0],
             aperture=0.064,
             focal_length=0.064,
             num_points=20_000,
         )
+    ]
+
+    viewer_config_3d = rendering.ViewerConfig3D(
+        init_angles=(90, 10, -60),
+        init_zoom=2.0,
+        colormaps={
+            "water": "blue",
+            "cortical_bone": "magma",
+            "brain": "bop orange",
+        },
+        opacities={
+            "water": 0.8,
+            "cortical_bone": 0.2,
+            "brain": 0.2,
+        },
+    )
+    slice_axis = SliceAxis.Z
+    slice_position = 0.0
+    material_outline_upsample_factor = 4
+
+    def make_grid(self):
+        """Make the grid for scenario 2 3D."""
+        self.grid = self._make_grid((0.225, 0.170, 0.190))
+        self.material_masks = self._make_material_masks(convert_2d=False)
 
 
 def _create_scenario_2_mask(material, convert_2d=False) -> npt.NDArray[np.bool_]:

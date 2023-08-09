@@ -73,6 +73,7 @@ precomputed
 reproducibility
 resampling
 ricker
+sliceaxis
 stackoverflow
 str
 struct
