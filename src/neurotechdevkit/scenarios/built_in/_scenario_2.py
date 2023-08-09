@@ -6,6 +6,7 @@ from typing import Mapping, Tuple, Union
 import hdf5storage
 import numpy as np
 import numpy.typing as npt
+import scipy.ndimage
 
 from ... import rendering, sources
 from ...grid import Grid
@@ -56,7 +57,7 @@ class Scenario2(Scenario):
             "brain",
         ]
         material_masks = {
-            name: _create_scenario_2_mask(name, convert_2d=convert_2d)
+            name: _create_scenario_2_mask(name, grid=self.grid, convert_2d=convert_2d)
             for name in material_layers
         }
         return material_masks
@@ -259,7 +260,7 @@ class Scenario2_3D(Scenario2, Scenario3D):
         self.material_masks = self._make_material_masks(convert_2d=False)
 
 
-def _create_scenario_2_mask(material, convert_2d=False) -> npt.NDArray[np.bool_]:
+def _create_scenario_2_mask(material, grid, convert_2d=False) -> npt.NDArray[np.bool_]:
 
     cur_dir = pathlib.Path(__file__).parent
     data_file = cur_dir / "data" / "skull_mask_bm8_dx_0.5mm.mat"
@@ -267,6 +268,22 @@ def _create_scenario_2_mask(material, convert_2d=False) -> npt.NDArray[np.bool_]
 
     skull_mask = mat_data["skull_mask"].astype(np.bool_)
     brain_mask = mat_data["brain_mask"].astype(np.bool_)
+
+    if convert_2d:
+        # slice through the center of the transducer
+        Z_CENTER_IDX = 190
+        skull_mask = skull_mask[:, :, Z_CENTER_IDX]
+        brain_mask = brain_mask[:, :, Z_CENTER_IDX]
+
+    assert skull_mask.shape == brain_mask.shape
+    if skull_mask.shape != grid.space.shape:
+        # resample the mask to match the grid
+        scale_factor = np.array(grid.space.shape) / np.array(skull_mask.shape)
+        skull_mask = scipy.ndimage.zoom(skull_mask, scale_factor, order=0)
+        brain_mask = scipy.ndimage.zoom(brain_mask, scale_factor, order=0)
+        # The resampling could have introduced some overlap between the masks.
+        # Ensure that each voxel is only assigned to one mask.
+        brain_mask &= ~skull_mask
 
     if material == "cortical_bone":
         mask = skull_mask
@@ -279,9 +296,5 @@ def _create_scenario_2_mask(material, convert_2d=False) -> npt.NDArray[np.bool_]
 
     else:
         raise ValueError(material)
-
-    if convert_2d:
-        mask = mask[:, :, 190]
-        # slice through the center of the transducer
 
     return mask
