@@ -38,8 +38,8 @@ class Scenario3(Scenario2D):
         ),
     }
     material_speckle_scale = {
-        "water": 0.001,
-        "agar_hydrogel": 0.01,
+        "water": 0.00067,
+        "agar_hydrogel": 0.008,
     }  # Acoustic property heterogeneity: relative scale
     PREDEFINED_TARGET_OPTIONS = {
         "agar-phantom-center": Target(
