@@ -77,6 +77,8 @@ class Scenario(abc.ABC):
 
     # The list of sources in the scenario.
     sources: list[Source]
+    # Coordinates of point receivers in the scenario
+    receiver_coords: npt.ArrayLike[float] | list[npt.ArrayLike[float]] = []
 
     material_outline_upsample_factor: int = 16
 
@@ -572,11 +574,20 @@ class Scenario(abc.ABC):
         Returns:
             The `SubProblem` to use for the simulation.
         """
-        shot = self._setup_shot(self.sources, self.center_frequency, simulation_mode)
+        shot = self._setup_shot(
+            sources=self.sources,
+            receiver_coords=self.receiver_coords,
+            freq_hz=self.center_frequency,
+            simulation_mode=simulation_mode
+        )
         return self.problem.sub_problem(shot.id)
 
     def _setup_shot(
-        self, sources: list[Source], freq_hz: float, simulation_mode: str
+        self,
+        sources: list[Source],
+        receiver_coords: npt.ArrayLike[float] | list[npt.ArrayLike[float]],
+        freq_hz: float,
+        simulation_mode: str,
     ) -> stride.Shot:
         """Create the stride `Shot` for the simulation.
 
@@ -596,11 +607,12 @@ class Scenario(abc.ABC):
             name=wavelet_name, freq_hz=freq_hz, time=problem.grid.time
         )
         return create_shot(
-            problem,
-            sources,
-            np.array(np.array(self.origin, dtype=float), dtype=float),
-            wavelet,
-            self.dx,
+            problem=problem,
+            sources=sources,
+            receiver_coords=receiver_coords,
+            origin=np.array(np.array(self.origin, dtype=float), dtype=float),
+            wavelet=wavelet,
+            dx=self.dx,
         )
 
     def _create_pde(self) -> stride.IsoAcousticDevito:

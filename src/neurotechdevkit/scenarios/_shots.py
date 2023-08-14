@@ -1,4 +1,5 @@
 from __future__ import annotations
+from typing import Optional
 
 import numpy as np
 import numpy.typing as npt
@@ -12,6 +13,7 @@ from ..problem import Problem
 def create_shot(
     problem: Problem,
     sources: list[sources.Source],
+    receiver_coords: npt.ArrayLike[float] | list[npt.ArrayLike[float]],
     origin: npt.NDArray[np.float_],
     wavelet: npt.NDArray[np.float_],
     dx: float,
@@ -23,7 +25,7 @@ def create_shot(
     shot to the acquisitions for the problem.
 
     !!! note
-        Support for receivers in a shot is not currently implemented in ndk.
+        NDK currently only supports point receivers.
 
     Args:
         problem: the problem to which the shot will be be added.
@@ -38,12 +40,19 @@ def create_shot(
         The newly-created shot for the simulation.
     """
     point_transducers = _add_sources_to_geometry(problem, sources, origin)
+    if len(receiver_coords) > 0:
+        point_receivers = _add_points_transducers_to_geometry(
+            problem,
+            np.asarray(receiver_coords) - origin
+        )
+    else:
+        point_receivers = []
 
     shot = stride.Shot(
         id=0,
         problem=problem,
         sources=point_transducers,
-        receivers=[],
+        receivers=point_receivers,
         geometry=problem.geometry,
     )
     assert shot.wavelets is not None
@@ -84,18 +93,18 @@ def _add_sources_to_geometry(
 
     for source in sources:
         source_coords = source.coordinates - origin
-        source_transducers = _add_points_for_source_to_geometry(problem, source_coords)
+        source_transducers = _add_points_transducers_to_geometry(problem, source_coords)
         point_transducers.extend(source_transducers)
 
     return point_transducers
 
 
-def _add_points_for_source_to_geometry(
+def _add_points_transducers_to_geometry(
     problem: Problem, coords: npt.NDArray[np.float_]
 ) -> list[TransducerLocation]:
-    """Add and return source transducers at locations specified by coords.
+    """Add and return transducers at locations specified by coords.
 
-    Each point source in a source is added to the stride problem geometry, and then the
+    Each coord is to the stride problem geometry as a point-transducer, and then the
     TransducerLocation for each point source is returned so that it can be added to the
     shot.
 
