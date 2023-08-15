@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from typing import List
-
 import numpy as np
 import numpy.typing as npt
 import stride
@@ -14,7 +12,7 @@ from ..problem import Problem
 def create_shot(
     problem: Problem,
     sources: list[sources.Source],
-    receiver_coords: npt.ArrayLike[float] | List[npt.ArrayLike[float]],
+    receiver_coords: npt.NDArray[np.float_] | list[npt.NDArray[np.float_]],
     origin: npt.NDArray[np.float_],
     wavelet: npt.NDArray[np.float_],
     dx: float,
