@@ -24,7 +24,8 @@ def demodulate_rf_to_iq(
 
     Parameters:
         rf_signals: Radio-frequency signals to be demodulated.
-            Shape: (num_samples, num_channels) or (num_samples, num_channels, num_echoes)
+            Shape: (num_samples, num_channels) or
+                (num_samples, num_channels, num_echoes)
             num_samples dimension is sometimes called the "fast time" dimension.
             num_echoes dimension is sometimes called the "slow time" dimension.
         freq_sampling: Sampling frequency of the RF signals (in Hz).
@@ -91,9 +92,7 @@ def demodulate_rf_to_iq(
     # Down-mix the RF signals
     # by multiplying them with a complex exponential corresponding to the
     # carrier frequency.
-    iq_signals = rf_signals * np.exp(
-        -1j * 2 * np.pi * freq_carrier * time_arr
-    )
+    iq_signals = rf_signals * np.exp(-1j * 2 * np.pi * freq_carrier * time_arr)
 
     # Low-pass Butterworth filter to extract demodulated I/Q signals
     sos = butter(5, normalized_freq_cutoff, output="sos")
@@ -125,7 +124,8 @@ def _estimate_carrier_frequency(
 
     Args:
         rf_signals: Radio-frequency signals estimate the carrier frequency of.
-            Shape: (num_samples, num_channels) or (num_samples, num_channels, num_echoes)
+            Shape: (num_samples, num_channels) or
+                (num_samples, num_channels, num_echoes)
         freq_sampling: Sampling frequency of the RF signals (in Hz).
         max_num_channels: Maximum number of channels (or channel-echo combos)
             to use for power spectrum analysis.
@@ -140,7 +140,7 @@ def _estimate_carrier_frequency(
         selected_channel_idxs = np.random.choice(
             num_channels, num_selected_channels, replace=False
         )
-        selected_idx_tuple = (selected_channel_idxs,)
+        selected_idxs_tuple = (selected_channel_idxs,)
     elif rf_signals.ndim == 3:
         num_samples, num_channels, num_echoes = rf_signals.shape
         num_selected = min(max_num_channels, num_channels * num_echoes)
@@ -205,7 +205,7 @@ def _potential_harmful_aliasing(
         n = np.floor(freq_high / (freq_high - freq_low))
         aliasing_freqs = 2 * freq_high / np.arange(1, n + 1)
         avoids_overlap = np.any(
-            ((2 * freq_high / np.arange(1, n + 1)) <= freq_sampling)
+            (aliasing_freqs <= freq_sampling)
             & (freq_sampling <= 2 * freq_low / np.arange(n))
         )
         return not avoids_overlap

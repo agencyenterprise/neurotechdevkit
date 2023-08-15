@@ -11,7 +11,9 @@ def log_compress(iq_signals_beamformed, dynamic_range_db: float = 40):
     assert np.iscomplexobj(iq_signals_beamformed), "I/Q signals should be complex"
 
     real_envelope = np.abs(iq_signals_beamformed)
-    real_envelope[real_envelope == 0] = np.finfo(float).eps  # add .eps for to allow log10
+    real_envelope[real_envelope == 0] = np.finfo(
+        float
+    ).eps  # add .eps for to allow log10
     image_db = 20 * np.log10(real_envelope / np.max(real_envelope)) + dynamic_range_db
     image_db = np.clip(image_db / dynamic_range_db, 0, None)
 

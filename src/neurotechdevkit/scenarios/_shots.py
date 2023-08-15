@@ -1,5 +1,4 @@
 from __future__ import annotations
-from typing import Optional
 
 import numpy as np
 import numpy.typing as npt
@@ -42,8 +41,7 @@ def create_shot(
     point_transducers = _add_sources_to_geometry(problem, sources, origin)
     if len(receiver_coords) > 0:
         point_receivers = _add_points_transducers_to_geometry(
-            problem,
-            np.asarray(receiver_coords) - origin
+            problem, np.asarray(receiver_coords) - origin
         )
     else:
         point_receivers = []

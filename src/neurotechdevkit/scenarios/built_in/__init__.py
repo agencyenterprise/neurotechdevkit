@@ -19,5 +19,5 @@ BUILT_IN_SCENARIOS = {
     "Scenario1_3D": Scenario1_3D,
     "Scenario2_2D": Scenario2_2D,
     "Scenario2_3D": Scenario2_3D,
-    "Scenario3" : Scenario3,
+    "Scenario3": Scenario3,
 }

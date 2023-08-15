@@ -578,7 +578,7 @@ class Scenario(abc.ABC):
             sources=self.sources,
             receiver_coords=self.receiver_coords,
             freq_hz=self.center_frequency,
-            simulation_mode=simulation_mode
+            simulation_mode=simulation_mode,
         )
         return self.problem.sub_problem(shot.id)
 

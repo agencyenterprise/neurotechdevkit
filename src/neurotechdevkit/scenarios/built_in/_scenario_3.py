@@ -1,28 +1,17 @@
 """Imaging scenario: grainy phantoms in water."""
 
-from types import SimpleNamespace
 from typing import Mapping, Optional
 
-from mosaic.types import Struct
 import numpy as np
 import numpy.typing as npt
 import stride
-from stride.problem import StructuredData
+from mosaic.types import Struct
 
-from ... import results
 from ...grid import Grid
 from ...materials import Material
 from ...problem import Problem
-from ...results import PulsedResult2D
 from .._base import Scenario2D, Target
-
-from .._resources import budget_time_and_memory_resources
 from .._utils import create_grid_circular_mask
-from .._time import (
-    create_time_grid,
-    find_largest_delay_in_sources,
-    select_simulation_time_for_pulsed,
-)
 
 
 class Scenario3(Scenario2D):
@@ -34,7 +23,10 @@ class Scenario3(Scenario2D):
     material_properties = {
         "water": Material(vp=1500.0, rho=1000.0, alpha=0.0, render_color="#2E86AB"),
         "agar_hydrogel": Material(
-            vp=1485.0, rho=1050.0, alpha=0.1, render_color="#E9E6C9",
+            vp=1485.0,
+            rho=1050.0,
+            alpha=0.1,
+            render_color="#E9E6C9",
         ),
     }
     material_speckle_scale = {

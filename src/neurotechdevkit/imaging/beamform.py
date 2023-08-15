@@ -8,6 +8,7 @@ import xarray as xr
 from scipy.optimize import minimize_scalar
 from scipy.sparse import csr_array
 
+
 @unique
 class InterpolationMethod(IntEnum):
     """Interpolation methods for beamforming.
@@ -156,11 +157,14 @@ def delay_and_sum_matrix(
         # Eq. 11 of https://doi.org/10.1016/j.ultras.2020.106309
         def directivity(theta, width, wavelength):
             return np.cos(theta) * np.sinc(width / wavelength * np.sin(theta))
+
         optimal_directivity = 0.71
 
         # Eq. 13 of https://doi.org/10.1016/j.ultras.2020.106309
         result = minimize_scalar(
-            lambda theta: np.abs(directivity(theta, width, wavelength_min) - optimal_directivity),
+            lambda theta: np.abs(
+                directivity(theta, width, wavelength_min) - optimal_directivity
+            ),
             bounds=(0, np.pi / 2),
         )
         alpha = result.x
@@ -259,7 +263,7 @@ def delay_and_sum_matrix(
         interp_weights = xr.concat(
             [
                 1 - (das_ds["time_idx"] % 1),  # how close to upper time sample?
-                das_ds["time_idx"] % 1,        # how close to lower time sample?
+                das_ds["time_idx"] % 1,  # how close to lower time sample?
             ],
             dim="interp",
         )
@@ -271,7 +275,9 @@ def delay_and_sum_matrix(
             dim="interp",
         )
     else:
-        raise NotImplementedError("Interpolation method not supported: {}".format(method))
+        raise NotImplementedError(
+            "Interpolation method not supported: {}".format(method)
+        )
 
     if das_ds["time_idx"].count() == 0:
         raise ValueError(
@@ -279,8 +285,7 @@ def delay_and_sum_matrix(
             "image grid."
         )
     if not (
-        das_ds.time_idx_round.isel(interp=0).isnull()
-        == das_ds.time_idx_round.isnull()
+        das_ds.time_idx_round.isel(interp=0).isnull() == das_ds.time_idx_round.isnull()
     ).all():
         raise ValueError(
             "If 1 interpolation weight is set, expected all interpolation"
@@ -288,7 +293,9 @@ def delay_and_sum_matrix(
         )
 
     # Rotate phase of I/Q signals, based on delays
-    das_ds["weights"] = interp_weights * np.exp(1j * (2 * np.pi * freq_carrier) * das_ds.tau)
+    das_ds["weights"] = interp_weights * np.exp(
+        1j * (2 * np.pi * freq_carrier) * das_ds.tau
+    )
 
     # In case, e.g., "x", "z", and "channel" are not 0-indexed
     # Convert "x", "z", "channel" coords to 0-indices, in case they have been
@@ -307,8 +314,10 @@ def delay_and_sum_matrix(
     ), "Should have dropped null time indices"
     assert das_ds_flat["weights"].notnull().all(), "Should have dropped null weights."
     assert len(das_ds_flat.dims) == 1, "Expected to have stacked all dimensions"
-    assert das_ds_flat[["time_idx_round", "weights"]].count().equals(
-        das_ds[["time_idx_round", "weights"]].count()
+    assert (
+        das_ds_flat[["time_idx_round", "weights"]]
+        .count()
+        .equals(das_ds[["time_idx_round", "weights"]].count())
     ), ".dropna shouldn't change count."
 
     x_z_multi_indices = np.row_stack((das_ds_flat.x, das_ds_flat.z))
