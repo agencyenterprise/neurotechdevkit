@@ -1,24 +1,58 @@
 <script>
+  let scenarioInfos = {{built_in_scenarios | tojson}};
+  console.log("scenarioInfos->", scenarioInfos)
   function togglePreBuiltDiv() {
     document.getElementById("preBuiltDiv").hidden = false
     document.getElementById("ctFileDiv").hidden = true
+    document.getElementById("axisDiv").hidden = true
+    document.getElementById("distanceFromOriginDiv").hidden = true
+
   }
 
   function toggleCTFileDiv() {
     document.getElementById("preBuiltDiv").hidden = true
     document.getElementById("ctFileDiv").hidden = false
+    document.getElementById("axisDiv").hidden = false
+    document.getElementById("distanceFromOriginDiv").hidden = false
+  }
+
+  function scenarioSelected(scenarioInput){
+    document.getElementById("plotArea").innerHTML = ""
+
+    const selection = scenarioInput.value;
+    if (selection===""){
+      // TODO: clean the form
+      // document.getElementById("myform").reset();
+      disallowRunSimulation()
+      disallowRenderLayout()
+      document.getElementById("axis") = ""
+      getElementById("distanceFromOrigin").value = ""
+      return;
+    }
+    const selectedScenario = scenarioInfos[selection]
+    console.log("selectedScenario -> ", selectedScenario)
+    setTargetPreBuiltValues(selectedScenario.target)
+    setSimulationSettingsPreBuiltValues(selectedScenario)
+    setTransducersPreBuiltValues(selectedScenario.transducers)
+
+    allowRenderLayout()
+    allowRunSimulation()
   }
 
   function getScenarioParams() {
-    let params = {}
-    params["axis"] = document.getElementById("axis").value
-    params["distance_from_origin"] =
-      document.getElementById("distanceFromOrigin").value
-    params["is_prebuilt"] = document.getElementById("isPrebuilt").checked
-    if (params["is_prebuilt"]) {
-      params["scenario_id"] = document.getElementById("scenario").value
+    const isPreBuilt = document.getElementById("isPreBuilt").checked
+    const axis = document.getElementById("axis").value || null
+    const distanceFromOrigin = document.getElementById("distanceFromOrigin")
+      .value || null
+    let params = {
+      axis: axis,
+      distanceFromOrigin: distanceFromOrigin,
+      isPreBuilt: isPreBuilt,
+    }
+    if (isPreBuilt) {
+      params["scenarioId"] = document.getElementById("scenario").value
     } else {
-      params["ct_file"] = document.getElementById("ct-file").value
+      params["ctFile"] = document.getElementById("ctFile").value
     }
     return params
   }
@@ -30,12 +64,12 @@
         type="radio"
         class="btn-check"
         name="options"
-        id="isPrebuilt"
+        id="isPreBuilt"
         autocomplete="off"
         onchange="togglePreBuiltDiv()"
         checked
       />
-      <label class="btn btn-secondary" for="isPrebuilt">Prebuilt</label>
+      <label class="btn btn-secondary" for="isPreBuilt">Prebuilt</label>
 
       <input
         type="radio"
@@ -52,28 +86,35 @@
   <div class="mb-3">
     <div id="preBuiltDiv">
       <label for="scenario" class="form-label">Scenarios:</label>
-      <select name="scenario" id="scenario" class="form-select">
-        {% for scenario in scenarios %} {% if scenario.is_2d %}
-        <option value="{{scenario.id}}">{{scenario.name}}</option>
+      <select
+        name="scenario"
+        id="scenario"
+        class="form-select"
+        onchange="scenarioSelected(this)"
+      >
+        <option value="" selected>Select a scenario</option>
+        {% for scenario_id, scenario in built_in_scenarios.items() %} {% if
+        scenario['is_2d'] %}
+        <option value="{{scenario_id}}">{{scenario['name']}}</option>
         {% endif %} {% endfor %}
       </select>
     </div>
     <div id="ctFileDiv" hidden>
-      <label for="ct-file" class="form-label" for="ct-file">CT File</label>
-      <input class="form-control" type="file" id="ct-file" />
+      <label for="ctFile" class="form-label" for="ctFile">CT File</label>
+      <input class="form-control" type="file" id="ctFile" />
     </div>
   </div>
-  <div class="mb-3">
+  <div id="axisDiv" class="mb-3" hidden>
     <label for="axis" class="form-label" for="axis">Axis</label>
     <select class="form-select" aria-label="Axis" id="axis">
-      <option value="" selected>Select Axis</option>
+      <option value="" selected>Select an axis</option>
       <option value="x">X</option>
       <option value="y">Y</option>
       <option value="z">Z</option>
     </select>
   </div>
-  <div class="mb-3">
-    <label for="axis" class="form-label" for="distanceFromOrigin"
+  <div id="distanceFromOriginDiv" class="mb-3" hidden>
+    <label for="distanceFromOrigin" class="form-label" for="distanceFromOrigin"
       >Distance from Origin (mm)</label
     >
     <input

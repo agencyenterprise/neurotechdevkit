@@ -47,6 +47,7 @@ class Source(abc.ABC):
         self._validate_delay(delay)
 
         self._position = position
+        self._direction = direction
         self._unit_direction = np.array(direction) / np.linalg.norm(direction)
         self._aperture = aperture
         self._focal_length = focal_length
@@ -151,6 +152,18 @@ class Source(abc.ABC):
         """
         pass
 
+    @abc.abstractmethod
+    def to_dict(self) -> dict:
+        """Return a dictionary representation of the source.
+
+        The dictionary representation should contain all information needed to recreate
+        the source.
+
+        Returns:
+            A dictionary representation of the source.
+        """
+        pass
+
 
 class PointSource(Source):
     """Theoretical point source.
@@ -201,6 +214,18 @@ class PointSource(Source):
         """
         return 1
 
+    def to_dict(self) -> dict:
+        """
+        Return a dictionary representation of the source.
+
+        Returns:
+            A dictionary representation of the source.
+        """
+        return {
+            "position": self._position,
+            "delay": self._delay,
+        }
+
 
 class PointSource2D(PointSource):
     """A point source in 2D."""
@@ -228,7 +253,7 @@ class PointSource3D(PointSource):
         position: list[float],
         delay: float = 0.0,
     ) -> None:
-        """Initialize a new 2-D point source."""
+        """Initialize a new 3-D point source."""
         super().__init__(
             position=position,
             num_dim=3,
@@ -316,6 +341,22 @@ class FocusedSource2D(Source):
         grid_point_density = 1 / dx
         source_density = self.num_points / (self._angle_range * self.focal_length)
         return grid_point_density / source_density
+
+    def to_dict(self) -> dict:
+        """
+        Return a dictionary representation of the source.
+
+        Returns:
+            A dictionary representation of the source.
+        """
+        return {
+            "position": self._position,
+            "direction": self._direction,
+            "aperture": self._aperture,
+            "focal_length": self._focal_length,
+            "num_points": self._num_points,
+            "delay": self._delay,
+        }
 
 
 class FocusedSource3D(Source):
@@ -474,6 +515,22 @@ class FocusedSource3D(Source):
             theta = np.pi - np.arcsin(mag)
 
         return axis, theta
+
+    def to_dict(self) -> dict:
+        """
+        Return a dictionary representation of the source.
+
+        Returns:
+            A dictionary representation of the source.
+        """
+        return {
+            "position": self._position,
+            "direction": self._direction,
+            "aperture": self._aperture,
+            "focal_length": self._focal_length,
+            "num_points": self._num_points,
+            "delay": self._delay,
+        }
 
 
 class UnfocusedSource(Source, abc.ABC):
@@ -1015,6 +1072,26 @@ class PhasedArraySource(Source):
 
         return delays
 
+    def to_dict(self) -> dict:
+        """
+        Return a dictionary representation of the source.
+
+        Returns:
+            A dictionary representation of the source.
+        """
+        return {
+            "position": self._position,
+            "direction": self._direction,
+            "num_points": self._num_points,
+            "num_elements": self._num_elements,
+            "pitch": self._pitch,
+            "element_width": self._element_width,
+            "tilt_angle": self._tilt_angle,
+            "focal_length": self._focal_length,
+            "delay": self._delay,
+            "element_delays": self._element_delays,
+        }
+
 
 class PhasedArraySource2D(PhasedArraySource):
     """A phased array source in 2D.
@@ -1188,6 +1265,7 @@ class PhasedArraySource3D(PhasedArraySource):
     ) -> None:
         """Initialize a new phased array source."""
         self._height = height
+        self._center_line = center_line
         self._unit_center_line = self._validate_center_line(
             center_line, np.array(direction, dtype=float)
         )
@@ -1204,6 +1282,17 @@ class PhasedArraySource3D(PhasedArraySource):
             delay=delay,
             element_delays=element_delays,
         )
+
+    def to_dict(self) -> dict:
+        """
+        Return a dictionary representation of the source.
+
+        Returns:
+            A dictionary representation of the source.
+        """
+        base_dict = super().to_dict()
+        base_dict.update({"height": self._height, "center_line": self._center_line})
+        return base_dict
 
     @property
     def height(self) -> float:
