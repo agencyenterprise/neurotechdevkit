@@ -78,7 +78,7 @@ class Scenario(abc.ABC):
     # The list of sources in the scenario.
     sources: list[Source]
     # Coordinates of point receivers in the scenario
-    receiver_coords: npt.ArrayLike[float] | list[npt.ArrayLike[float]] = []
+    receiver_coords: npt.NDArray[np.float_] | list[npt.NDArray[np.float_]] = []
 
     material_outline_upsample_factor: int = 16
 
@@ -585,7 +585,7 @@ class Scenario(abc.ABC):
     def _setup_shot(
         self,
         sources: list[Source],
-        receiver_coords: npt.ArrayLike[float] | list[npt.ArrayLike[float]],
+        receiver_coords: npt.NDArray[np.float_] | list[npt.NDArray[np.float_]],
         freq_hz: float,
         simulation_mode: str,
     ) -> stride.Shot:

@@ -1,8 +1,9 @@
 """Demodulate ultrasound radio-frequency (RF) signals."""
 
 import itertools
+import random
 import warnings
-from typing import Optional, Tuple
+from typing import Optional, Tuple, List
 
 import numpy as np
 from scipy.signal import butter, sosfiltfilt, welch
@@ -81,9 +82,7 @@ def demodulate_rf_to_iq(
         normalized_freq_cutoff = min(normalized_freq_cutoff, 0.5)
         bandwidth = normalized_freq_cutoff * freq_sampling / freq_carrier
     else:
-        assert np.isscalar(
-            bandwidth
-        ), "The signal bandwidth (bandwidth) must be a scalar."
+        assert isinstance(bandwidth, float), "The signal bandwidth (bandwidth) must be a scalar."
         assert (
             0 < bandwidth < 2
         ), "The signal bandwidth (bandwidth) must be within the interval of (0, 2)."
@@ -132,35 +131,41 @@ def _estimate_carrier_frequency(
         use_welch: whether to use Welch's method to estimate the power spectrum.
             If False, uses FFT sum-of-squares.
     """
+    assert np.isrealobj(rf_signals), "rf_signals must be real-valued."
+
     # Select a subset of channels/echoes to speed up calculation
     if rf_signals.ndim == 2:
         num_samples, num_channels = rf_signals.shape
         num_selected_channels = min(max_num_channels, num_channels)
         # randomly select channels (scan-lines) to speed up calculation
-        selected_channel_idxs = np.random.choice(
-            num_channels, num_selected_channels, replace=False
+        selected_channel_idxs = random.sample(
+            range(num_channels), num_selected_channels,
         )
-        selected_idxs_tuple = (selected_channel_idxs,)
+        rf_signals_subset = rf_signals[:, selected_channel_idxs]
     elif rf_signals.ndim == 3:
         num_samples, num_channels, num_echoes = rf_signals.shape
         num_selected = min(max_num_channels, num_channels * num_echoes)
         channel_echo_combo_idxs = itertools.product(
             range(num_channels), range(num_echoes)
         )
-        selected_idxs_tuple = np.random.choice(
-            channel_echo_combo_idxs, num_selected, replace=False
+        selected_channel_echo_combos: List[Tuple[int, int]] = random.sample(
+            list(channel_echo_combo_idxs), num_selected,
         )
+        selected_channel_idxs, selected_echo_idxs = map(
+            list,
+            zip(*selected_channel_echo_combos)
+        )
+        rf_signals_subset = rf_signals[:, selected_channel_idxs, selected_echo_idxs]
     else:
         raise ValueError(
             "Expected rf_signals to have shape (num_samples, num_channels) or"
             "(num_samples, num_channels, num_echoes)."
         )
-    assert np.isrealobj(rf_signals), "rf_signals must be real-valued."
 
     # Calculate the power spectrum
     kwargs = {} if use_welch else {"nperseg": num_samples, "window": "boxcar"}
     frequencies, power_spectrum = welch(
-        rf_signals[(slice(None),) + selected_idxs_tuple],
+        rf_signals_subset,
         fs=freq_sampling,
         scaling="spectrum",
         return_onesided=True,  # only positive frequencies
