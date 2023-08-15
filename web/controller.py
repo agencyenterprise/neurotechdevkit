@@ -6,23 +6,22 @@ from typing import Dict, Tuple
 
 from neurotechdevkit.scenarios import Scenario2D, Scenario3D
 from neurotechdevkit.scenarios.built_in import BUILT_IN_SCENARIOS
-from web.built_in_scenario_info import BuiltInScenarioInfo
-from web.messages import RenderLayoutRequest, SimulateRequest
+from web.messages import IndexBuiltInScenario, RenderLayoutRequest, SimulateRequest
 
 
-def get_scenarios() -> Dict[str, BuiltInScenarioInfo]:
+def get_built_in_scenarios() -> Dict[str, Dict]:
     """
     Return a dictionary containing information about all the built-in scenarios.
 
     Returns:
         The dictionary of built-in scenario infos.
     """
-    scenarios: Dict[str, BuiltInScenarioInfo] = {}
+    scenarios = {}
     for scenario_id, scenario in BUILT_IN_SCENARIOS.items():
         assert issubclass(scenario, (Scenario2D, Scenario3D))
 
-        scenario_info = BuiltInScenarioInfo.from_scenario(scenario_id, scenario)
-        scenarios[scenario_id] = scenario_info
+        settings = IndexBuiltInScenario.from_scenario(scenario_id, scenario)
+        scenarios[scenario_id] = settings.dict()
     return scenarios
 
 

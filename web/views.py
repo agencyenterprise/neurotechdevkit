@@ -1,10 +1,12 @@
 """Views for the web app."""
-from dataclasses import asdict
-
 from flask import Blueprint, jsonify, render_template, request
 from pydantic import ValidationError
 
-from web.controller import get_scenario_layout, get_scenarios, get_simulation_image
+from web.controller import (
+    get_built_in_scenarios,
+    get_scenario_layout,
+    get_simulation_image,
+)
 from web.messages import RenderLayoutRequest, SimulateRequest
 
 bp = Blueprint("main", __name__, url_prefix="/")
@@ -14,12 +16,8 @@ bp = Blueprint("main", __name__, url_prefix="/")
 async def index():
     """Render the index page, listing all the built-in scenarios."""
     title = "Neurotech Web App"
-    built_in_scenarios = {
-        scenario_id: asdict(scenario_info)
-        for scenario_id, scenario_info in get_scenarios().items()
-    }
     return render_template(
-        "index.html", title=title, built_in_scenarios=built_in_scenarios
+        "index.html", title=title, built_in_scenarios=get_built_in_scenarios()
     )
 
 
@@ -45,7 +43,6 @@ async def render_layout():
     try:
         config = RenderLayoutRequest.parse_obj(request.json)
     except ValidationError as e:
-        raise e
         # If the JSON data doesn't match the Pydantic model,
         # return a 400 Bad Request response
         return jsonify({"error": str(e)}), 400

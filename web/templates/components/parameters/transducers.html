@@ -19,13 +19,9 @@
     addedTransducers.splice(0, addedTransducers.length)
 
     for (transducer of transducers) {
-      let newTransducer = {
-        transducerType: transducer.transducer_type,
-        transducerSettings: transducer.transducer,
-      }
-      addedTransducers.push(newTransducer)
-      transducerAdded()
+      addedTransducers.push(transducer)
     }
+    transducerAdded()
   }
 
   function transducerSelected(transducerComponent) {
@@ -70,7 +66,7 @@
       let transducers = ""
       for (let i = 0; i < addedTransducers.length; i++) {
         // TODO: add a proper element here, with edit and remove buttons
-        transducers += addedTransducers[i].transducer_type + "<br>"
+        transducers += addedTransducers[i].transducerType + "<br>"
       }
       document.getElementById("addedTransducers").innerHTML = transducers
     } else {

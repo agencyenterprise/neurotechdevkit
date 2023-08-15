@@ -32,7 +32,7 @@
     const selectedScenario = scenarioInfos[selection]
     console.log("selectedScenario -> ", selectedScenario)
     setTargetPreBuiltValues(selectedScenario.target)
-    setSimulationSettingsPreBuiltValues(selectedScenario)
+    setSimulationSettingsPreBuiltValues(selectedScenario.simulationSettings)
     setTransducersPreBuiltValues(selectedScenario.transducers)
 
     allowRenderLayout()
@@ -94,8 +94,8 @@
       >
         <option value="" selected>Select a scenario</option>
         {% for scenario_id, scenario in built_in_scenarios.items() %} {% if
-        scenario['is_2d'] %}
-        <option value="{{scenario_id}}">{{scenario['name']}}</option>
+        scenario['is2d'] %}
+        <option value="{{scenario_id}}">{{scenario['scenarioName']}}</option>
         {% endif %} {% endfor %}
       </select>
     </div>
