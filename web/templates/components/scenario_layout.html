@@ -1,6 +1,59 @@
+<script>
+  function allowRunSimulation() {
+    document.getElementById("runSimulation").removeAttribute("disabled")
+  }
+  function disallowRunSimulation() {
+    document.getElementById("runSimulation").setAttribute("disabled", true)
+  }
+
+  function runSimulation(button) {
+    BtnLoading(button)
+    document.getElementById("plotArea").innerHTML = ""
+
+    const is2d = document.getElementById("is2d").checked
+    const scenarioParams = getScenarioParams()
+    const transducersParams = getTransducersParams()
+    const targetParams = getTargetParams()
+    const simulationSettingsParams = getSimulationSettingsParams()
+
+    const data = {
+      is2d: is2d,
+      scenarioSettings: scenarioParams,
+      transducers: transducersParams,
+      target: targetParams,
+      simulationSettings: simulationSettingsParams,
+    }
+
+    const url = "{{ url_for('main.simulate') }}"
+    fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    })
+      .then((response) => response.text())
+      .then((text) => {
+        document.getElementById("plotArea").innerHTML = text
+      })
+      .then(() => {
+        BtnReset(button)
+      })
+  }
+</script>
+
 <h1 class="d-flex justify-content-between align-items-center mb-3">
   <span>Plots</span>
+  <button
+    id="runSimulation"
+    type="button"
+    class="btn btn-primary"
+    disabled
+    onclick="runSimulation(this)"
+  >
+    Run Simulation
+  </button>
 </h1>
 <div>
-  <div id="plot-content-base64"></div>
+  <div id="plotArea"></div>
 </div>

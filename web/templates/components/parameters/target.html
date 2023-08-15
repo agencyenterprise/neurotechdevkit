@@ -1,4 +1,10 @@
 <script>
+  function setTargetPreBuiltValues(target) {
+    document.getElementById("centerX").value = target.center[1]
+    document.getElementById("centerY").value = target.center[0]
+    document.getElementById("radius").value = target.radius
+  }
+
   function getTargetParams() {
     let params = {}
     params["centerX"] = document.getElementById("centerX").value

@@ -1,13 +1,18 @@
 <script>
+  function setSimulationSettingsPreBuiltValues(scenario) {
+    document.getElementById("simulationPrecision").value = scenario.precision
+    document.getElementById("centerFrequency").value = scenario.center_frequency
+    setMaterialPropertiesPreBuiltValues(scenario.material_properties)
+  }
+
   function getSimulationSettingsParams() {
-    let params = {}
-    params["simulation_precision"] = document.getElementById(
-      "simulationPrecision"
-    ).value
-    params["center_frequency"] =
-      document.getElementById("centerFrequency").value
-    params["simulation_type"] = document.getElementById("simulationType").value
-    params["material_properties"] = getMaterialPropertiesParams()
+    let params = {
+      materialProperties: getMaterialPropertiesParams(),
+      simulationPrecision: document.getElementById("simulationPrecision").value,
+      centerFrequency: document.getElementById("centerFrequency").value,
+      isSteadySimulation: document.getElementById("simulationTypeSteady")
+        .checked,
+    }
     return params
   }
 </script>

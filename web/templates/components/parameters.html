@@ -1,3 +1,46 @@
+<script>
+  function allowRenderLayout() {
+    document.getElementById("renderSimulation").removeAttribute("disabled")
+  }
+  function disallowRenderLayout() {
+    document.getElementById("renderSimulation").setAttribute("disabled", true)
+  }
+
+  function renderLayout(button) {
+    BtnLoading(button)
+    document.getElementById("plotArea").innerHTML = ""
+
+    const is2d = document.getElementById("is2d").checked
+    const scenarioParams = getScenarioParams()
+    const transducersParams = getTransducersParams()
+    const targetParams = getTargetParams()
+    const simulationSettingsParams = getSimulationSettingsParams()
+
+    const data = {
+      is2d: is2d,
+      scenarioSettings: scenarioParams,
+      transducers: transducersParams,
+      target: targetParams,
+      simulationSettings: simulationSettingsParams,
+    }
+    console.log("Data", JSON.stringify(data))
+    const url = "{{ url_for('main.render_layout') }}"
+    fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    })
+      .then((response) => response.text())
+      .then((text) => {
+        document.getElementById("plotArea").innerHTML = text
+      })
+      .then(() => {
+        BtnReset(button)
+      })
+  }
+</script>
 <h1>
   <span>Parameters</span>
 </h1>
@@ -38,7 +81,7 @@
     </h2>
     <div
       id="scenario-accordion-item"
-      class="accordion-collapse collapse"
+      class="accordion-collapse collapse show"
       data-bs-parent="#parameters-accordion"
     >
       <div class="accordion-body">
@@ -117,16 +160,17 @@
   </div>
 </div>
 <button
-  id="run-render-layout-button"
+  id="renderSimulation"
   class="btn btn-primary"
   type="button"
-  onclick="renderLayout()"
+  onclick="renderLayout(this)"
+  disabled
 >
   Render Layout
 </button>
-<button id="save-settings-button" class="btn btn-primary" type="button">
+<button id="saveSettingsButton" class="btn btn-primary" type="button">
   Save Settings
 </button>
-<button id="load-settings-button" class="btn btn-primary" type="button">
+<button id="loadSettingsButton" class="btn btn-primary" type="button">
   Load Settings
 </button>

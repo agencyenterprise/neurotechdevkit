@@ -1,31 +1,54 @@
 <script>
+  function setMaterialPropertiesPreBuiltValues(materialProperties) {
+    document.getElementById("waterVp").value = materialProperties.water.vp
+    document.getElementById("waterRho").value = materialProperties.water.rho
+    document.getElementById("waterAlpha").value = materialProperties.water.alpha
+    document.getElementById("waterRenderColor").value =
+      materialProperties.water.renderColor
+
+    document.getElementById("trabecularBoneVp").value =
+      materialProperties.cortical_bone.vp
+    document.getElementById("trabecularBoneRho").value =
+      materialProperties.cortical_bone.rho
+    document.getElementById("trabecularBoneAlpha").value =
+      materialProperties.cortical_bone.alpha
+    document.getElementById("trabecularBoneRenderColor").value =
+      materialProperties.cortical_bone.render_color
+
+    document.getElementById("brainVp").value = materialProperties.brain.vp
+    document.getElementById("brainRho").value = materialProperties.brain.rho
+    document.getElementById("brainAlpha").value = materialProperties.brain.alpha
+    document.getElementById("brainRenderColor").value =
+      materialProperties.brain.renderColor
+  }
+
   function getMaterialPropertiesParams() {
     let params = {
       water: {},
-      trabecular_bone: {},
+      trabecularBone: {},
       brain: {},
     }
     params["water"]["vp"] = document.getElementById("waterVp").value
     params["water"]["rho"] = document.getElementById("waterRho").value
     params["water"]["alpha"] = document.getElementById("waterAlpha").value
-    params["water"]["render_color"] =
+    params["water"]["renderColor"] =
       document.getElementById("waterRenderColor").value
 
-    params["trabecular_bone"]["vp"] =
+    params["trabecularBone"]["vp"] =
       document.getElementById("trabecularBoneVp").value
-    params["trabecular_bone"]["rho"] =
-      document.getElementById("trabecular_boneRho").value
-    params["trabecular_bone"]["alpha"] = document.getElementById(
+    params["trabecularBone"]["rho"] =
+      document.getElementById("trabecularBoneRho").value
+    params["trabecularBone"]["alpha"] = document.getElementById(
       "trabecularBoneAlpha"
     ).value
-    params["trabecular_bone"]["render_color"] = document.getElementById(
+    params["trabecularBone"]["renderColor"] = document.getElementById(
       "trabecularBoneRenderColor"
     ).value
 
     params["brain"]["vp"] = document.getElementById("brainVp").value
     params["brain"]["rho"] = document.getElementById("brainRho").value
     params["brain"]["alpha"] = document.getElementById("brainAlpha").value
-    params["brain"]["render_color"] =
+    params["brain"]["renderColor"] =
       document.getElementById("brainRenderColor").value
 
     return params
@@ -131,12 +154,12 @@
           />
         </div>
         <div class="mb-3">
-          <label for="trabecular_boneRho">RHO</label>
+          <label for="trabecularBoneRho">RHO</label>
           <input
             type="number"
             class="form-control"
-            name="trabecular_boneRho"
-            id="trabecular_boneRho"
+            name="trabecularBoneRho"
+            id="trabecularBoneRho"
             value="1700"
             required
           />

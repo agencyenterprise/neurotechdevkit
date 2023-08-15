@@ -15,6 +15,19 @@
     document.getElementById("controls").removeAttribute("hidden")
   }
 
+  function setTransducersPreBuiltValues(transducers) {
+    addedTransducers.splice(0, addedTransducers.length)
+
+    for (transducer of transducers) {
+      let newTransducer = {
+        transducerType: transducer.transducer_type,
+        transducerSettings: transducer.transducer,
+      }
+      addedTransducers.push(newTransducer)
+      transducerAdded()
+    }
+  }
+
   function transducerSelected(transducerComponent) {
     let params = null
     switch (transducerComponent.value) {
@@ -36,11 +49,7 @@
   }
 
   function getTransducersParams() {
-    let transducers = []
-    for (let transducer of addedTransducers) {
-      transducers.push(JSON.stringify(transducer.formData))
-    }
-    return transducers
+    return addedTransducers
   }
 
   function cleanTransducerOptions() {
@@ -81,7 +90,7 @@
     let formData = new FormData(document.getElementById("createTransducer"))
     let array = Array.from(formData)
     let newTransducer = {
-      transducer_type: array[0][1],
+      transducerType: array[0][1],
       data: array,
       formData: formData,
     }

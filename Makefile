@@ -4,24 +4,24 @@ help:
 	@echo "Available commands are: \n*lint, lint-check, spellcheck, test, test-unit, test-integration docs web"
 
 lint:
-	poetry run isort src tests docs/examples
-	poetry run black src tests docs/examples
-	poetry run flake8 src tests docs/examples
-	poetry run mypy src docs/examples
-	poetry run codespell src docs/examples
-	poetry run pydocstyle src
+	poetry run isort web src tests docs/examples
+	poetry run black web src tests docs/examples
+	poetry run flake8 web src tests docs/examples
+	poetry run mypy web src docs/examples
+	poetry run codespell web src docs/examples
+	poetry run pydocstyle web src
 	poetry run pyright
 
 spellcheck:
 	poetry run pylint --disable all --enable spelling --spelling-dict en_US --spelling-private-dict-file=whitelist.txt src
 
 lint-check:
-	poetry run isort --check src tests docs/examples
-	poetry run black --check src tests docs/examples
-	poetry run flake8  src tests docs/examples
-	poetry run mypy src docs/examples
-	poetry run codespell src docs/examples
-	poetry run pydocstyle src
+	poetry run isort --check web src tests docs/examples
+	poetry run black --check web src tests docs/examples
+	poetry run flake8  web src tests docs/examples
+	poetry run mypy web src docs/examples
+	poetry run codespell web src docs/examples
+	poetry run pydocstyle web src
 	poetry run pyright --warnings
 
 test:
@@ -40,4 +40,4 @@ docs:
 	poetry run mkdocs build
 
 web:
-	poetry run python web/web_server.py
+	poetry run flask --app web/app.py --debug run
