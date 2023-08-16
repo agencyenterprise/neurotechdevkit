@@ -6,7 +6,7 @@ from neurotechdevkit.grid import Grid
 from neurotechdevkit.problem import Problem
 from neurotechdevkit.scenarios import _shots
 from neurotechdevkit.scenarios._shots import (
-    _add_points_for_source_to_geometry,
+    _add_point_transducers_to_geometry,
     _add_sources_to_geometry,
     _build_shot_wavelets_array,
     _create_delayed_source_wavelets,
@@ -135,10 +135,10 @@ def test_add_sources_to_geometry_shifts_origin(a_problem, fake_source_1):
     np.testing.assert_equal(first_coords, expected)
 
 
-def test_add_points_for_source_to_geometry(a_problem):
+def test_add_point_transducers_to_geometry(a_problem):
     """The point source coords should be added to the problem geometry and returned."""
     coords = np.array([[0.0, 0.1], [0.5, 0.3], [1.1, 0.2]])
-    point_transducers = _add_points_for_source_to_geometry(a_problem, coords)
+    point_transducers = _add_point_transducers_to_geometry(a_problem, coords)
     assert len(point_transducers) == 3
     assert [p.id for p in point_transducers] == [0, 1, 2]
     assert a_problem.geometry.locations == point_transducers
@@ -146,7 +146,7 @@ def test_add_points_for_source_to_geometry(a_problem):
         np.testing.assert_equal(transducer.coordinates, coords[n])
 
 
-def test_add_points_for_source_to_geometry_with_preexisting_locations(a_problem):
+def test_add_point_transducers_to_geometry_with_preexisting_locations(a_problem):
     """Existing locations should be preserved without problem.
 
     New location ids should continue beyond the last index of the existing locations.
@@ -155,7 +155,7 @@ def test_add_points_for_source_to_geometry_with_preexisting_locations(a_problem)
     a_problem.transducers.default()
     a_problem.geometry.add(0, a_problem.transducers.get(0), np.array([0.0, 0.0]))
     a_problem.geometry.add(1, a_problem.transducers.get(0), np.array([0.1, 0.1]))
-    point_transducers = _add_points_for_source_to_geometry(a_problem, coords)
+    point_transducers = _add_point_transducers_to_geometry(a_problem, coords)
     assert len(point_transducers) == 3
     assert [p.id for p in point_transducers] == [2, 3, 4]
     assert a_problem.geometry.locations[2:] == point_transducers

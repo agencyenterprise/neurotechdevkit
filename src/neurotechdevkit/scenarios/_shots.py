@@ -40,7 +40,7 @@ def create_shot(
     """
     point_transducers = _add_sources_to_geometry(problem, sources, origin)
     if len(receiver_coords) > 0:
-        point_receivers = _add_points_transducers_to_geometry(
+        point_receivers = _add_point_transducers_to_geometry(
             problem, np.asarray(receiver_coords) - origin
         )
     else:
@@ -91,13 +91,13 @@ def _add_sources_to_geometry(
 
     for source in sources:
         source_coords = source.coordinates - origin
-        source_transducers = _add_points_transducers_to_geometry(problem, source_coords)
+        source_transducers = _add_point_transducers_to_geometry(problem, source_coords)
         point_transducers.extend(source_transducers)
 
     return point_transducers
 
 
-def _add_points_transducers_to_geometry(
+def _add_point_transducers_to_geometry(
     problem: Problem, coords: npt.NDArray[np.float_]
 ) -> list[TransducerLocation]:
     """Add and return transducers at locations specified by coords.
