@@ -75,7 +75,7 @@ def _instantiate_scenario(
             material_properties=builtin_scenario.material_properties,
             material_masks=builtin_scenario.material_masks,
             origin=builtin_scenario.origin,
-            sources=builtin_scenario.sources,
+            sources=[source for source in builtin_scenario.sources],
             target=builtin_scenario.target,
             problem=builtin_scenario.problem,
             grid=builtin_scenario.grid,
