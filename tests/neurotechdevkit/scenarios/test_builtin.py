@@ -8,6 +8,7 @@ from neurotechdevkit.scenarios.built_in import (
     Scenario1_3D,
     Scenario2_2D,
     Scenario2_3D,
+    Scenario3,
 )
 
 
@@ -18,6 +19,7 @@ from neurotechdevkit.scenarios.built_in import (
         Scenario1_3D,
         Scenario2_2D,
         Scenario2_3D,
+        Scenario3
     ]
 )
 def scenario_cls(request):
@@ -31,6 +33,7 @@ def center_frequency(request):
     return request.param
 
 
+@pytest.mark.integration
 def test_compile_problem(scenario_cls, center_frequency):
     """Test compiling each built-in scenario's default problem."""
     scenario = scenario_cls()
