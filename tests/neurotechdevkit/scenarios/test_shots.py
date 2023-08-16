@@ -76,11 +76,14 @@ def fake_source_wavelet_array(dt, n):
 def test_create_shot_adds_to_geometry(a_problem, fake_source_1, fake_source_2):
     """The shot should include source locations which match the problem geometry."""
     sources = [fake_source_1, fake_source_2]
+    receiver_coords = [np.zeros(shape=2)]
     origin = np.array([-0.2, -0.1])
     wavelet = np.arange(100)
-    shot = create_shot(a_problem, sources, origin, wavelet, dx=0.1)
-    assert len(a_problem.geometry.locations) == 6
-    assert shot.sources == a_problem.geometry.locations
+    shot = create_shot(a_problem, sources, receiver_coords, origin, wavelet, dx=0.1)
+    assert len(a_problem.geometry.locations) == (
+        fake_source_1.num_points + fake_source_2.num_points + len(receiver_coords)
+    )
+    assert (shot.sources + shot.receivers) == a_problem.geometry.locations
 
 
 def test_create_shot_creates_wavelet(a_problem, fake_source_1, fake_source_2):
@@ -88,7 +91,7 @@ def test_create_shot_creates_wavelet(a_problem, fake_source_1, fake_source_2):
     sources = [fake_source_1, fake_source_2]
     origin = np.array([-0.2, -0.1])
     wavelet = np.arange(100)
-    shot = create_shot(a_problem, sources, origin, wavelet, dx=0.1)
+    shot = create_shot(a_problem, sources, [], origin, wavelet, dx=0.1)
     assert shot.wavelets.data.shape == (6, 100)
     assert np.any(shot.wavelets.data.shape != 0.0)
 
@@ -97,7 +100,7 @@ def test_create_shot_has_correct_shot_properties(a_problem, fake_source_1):
     """The shot should have the correct attributes assigned."""
     wavelet = np.arange(100)
     shot = create_shot(
-        a_problem, [fake_source_1], np.array([0.0, 0.0]), wavelet, dx=0.1
+        a_problem, [fake_source_1], [], np.array([0.0, 0.0]), wavelet, dx=0.1
     )
     assert shot.id == 0
     assert shot.problem == a_problem
@@ -109,7 +112,7 @@ def test_create_shot_assigns_acquisition(a_problem, fake_source_1):
     """The shot should be added to the problem acquisitions."""
     wavelet = np.arange(100)
     shot = create_shot(
-        a_problem, [fake_source_1], np.array([0.0, 0.0]), wavelet, dx=0.1
+        a_problem, [fake_source_1], [], np.array([0.0, 0.0]), wavelet, dx=0.1
     )
     assert a_problem.acquisitions.get(0) == shot
 
