@@ -267,7 +267,7 @@
     let index = 0
     for (transducer of addedTransducers) {
       let addTransducer = transducerTemplate.content.cloneNode(true)
-      addTransducer.querySelector(".content_title").innerHTML =
+      addTransducer.querySelector(".content-title").innerHTML =
         transducer.transducerType
 
       addTransducer
@@ -285,7 +285,7 @@
 
 <template id="addedTransducerTemplate">
   <li class="list-group-item d-flex collapsed">
-    <h5 class="content_title fw-bold m-1">Title 1</h5>
+    <span class="content-title m-1">Title 1</span>
 
     <div class="ms-auto">
       <span
