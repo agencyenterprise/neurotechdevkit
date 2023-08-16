@@ -3,7 +3,7 @@
 import itertools
 import random
 import warnings
-from typing import Optional, Tuple, List
+from typing import List, Optional, Tuple
 
 import numpy as np
 from scipy.signal import butter, sosfiltfilt, welch
@@ -52,7 +52,6 @@ def demodulate_rf_to_iq(
 
     Inspired by the MATLAB Ultrasound Toolbox (MUST) `rf2iq` function.
     """
-
     # Check input arguments
     assert np.isrealobj(rf_signals), "rf_signals must be real-valued."
 
@@ -82,7 +81,9 @@ def demodulate_rf_to_iq(
         normalized_freq_cutoff = min(normalized_freq_cutoff, 0.5)
         bandwidth = normalized_freq_cutoff * freq_sampling / freq_carrier
     else:
-        assert isinstance(bandwidth, float), "The signal bandwidth (bandwidth) must be a scalar."
+        assert isinstance(
+            bandwidth, float
+        ), "The signal bandwidth (bandwidth) must be a scalar."
         assert (
             0 < bandwidth < 2
         ), "The signal bandwidth (bandwidth) must be within the interval of (0, 2)."
@@ -136,10 +137,11 @@ def _estimate_carrier_frequency(
     # Select a subset of channels/echoes to speed up calculation
     if rf_signals.ndim == 2:
         num_samples, num_channels = rf_signals.shape
-        num_selected_channels = min(max_num_channels, num_channels)
+        num_selected = min(max_num_channels, num_channels)
         # randomly select channels (scan-lines) to speed up calculation
         selected_channel_idxs = random.sample(
-            range(num_channels), num_selected_channels,
+            range(num_channels),
+            num_selected,
         )
         rf_signals_subset = rf_signals[:, selected_channel_idxs]
     elif rf_signals.ndim == 3:
@@ -149,12 +151,12 @@ def _estimate_carrier_frequency(
             range(num_channels), range(num_echoes)
         )
         selected_channel_echo_combos: List[Tuple[int, int]] = random.sample(
-            list(channel_echo_combo_idxs), num_selected,
+            list(channel_echo_combo_idxs),
+            num_selected,
         )
         selected_echo_idxs: List[int]
         selected_channel_idxs, selected_echo_idxs = map(  # type: ignore
-            list,
-            zip(*selected_channel_echo_combos)
+            list, zip(*selected_channel_echo_combos)
         )
         rf_signals_subset = rf_signals[:, selected_channel_idxs, selected_echo_idxs]
     else:
@@ -176,7 +178,7 @@ def _estimate_carrier_frequency(
 
     # Aggregate spectrum across channels
     (num_frequencies,) = frequencies.shape
-    assert power_spectrum.shape == (num_frequencies, num_selected_channels)
+    assert power_spectrum.shape == (num_frequencies, num_selected)
     power_spectrum = power_spectrum.sum(axis=1)
     # Estimate the carrier frequency using the weighted average
     freq_carrier = np.average(frequencies, weights=power_spectrum)

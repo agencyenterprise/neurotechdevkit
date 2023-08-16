@@ -115,7 +115,7 @@ def delay_and_sum_matrix(
     method: InterpolationMethod = InterpolationMethod.LINEAR,
 ) -> csr_array:
     """
-    Calculates the delay-and-sum sparse matrix for beamforming I/Q signals.
+    Calculate the delay-and-sum sparse matrix for beamforming I/Q signals.
 
     Returns:
         delay-and-sum matrix. Shape: (num_pixels, num_samples*num_channels)
@@ -170,8 +170,8 @@ def delay_and_sum_matrix(
         )
         alpha = result.x
         f_number = 1 / (2 * np.tan(alpha))
-    else:
-        assert f_number >= 0, "f-number must be non-negative."
+    assert isinstance(f_number, float)
+    assert f_number >= 0, "f-number must be non-negative."
 
     # Helper parameters
     width_pixels, depth_pixels = x.shape
@@ -184,13 +184,9 @@ def delay_and_sum_matrix(
 
     # transducer centered on (0, 0) parallel to x-axis
     x_channels = xr.DataArray(
-        (np.arange(num_channels) - (num_channels - 1) / 2) * pitch,
-        dims=("channel",)
+        (np.arange(num_channels) - (num_channels - 1) / 2) * pitch, dims=("channel",)
     )  # keep as 0-index
-    z_channels = xr.DataArray(
-        np.zeros(x_channels.shape),
-        dims=("channel",)
-    )
+    z_channels = xr.DataArray(np.zeros(x_channels.shape), dims=("channel",))
 
     # Effective transmit-distance from each (interpolated) element to each pixel
     # TODO: interpolate transducers for better estimation of delays
@@ -214,8 +210,11 @@ def delay_and_sum_matrix(
 
     # Receive-delay:
     # Calculate distances from each pixel to each receive-element/channel
-    rx_distance = np.sqrt((x_dataarray - x_channels) ** 2 + (z_dataarray - z_channels) ** 2)
-    assert rx_distance.sizes == {  # type: ignore  # np.sqrt return-typed as numpy despite xarray patching: https://github.com/pydata/xarray/issues/6524
+    rx_distance = np.sqrt(
+        (x_dataarray - x_channels) ** 2 + (z_dataarray - z_channels) ** 2
+    )
+    assert rx_distance.sizes == {  # type: ignore
+        # https://github.com/pydata/xarray/issues/6524
         "x": width_pixels,
         "z": depth_pixels,
         "channel": num_channels,
@@ -240,7 +239,8 @@ def delay_and_sum_matrix(
         # assume linear array at z=0
         half_aperture = z_dataarray / (2 * f_number)
         is_within_aperture = np.abs(x_dataarray - x_channels) <= half_aperture
-        assert is_within_aperture.sizes == {  # type: ignore  # np.abs return-typed as numpy despite xarray patching: https://github.com/pydata/xarray/issues/6524
+        assert is_within_aperture.sizes == {  # type: ignore
+            # https://github.com/pydata/xarray/issues/6524
             "x": width_pixels,
             "z": depth_pixels,
             "channel": num_channels,
@@ -272,7 +272,8 @@ def delay_and_sum_matrix(
             ],
             dim="interp",
         )
-        das_ds["time_idx_round"] = xr.concat(  # type: ignore  # np.floor and np.ceil return-typed as numpy despite xarray patching: https://github.com/pydata/xarray/issues/6524
+        das_ds["time_idx_round"] = xr.concat(  # type: ignore
+            # https://github.com/pydata/xarray/issues/6524
             [
                 np.floor(das_ds["time_idx"]),  # closest time sample below
                 np.ceil(das_ds["time_idx"]),  # closest time sample above

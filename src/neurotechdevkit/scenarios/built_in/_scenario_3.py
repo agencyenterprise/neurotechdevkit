@@ -125,7 +125,7 @@ def _add_material_fields_to_problem(
     """Add material fields as media to the problem.
 
     This is an adaptation of the default `compile_problem()` that adds
-    in heterogenous material properties.
+    in heterogeneous material properties.
 
     Included fields are:
 
