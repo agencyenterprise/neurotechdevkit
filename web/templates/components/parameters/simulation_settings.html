@@ -4,6 +4,10 @@
       scenarioSettings.simulationPrecision
     document.getElementById("centerFrequency").value =
       scenarioSettings.centerFrequency
+    document.getElementById("simulationTypePulsed").checked =
+      !scenarioSettings.isSteadySimulation
+    document.getElementById("simulationTypeSteady").checked =
+      scenarioSettings.isSteadySimulation
     setMaterialPropertiesPreBuiltValues(scenarioSettings.materialProperties)
   }
 
