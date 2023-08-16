@@ -152,7 +152,7 @@ def test_setup_shot_receiver_locations(tester_with_time, a_source, sim_mode):
         [a_source],
         receiver_coords=receiver_coords,
         freq_hz=50.0,
-        simulation_mode=sim_mode
+        simulation_mode=sim_mode,
     )
     assert tester_with_time.problem.geometry.num_locations == (
         a_source.num_points + len(receiver_coords)
