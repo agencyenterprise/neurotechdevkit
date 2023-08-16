@@ -1,6 +1,5 @@
 <script>
   let scenarioInfos = {{built_in_scenarios | tojson}};
-  console.log("scenarioInfos->", scenarioInfos)
   function togglePreBuiltDiv() {
     document.getElementById("preBuiltDiv").hidden = false
     document.getElementById("ctFileDiv").hidden = true
@@ -25,12 +24,11 @@
       // document.getElementById("myform").reset();
       disallowRunSimulation()
       disallowRenderLayout()
-      document.getElementById("axis") = ""
+      document.getElementById("axis").value = ""
       getElementById("distanceFromOrigin").value = ""
       return;
     }
     const selectedScenario = scenarioInfos[selection]
-    console.log("selectedScenario -> ", selectedScenario)
     setTargetPreBuiltValues(selectedScenario.target)
     setSimulationSettingsPreBuiltValues(selectedScenario.simulationSettings)
     setTransducersPreBuiltValues(selectedScenario.transducers)
@@ -78,6 +76,7 @@
         id="isCtScan"
         autocomplete="off"
         onchange="toggleCTFileDiv()"
+        disabled
       />
       <label class="btn btn-secondary" for="isCtScan">CT Scan</label>
     </div>
@@ -95,7 +94,7 @@
         <option value="" selected>Select a scenario</option>
         {% for scenario_id, scenario in built_in_scenarios.items() %} {% if
         scenario['is2d'] %}
-        <option value="{{scenario_id}}">{{scenario['scenarioName']}}</option>
+        <option value="{{scenario_id}}">{{scenario_id}}</option>
         {% endif %} {% endfor %}
       </select>
     </div>

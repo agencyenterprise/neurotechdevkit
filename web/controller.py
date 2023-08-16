@@ -2,11 +2,28 @@
 import base64
 import io
 import tempfile
-from typing import Dict, Tuple
+from typing import Dict, List, Tuple, Union
 
-from neurotechdevkit.scenarios import Scenario2D, Scenario3D
+from neurotechdevkit.scenarios import Scenario2D, Scenario3D, Target
 from neurotechdevkit.scenarios.built_in import BUILT_IN_SCENARIOS
 from web.messages import IndexBuiltInScenario, RenderLayoutRequest, SimulateRequest
+
+
+def get_supported_materials() -> List[Tuple[str, str]]:
+    """
+    Return a list of supported materials and their descriptions.
+
+    Returns:
+        The list of supported materials.
+    """
+    return [
+        ("water", "Water"),
+        ("brain", "Brain"),
+        ("trabecularBone", "Trabecular Bone"),
+        ("corticalBone", "Cortical Bone"),
+        ("skin", "Skin"),
+        ("tumor", "Tumor"),
+    ]
 
 
 def get_built_in_scenarios() -> Dict[str, Dict]:
@@ -19,7 +36,6 @@ def get_built_in_scenarios() -> Dict[str, Dict]:
     scenarios = {}
     for scenario_id, scenario in BUILT_IN_SCENARIOS.items():
         assert issubclass(scenario, (Scenario2D, Scenario3D))
-
         settings = IndexBuiltInScenario.from_scenario(scenario_id, scenario)
         scenarios[scenario_id] = settings.dict()
     return scenarios
@@ -37,10 +53,8 @@ def get_scenario_layout(config: RenderLayoutRequest) -> str:
     """
     if config.is2d:
         if config.scenarioSettings.isPreBuilt:
-            print("prebuilt scenario")
             scenario = BUILT_IN_SCENARIOS[config.scenarioSettings.scenario_id]()
         else:
-            print("custom scenario")
             scenario = Scenario2D()
 
         _configure_scenario(scenario, config)
@@ -91,6 +105,28 @@ def get_simulation_image(config: SimulateRequest) -> Tuple[str, str]:
     raise NotImplementedError
 
 
-def _configure_scenario(scenario, config):
-    # TODO: configure all parameters
-    pass
+def _configure_scenario(
+    scenario: Scenario2D, config: Union[RenderLayoutRequest, SimulateRequest]
+):
+    config_target = config.target
+    if config_target:
+        scenario.target = Target(
+            target_id="target_1",
+            center=[config_target.centerY, config_target.centerX],
+            radius=config_target.radius,
+            description="",
+        )
+
+    scenario.center_frequency = config.simulationSettings.centerFrequency
+
+    config_material_properties = config.simulationSettings.materialProperties
+    if config_material_properties:
+        scenario.material_properties = (
+            config_material_properties.to_ndk_material_properties()
+        )
+
+    config_transducers = config.transducers
+    scenario.sources.clear()
+    for configured_transducer in config_transducers:
+        source = configured_transducer.to_ndk_source()
+        scenario.sources.append(source)

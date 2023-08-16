@@ -9,13 +9,55 @@
 </div>
 <script>
   let addedTransducers = []
+
+  function showSaveButton(transducerIndex) {
+    document.getElementById("saveTransducerButton").removeAttribute("hidden")
+    document.getElementById("saveTransducerButton").dataset.transducerId =
+      transducerIndex
+    document.getElementById("addTransducerButton").setAttribute("hidden", true)
+  }
+
+  function hideSaveButton() {
+    document.getElementById("saveTransducerButton").setAttribute("hidden", true)
+    document.getElementById("addTransducerButton").removeAttribute("hidden")
+  }
+
+  function showForm() {
+    document.getElementById("createTransducerForm").removeAttribute("hidden")
+    document.getElementById("newTransducerButton").setAttribute("hidden", true)
+    document.getElementById("formControls").removeAttribute("hidden")
+    cleanTransducerSettings()
+  }
+
+  function hideForm() {
+    document.getElementById("createTransducerForm").setAttribute("hidden", true)
+    document.getElementById("formControls").setAttribute("hidden", true)
+    document.getElementById("newTransducerButton").removeAttribute("hidden")
+  }
+
+  function cleanTransducerSettings() {
+    document.getElementById("transducerSettings").innerHTML = ""
+  }
+
+  function addTransducer() {
+    // Called when button Add at the end of the form is pressed
+    storeTransducer()
+    hideForm()
+  }
+
   function newTransducer() {
-    document.getElementById("newTransducer").setAttribute("hidden", true)
-    document.getElementById("createTransducer").removeAttribute("hidden")
-    document.getElementById("controls").removeAttribute("hidden")
+    // Called when button Add Transducer is pressed
+    showForm()
+    hideSaveButton()
+  }
+
+  function saveTransducer(transducerIndex) {
+    // Called when button Save at the end of the form is pressed
+    storeTransducer(transducerIndex)
   }
 
   function setTransducersPreBuiltValues(transducers) {
+    // Called by the main script to set the transducers values
     addedTransducers.splice(0, addedTransducers.length)
 
     for (transducer of transducers) {
@@ -25,22 +67,23 @@
   }
 
   function transducerSelected(transducerComponent) {
+    // Called when the user changes the value of the <select> component
     let params = null
     switch (transducerComponent.value) {
       case "focusedSource":
         params = document.getElementById("focusedOptions").innerHTML
-        document.getElementById("transducerOptions").innerHTML = params
+        document.getElementById("transducerSettings").innerHTML = params
         break
       case "planarSource":
         params = document.getElementById("planarOptions").innerHTML
-        document.getElementById("transducerOptions").innerHTML = params
+        document.getElementById("transducerSettings").innerHTML = params
         break
       case "phasedArraySource":
         params = document.getElementById("phasedArrayOptions").innerHTML
-        document.getElementById("transducerOptions").innerHTML = params
+        document.getElementById("transducerSettings").innerHTML = params
         break
       default:
-        cleanTransducerOptions()
+        cleanTransducerSettings()
     }
   }
 
@@ -48,59 +91,230 @@
     return addedTransducers
   }
 
-  function cleanTransducerOptions() {
-    document.getElementById("transducerOptions").innerHTML = ""
-  }
-
   function transducerAdded() {
+    // Called after a transducer is added
     renderAddedTransducers()
-    cleanTransducerOptions()
+    cleanTransducerSettings()
 
-    document.getElementById("newTransducer").removeAttribute("hidden")
-    document.getElementById("controls").setAttribute("hidden", true)
-    document.getElementById("createTransducer").setAttribute("hidden", true)
+    hideForm()
   }
 
-  function renderAddedTransducers() {
-    if (addedTransducers.length > 0) {
-      let transducers = ""
-      for (let i = 0; i < addedTransducers.length; i++) {
-        // TODO: add a proper element here, with edit and remove buttons
-        transducers += addedTransducers[i].transducerType + "<br>"
-      }
-      document.getElementById("addedTransducers").innerHTML = transducers
-    } else {
-      document.getElementById("addedTransducers").innerHTML = ""
+  function getFocusedSourceParams(formData) {
+    const position = [formData.positionY, formData.positionX]
+    const direction = [formData.directionY, formData.directionX]
+    const aperture = formData.aperture
+    const focalLength = formData.focalLength
+    const numPoints = formData.numPoints
+    const delay = formData.delay
+    return {
+      position,
+      direction,
+      aperture,
+      focalLength,
+      numPoints,
+      delay,
+    }
+  }
+
+  function getPlanarSourceParams(formData) {
+    const position = [formData.positionY, formData.positionX]
+    const direction = [formData.directionY, formData.directionX]
+    const aperture = formData.aperture
+    const numPoints = formData.numPoints
+    const delay = formData.delay
+    return {
+      position,
+      direction,
+      aperture,
+      numPoints,
+      delay,
+    }
+  }
+
+  function getPhasedArraySourceParams(formData) {
+    const position = [formData.positionY, formData.positionX]
+    const direction = [formData.directionY, formData.directionX]
+    const numPoints = formData.numPoints
+    const numElements = formData.numElements
+    const pitch = formData.pitch
+    const elementWidth = formData.elementWidth
+    const tiltAngle = formData.tiltAngle
+    const focalLength = formData.focalLength
+    const delay = formData.delay
+    const aperture = formData.aperture
+    return {
+      position,
+      direction,
+      numPoints,
+      numElements,
+      pitch,
+      elementWidth,
+      tiltAngle,
+      focalLength,
+      delay,
+      aperture,
     }
   }
 
   function cancelAddTransducer() {
-    document.getElementById("newTransducer").removeAttribute("hidden")
-    document.getElementById("createTransducer").setAttribute("hidden", true)
-    document.getElementById("controls").setAttribute("hidden", true)
-    cleanTransducerOptions()
+    hideForm()
   }
 
-  function addTransducer() {
-    // TODO: refactor this code
-    let formData = new FormData(document.getElementById("createTransducer"))
-    let array = Array.from(formData)
-    let newTransducer = {
-      transducerType: array[0][1],
-      data: array,
-      formData: formData,
+  function storeTransducer(transducerIndex) {
+    let settings = {}
+
+    let formValues = {}
+    let formData = new FormData(document.getElementById("createTransducerForm"))
+    formData.forEach(function (value, key) {
+      formValues[key] = value
+    })
+    switch (formValues.transducerType) {
+      case "focusedSource":
+        settings = getFocusedSourceParams(formValues)
+        break
+      case "planarSource":
+        settings = getPlanarSourceParams(formValues)
+        break
+      case "phasedArraySource":
+        settings = getPhasedArraySourceParams(formValues)
+        break
     }
-    addedTransducers.push(newTransducer)
+    let addTransducer = {
+      transducerType: formValues.transducerType,
+      ...settings,
+    }
+
+    if (transducerIndex) {
+      addedTransducers[transducerIndex] = addTransducer
+    } else {
+      addedTransducers.push(addTransducer)
+    }
     transducerAdded()
   }
+
+  function editFocusedSource(transducer) {
+    const form = document.getElementById("createTransducerForm")
+    form.positionY.value = transducer.position[0]
+    form.positionX.value = transducer.position[1]
+    form.directionY.value = transducer.direction[0]
+    form.directionX.value = transducer.direction[1]
+    form.aperture.value = transducer.aperture
+    form.focalLength.value = transducer.focalLength
+    form.numPoints.value = transducer.numPoints
+    form.delay.value = transducer.delay
+  }
+
+  function editPlanarSource(transducer) {
+    const form = document.getElementById("createTransducerForm")
+    form.positionY.value = transducer.position[0]
+    form.positionX.value = transducer.position[1]
+    form.directionY.value = transducer.direction[0]
+    form.directionX.value = transducer.direction[1]
+    form.aperture.value = transducer.aperture
+    form.numPoints.value = transducer.numPoints
+    form.delay.value = transducer.delay
+  }
+
+  function editPhasedArraySource(transducer) {
+    const form = document.getElementById("createTransducerForm")
+    form.positionY.value = transducer.position[0]
+    form.positionX.value = transducer.position[1]
+    form.directionY.value = transducer.direction[0]
+    form.directionX.value = transducer.direction[1]
+    form.numPoints.value = transducer.numPoints
+    form.numElements.value = transducer.numElements
+    form.pitch.value = transducer.pitch
+    form.elementWidth.value = transducer.elementWidth
+    form.tiltAngle.value = transducer.tiltAngle
+    form.focalLength.value = transducer.focalLength
+    form.delay.value = transducer.delay
+    form.aperture.value = transducer.aperture
+  }
+
+  function editTransducer(transducerIndex) {
+    // Called when edit button of an already added transducer is pressed
+    const transducer = addedTransducers[transducerIndex]
+
+    showForm()
+    showSaveButton(transducerIndex)
+    document.getElementById("transducerType").value = transducer.transducerType
+    transducerSelected(document.getElementById("transducerType"))
+    switch (transducer.transducerType) {
+      case "focusedSource":
+        editFocusedSource(transducer)
+        break
+      case "planarSource":
+        editPlanarSource(transducer)
+        break
+      case "phasedArraySource":
+        editPhasedArraySource(transducer)
+        break
+    }
+  }
+
+  function deleteTransducer(transducerIndex) {
+    // Called when delete button of an already added transducer is pressed
+    addedTransducers.splice(transducerIndex, 1)
+    renderAddedTransducers()
+  }
+
+  function renderAddedTransducers() {
+    const addedTransducersElement = document.getElementById("addedTransducers")
+    addedTransducersElement.innerHTML = ""
+    const transducerTemplate = document.getElementById(
+      "addedTransducerTemplate"
+    )
+    let index = 0
+    for (transducer of addedTransducers) {
+      let addTransducer = transducerTemplate.content.cloneNode(true)
+      addTransducer.querySelector(".content_title").innerHTML =
+        transducer.transducerType
+
+      addTransducer
+        .querySelector('[data-action="edit"]')
+        .setAttribute("data-transducer-id", index)
+
+      addTransducer
+        .querySelector('[data-action="delete"]')
+        .setAttribute("data-transducer-id", index)
+
+      addedTransducersElement.appendChild(addTransducer)
+    }
+  }
 </script>
-<div id="addedTransducers"></div>
-<div id="newTransducer">
+
+<template id="addedTransducerTemplate">
+  <li class="list-group-item d-flex collapsed">
+    <h5 class="content_title fw-bold m-1">Title 1</h5>
+
+    <div class="ms-auto">
+      <span
+        class="fa fa-pencil-alt cercle-icons edit-icon"
+        data-transducer-id="-1"
+        data-action="edit"
+        aria-hidden="true"
+        onclick="editTransducer(this.dataset.transducerId)"
+      ></span>
+      <span
+        class="far fa-trash-alt cercle-icons delete-icon"
+        data-transducer-id="-1"
+        data-action="delete"
+        aria-hidden="true"
+        onclick="deleteTransducer(this.dataset.transducerId)"
+      ></span>
+    </div>
+  </li>
+</template>
+
+<div class="card border-light">
+  <ul class="list-group list-group-flush" id="addedTransducers"></ul>
+</div>
+<div id="newTransducerButton">
   <button class="btn btn-primary" type="button" onclick="newTransducer()">
     Add Transducer
   </button>
 </div>
-<form id="createTransducer" hidden>
+<form id="createTransducerForm" hidden>
   <div class="mb-3">
     <label for="transducerType" class="form-label">Source Transducer</label>
     <select
@@ -116,8 +330,8 @@
       <option value="phasedArraySource">Phased Array Source</option>
     </select>
   </div>
-  <div id="transducerOptions"></div>
-  <div id="controls" hidden>
+  <div id="transducerSettings"></div>
+  <div id="formControls" hidden>
     <button
       type="button"
       class="btn btn-primary btn-block"
@@ -127,10 +341,21 @@
     </button>
     <button
       type="button"
+      id="addTransducerButton"
       class="btn btn-primary btn-block"
       onclick="addTransducer(this)"
     >
-      Add transducer
+      Add
+    </button>
+    <button
+      type="button"
+      data-transducer-id="-1"
+      id="saveTransducerButton"
+      class="btn btn-primary btn-block"
+      onclick="saveTransducer(this.dataset.transducerId)"
+      hidden
+    >
+      Save transducer
     </button>
   </div>
 </form>
