@@ -151,7 +151,8 @@ def _estimate_carrier_frequency(
         selected_channel_echo_combos: List[Tuple[int, int]] = random.sample(
             list(channel_echo_combo_idxs), num_selected,
         )
-        selected_channel_idxs, selected_echo_idxs = map(
+        selected_echo_idxs: List[int]
+        selected_channel_idxs, selected_echo_idxs = map(  # type: ignore
             list,
             zip(*selected_channel_echo_combos)
         )
