@@ -1,22 +1,28 @@
+html,
+body,
+.container-fluid {
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+}
+
 .parameters {
   background-color: #344054;
   color: white;
+  position: absolute;
+  width: 400px;
+  height: 100%;
+  padding: 10px;
 }
 
 .main-grid {
   background-color: #1d2939;
   color: white;
-}
-
-.row {
+  margin-left: 400px;
   height: 100%;
-  width: 100%;
-  display: table-row;
-}
-
-.row .no-float {
-  display: table-cell;
-  float: none;
+  overflow: hidden;
+  padding: 10px;
 }
 
 .accordion-button::after {
