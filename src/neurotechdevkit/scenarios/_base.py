@@ -56,7 +56,7 @@ class Scenario(abc.ABC):
     # Coordinates of point receivers in the scenario
     receiver_coords: npt.NDArray[np.float_] | list[npt.NDArray[np.float_]] = []
 
-    material_outline_upsample_factor: int = 16
+    material_outline_upsample_factor: int
 
     _center_frequency: float
     _problem: Problem
@@ -70,7 +70,7 @@ class Scenario(abc.ABC):
         material_masks: Optional[Mapping[str, npt.NDArray[np.bool_]]] = None,
         origin: Optional[list[float]] = None,
         sources: Optional[list[Source]] = None,
-        material_outline_upsample_factor: Optional[int] = None,
+        material_outline_upsample_factor: Optional[int] = 16,
         target: Optional[Target] = None,
         problem: Optional[Problem] = None,
         grid: Optional[Grid] = None,
@@ -94,7 +94,7 @@ class Scenario(abc.ABC):
                 scenario. Defaults to None.
             material_outline_upsample_factor (Optional[int], optional): The factor by
                 which to upsample the material outline when rendering the scenario.
-                Defaults to None.
+                Defaults to 16.
             target (Optional[Target], optional): The target in the scenario. Defaults
                 to None.
             problem (Optional[Problem], optional): The problem definition for the

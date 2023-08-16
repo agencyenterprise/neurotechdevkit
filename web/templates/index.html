@@ -1,14 +1,8 @@
 {% extends "base.html" %} {% block content %}
 
-<div class="container">
-  <div class="row">
-    <div class="col-md-3 no-float parameters">
-      {% include 'components/parameters.html' %}
-    </div>
-    <div class="col-md-9 no-float main-grid">
-      {% include 'components/scenario_layout.html' %}
-    </div>
-  </div>
+<div class="container-fluid">
+  <div class="parameters">{% include 'components/parameters.html' %}</div>
+  <div class="main-grid">{% include 'components/scenario_layout.html' %}</div>
 </div>
 
 {% endblock %}
