@@ -1,8 +1,10 @@
 """Pydantic models for the messages exchanged between server and client."""
 from enum import Enum
-from typing import Dict, List, Optional, Type, Union
+from typing import Dict, List, Literal, Optional, Type, Union
 
-from pydantic import BaseModel, validator
+import numpy as np
+from pydantic import BaseModel, Field, validator
+from typing_extensions import Annotated
 
 from neurotechdevkit.materials import Material as NDKMaterial
 from neurotechdevkit.materials import get_material
@@ -65,18 +67,29 @@ class _BaseSourceSettings(BaseModel):
 class PointSourceSettings(_BaseSourceSettings):
     """Settings for a point source transducer."""
 
+    transducerType: Literal["pointSource"]
     delay: float
     position: List[float]
 
     @classmethod
     def from_source(cls, source: PointSource2D) -> "PointSourceSettings":
         """Instantiate the source settings from a source."""
-        return cls(position=source._position, delay=source._delay)
+        return cls(
+            transducerType="pointSource", position=source._position, delay=source._delay
+        )
+
+    def to_ndk_source(self) -> PointSource2D:
+        """Instantiate the NDK source from transducer settings."""
+        return PointSource2D(
+            position=self.position,
+            delay=self.delay,
+        )
 
 
 class PhasedArraySettings(_BaseSourceSettings):
     """Settings for a phased array transducer."""
 
+    transducerType: Literal["phasedArray"]
     position: List[float]
     direction: List[float]
     numPoints: int
@@ -92,6 +105,7 @@ class PhasedArraySettings(_BaseSourceSettings):
     def from_source(cls, source: PhasedArraySource2D) -> "PhasedArraySettings":
         """Instantiate the source settings from a source."""
         return cls(
+            transducerType="phasedArray",
             position=source._position,
             direction=source._direction,
             num_points=source._num_points,
@@ -104,10 +118,26 @@ class PhasedArraySettings(_BaseSourceSettings):
             element_delays=source._element_delays,
         )
 
+    def to_ndk_source(self) -> PhasedArraySource2D:
+        """Instantiate the NDK source from transducer settings."""
+        return PhasedArraySource2D(
+            position=self.position,
+            direction=self.direction,
+            num_points=self.numPoints,
+            num_elements=self.numElements,
+            pitch=self.pitch,
+            element_width=self.elementWidth,
+            tilt_angle=self.tiltAngle,
+            focal_length=self.focalLength,
+            delay=self.delay,
+            element_delays=np.array(self.elementDelays),
+        )
+
 
 class FocusedSourceSettings(_BaseSourceSettings):
     """Settings for a focused source transducer."""
 
+    transducerType: Literal["focusedSource"]
     position: List[float]
     aperture: float
     direction: List[float]
@@ -119,6 +149,7 @@ class FocusedSourceSettings(_BaseSourceSettings):
     def from_source(cls, source: FocusedSource2D) -> "FocusedSourceSettings":
         """Instantiate the source settings from a source."""
         return cls(
+            transducerType="focusedSource",
             position=source._position,
             direction=source._direction,
             aperture=source._aperture,
@@ -127,14 +158,25 @@ class FocusedSourceSettings(_BaseSourceSettings):
             delay=source._delay,
         )
 
+    def to_ndk_source(self) -> FocusedSource2D:
+        """Instantiate the NDK source from transducer settings."""
+        return FocusedSource2D(
+            position=self.position,
+            direction=self.direction,
+            aperture=self.aperture,
+            focal_length=self.focalLength,
+            num_points=self.numPoints,
+            delay=self.delay,
+        )
+
 
 class PlanarSourceSettings(_BaseSourceSettings):
     """Settings for a planar source transducer."""
 
+    transducerType: Literal["planarSource"]
     aperture: float
     delay: float
     direction: List[float]
-    focalLength: float
     numPoints: int
     position: List[float]
 
@@ -142,12 +184,22 @@ class PlanarSourceSettings(_BaseSourceSettings):
     def from_source(cls, source: PlanarSource2D) -> "PlanarSourceSettings":
         """Instantiate the source settings from a source."""
         return cls(
+            transducerType="planarSource",
             aperture=source._aperture,
             delay=source._delay,
             direction=source._direction,
-            focalLength=source._focal_length,
             numPoints=source._num_points,
             position=source._position,
+        )
+
+    def to_ndk_source(self) -> PlanarSource2D:
+        """Instantiate the NDK source from transducer settings."""
+        return PlanarSource2D(
+            aperture=self.aperture,
+            delay=self.delay,
+            direction=self.direction,
+            num_points=self.numPoints,
+            position=self.position,
         )
 
 
@@ -160,35 +212,15 @@ TRANSDUCER_SETTINGS: Dict[Type[Source], Type[_BaseSourceSettings]] = {
 }
 
 
-class Transducer(BaseModel):
-    """Transducer model for the transducer settings."""
-
-    transducerType: TransducerType
-    transducerSettings: Union[
+Transducer = Annotated[
+    Union[
         PointSourceSettings,
         PhasedArraySettings,
         FocusedSourceSettings,
         PlanarSourceSettings,
-    ]
-
-    @classmethod
-    def from_source(
-        cls,
-        source: Union[
-            PointSource2D,
-            PhasedArraySource2D,
-            FocusedSource2D,
-            PlanarSource2D,
-        ],
-    ) -> "Transducer":
-        """Instantiate the transducer settings from a source."""
-        transducer_type = TransducerType.from_source(source)
-        settings_model = TRANSDUCER_SETTINGS[type(source)]
-        transducer_settings = settings_model.from_source(source)
-        return cls(
-            transducerType=transducer_type,
-            transducerSettings=transducer_settings,
-        )
+    ],
+    Field(discriminator="transducerType"),
+]
 
 
 class Target(BaseModel):
@@ -238,6 +270,15 @@ class Material(BaseModel):
             renderColor=material.render_color,
         )
 
+    def to_ndk_material(self) -> NDKMaterial:
+        """Instantiate the NDKMaterial from the web material."""
+        return NDKMaterial(
+            vp=self.vp,
+            rho=self.rho,
+            alpha=self.alpha,
+            render_color=self.renderColor,
+        )
+
 
 class MaterialProperties(BaseModel):
     """Material properties model for the material properties."""
@@ -245,6 +286,20 @@ class MaterialProperties(BaseModel):
     water: Material
     brain: Material
     trabecularBone: Material
+    corticalBone: Material
+    skin: Material
+    tumor: Material
+
+    def to_ndk_material_properties(self) -> Dict[str, NDKMaterial]:
+        """Instantiate the NDKMaterialProperties from the web material properties."""
+        return {
+            "water": self.water.to_ndk_material(),
+            "brain": self.brain.to_ndk_material(),
+            "trabecular_bone": self.trabecularBone.to_ndk_material(),
+            "cortical_bone": self.corticalBone.to_ndk_material(),
+            "skin": self.skin.to_ndk_material(),
+            "tumor": self.tumor.to_ndk_material(),
+        }
 
 
 class SimulationSettings(BaseModel):
@@ -262,7 +317,7 @@ class _DefaultSettings(BaseModel):
     is2d: bool
     scenarioSettings: ScenarioSettings
     transducers: list[Transducer]
-    target: Target
+    target: Optional[Target]
     simulationSettings: SimulationSettings
 
     @classmethod
@@ -279,6 +334,11 @@ class _DefaultSettings(BaseModel):
             trabecularBone=Material.from_ndk_material(
                 get_material("trabecular_bone", center_frequency)
             ),
+            corticalBone=Material.from_ndk_material(
+                get_material("cortical_bone", center_frequency)
+            ),
+            skin=Material.from_ndk_material(get_material("skin", center_frequency)),
+            tumor=Material.from_ndk_material(get_material("tumor", center_frequency)),
         )
         simulation_settings = SimulationSettings(
             simulationPrecision=5,  # TODO: make this a parameter
@@ -294,7 +354,13 @@ class _DefaultSettings(BaseModel):
             centerY=scenario_target.center[0],
             radius=scenario_target.radius,
         )
-        transducers = [Transducer.from_source(source) for source in scenario.sources]
+
+        transducers = []
+        for source in scenario.sources:
+            settings_model = TRANSDUCER_SETTINGS[type(source)]
+            transducer_settings = settings_model.from_source(source)
+            transducers.append(transducer_settings)
+
         return cls(
             is2d=is_2d,
             scenarioSettings=scenario_settings,
@@ -319,12 +385,4 @@ class SimulateRequest(_DefaultSettings):
 class IndexBuiltInScenario(_DefaultSettings):
     """The Scenario settings for the index page."""
 
-    scenarioName: str
-
-    @classmethod
-    def from_scenario(
-        cls, scenario_id: str, scenario: Union[Type[Scenario2D], Type[Scenario3D]]
-    ) -> "IndexBuiltInScenario":
-        """Instantiate the settings from a built in scenario."""
-        super_settings = _DefaultSettings.from_scenario(scenario_id, scenario)
-        return cls(scenarioName=scenario_id, **super_settings.dict())
+    pass

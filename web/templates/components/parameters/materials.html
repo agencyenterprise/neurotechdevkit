@@ -1,249 +1,94 @@
 <script>
   function setMaterialPropertiesPreBuiltValues(materialProperties) {
-    document.getElementById("waterVp").value = materialProperties.water.vp
-    document.getElementById("waterRho").value = materialProperties.water.rho
-    document.getElementById("waterAlpha").value = materialProperties.water.alpha
-    document.getElementById("waterRenderColor").value =
-      materialProperties.water.renderColor
-
-    document.getElementById("trabecularBoneVp").value =
-      materialProperties.trabecularBone.vp
-    document.getElementById("trabecularBoneRho").value =
-      materialProperties.trabecularBone.rho
-    document.getElementById("trabecularBoneAlpha").value =
-      materialProperties.trabecularBone.alpha
-    document.getElementById("trabecularBoneRenderColor").value =
-      materialProperties.trabecularBone.renderColor
-
-    document.getElementById("brainVp").value = materialProperties.brain.vp
-    document.getElementById("brainRho").value = materialProperties.brain.rho
-    document.getElementById("brainAlpha").value = materialProperties.brain.alpha
-    document.getElementById("brainRenderColor").value =
-      materialProperties.brain.renderColor
+    for (let key in materialProperties) {
+      document.getElementById(`${key}Vp`).value = materialProperties[key].vp
+      document.getElementById(`${key}Rho`).value = materialProperties[key].rho
+      document.getElementById(`${key}Alpha`).value =
+        materialProperties[key].alpha
+      document.getElementById(`${key}RenderColor`).value =
+        materialProperties[key].renderColor
+    }
   }
 
   function getMaterialPropertiesParams() {
-    let params = {
-      water: {},
-      trabecularBone: {},
-      brain: {},
+    const supportedMaterials = {{materials | tojson | safe}}
+    let params = {}
+    for (let material of supportedMaterials) {
+      const key = material[0];
+      params[key] = {
+        "vp": document.getElementById(`${key}Vp`).value,
+        "rho": document.getElementById(`${key}Rho`).value,
+        "alpha": document.getElementById(`${key}Alpha`).value,
+        "renderColor": document.getElementById(`${key}RenderColor`).value,
+      }
     }
-    params["water"]["vp"] = document.getElementById("waterVp").value
-    params["water"]["rho"] = document.getElementById("waterRho").value
-    params["water"]["alpha"] = document.getElementById("waterAlpha").value
-    params["water"]["renderColor"] =
-      document.getElementById("waterRenderColor").value
-
-    params["trabecularBone"]["vp"] =
-      document.getElementById("trabecularBoneVp").value
-    params["trabecularBone"]["rho"] =
-      document.getElementById("trabecularBoneRho").value
-    params["trabecularBone"]["alpha"] = document.getElementById(
-      "trabecularBoneAlpha"
-    ).value
-    params["trabecularBone"]["renderColor"] = document.getElementById(
-      "trabecularBoneRenderColor"
-    ).value
-
-    params["brain"]["vp"] = document.getElementById("brainVp").value
-    params["brain"]["rho"] = document.getElementById("brainRho").value
-    params["brain"]["alpha"] = document.getElementById("brainAlpha").value
-    params["brain"]["renderColor"] =
-      document.getElementById("brainRenderColor").value
-
     return params
   }
 </script>
 <div class="accordion accordion-flush" id="materialsAccordion">
+  {% for material, material_label in materials %}
   <div class="accordion-item">
-    <h2 class="accordion-header" id="flush-headingOne">
+    <h2 class="accordion-header" id="flush-{{loop.index}}">
       <button
         class="accordion-button collapsed"
         type="button"
         data-bs-toggle="collapse"
-        data-bs-target="#flush-collapseOne"
+        data-bs-target="#flush-collapse{{loop.index}}"
         aria-expanded="false"
-        aria-controls="flush-collapseOne"
+        aria-controls="flush-collapse{{loop.index}}"
       >
-        Water
+        {{material_label}}
       </button>
     </h2>
     <div
-      id="flush-collapseOne"
+      id="flush-collapse{{loop.index}}"
       class="accordion-collapse collapse"
-      aria-labelledby="flush-headingOne"
+      aria-labelledby="flush-heading{{loop.index}}"
       data-bs-parent="#materialsAccordion"
     >
       <div class="accordion-body">
         <div class="mb-3">
-          <label for="waterVp">VP</label>
+          <label for="{{material}}Vp">VP</label>
           <input
             type="number"
             class="form-control"
-            name="waterVp"
-            id="waterVp"
+            name="{{material}}Vp"
+            id="{{material}}Vp"
             required
           />
         </div>
         <div class="mb-3">
-          <label for="waterRho">RHO</label>
+          <label for="{{material}}Rho">RHO</label>
           <input
             type="number"
             class="form-control"
-            name="waterRho"
-            id="waterRho"
+            name="{{material}}Rho"
+            id="{{material}}Rho"
             required
           />
         </div>
         <div class="mb-3">
-          <label for="waterAlpha">Alpha</label>
+          <label for="{{material}}Alpha">Alpha</label>
           <input
             type="number"
             class="form-control"
-            name="waterAlpha"
-            id="waterAlpha"
+            name="{{material}}Alpha"
+            id="{{material}}Alpha"
             required
           />
         </div>
         <div class="mb-3">
-          <label for="waterRenderColor" class="form-label">Color</label>
+          <label for="{{material}}RenderColor" class="form-label">Color</label>
           <input
             type="color"
             class="form-control form-control-color"
-            name="waterRenderColor"
-            id="waterRenderColor"
+            name="{{material}}RenderColor"
+            id="{{material}}RenderColor"
             title="Choose your color"
           />
         </div>
       </div>
     </div>
   </div>
-  <div class="accordion-item">
-    <h2 class="accordion-header" id="flush-headingTwo">
-      <button
-        class="accordion-button collapsed"
-        type="button"
-        data-bs-toggle="collapse"
-        data-bs-target="#flush-collapseTwo"
-        aria-expanded="false"
-        aria-controls="flush-collapseTwo"
-      >
-        Trabecular Bone
-      </button>
-    </h2>
-    <div
-      id="flush-collapseTwo"
-      class="accordion-collapse collapse"
-      aria-labelledby="flush-headingTwo"
-      data-bs-parent="#materialsAccordion"
-    >
-      <div class="accordion-body">
-        <div class="mb-3">
-          <label for="trabecularBoneVp">VP</label>
-          <input
-            type="number"
-            class="form-control"
-            name="trabecularBoneVp"
-            id="trabecularBoneVp"
-            required
-          />
-        </div>
-        <div class="mb-3">
-          <label for="trabecularBoneRho">RHO</label>
-          <input
-            type="number"
-            class="form-control"
-            name="trabecularBoneRho"
-            id="trabecularBoneRho"
-            required
-          />
-        </div>
-        <div class="mb-3">
-          <label for="trabecularBoneAlpha">Alpha</label>
-          <input
-            type="number"
-            class="form-control"
-            name="trabecularBoneAlpha"
-            id="trabecularBoneAlpha"
-            required
-          />
-        </div>
-        <div class="mb-3">
-          <label for="trabecularBoneRenderColor" class="form-label"
-            >Color</label
-          >
-          <input
-            type="color"
-            class="form-control form-control-color"
-            name="trabecularBoneRenderColor"
-            id="trabecularBoneRenderColor"
-            title="Choose your color"
-          />
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="accordion-item">
-    <h2 class="accordion-header" id="flush-headingThree">
-      <button
-        class="accordion-button collapsed"
-        type="button"
-        data-bs-toggle="collapse"
-        data-bs-target="#flush-collapseThree"
-        aria-expanded="false"
-        aria-controls="flush-collapseThree"
-      >
-        Brain
-      </button>
-    </h2>
-    <div
-      id="flush-collapseThree"
-      class="accordion-collapse collapse"
-      aria-labelledby="flush-headingThree"
-      data-bs-parent="#materialsAccordion"
-    >
-      <div class="accordion-body">
-        <div class="mb-3">
-          <label for="brainVp">VP</label>
-          <input
-            type="number"
-            class="form-control"
-            name="brainVp"
-            id="brainVp"
-            required
-          />
-        </div>
-        <div class="mb-3">
-          <label for="brainRho">RHO</label>
-          <input
-            type="number"
-            class="form-control"
-            name="brainRho"
-            id="brainRho"
-            required
-          />
-        </div>
-        <div class="mb-3">
-          <label for="brainAlpha">Alpha</label>
-          <input
-            type="number"
-            class="form-control"
-            name="brainAlpha"
-            id="brainAlpha"
-            required
-          />
-        </div>
-        <div class="mb-3">
-          <label for="brainRenderColor" class="form-label">Color</label>
-          <input
-            type="color"
-            class="form-control form-control-color"
-            name="brainRenderColor"
-            id="brainRenderColor"
-            title="Choose your color"
-          />
-        </div>
-      </div>
-    </div>
-  </div>
+  {% endfor %}
 </div>

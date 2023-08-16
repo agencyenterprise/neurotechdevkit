@@ -23,7 +23,6 @@
       target: targetParams,
       simulationSettings: simulationSettingsParams,
     }
-    console.log("Data", JSON.stringify(data))
     const url = "{{ url_for('main.render_layout') }}"
     fetch(url, {
       method: "POST",
@@ -55,14 +54,14 @@
   />
   <label class="btn btn-secondary" for="is2d">2D</label>
 
-  <input
+  <!-- <input
     type="radio"
     class="btn-check"
     name="options"
     id="is3d"
     autocomplete="off"
   />
-  <label class="btn btn-secondary" for="is3d">3D</label>
+  <label class="btn btn-secondary" for="is3d">3D</label> -->
 </div>
 
 <div class="accordion accordion-flush" id="parameters-accordion">
@@ -159,18 +158,22 @@
     </div>
   </div>
 </div>
-<button
-  id="renderSimulation"
-  class="btn btn-primary"
-  type="button"
-  onclick="renderLayout(this)"
-  disabled
->
-  Render Layout
-</button>
-<button id="saveSettingsButton" class="btn btn-primary" type="button">
+</br>
+<div class="d-flex justify-content-center">
+  <button
+    id="renderSimulation"
+    class="btn btn-primary"
+    type="button"
+    onclick="renderLayout(this)"
+    disabled
+  >
+    Render Layout
+  </button>
+</div>
+</br>
+<!-- <button id="saveSettingsButton" class="btn btn-primary" type="button">
   Save Settings
 </button>
 <button id="loadSettingsButton" class="btn btn-primary" type="button">
   Load Settings
-</button>
+</button> -->
