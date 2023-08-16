@@ -129,7 +129,7 @@ def delay_and_sum_matrix(
     Notes:
         - Alternatively, delay-and-sum can be implemented using an explicit
             for-loop over the delays. However, Python for-loops are much
-            slower than scipy's optimized sparse matrix multiplication.
+            slower than  optimized sparse matrix multiplication.
         - Memory usage for the delay-and-sum matrix is:
             O(num_pixels * num_channels * num_interpolation_points).
 

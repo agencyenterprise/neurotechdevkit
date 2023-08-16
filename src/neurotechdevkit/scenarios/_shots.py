@@ -102,9 +102,9 @@ def _add_point_transducers_to_geometry(
 ) -> list[TransducerLocation]:
     """Add and return transducers at locations specified by coords.
 
-    Each coord is to the stride problem geometry as a point-transducer, and then the
-    TransducerLocation for each point source is returned so that it can be added to the
-    shot.
+    Each coordinate is to the stride problem geometry as a point-transducer, and
+    then the TransducerLocation for each point source is returned so that it can
+    be added to the shot.
 
     Args:
         problem: the problem to which the point sources should be added.

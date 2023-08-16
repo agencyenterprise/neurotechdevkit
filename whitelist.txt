@@ -4,9 +4,13 @@ antiparallel
 args
 aubry
 backend
+beamform
+beamformed
+beamforming
 bitrate
 boehm
 boolean
+Butterworth
 clim
 cmap
 cmaps
@@ -48,6 +52,8 @@ ipython
 javascript
 jshtml
 jupyter
+kwargs
+Lanczos
 legalcode
 linestyle
 loc
@@ -73,6 +79,7 @@ precomputed
 reproducibility
 resampling
 ricker
+scipy
 sliceaxis
 stackoverflow
 str
@@ -81,6 +88,7 @@ structs
 suptitle
 timesteps
 transcranial
+undersampled
 undersampling
 unformatted
 upsample
@@ -93,5 +101,7 @@ voxel
 vp
 wavefield
 waveforms
+Welch's
+xarray
 xy
 s̅

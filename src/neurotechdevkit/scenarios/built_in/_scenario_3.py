@@ -141,7 +141,7 @@ def _add_material_fields_to_problem(
         masks: a mapping from material
             names to boolean masks indicating the gridpoints.
         material_speckle: a mapping from material names to the relative scale
-            of material hetereogeneity
+            of material heterogeneity
     """
     property_names = [
         "vp",  # [m/s]
@@ -160,7 +160,7 @@ def _add_material_fields_to_problem(
                 scale=material_speckle[name] * material_prop,
                 size=material_mask.sum(),
             )
-            # Add hetereogeneity to the material property
+            # Add heterogeneity to the material property
             # Really, only vp and rho affect the wave scattering,
             # but we add it to alpha for completeness
             field.data[material_mask] = material_prop + speckle
