@@ -59,7 +59,7 @@ def get_scenario_layout(config: RenderLayoutRequest) -> str:
 
         _configure_scenario(scenario, config)
         scenario.make_grid()
-        fig = scenario.render_layout()
+        fig = scenario.render_layout(show_sources=len(scenario.sources) > 0)
         buf = io.BytesIO()
         fig.savefig(buf, format="png")
         data = base64.b64encode(buf.getbuffer()).decode("ascii")
@@ -108,6 +108,7 @@ def get_simulation_image(config: SimulateRequest) -> Tuple[str, str]:
 def _configure_scenario(
     scenario: Scenario2D, config: Union[RenderLayoutRequest, SimulateRequest]
 ):
+    """Configure a scenario based on the given configuration."""
     config_target = config.target
     if config_target:
         scenario.target = Target(
