@@ -2,7 +2,7 @@
 import base64
 import io
 import tempfile
-from typing import Dict, Tuple, Union
+from typing import Dict, Optional, Tuple, Union
 
 from neurotechdevkit.results import PulsedResult2D, SteadyStateResult2D
 from neurotechdevkit.scenarios import Scenario2D, Scenario3D, Target
@@ -69,7 +69,9 @@ def get_scenario_layout(config: RenderLayoutRequest) -> str:
         The base64 encoded png image.
     """
     if config.is2d:
-        scenario = _instantiate_scenario(config)
+        scenario = _instantiate_scenario(
+            config.scenarioSettings.isPreBuilt, config.scenarioSettings.scenario_id
+        )
         _configure_scenario(scenario, config)
         fig = scenario.render_layout(show_sources=len(scenario.sources) > 0)
         buf = io.BytesIO()
@@ -79,13 +81,19 @@ def get_scenario_layout(config: RenderLayoutRequest) -> str:
     raise NotImplementedError
 
 
-def _instantiate_scenario(
-    config: Union[RenderLayoutRequest, SimulateRequest]
-) -> Scenario2D:
-    if config.scenarioSettings.isPreBuilt:
-        builtin_scenario = BuiltInScenariosShelf().get(
-            config.scenarioSettings.scenario_id
-        )
+def _instantiate_scenario(is_prebuilt: bool, scenario_id: Optional[str]) -> Scenario2D:
+    """Instantiate the scenario for the web app.
+
+    Args:
+        is_prebuilt (bool): Whether the scenario is prebuilt or not.
+        scenario_id (Optional[str]): The id of the scenario.
+
+    Returns:
+        The instantiated scenario.
+    """
+    if is_prebuilt:
+        assert scenario_id is not None
+        builtin_scenario = BuiltInScenariosShelf().get(scenario_id)
         material_properties = {
             key: value for key, value in builtin_scenario.material_properties.items()
         }
@@ -100,7 +108,7 @@ def _instantiate_scenario(
             grid=builtin_scenario.grid,
         )
     else:
-        scenario = Scenario2D()
+        raise NotImplementedError
     return scenario
 
 
@@ -115,7 +123,9 @@ def get_simulation_image(config: SimulateRequest) -> Tuple[str, str]:
         Tuple[str, str]: The base64 encoded image and the image format.
     """
     if config.is2d:
-        scenario = _instantiate_scenario(config)
+        scenario = _instantiate_scenario(
+            config.scenarioSettings.isPreBuilt, config.scenarioSettings.scenario_id
+        )
         _configure_scenario(scenario, config)
         scenario.compile_problem()
         if config.simulationSettings.isSteadySimulation:
@@ -143,8 +153,7 @@ def _configure_scenario(
     scenario: Scenario2D, config: Union[RenderLayoutRequest, SimulateRequest]
 ):
     """Configure a scenario based on the given configuration."""
-    config_target = config.target
-    if config_target:
+    if config_target := config.target:
         scenario.target = Target(
             target_id="target_1",
             center=[config_target.centerY, config_target.centerX],

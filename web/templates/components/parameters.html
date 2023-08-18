@@ -1,17 +1,24 @@
 <script>
   function allowRenderLayout() {
-    document.getElementById("parameters-accordion").querySelectorAll(".accordion-button[disabled]").forEach((button) => {
-      button.removeAttribute("disabled")
-      button.dataset.toDisable = true
-    })
-  }
-  function disallowRenderLayout() {
-    document.getElementById("parameters-accordion").querySelectorAll(".accordion-button[data-to-disable=true]").forEach((button) => {
-      button.setAttribute("disabled", true)
-    })
+    document
+      .getElementById("parameters-accordion")
+      .querySelectorAll(".accordion-button[disabled]")
+      .forEach((button) => {
+        button.removeAttribute("disabled")
+        button.dataset.toDisable = true
+      })
   }
 
-  function renderLayoutPressed(button){
+  function disallowRenderLayout() {
+    document
+      .getElementById("parameters-accordion")
+      .querySelectorAll(".accordion-button[data-to-disable=true]")
+      .forEach((button) => {
+        button.setAttribute("disabled", true)
+      })
+  }
+
+  function renderLayoutPressed(button) {
     BtnLoading(button)
     renderLayout()
     BtnReset(button)
@@ -168,22 +175,3 @@
     </div>
   </div>
 </div>
-</br>
-<!-- <div class="d-flex justify-content-center">
-  <button
-    id="renderLayout"
-    class="btn btn-primary"
-    type="button"
-    onclick="renderLayoutPressed(this)"
-    disabled
-  >
-    Render Layout
-  </button>
-</div>
-</br> -->
-<!-- <button id="saveSettingsButton" class="btn btn-primary" type="button">
-  Save Settings
-</button>
-<button id="loadSettingsButton" class="btn btn-primary" type="button">
-  Load Settings
-</button> -->
