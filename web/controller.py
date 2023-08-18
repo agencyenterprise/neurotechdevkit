@@ -2,28 +2,32 @@
 import base64
 import io
 import tempfile
-from typing import Dict, List, Tuple, Union
+from typing import Dict, Tuple, Union
 
 from neurotechdevkit.results import PulsedResult2D, SteadyStateResult2D
 from neurotechdevkit.scenarios import Scenario2D, Scenario3D, Target
 from neurotechdevkit.scenarios.built_in import BUILT_IN_SCENARIOS
-from web.messages import IndexBuiltInScenario, RenderLayoutRequest, SimulateRequest
+from web.messages.requests import (
+    IndexBuiltInScenario,
+    RenderLayoutRequest,
+    SimulateRequest,
+)
 
 
 class BuiltInScenariosShelf(object):
-    """Singleton class for storing the built-in scenarios."""
+    """Singleton class for storing the already instantiated built-in scenarios."""
 
     scenarios: Dict[str, Scenario2D] = {}
 
     def __new__(cls):
-        """Create a new instance of the class."""
+        """Create a new instance of the BuiltInScenariosShelf class."""
         if not hasattr(cls, "instance"):
             cls.instance = super(BuiltInScenariosShelf, cls).__new__(cls)
         return cls.instance
 
     def get(self, scenario_id: str) -> Scenario2D:
         """
-        Return the built-in scenario with the given id.
+        Return the instantiated built-in scenario with the given id.
 
         Args:
             scenario_id (str): The id of the scenario.
@@ -37,23 +41,6 @@ class BuiltInScenariosShelf(object):
             builtin_scenario.compile_problem()
             self.scenarios[scenario_id] = builtin_scenario
         return self.scenarios[scenario_id]
-
-
-def get_supported_materials() -> List[Tuple[str, str]]:
-    """
-    Return a list of supported materials and their descriptions.
-
-    Returns:
-        The list of supported materials.
-    """
-    return [
-        ("water", "Water"),
-        ("brain", "Brain"),
-        ("trabecularBone", "Trabecular Bone"),
-        ("corticalBone", "Cortical Bone"),
-        ("skin", "Skin"),
-        ("tumor", "Tumor"),
-    ]
 
 
 def get_built_in_scenarios() -> Dict[str, Dict]:

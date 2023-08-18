@@ -6,9 +6,9 @@ from web.controller import (
     get_built_in_scenarios,
     get_scenario_layout,
     get_simulation_image,
-    get_supported_materials,
 )
-from web.messages import RenderLayoutRequest, SimulateRequest
+from web.messages.material_properties import SUPPORTED_MATERIAL_NAMES
+from web.messages.requests import RenderLayoutRequest, SimulateRequest
 
 bp = Blueprint("main", __name__, url_prefix="/")
 
@@ -21,7 +21,7 @@ async def index():
         "index.html",
         title=title,
         built_in_scenarios=get_built_in_scenarios(),
-        all_materials=get_supported_materials(),
+        all_materials=SUPPORTED_MATERIAL_NAMES.get_material_titles(),
     )
 
 
