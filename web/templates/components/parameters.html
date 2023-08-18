@@ -1,13 +1,23 @@
 <script>
   function allowRenderLayout() {
-    document.getElementById("renderSimulation").removeAttribute("disabled")
+    document.getElementById("parameters-accordion").querySelectorAll(".accordion-button[disabled]").forEach((button) => {
+      button.removeAttribute("disabled")
+      button.dataset.toDisable = true
+    })
   }
   function disallowRenderLayout() {
-    document.getElementById("renderSimulation").setAttribute("disabled", true)
+    document.getElementById("parameters-accordion").querySelectorAll(".accordion-button[data-to-disable=true]").forEach((button) => {
+      button.setAttribute("disabled", true)
+    })
   }
 
-  function renderLayout(button) {
+  function renderLayoutPressed(button){
     BtnLoading(button)
+    renderLayout()
+    BtnReset(button)
+  }
+
+  function renderLayout() {
     document.getElementById("plotArea").innerHTML = ""
 
     const is2d = document.getElementById("is2d").checked
@@ -34,9 +44,6 @@
       .then((response) => response.text())
       .then((text) => {
         document.getElementById("plotArea").innerHTML = text
-      })
-      .then(() => {
-        BtnReset(button)
       })
   }
 </script>
@@ -98,6 +105,7 @@
         data-bs-target="#transducers-accordion-item"
         aria-expanded="false"
         aria-controls="transducers-accordion-item"
+        disabled
       >
         Transducers
       </button>
@@ -121,6 +129,7 @@
         data-bs-target="#target-accordion-item"
         aria-expanded="false"
         aria-controls="target-accordion-item"
+        disabled
       >
         Target
       </button>
@@ -144,6 +153,7 @@
         data-bs-target="#simulation-settings-accordion-item"
         aria-expanded="false"
         aria-controls="simulation-settings-accordion-item"
+        disabled
       >
         Simulation Settings
       </button>
@@ -160,18 +170,18 @@
   </div>
 </div>
 </br>
-<div class="d-flex justify-content-center">
+<!-- <div class="d-flex justify-content-center">
   <button
-    id="renderSimulation"
+    id="renderLayout"
     class="btn btn-primary"
     type="button"
-    onclick="renderLayout(this)"
+    onclick="renderLayoutPressed(this)"
     disabled
   >
     Render Layout
   </button>
 </div>
-</br>
+</br> -->
 <!-- <button id="saveSettingsButton" class="btn btn-primary" type="button">
   Save Settings
 </button>
