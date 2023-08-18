@@ -99,9 +99,12 @@ def _instantiate_scenario(
         builtin_scenario = BuiltInScenariosShelf().get(
             config.scenarioSettings.scenario_id
         )
+        material_properties = {
+            key: value for key, value in builtin_scenario.material_properties.items()
+        }
         scenario = Scenario2D(
             center_frequency=builtin_scenario.center_frequency,
-            material_properties=builtin_scenario.material_properties,
+            material_properties=material_properties,
             material_masks=builtin_scenario.material_masks,
             origin=builtin_scenario.origin,
             sources=[source for source in builtin_scenario.sources],
