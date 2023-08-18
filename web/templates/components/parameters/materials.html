@@ -1,20 +1,30 @@
 <script>
   function setMaterialPropertiesPreBuiltValues(materialProperties) {
     for (let key in materialProperties) {
+      if (!materialProperties[key]){
+        // hiding the material as it is not part of the scenario
+        document.getElementById(`${key}`).setAttribute("hidden", true)
+        continue
+      }
       document.getElementById(`${key}Vp`).value = materialProperties[key].vp
       document.getElementById(`${key}Rho`).value = materialProperties[key].rho
       document.getElementById(`${key}Alpha`).value =
         materialProperties[key].alpha
       document.getElementById(`${key}RenderColor`).value =
         materialProperties[key].renderColor
+      document.getElementById(`${key}`).removeAttribute("hidden")
     }
   }
 
   function getMaterialPropertiesParams() {
-    const supportedMaterials = {{materials | tojson | safe}}
+    const supportedMaterials = {{all_materials | tojson | safe}}
     let params = {}
     for (let material of supportedMaterials) {
-      const key = material[0];
+      const key = material[0];  // material[0] is the material name, e.g. "water"
+      if (document.getElementById(`${key}`).hasAttribute("hidden")){
+        // as the material is hidden, it means it is not part of the scenario
+        continue
+      }
       params[key] = {
         "vp": document.getElementById(`${key}Vp`).value,
         "rho": document.getElementById(`${key}Rho`).value,
@@ -26,8 +36,8 @@
   }
 </script>
 <div class="accordion accordion-flush" id="materialsAccordion">
-  {% for material, material_label in materials %}
-  <div class="accordion-item">
+  {% for material, material_label in all_materials %}
+  <div class="accordion-item" id="{{material}}" hidden>
     <h2 class="accordion-header" id="flush-{{loop.index}}">
       <button
         class="accordion-button collapsed"

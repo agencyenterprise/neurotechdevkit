@@ -21,7 +21,7 @@ async def index():
         "index.html",
         title=title,
         built_in_scenarios=get_built_in_scenarios(),
-        materials=get_supported_materials(),
+        all_materials=get_supported_materials(),
     )
 
 

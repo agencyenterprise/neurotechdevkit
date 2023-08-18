@@ -7,7 +7,6 @@ from pydantic import BaseModel, Field, validator
 from typing_extensions import Annotated
 
 from neurotechdevkit.materials import Material as NDKMaterial
-from neurotechdevkit.materials import get_material
 from neurotechdevkit.scenarios import Scenario2D, Scenario3D
 from neurotechdevkit.scenarios import Target as NDKTarget
 from neurotechdevkit.sources import (
@@ -280,26 +279,74 @@ class Material(BaseModel):
         )
 
 
+class SUPPORTED_MATERIAL_NAMES(Enum):
+    """Enum to map the material names between the web and NDK."""
+
+    water = "water"
+    brain = "brain"
+    trabecularBone = "trabecular_bone"
+    corticalBone = "cortical_bone"
+    skin = "skin"
+    tumor = "tumor"
+
+    @classmethod
+    def get_material_names(cls) -> List[str]:
+        """Get the list of material names."""
+        return [material_name.name for material_name in cls]
+
+    @classmethod
+    def get_material_name(cls, ndk_material_name: str) -> str:
+        """Get the material name from the NDK material name."""
+        for material_name in SUPPORTED_MATERIAL_NAMES:
+            if material_name.value == ndk_material_name:
+                return material_name.name
+        raise ValueError(f"Material name {ndk_material_name} not found.")
+
+    @classmethod
+    def get_ndk_material_name(cls, material_name: str) -> str:
+        """Get the NDK material name from the material name."""
+        for material in SUPPORTED_MATERIAL_NAMES:
+            if material.name == material_name:
+                return material.value
+        raise ValueError(f"Material name {material_name} not found.")
+
+
 class MaterialProperties(BaseModel):
     """Material properties model for the material properties."""
 
-    water: Material
-    brain: Material
-    trabecularBone: Material
-    corticalBone: Material
-    skin: Material
-    tumor: Material
+    water: Optional[Material]
+    brain: Optional[Material]
+    trabecularBone: Optional[Material]
+    corticalBone: Optional[Material]
+    skin: Optional[Material]
+    tumor: Optional[Material]
 
     def to_ndk_material_properties(self) -> Dict[str, NDKMaterial]:
         """Instantiate the NDKMaterialProperties from the web material properties."""
-        return {
-            "water": self.water.to_ndk_material(),
-            "brain": self.brain.to_ndk_material(),
-            "trabecular_bone": self.trabecularBone.to_ndk_material(),
-            "cortical_bone": self.corticalBone.to_ndk_material(),
-            "skin": self.skin.to_ndk_material(),
-            "tumor": self.tumor.to_ndk_material(),
-        }
+        ndk_material_properties = {}
+        for material_name in self.__fields__:
+            if material := getattr(self, material_name):
+                ndk_material = material.to_ndk_material()
+                ndk_material_name = SUPPORTED_MATERIAL_NAMES.get_ndk_material_name(
+                    material_name
+                )
+                ndk_material_properties[ndk_material_name] = ndk_material
+        return ndk_material_properties
+
+    @classmethod
+    def from_scenario(
+        cls, scenario: Union[Scenario2D, Scenario3D]
+    ) -> "MaterialProperties":
+        """Instantiate the web material properties from a scenario."""
+        material_properties = {}
+        ndk_material_properties = scenario.material_properties
+        for ndk_material_name, ndk_material in ndk_material_properties.items():
+            material = Material.from_ndk_material(ndk_material)
+            material_name = SUPPORTED_MATERIAL_NAMES.get_material_name(
+                ndk_material_name
+            )
+            material_properties[material_name] = material
+        return cls(**material_properties)
 
 
 class SimulationSettings(BaseModel):
@@ -328,18 +375,7 @@ class _DefaultSettings(BaseModel):
         is_2d = issubclass(scenario, Scenario2D)
         center_frequency = scenario.center_frequency
         assert isinstance(center_frequency, float)
-        material_properties = MaterialProperties(
-            water=Material.from_ndk_material(get_material("water", center_frequency)),
-            brain=Material.from_ndk_material(get_material("brain", center_frequency)),
-            trabecularBone=Material.from_ndk_material(
-                get_material("trabecular_bone", center_frequency)
-            ),
-            corticalBone=Material.from_ndk_material(
-                get_material("cortical_bone", center_frequency)
-            ),
-            skin=Material.from_ndk_material(get_material("skin", center_frequency)),
-            tumor=Material.from_ndk_material(get_material("tumor", center_frequency)),
-        )
+        material_properties = MaterialProperties.from_scenario(scenario)
         simulation_settings = SimulationSettings(
             simulationPrecision=5,  # TODO: make this a parameter
             centerFrequency=center_frequency,
