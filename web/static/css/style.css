@@ -8,25 +8,41 @@ body,
 }
 
 .parameters {
-  background-color: #344054;
-  color: white;
+  background-color: #e4e5f1;
   position: absolute;
   width: 400px;
   height: 100%;
   padding: 10px;
+  overflow: scroll;
+}
+
+.form-control-color {
+  background-color: #e4e5f1;
+}
+
+.card ul li {
+  background-color: #e4e5f1;
+}
+
+.accordion-body {
+  background-color: #e4e5f1;
+}
+
+.accordion-button {
+  background-color: #e4e5f1;
+}
+
+.accordion-item {
+  --bs-accordion-border-color: #d2d3db;
 }
 
 .main-grid {
-  background-color: #1d2939;
-  color: white;
+  background-color: #fafafa;
+  /* color: white; */
   margin-left: 400px;
   height: 100%;
   overflow: hidden;
   padding: 10px;
-}
-
-.accordion-button::after {
-  margin-left: 1.1rem;
 }
 
 .cercle-icons {
@@ -55,4 +71,8 @@ body,
 
 #content_list_container {
   padding: 2rem;
+}
+
+#simulationType {
+  background-color: #e4e5f1;
 }
