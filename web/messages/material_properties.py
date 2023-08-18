@@ -2,7 +2,7 @@
 from enum import Enum
 from typing import Dict, List, Optional, Tuple, Union
 
-from pydantic import BaseModel
+from pydantic import BaseModel, create_model
 
 from neurotechdevkit.materials import Material as NDKMaterial
 from neurotechdevkit.scenarios import Scenario2D, Scenario3D
@@ -76,15 +76,17 @@ class SUPPORTED_MATERIAL_NAMES(Enum):
         raise ValueError(f"Material name {material_name} not found.")
 
 
-class MaterialProperties(BaseModel):
-    """Material properties model for the material properties."""
+_MaterialProperties: BaseModel = create_model(  # type: ignore
+    "MaterialProperties",
+    **{
+        material_name.name: (Optional[Material], None)
+        for material_name in SUPPORTED_MATERIAL_NAMES
+    },
+)
 
-    water: Optional[Material]
-    brain: Optional[Material]
-    trabecularBone: Optional[Material]
-    corticalBone: Optional[Material]
-    skin: Optional[Material]
-    tumor: Optional[Material]
+
+class MaterialProperties(_MaterialProperties):  # type: ignore
+    """Material properties model for the material properties."""
 
     def to_ndk_material_properties(self) -> Dict[str, NDKMaterial]:
         """Instantiate the NDKMaterialProperties from the web material properties."""
