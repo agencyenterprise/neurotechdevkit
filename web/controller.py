@@ -10,6 +10,35 @@ from neurotechdevkit.scenarios.built_in import BUILT_IN_SCENARIOS
 from web.messages import IndexBuiltInScenario, RenderLayoutRequest, SimulateRequest
 
 
+class BuiltInScenariosShelf(object):
+    """Singleton class for storing the built-in scenarios."""
+
+    scenarios: Dict[str, Scenario2D] = {}
+
+    def __new__(cls):
+        """Create a new instance of the class."""
+        if not hasattr(cls, "instance"):
+            cls.instance = super(BuiltInScenariosShelf, cls).__new__(cls)
+        return cls.instance
+
+    def get(self, scenario_id: str) -> Scenario2D:
+        """
+        Return the built-in scenario with the given id.
+
+        Args:
+            scenario_id (str): The id of the scenario.
+
+        Returns:
+            The built-in scenario.
+        """
+        if scenario_id not in self.scenarios:
+            builtin_scenario = BUILT_IN_SCENARIOS[scenario_id]()
+            builtin_scenario.make_grid()
+            builtin_scenario.compile_problem()
+            self.scenarios[scenario_id] = builtin_scenario
+        return self.scenarios[scenario_id]
+
+
 def get_supported_materials() -> List[Tuple[str, str]]:
     """
     Return a list of supported materials and their descriptions.
@@ -67,9 +96,9 @@ def _instantiate_scenario(
     config: Union[RenderLayoutRequest, SimulateRequest]
 ) -> Scenario2D:
     if config.scenarioSettings.isPreBuilt:
-        builtin_scenario = BUILT_IN_SCENARIOS[config.scenarioSettings.scenario_id]()
-        builtin_scenario.make_grid()
-        builtin_scenario.compile_problem()
+        builtin_scenario = BuiltInScenariosShelf().get(
+            config.scenarioSettings.scenario_id
+        )
         scenario = Scenario2D(
             center_frequency=builtin_scenario.center_frequency,
             material_properties=builtin_scenario.material_properties,

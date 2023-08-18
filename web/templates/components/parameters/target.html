@@ -1,4 +1,8 @@
 <script>
+  function valueChanged() {
+    renderLayout()
+  }
+
   function setTargetPreBuiltValues(target) {
     document.getElementById("centerX").value = target.centerX
     document.getElementById("centerY").value = target.centerY
@@ -21,6 +25,7 @@
       class="form-control"
       name="centerX"
       id="centerX"
+      onchange="valueChanged()"
       required
     />
   </div>
@@ -31,6 +36,7 @@
       class="form-control"
       id="centerY"
       name="centerY"
+      onchange="valueChanged()"
       required
     />
   </div>
@@ -42,6 +48,7 @@
     class="form-control"
     name="radius"
     id="radius"
+    onchange="valueChanged()"
     required
   />
 </div>
