@@ -22,8 +22,8 @@
     if (selection===""){
       disallowRunSimulation()
       disallowRenderLayout()
-      document.getElementById("axis").value = ""
-      document.getElementById("distanceFromOrigin").value = ""
+      clearAllTransducers()
+      document.getElementById("parameters-form").reset()
       return;
     }
     const selectedScenario = scenarioInfos[selection]
