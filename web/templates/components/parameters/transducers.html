@@ -43,6 +43,7 @@
     // Called when button Add at the end of the form is pressed
     storeTransducer()
     hideForm()
+    renderLayout()
   }
 
   function newTransducer() {
@@ -229,7 +230,6 @@
     form.tiltAngle.value = transducer.tiltAngle
     form.focalLength.value = transducer.focalLength
     form.delay.value = transducer.delay
-    form.aperture.value = transducer.aperture
   }
 
   function editTransducer(transducerIndex) {
@@ -257,6 +257,8 @@
     // Called when delete button of an already added transducer is pressed
     addedTransducers.splice(transducerIndex, 1)
     renderAddedTransducers()
+    hideForm()
+    renderLayout()
   }
 
   function renderAddedTransducers() {
@@ -280,6 +282,7 @@
         .setAttribute("data-transducer-id", index)
 
       addedTransducersElement.appendChild(addTransducer)
+      index++
     }
   }
 </script>

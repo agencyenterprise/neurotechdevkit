@@ -32,7 +32,7 @@ class TransducerType(str, Enum):
     """Transducer type enum for the type of transducer."""
 
     pointSource = "pointSource"
-    phasedArray = "phasedArray"
+    phasedArraySource = "phasedArraySource"
     focusedSource = "focusedSource"
     planarSource = "planarSource"
 
@@ -50,7 +50,7 @@ class TransducerType(str, Enum):
         if isinstance(source, PointSource2D):
             return cls.pointSource
         elif isinstance(source, PhasedArraySource2D):
-            return cls.phasedArray
+            return cls.phasedArraySource
         elif isinstance(source, (FocusedSource2D, FocusedSource3D)):
             return cls.focusedSource
         elif isinstance(source, PlanarSource2D):
@@ -89,7 +89,7 @@ class PointSourceSettings(_BaseSourceSettings):
 class PhasedArraySettings(_BaseSourceSettings):
     """Settings for a phased array transducer."""
 
-    transducerType: Literal["phasedArray"]
+    transducerType: Literal["phasedArraySource"]
     position: List[float]
     direction: List[float]
     numPoints: int
@@ -99,13 +99,13 @@ class PhasedArraySettings(_BaseSourceSettings):
     tiltAngle: float
     focalLength: float
     delay: float
-    elementDelays: List[float]
+    elementDelays: Optional[List[float]]
 
     @classmethod
     def from_source(cls, source: PhasedArraySource2D) -> "PhasedArraySettings":
         """Instantiate the source settings from a source."""
         return cls(
-            transducerType="phasedArray",
+            transducerType="phasedArraySource",
             position=source._position,
             direction=source._direction,
             num_points=source._num_points,
@@ -130,7 +130,7 @@ class PhasedArraySettings(_BaseSourceSettings):
             tilt_angle=self.tiltAngle,
             focal_length=self.focalLength,
             delay=self.delay,
-            element_delays=np.array(self.elementDelays),
+            element_delays=np.array(self.elementDelays) if self.elementDelays else None,
         )
 
 
