@@ -58,6 +58,11 @@
     renderLayout()
   }
 
+  function clearAllTransducers() {
+    addedTransducers.splice(0, addedTransducers.length)
+    renderAddedTransducers()
+  }
+
   function setTransducersPreBuiltValues(transducers) {
     // Called by the main script to set the transducers values
     addedTransducers.splice(0, addedTransducers.length)

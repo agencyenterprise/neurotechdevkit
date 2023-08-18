@@ -78,100 +78,102 @@
   />
   <label class="btn btn-outline-success" for="is3d">3D</label>
 </div>
-<div class="accordion accordion-flush" id="parameters-accordion">
-  <div class="accordion-item">
-    <h2 class="accordion-header">
-      <button
-        class="accordion-button collapsed"
-        type="button"
-        data-bs-toggle="collapse"
-        data-bs-target="#scenario-accordion-item"
-        aria-expanded="false"
-        aria-controls="scenario-accordion-item"
+<form id="parameters-form">
+  <div class="accordion accordion-flush" id="parameters-accordion">
+    <div class="accordion-item">
+      <h2 class="accordion-header">
+        <button
+          class="accordion-button collapsed"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#scenario-accordion-item"
+          aria-expanded="false"
+          aria-controls="scenario-accordion-item"
+        >
+          Scenario
+        </button>
+      </h2>
+      <div
+        id="scenario-accordion-item"
+        class="accordion-collapse collapse show"
+        data-bs-parent="#parameters-accordion"
       >
-        Scenario
-      </button>
-    </h2>
-    <div
-      id="scenario-accordion-item"
-      class="accordion-collapse collapse show"
-      data-bs-parent="#parameters-accordion"
-    >
-      <div class="accordion-body">
-        {% include 'components/parameters/scenario.html' %}
+        <div class="accordion-body">
+          {% include 'components/parameters/scenario.html' %}
+        </div>
+      </div>
+    </div>
+    <div class="accordion-item">
+      <h2 class="accordion-header">
+        <button
+          class="accordion-button collapsed"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#transducers-accordion-item"
+          aria-expanded="false"
+          aria-controls="transducers-accordion-item"
+          disabled
+        >
+          Transducers
+        </button>
+      </h2>
+      <div
+        id="transducers-accordion-item"
+        class="accordion-collapse collapse"
+        data-bs-parent="#parameters-accordion"
+      >
+        <div class="accordion-body">
+          {% include 'components/parameters/transducers.html' %}
+        </div>
+      </div>
+    </div>
+    <div class="accordion-item">
+      <h2 class="accordion-header">
+        <button
+          class="accordion-button collapsed"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#target-accordion-item"
+          aria-expanded="false"
+          aria-controls="target-accordion-item"
+          disabled
+        >
+          Target
+        </button>
+      </h2>
+      <div
+        id="target-accordion-item"
+        class="accordion-collapse collapse"
+        data-bs-parent="#parameters-accordion"
+      >
+        <div class="accordion-body">
+          {% include 'components/parameters/target.html' %}
+        </div>
+      </div>
+    </div>
+    <div class="accordion-item">
+      <h2 class="accordion-header">
+        <button
+          class="accordion-button collapsed"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#simulation-settings-accordion-item"
+          aria-expanded="false"
+          aria-controls="simulation-settings-accordion-item"
+          disabled
+        >
+          Simulation Settings
+        </button>
+      </h2>
+      <div
+        id="simulation-settings-accordion-item"
+        class="accordion-collapse collapse"
+        data-bs-parent="#parameters-accordion"
+      >
+        <div class="accordion-body">
+          {% include 'components/parameters/simulation_settings.html' %}
+        </div>
       </div>
     </div>
   </div>
-  <div class="accordion-item">
-    <h2 class="accordion-header">
-      <button
-        class="accordion-button collapsed"
-        type="button"
-        data-bs-toggle="collapse"
-        data-bs-target="#transducers-accordion-item"
-        aria-expanded="false"
-        aria-controls="transducers-accordion-item"
-        disabled
-      >
-        Transducers
-      </button>
-    </h2>
-    <div
-      id="transducers-accordion-item"
-      class="accordion-collapse collapse"
-      data-bs-parent="#parameters-accordion"
-    >
-      <div class="accordion-body">
-        {% include 'components/parameters/transducers.html' %}
-      </div>
-    </div>
-  </div>
-  <div class="accordion-item">
-    <h2 class="accordion-header">
-      <button
-        class="accordion-button collapsed"
-        type="button"
-        data-bs-toggle="collapse"
-        data-bs-target="#target-accordion-item"
-        aria-expanded="false"
-        aria-controls="target-accordion-item"
-        disabled
-      >
-        Target
-      </button>
-    </h2>
-    <div
-      id="target-accordion-item"
-      class="accordion-collapse collapse"
-      data-bs-parent="#parameters-accordion"
-    >
-      <div class="accordion-body">
-        {% include 'components/parameters/target.html' %}
-      </div>
-    </div>
-  </div>
-  <div class="accordion-item">
-    <h2 class="accordion-header">
-      <button
-        class="accordion-button collapsed"
-        type="button"
-        data-bs-toggle="collapse"
-        data-bs-target="#simulation-settings-accordion-item"
-        aria-expanded="false"
-        aria-controls="simulation-settings-accordion-item"
-        disabled
-      >
-        Simulation Settings
-      </button>
-    </h2>
-    <div
-      id="simulation-settings-accordion-item"
-      class="accordion-collapse collapse"
-      data-bs-parent="#parameters-accordion"
-    >
-      <div class="accordion-body">
-        {% include 'components/parameters/simulation_settings.html' %}
-      </div>
-    </div>
-  </div>
-</div>
+</form>
