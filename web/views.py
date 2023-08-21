@@ -7,8 +7,9 @@ from web.controller import (
     get_scenario_layout,
     get_simulation_image,
 )
-from web.messages.material_properties import SUPPORTED_MATERIAL_NAMES
+from web.messages.material_properties import MaterialName
 from web.messages.requests import RenderLayoutRequest, SimulateRequest
+from web.messages.transducers import TransducerType
 
 bp = Blueprint("main", __name__, url_prefix="/")
 
@@ -21,7 +22,8 @@ async def index():
         "index.html",
         title=title,
         built_in_scenarios=get_built_in_scenarios(),
-        all_materials=SUPPORTED_MATERIAL_NAMES.get_material_titles(),
+        all_materials=MaterialName.get_material_titles(),
+        all_transducers_types=TransducerType.get_transducer_titles(),
     )
 
 

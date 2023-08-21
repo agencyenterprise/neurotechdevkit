@@ -54,6 +54,8 @@ def get_built_in_scenarios() -> Dict[str, Dict]:
     for scenario_id, scenario in BUILT_IN_SCENARIOS.items():
         assert issubclass(scenario, (Scenario2D, Scenario3D))
         settings = IndexBuiltInScenario.from_scenario(scenario_id, scenario)
+        assert isinstance(settings, IndexBuiltInScenario)
+        settings.title = scenario_id.replace("_", " ").title()
         scenarios[scenario_id] = settings.dict()
     return scenarios
 

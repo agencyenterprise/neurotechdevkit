@@ -4,17 +4,33 @@
 <div id="planarOptions" hidden>
   {% include 'components/parameters/transducers/planar.html' %}
 </div>
+<div id="pointOptions" hidden>
+  {% include 'components/parameters/transducers/point.html' %}
+</div>
 <div id="phasedArrayOptions" hidden>
   {% include 'components/parameters/transducers/phased-array.html' %}
 </div>
 <script>
   let addedTransducers = []
 
+  function getTransducerTitle(transducer){
+    const transducerTypes = {{all_transducers_types | tojson | safe}}
+    for (let transducerTuple of transducerTypes){
+      if (transducerTuple[0] == transducer){
+        return transducerTuple[1]
+      }
+    }
+  }
+
   function showSaveButton(transducerIndex) {
     document.getElementById("saveTransducerButton").removeAttribute("hidden")
     document.getElementById("saveTransducerButton").dataset.transducerId =
       transducerIndex
     document.getElementById("addTransducerButton").setAttribute("hidden", true)
+  }
+
+  function hasTransducers() {
+    return addedTransducers.length > 0
   }
 
   function hideSaveButton() {
@@ -81,6 +97,10 @@
         params = document.getElementById("focusedOptions").innerHTML
         document.getElementById("transducerSettings").innerHTML = params
         break
+      case "pointSource":
+        params = document.getElementById("pointOptions").innerHTML
+        document.getElementById("transducerSettings").innerHTML = params
+        break
       case "planarSource":
         params = document.getElementById("planarOptions").innerHTML
         document.getElementById("transducerSettings").innerHTML = params
@@ -119,6 +139,15 @@
       aperture,
       focalLength,
       numPoints,
+      delay,
+    }
+  }
+
+  function getPointSourceParams(formData) {
+    const position = [formData.positionY, formData.positionX]
+    const delay = formData.delay
+    return {
+      position,
       delay,
     }
   }
@@ -182,6 +211,9 @@
       case "planarSource":
         settings = getPlanarSourceParams(formValues)
         break
+      case "pointSource":
+        settings = getPointSourceParams(formValues)
+        break
       case "phasedArraySource":
         settings = getPhasedArraySourceParams(formValues)
         break
@@ -222,6 +254,13 @@
     form.delay.value = transducer.delay
   }
 
+  function editPointSource(transducer) {
+    const form = document.getElementById("createTransducerForm")
+    form.positionY.value = transducer.position[0]
+    form.positionX.value = transducer.position[1]
+    form.delay.value = transducer.delay
+  }
+
   function editPhasedArraySource(transducer) {
     const form = document.getElementById("createTransducerForm")
     form.positionY.value = transducer.position[0]
@@ -252,6 +291,9 @@
       case "planarSource":
         editPlanarSource(transducer)
         break
+      case "pointSource":
+        editPointSource(transducer)
+        break
       case "phasedArraySource":
         editPhasedArraySource(transducer)
         break
@@ -276,7 +318,7 @@
     for (transducer of addedTransducers) {
       let addTransducer = transducerTemplate.content.cloneNode(true)
       addTransducer.querySelector(".content-title").innerHTML =
-        transducer.transducerType
+        getTransducerTitle(transducer.transducerType)
 
       addTransducer
         .querySelector('[data-action="edit"]')
@@ -289,6 +331,8 @@
       addedTransducersElement.appendChild(addTransducer)
       index++
     }
+    // if there are no transducers, disable the run simulation button
+    allowRunSimulation()
   }
 </script>
 
@@ -335,9 +379,9 @@
       aria-label="Select a transducer"
     >
       <option selected>-- Select transducer --</option>
-      <option value="focusedSource">Focused Source</option>
-      <option value="planarSource">Planar Source</option>
-      <option value="phasedArraySource">Phased Array Source</option>
+      {% for transducerType, transducerTypeLabel in all_transducers_types %}
+      <option value="{{transducerType}}">{{transducerTypeLabel}}</option>
+      {% endfor %}
     </select>
   </div>
   <div id="transducerSettings"></div>

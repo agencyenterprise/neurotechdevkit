@@ -36,7 +36,7 @@ class Material(BaseModel):
         )
 
 
-class SUPPORTED_MATERIAL_NAMES(Enum):
+class MaterialName(Enum):
     """Enum to map the material names between the web and NDK."""
 
     water = "water"
@@ -62,7 +62,7 @@ class SUPPORTED_MATERIAL_NAMES(Enum):
     @classmethod
     def get_material_name(cls, ndk_material_name: str) -> str:
         """Get the material name from the NDK material name."""
-        for material_name in SUPPORTED_MATERIAL_NAMES:
+        for material_name in MaterialName:
             if material_name.value == ndk_material_name:
                 return material_name.name
         raise ValueError(f"Material name {ndk_material_name} not found.")
@@ -70,7 +70,7 @@ class SUPPORTED_MATERIAL_NAMES(Enum):
     @classmethod
     def get_ndk_material_name(cls, material_name: str) -> str:
         """Get the NDK material name from the material name."""
-        for material in SUPPORTED_MATERIAL_NAMES:
+        for material in MaterialName:
             if material.name == material_name:
                 return material.value
         raise ValueError(f"Material name {material_name} not found.")
@@ -79,8 +79,7 @@ class SUPPORTED_MATERIAL_NAMES(Enum):
 _MaterialProperties: BaseModel = create_model(  # type: ignore
     "MaterialProperties",
     **{
-        material_name.name: (Optional[Material], None)
-        for material_name in SUPPORTED_MATERIAL_NAMES
+        material_name.name: (Optional[Material], None) for material_name in MaterialName
     },
 )
 
@@ -94,9 +93,7 @@ class MaterialProperties(_MaterialProperties):  # type: ignore
         for material_name in self.__fields__:
             if material := getattr(self, material_name):
                 ndk_material = material.to_ndk_material()
-                ndk_material_name = SUPPORTED_MATERIAL_NAMES.get_ndk_material_name(
-                    material_name
-                )
+                ndk_material_name = MaterialName.get_ndk_material_name(material_name)
                 ndk_material_properties[ndk_material_name] = ndk_material
         return ndk_material_properties
 
@@ -109,8 +106,6 @@ class MaterialProperties(_MaterialProperties):  # type: ignore
         ndk_material_properties = scenario.material_properties
         for ndk_material_name, ndk_material in ndk_material_properties.items():
             material = Material.from_ndk_material(ndk_material)
-            material_name = SUPPORTED_MATERIAL_NAMES.get_material_name(
-                ndk_material_name
-            )
+            material_name = MaterialName.get_material_name(ndk_material_name)
             material_properties[material_name] = material
         return cls(**material_properties)

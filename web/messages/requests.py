@@ -1,4 +1,6 @@
 """Request models for the web messages sent and received by the web app."""
+from typing import Optional
+
 from web.messages.settings import DefaultSettings
 
 
@@ -17,4 +19,4 @@ class SimulateRequest(DefaultSettings):
 class IndexBuiltInScenario(DefaultSettings):
     """The Scenario settings for the index page."""
 
-    pass
+    title: Optional[str] = None
