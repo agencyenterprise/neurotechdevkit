@@ -5,7 +5,6 @@
     document.getElementById("ctFileDiv").hidden = true
     document.getElementById("axisDiv").hidden = true
     document.getElementById("distanceFromOriginDiv").hidden = true
-
   }
 
   function toggleCTFileDiv() {
@@ -93,7 +92,7 @@
         <option value="" selected>Select a scenario</option>
         {% for scenario_id, scenario in built_in_scenarios.items() %} {% if
         scenario['is2d'] %}
-        <option value="{{scenario_id}}">{{scenario_id}}</option>
+        <option value="{{scenario_id}}">{{scenario.title}}</option>
         {% endif %} {% endfor %}
       </select>
     </div>

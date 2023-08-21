@@ -1,6 +1,10 @@
 <script>
   function allowRunSimulation() {
-    document.getElementById("runSimulation").removeAttribute("disabled")
+    if (hasTransducers()) {
+      document.getElementById("runSimulation").removeAttribute("disabled")
+    } else {
+      disallowRunSimulation()
+    }
   }
   function disallowRunSimulation() {
     document.getElementById("runSimulation").setAttribute("disabled", true)

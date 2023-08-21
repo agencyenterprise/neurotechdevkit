@@ -1,6 +1,7 @@
 """Pydantic models for the transducers and their settings."""
+import re
 from enum import Enum
-from typing import Dict, List, Literal, Optional, Type, Union
+from typing import Dict, List, Literal, Optional, Tuple, Type, Union
 
 import numpy as np
 from pydantic import BaseModel, Field
@@ -14,6 +15,25 @@ from neurotechdevkit.sources import (
     PointSource2D,
     Source,
 )
+
+
+def title_case(string: str) -> str:
+    """Convert a string to title case.
+
+    Example:
+        >>> title_case('helloWorld')
+        'Hello World'
+
+    Args:
+        string: The string to convert to title case.
+
+    Returns:
+        The string in title case.
+    """
+    if string != "":
+        result = re.sub("([A-Z])", r" \1", string)
+        return result[:1].upper() + result[1:]
+    return ""
 
 
 class TransducerType(str, Enum):
@@ -44,6 +64,19 @@ class TransducerType(str, Enum):
         elif isinstance(source, PlanarSource2D):
             return cls.planarSource
 
+    @classmethod
+    def get_transducer_titles(cls) -> List[Tuple[str, str]]:
+        """Get the transducer types and titles.
+
+        Returns:
+            The list of transducer types and titles.
+        """
+        titles = []
+        for transducer_type in cls:
+            title = title_case(transducer_type.value)
+            titles.append((transducer_type.name, title))
+        return titles
+
 
 class _BaseSourceSettings(BaseModel):
     @classmethod
@@ -55,7 +88,7 @@ class _BaseSourceSettings(BaseModel):
 class PointSourceSettings(_BaseSourceSettings):
     """Settings for a point source transducer."""
 
-    transducerType: Literal["pointSource"]
+    transducerType: Literal[TransducerType.pointSource]
     delay: float
     position: List[float]
 
@@ -63,7 +96,9 @@ class PointSourceSettings(_BaseSourceSettings):
     def from_source(cls, source: PointSource2D) -> "PointSourceSettings":
         """Instantiate the source settings from a source."""
         return cls(
-            transducerType="pointSource", position=source._position, delay=source._delay
+            transducerType=TransducerType.pointSource,
+            position=source._position,
+            delay=source._delay,
         )
 
     def to_ndk_source(self) -> PointSource2D:
@@ -77,7 +112,7 @@ class PointSourceSettings(_BaseSourceSettings):
 class PhasedArraySettings(_BaseSourceSettings):
     """Settings for a phased array transducer."""
 
-    transducerType: Literal["phasedArraySource"]
+    transducerType: Literal[TransducerType.phasedArraySource]
     position: List[float]
     direction: List[float]
     numPoints: int
@@ -93,7 +128,7 @@ class PhasedArraySettings(_BaseSourceSettings):
     def from_source(cls, source: PhasedArraySource2D) -> "PhasedArraySettings":
         """Instantiate the source settings from a source."""
         return cls(
-            transducerType="phasedArraySource",
+            transducerType=TransducerType.phasedArraySource,
             position=source._position,
             direction=source._direction,
             num_points=source._num_points,
@@ -125,7 +160,7 @@ class PhasedArraySettings(_BaseSourceSettings):
 class FocusedSourceSettings(_BaseSourceSettings):
     """Settings for a focused source transducer."""
 
-    transducerType: Literal["focusedSource"]
+    transducerType: Literal[TransducerType.focusedSource]
     position: List[float]
     aperture: float
     direction: List[float]
@@ -137,7 +172,7 @@ class FocusedSourceSettings(_BaseSourceSettings):
     def from_source(cls, source: FocusedSource2D) -> "FocusedSourceSettings":
         """Instantiate the source settings from a source."""
         return cls(
-            transducerType="focusedSource",
+            transducerType=TransducerType.focusedSource,
             position=source._position,
             direction=source._direction,
             aperture=source._aperture,
@@ -161,7 +196,7 @@ class FocusedSourceSettings(_BaseSourceSettings):
 class PlanarSourceSettings(_BaseSourceSettings):
     """Settings for a planar source transducer."""
 
-    transducerType: Literal["planarSource"]
+    transducerType: Literal[TransducerType.planarSource]
     aperture: float
     delay: float
     direction: List[float]
@@ -172,7 +207,7 @@ class PlanarSourceSettings(_BaseSourceSettings):
     def from_source(cls, source: PlanarSource2D) -> "PlanarSourceSettings":
         """Instantiate the source settings from a source."""
         return cls(
-            transducerType="planarSource",
+            transducerType=TransducerType.planarSource,
             aperture=source._aperture,
             delay=source._delay,
             direction=source._direction,
