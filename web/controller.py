@@ -5,7 +5,7 @@ import tempfile
 from typing import Dict, Optional, Tuple, Union
 
 from neurotechdevkit.results import PulsedResult2D, SteadyStateResult2D
-from neurotechdevkit.scenarios import Scenario2D, Scenario3D, Target
+from neurotechdevkit.scenarios import Scenario2D, Scenario3D
 from neurotechdevkit.scenarios.built_in import BUILT_IN_SCENARIOS
 from web.messages.requests import (
     IndexBuiltInScenario,
@@ -70,24 +70,27 @@ def get_scenario_layout(config: RenderLayoutRequest) -> str:
     Returns:
         The base64 encoded png image.
     """
-    if config.is2d:
-        scenario = _instantiate_scenario(
-            config.scenarioSettings.isPreBuilt, config.scenarioSettings.scenario_id
-        )
-        _configure_scenario(scenario, config)
-        fig = scenario.render_layout(show_sources=len(scenario.sources) > 0)
-        buf = io.BytesIO()
-        fig.savefig(buf, format="png")
-        data = base64.b64encode(buf.getbuffer()).decode("ascii")
-        return data
-    raise NotImplementedError
+    scenario = _instantiate_scenario(
+        config.scenarioSettings.isPreBuilt,
+        config.is2d,
+        config.scenarioSettings.scenario_id,
+    )
+    _configure_scenario(scenario, config)
+    fig = scenario.render_layout(show_sources=len(scenario.sources) > 0)
+    buf = io.BytesIO()
+    fig.savefig(buf, format="png")
+    data = base64.b64encode(buf.getbuffer()).decode("ascii")
+    return data
 
 
-def _instantiate_scenario(is_prebuilt: bool, scenario_id: Optional[str]) -> Scenario2D:
+def _instantiate_scenario(
+    is_prebuilt: bool, is_2d: bool, scenario_id: Optional[str]
+) -> Union[Scenario2D, Scenario3D]:
     """Instantiate the scenario for the web app.
 
     Args:
         is_prebuilt (bool): Whether the scenario is prebuilt or not.
+        is_2d (bool): Whether the scenario is 2D or not.
         scenario_id (Optional[str]): The id of the scenario.
 
     Returns:
@@ -99,7 +102,8 @@ def _instantiate_scenario(is_prebuilt: bool, scenario_id: Optional[str]) -> Scen
         material_properties = {
             key: value for key, value in builtin_scenario.material_properties.items()
         }
-        scenario = Scenario2D(
+        scenario_class = Scenario2D if is_2d else Scenario3D
+        scenario = scenario_class(
             center_frequency=builtin_scenario.center_frequency,
             material_properties=material_properties,
             material_masks=builtin_scenario.material_masks,
@@ -124,12 +128,14 @@ def get_simulation_image(config: SimulateRequest) -> Tuple[str, str]:
     Returns:
         Tuple[str, str]: The base64 encoded image and the image format.
     """
+    scenario = _instantiate_scenario(
+        config.scenarioSettings.isPreBuilt,
+        config.is2d,
+        config.scenarioSettings.scenario_id,
+    )
+    _configure_scenario(scenario, config)
+    scenario.compile_problem()
     if config.is2d:
-        scenario = _instantiate_scenario(
-            config.scenarioSettings.isPreBuilt, config.scenarioSettings.scenario_id
-        )
-        _configure_scenario(scenario, config)
-        scenario.compile_problem()
         if config.simulationSettings.isSteadySimulation:
             result = scenario.simulate_steady_state()
             assert isinstance(result, SteadyStateResult2D)
@@ -152,18 +158,18 @@ def get_simulation_image(config: SimulateRequest) -> Tuple[str, str]:
 
 
 def _configure_scenario(
-    scenario: Scenario2D, config: Union[RenderLayoutRequest, SimulateRequest]
+    scenario: Union[Scenario2D, Scenario3D],
+    config: Union[RenderLayoutRequest, SimulateRequest],
 ):
     """Configure a scenario based on the given configuration."""
     if config_target := config.target:
-        scenario.target = Target(
-            target_id="target_1",
-            center=[config_target.centerY, config_target.centerX],
-            radius=config_target.radius,
-            description="",
-        )
+        scenario.target = config_target.to_ndk_target()
 
     scenario.center_frequency = config.simulationSettings.centerFrequency
+    if isinstance(scenario, Scenario3D) and config.scenarioSettings.sliceAxis:
+        scenario.slice_axis = config.scenarioSettings.sliceAxis.to_ndk_axis()
+        assert config.scenarioSettings.slicePosition is not None
+        scenario.slice_position = config.scenarioSettings.slicePosition
 
     config_material_properties = config.simulationSettings.materialProperties
     if config_material_properties:

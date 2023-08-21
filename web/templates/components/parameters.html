@@ -25,7 +25,7 @@
   }
 
   function renderLayout() {
-    document.getElementById("plotArea").innerHTML = ""
+    clearPlotArea()
 
     const is2d = document.getElementById("is2d").checked
     const scenarioParams = getScenarioParams()
@@ -53,6 +53,24 @@
         document.getElementById("plotArea").innerHTML = text
       })
   }
+
+  function changeSimulationType(is2d) {
+    if (is2d) {
+      document.querySelectorAll('[data-3d-only="true"]').forEach((element) => {
+        element.setAttribute("hidden", true)
+      })
+    } else {
+      document.querySelectorAll('[data-3d-only="true"]').forEach((element) => {
+        element.removeAttribute("hidden")
+      })
+    }
+    clearPlotArea()
+    setScenariosOptions(is2d)
+  }
+
+  window.onload = function () {
+    setScenariosOptions((is2d = true)) // default is 2D
+  }
 </script>
 <h1>
   <span>Parameters</span>
@@ -64,6 +82,7 @@
     name="options"
     id="is2d"
     autocomplete="off"
+    onchange="changeSimulationType(is2d=true)"
     checked
   />
   <label class="btn btn-primary" for="is2d">2D</label>
@@ -74,7 +93,7 @@
     name="options"
     id="is3d"
     autocomplete="off"
-    disabled
+    onchange="changeSimulationType(is2d=false)"
   />
   <label class="btn btn-primary" for="is3d">3D</label>
 </div>

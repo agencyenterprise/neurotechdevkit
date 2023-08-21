@@ -3,19 +3,23 @@
   function togglePreBuiltDiv() {
     document.getElementById("preBuiltDiv").hidden = false
     document.getElementById("ctFileDiv").hidden = true
-    document.getElementById("axisDiv").hidden = true
-    document.getElementById("distanceFromOriginDiv").hidden = true
+    document.getElementById("sliceAxisDiv").hidden = true
+    document.getElementById("slicePositionDiv").hidden = true
   }
 
   function toggleCTFileDiv() {
     document.getElementById("preBuiltDiv").hidden = true
     document.getElementById("ctFileDiv").hidden = false
-    document.getElementById("axisDiv").hidden = false
-    document.getElementById("distanceFromOriginDiv").hidden = false
+    document.getElementById("sliceAxisDiv").hidden = false
+    document.getElementById("slicePositionDiv").hidden = false
+  }
+
+  function valueChanged() {
+    renderLayout()
   }
 
   function scenarioSelected(scenarioInput){
-    document.getElementById("plotArea").innerHTML = ""
+    clearPlotArea()
 
     const selection = scenarioInput.value;
     if (selection===""){
@@ -29,6 +33,7 @@
     setTargetPreBuiltValues(selectedScenario.target)
     setSimulationSettingsPreBuiltValues(selectedScenario.simulationSettings)
     setTransducersPreBuiltValues(selectedScenario.transducers)
+    setScenarioPreBuiltValues(selectedScenario.scenarioSettings)
 
     allowRenderLayout()
     allowRunSimulation()
@@ -37,12 +42,12 @@
 
   function getScenarioParams() {
     const isPreBuilt = document.getElementById("isPreBuilt").checked
-    const axis = document.getElementById("axis").value || null
-    const distanceFromOrigin = document.getElementById("distanceFromOrigin")
+    const sliceAxis = document.getElementById("sliceAxis").value || null
+    const slicePosition = document.getElementById("slicePosition")
       .value || null
     let params = {
-      axis: axis,
-      distanceFromOrigin: distanceFromOrigin,
+      sliceAxis: sliceAxis,
+      slicePosition: slicePosition,
       isPreBuilt: isPreBuilt,
     }
     if (isPreBuilt) {
@@ -51,6 +56,31 @@
       params["ctFile"] = document.getElementById("ctFile").value
     }
     return params
+  }
+
+  function setScenarioPreBuiltValues(scenarioSettings) {
+    document.getElementById("sliceAxis").value = scenarioSettings.sliceAxis
+    document.getElementById("slicePosition").value =
+      scenarioSettings.slicePosition
+  }
+
+  function setScenariosOptions(is2d){
+    const scenarioSelect = document.getElementById("scenario")
+    scenarioSelect.innerHTML = ""
+
+    const option = document.createElement("option")
+    option.value = ""
+    option.text = "Select a scenario"
+    scenarioSelect.appendChild(option)
+
+    for (const [scenarioId, scenario] of Object.entries(scenarioInfos)) {
+      if (scenario.is2d === is2d) {
+        const option = document.createElement("option")
+        option.value = scenarioId
+        option.text = scenario.title
+        scenarioSelect.appendChild(option)
+      }
+    }
   }
 </script>
 <form>
@@ -88,37 +118,37 @@
         id="scenario"
         class="form-select"
         onchange="scenarioSelected(this)"
-      >
-        <option value="" selected>Select a scenario</option>
-        {% for scenario_id, scenario in built_in_scenarios.items() %} {% if
-        scenario['is2d'] %}
-        <option value="{{scenario_id}}">{{scenario.title}}</option>
-        {% endif %} {% endfor %}
-      </select>
+      ></select>
     </div>
     <div id="ctFileDiv" hidden>
       <label for="ctFile" class="form-label" for="ctFile">CT File</label>
       <input class="form-control" type="file" id="ctFile" />
     </div>
   </div>
-  <div id="axisDiv" class="mb-3" hidden>
-    <label for="axis" class="form-label" for="axis">Axis</label>
-    <select class="form-select" aria-label="Axis" id="axis">
+  <div id="sliceAxisDiv" class="mb-3" data-3d-only="true" hidden>
+    <label for="sliceAxis" class="form-label">Axis</label>
+    <select
+      class="form-select"
+      aria-label="Axis"
+      id="sliceAxis"
+      onchange="valueChanged()"
+    >
       <option value="" selected>Select an axis</option>
       <option value="x">X</option>
       <option value="y">Y</option>
       <option value="z">Z</option>
     </select>
   </div>
-  <div id="distanceFromOriginDiv" class="mb-3" hidden>
-    <label for="distanceFromOrigin" class="form-label" for="distanceFromOrigin"
-      >Distance from Origin (mm)</label
+  <div id="slicePositionDiv" class="mb-3" data-3d-only="true" hidden>
+    <label for="slicePosition" class="form-label" for="slicePosition"
+      >Distance from Origin (m)</label
     >
     <input
       type="number"
       class="form-control"
-      id="distanceFromOrigin"
+      id="slicePosition"
       placeholder="Type here"
+      onchange="valueChanged()"
     />
   </div>
 </form>

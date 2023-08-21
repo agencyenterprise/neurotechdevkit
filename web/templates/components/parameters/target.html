@@ -1,11 +1,8 @@
 <script>
-  function valueChanged() {
-    renderLayout()
-  }
-
   function setTargetPreBuiltValues(target) {
     document.getElementById("centerX").value = target.centerX
     document.getElementById("centerY").value = target.centerY
+    document.getElementById("centerZ").value = target.centerZ
     document.getElementById("radius").value = target.radius
   }
 
@@ -13,6 +10,7 @@
     let params = {}
     params["centerX"] = document.getElementById("centerX").value
     params["centerY"] = document.getElementById("centerY").value
+    params["centerZ"] = document.getElementById("centerZ").value || null
     params["radius"] = document.getElementById("radius").value
     return params
   }
@@ -36,6 +34,17 @@
       class="form-control"
       id="centerY"
       name="centerY"
+      onchange="valueChanged()"
+      required
+    />
+  </div>
+  <div class="col" data-3d-only="true" hidden>
+    <label for="centerZ">Center Z</label>
+    <input
+      type="number"
+      class="form-control"
+      id="centerZ"
+      name="centerZ"
       onchange="valueChanged()"
       required
     />
