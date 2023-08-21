@@ -23,7 +23,7 @@ async def index():
         title=title,
         built_in_scenarios=get_built_in_scenarios(),
         all_materials=MaterialName.get_material_titles(),
-        all_transducers_types=TransducerType.get_transducer_titles(),
+        all_transducer_types=TransducerType.get_transducer_titles(),
     )
 
 

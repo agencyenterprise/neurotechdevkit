@@ -9,13 +9,23 @@
       required
     />
   </div>
-  <div class="col">
+  <div class="col mb-3">
     <label for="positionY">Position Y</label>
     <input
       type="number"
       class="form-control"
       id="positionY"
       name="positionY"
+      required
+    />
+  </div>
+  <div class="col mb-3" data-3d-only="true" hidden>
+    <label for="positionY">Position Z</label>
+    <input
+      type="number"
+      class="form-control"
+      id="positionZ"
+      name="positionZ"
       required
     />
   </div>
@@ -38,6 +48,16 @@
       class="form-control"
       name="directionY"
       id="directionY"
+      required
+    />
+  </div>
+  <div class="col mb-3" data-3d-only="true" hidden>
+    <label for="directionZ">Direction Z</label>
+    <input
+      type="number"
+      class="form-control"
+      name="directionZ"
+      id="directionZ"
       required
     />
   </div>

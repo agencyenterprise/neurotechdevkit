@@ -14,7 +14,7 @@
   let addedTransducers = []
 
   function getTransducerTitle(transducer){
-    const transducerTypes = {{all_transducers_types | tojson | safe}}
+    const transducerTypes = {{all_transducer_types | tojson | safe}}
     for (let transducerTuple of transducerTypes){
       if (transducerTuple[0] == transducer){
         return transducerTuple[1]
@@ -127,8 +127,8 @@
   }
 
   function getFocusedSourceParams(formData) {
-    const position = [formData.positionY, formData.positionX]
-    const direction = [formData.directionY, formData.directionX]
+    const position = [formData.positionY, formData.positionX, formData.positionZ]
+    const direction = [formData.directionY, formData.directionX, formData.directionZ]
     const aperture = formData.aperture
     const focalLength = formData.focalLength
     const numPoints = formData.numPoints
@@ -144,7 +144,7 @@
   }
 
   function getPointSourceParams(formData) {
-    const position = [formData.positionY, formData.positionX]
+    const position = [formData.positionY, formData.positionX, formData.positionZ]
     const delay = formData.delay
     return {
       position,
@@ -153,8 +153,8 @@
   }
 
   function getPlanarSourceParams(formData) {
-    const position = [formData.positionY, formData.positionX]
-    const direction = [formData.directionY, formData.directionX]
+    const position = [formData.positionY, formData.positionX, formData.positionZ]
+    const direction = [formData.directionY, formData.directionX, formData.directionZ]
     const aperture = formData.aperture
     const numPoints = formData.numPoints
     const delay = formData.delay
@@ -168,8 +168,8 @@
   }
 
   function getPhasedArraySourceParams(formData) {
-    const position = [formData.positionY, formData.positionX]
-    const direction = [formData.directionY, formData.directionX]
+    const position = [formData.positionY, formData.positionX, formData.positionZ]
+    const direction = [formData.directionY, formData.directionX, formData.directionZ]
     const numPoints = formData.numPoints
     const numElements = formData.numElements
     const pitch = formData.pitch
@@ -235,8 +235,10 @@
     const form = document.getElementById("createTransducerForm")
     form.positionY.value = transducer.position[0]
     form.positionX.value = transducer.position[1]
+    form.positionZ.value = transducer.position.length > 2 ? transducer.position[2] : ""
     form.directionY.value = transducer.direction[0]
     form.directionX.value = transducer.direction[1]
+    form.directionZ.value = transducer.direction.length > 2 ? transducer.direction[2] : ""
     form.aperture.value = transducer.aperture
     form.focalLength.value = transducer.focalLength
     form.numPoints.value = transducer.numPoints
@@ -247,8 +249,10 @@
     const form = document.getElementById("createTransducerForm")
     form.positionY.value = transducer.position[0]
     form.positionX.value = transducer.position[1]
+    form.positionZ.value = transducer.position.length > 2 ? transducer.position[2] : ""
     form.directionY.value = transducer.direction[0]
     form.directionX.value = transducer.direction[1]
+    form.directionZ.value = transducer.direction.length > 2 ? transducer.direction[2] : ""
     form.aperture.value = transducer.aperture
     form.numPoints.value = transducer.numPoints
     form.delay.value = transducer.delay
@@ -258,6 +262,7 @@
     const form = document.getElementById("createTransducerForm")
     form.positionY.value = transducer.position[0]
     form.positionX.value = transducer.position[1]
+    form.positionZ.value = transducer.position.length > 2 ? transducer.position[2] : ""
     form.delay.value = transducer.delay
   }
 
@@ -265,8 +270,10 @@
     const form = document.getElementById("createTransducerForm")
     form.positionY.value = transducer.position[0]
     form.positionX.value = transducer.position[1]
+    form.positionZ.value = transducer.position.length > 2 ? transducer.position[2] : ""
     form.directionY.value = transducer.direction[0]
     form.directionX.value = transducer.direction[1]
+    form.directionZ.value = transducer.direction.length > 2 ? transducer.direction[2] : ""
     form.numPoints.value = transducer.numPoints
     form.numElements.value = transducer.numElements
     form.pitch.value = transducer.pitch
@@ -379,7 +386,7 @@
       aria-label="Select a transducer"
     >
       <option selected>-- Select transducer --</option>
-      {% for transducerType, transducerTypeLabel in all_transducers_types %}
+      {% for transducerType, transducerTypeLabel in all_transducer_types %}
       <option value="{{transducerType}}">{{transducerTypeLabel}}</option>
       {% endfor %}
     </select>
