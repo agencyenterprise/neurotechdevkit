@@ -234,7 +234,6 @@ class SteadyStateResult(Result):
             "effective_dt": self.effective_dt,
             "steady_state": self.get_steady_state(),
         }
-
         return save_data
 
 
@@ -1276,7 +1275,6 @@ def load_result_from_disk(filepath: str | pathlib.Path) -> Result:
         ]()
 
         result_type = getattr(ndk.results, save_data["result_type"])
-
         fields_kwargs = dict(
             scenario=scenario,
             center_frequency=save_data["center_frequency"],
@@ -1291,6 +1289,7 @@ def load_result_from_disk(filepath: str | pathlib.Path) -> Result:
         scenario.grid = scenario.problem.grid
         scenario.material_masks = save_data["material_masks"]
         scenario.origin = save_data["origin"]
+        scenario.sources = save_data["sources"]
 
         if save_data.get("steady_state") is not None:
             fields_kwargs.update(steady_state=save_data["steady_state"])

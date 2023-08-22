@@ -109,7 +109,8 @@ def pulsed_data_2d():
 def a_test_scenario_2d():
     """A real 2D scenario that can be saved to disk and reloaded."""
     scenario = scenarios.built_in.Scenario1_2D()
-    scenario.sources.append(
+    original_sources = [source for source in scenario.sources]
+    scenario.sources = [
         sources.FocusedSource2D(
             position=np.array([0.02, 0.02]),
             direction=np.array([1.0, -1.0]),
@@ -117,30 +118,33 @@ def a_test_scenario_2d():
             focal_length=0.07,
             num_points=100,
         )
-    )
+    ]
     scenario.center_frequency = 5e5
     scenario.make_grid()
     scenario.compile_problem()
-    return scenario
+    yield scenario
+    scenario.sources = original_sources
 
 
 @pytest.fixture
 def a_test_scenario_3d():
     """A real 3D scenario that can be saved to disk and reloaded."""
     scenario = scenarios.built_in.Scenario1_3D()
-    scenario.sources.append(
+    original_sources = [source for source in scenario.sources]
+    scenario.sources = [
         sources.FocusedSource3D(
-            position=np.array([0.02, 0.02, 0.0]),
-            direction=np.array([1.0, -1.0, 0.0]),
+            position=[0.02, 0.02, 0.0],
+            direction=[1.0, -1.0, 0.0],
             aperture=0.025,
             focal_length=0.07,
             num_points=100,
         )
-    )
+    ]
     scenario.center_frequency = 5e5
     scenario.make_grid()
     scenario.compile_problem()
-    return scenario
+    yield scenario
+    scenario.sources = original_sources
 
 
 @pytest.mark.parametrize("by_slice", [False, True])
@@ -163,7 +167,6 @@ def test_extract_steady_state_with_3d(fake_ss_result_3d, ss_data_3d, by_slice):
     """
     data, expected_steady_state = ss_data_3d
     fake_ss_result_3d.wavefield = data
-    print(data.shape, expected_steady_state.shape)
     measured_steady_state = fake_ss_result_3d._extract_steady_state(by_slice=by_slice)
     np.testing.assert_allclose(measured_steady_state, expected_steady_state)
 
@@ -255,6 +258,7 @@ def test_save_round_trip_steady_state_2d(
     """
     data, expected_steady_state = ss_data_2d
     fake_ss_result_2d.scenario = a_test_scenario_2d
+    assert len(a_test_scenario_2d.sources) == 1
     fake_ss_result_2d.wavefield = data
     fake_ss_result_2d.steady_state = expected_steady_state
     filepath = tmp_path / "result.pkl"
@@ -263,9 +267,9 @@ def test_save_round_trip_steady_state_2d(
     result = ndk.load_result_from_disk(filepath)
 
     assert isinstance(result, SteadyStateResult2D)
-    np.testing.assert_allclose(result.steady_state, expected.steady_state)
     assert result.center_frequency == expected.center_frequency
     assert result.effective_dt == expected.effective_dt
+    np.testing.assert_allclose(result.steady_state, expected.steady_state)
     assert_scenario_match(result.scenario, expected.scenario)
 
 
@@ -299,6 +303,7 @@ def test_save_round_trip_pulsed_2d(pulsed_data_2d, a_test_scenario_2d, tmp_path)
 
     This is an integration test because it saves an actual result object to disk.
     """
+    assert len(a_test_scenario_2d.sources) == 1
     pulsed_results = PulsedResult2D(
         scenario=a_test_scenario_2d,
         center_frequency=25.0,
@@ -322,7 +327,7 @@ def test_save_round_trip_pulsed_2d(pulsed_data_2d, a_test_scenario_2d, tmp_path)
 
 
 @pytest.mark.integration
-def test_save_round_trip_pulsed_3D(tmp_path, a_test_scenario_3d):
+def test_save_round_trip_pulsed_3d(tmp_path, a_test_scenario_3d):
     """Verify that saving and loading a PulsedResults3D reproduces the fields.
 
     This is an integration test because it saves an actual result object to disk.
