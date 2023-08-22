@@ -43,4 +43,4 @@ web-development:
 	poetry run flask --app web/app.py --debug run
 
 web:
-	poetry run gunicorn -w 4 'web.app:app'
+	poetry run gunicorn -b 0.0.0.0 -w 4 'web.app:app'

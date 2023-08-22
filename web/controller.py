@@ -107,6 +107,7 @@ def _instantiate_scenario(
             center_frequency=builtin_scenario.center_frequency,
             material_properties=material_properties,
             material_masks=builtin_scenario.material_masks,
+            material_outline_upsample_factor=16,  # TODO: make this configurable
             origin=builtin_scenario.origin,
             sources=[source for source in builtin_scenario.sources],
             target=builtin_scenario.target,

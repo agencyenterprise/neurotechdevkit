@@ -18,6 +18,16 @@
     renderLayout()
   }
 
+  function disable3DParameters() {
+    document.getElementById("sliceAxis").disabled = true
+    document.getElementById("slicePosition").disabled = true
+  }
+
+  function enable3DParameters() {
+    document.getElementById("sliceAxis").disabled = false
+    document.getElementById("slicePosition").disabled = false
+  }
+
   function scenarioSelected(scenarioInput){
     clearPlotArea()
 
@@ -26,6 +36,7 @@
       disallowRunSimulation()
       disallowRenderLayout()
       clearAllTransducers()
+      disable3DParameters()
       document.getElementById("parameters-form").reset()
       return;
     }
@@ -35,8 +46,12 @@
     setTransducersPreBuiltValues(selectedScenario.transducers)
     setScenarioPreBuiltValues(selectedScenario.scenarioSettings)
 
-    document.getElementById("slicePosition").disabled = selectedScenario.is2d
-    document.getElementById("sliceAxis").disabled = selectedScenario.is2d
+
+    if (selectedScenario.is2d){
+      disable3DParameters()
+    } else {
+      enable3DParameters()
+    }
 
     allowRenderLayout()
     allowRunSimulation()
