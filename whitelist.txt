@@ -31,7 +31,7 @@ downsampling
 dt
 dx
 eg
-Enum
+enum
 et
 ffmpeg
 fft
@@ -51,6 +51,7 @@ img
 imshow
 intercomparison
 ipython
+iterable
 javascript
 jshtml
 jupyter
@@ -79,6 +80,7 @@ ppp
 ppw
 pre
 precomputed
+pydantic
 reproducibility
 resampling
 ricker
