@@ -1,11 +1,6 @@
 <script>
   function allowRunSimulation() {
     const is2d = document.getElementById("is2d").checked
-    if (!is2d) {
-      // 3D scenarios are not supported yet
-      disallowRunSimulation()
-      return
-    }
 
     if (hasTransducers()) {
       document.getElementById("runSimulation").removeAttribute("disabled")

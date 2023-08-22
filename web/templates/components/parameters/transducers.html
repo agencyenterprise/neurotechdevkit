@@ -178,6 +178,8 @@
     const focalLength = formData.focalLength
     const delay = formData.delay
     const aperture = formData.aperture
+    const centerLine = formData.centerLine
+    const height = formData.height
     return {
       position,
       direction,
@@ -189,6 +191,8 @@
       focalLength,
       delay,
       aperture,
+      centerLine,
+      height,
     }
   }
 
@@ -281,6 +285,8 @@
     form.tiltAngle.value = transducer.tiltAngle
     form.focalLength.value = transducer.focalLength
     form.delay.value = transducer.delay
+    form.centerLine.value = transducer.centerLine
+    form.height.value = transducer.height
   }
 
   function editTransducer(transducerIndex) {

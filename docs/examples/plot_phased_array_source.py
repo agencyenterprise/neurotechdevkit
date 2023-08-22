@@ -184,7 +184,7 @@ phased_array = ndk.sources.PhasedArraySource2D(
     num_elements=20,
     pitch=1.5e-3,
     element_width=1.2e-3,
-    element_delays=np.linspace(0, 1e-5, 20),
+    element_delays=np.linspace(0, 1e-5, 20).tolist(),
     num_points=1000,
 )
 scenario.sources = [phased_array]
@@ -213,7 +213,7 @@ scenario_3d = ndk.scenarios.built_in.Scenario1_3D()
 phased_3d = ndk.sources.PhasedArraySource3D(
     position=[0.0, 0.0, 0.0],
     direction=[1.0, 0.0, 0.0],
-    center_line=np.array([0.0, 0.0, 1.0]),
+    center_line=[0.0, 0.0, 1.0],
     num_points=20_000,
     num_elements=16,
     pitch=1.5e-3,

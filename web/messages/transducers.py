@@ -3,7 +3,6 @@ import re
 from enum import Enum
 from typing import Dict, List, Literal, Optional, Tuple, Type, Union
 
-import numpy as np
 from pydantic import BaseModel, Field
 from typing_extensions import Annotated
 
@@ -11,8 +10,11 @@ from neurotechdevkit.sources import (
     FocusedSource2D,
     FocusedSource3D,
     PhasedArraySource2D,
+    PhasedArraySource3D,
     PlanarSource2D,
+    PlanarSource3D,
     PointSource2D,
+    PointSource3D,
     Source,
 )
 
@@ -49,19 +51,23 @@ class TransducerType(str, Enum):
         cls,
         source: Union[
             PointSource2D,
+            PointSource3D,
             PhasedArraySource2D,
+            PhasedArraySource3D,
             FocusedSource2D,
+            FocusedSource3D,
             PlanarSource2D,
+            PlanarSource3D,
         ],
     ):
         """Instantiate the transducer type from a source."""
-        if isinstance(source, PointSource2D):
+        if isinstance(source, (PointSource2D, PointSource3D)):
             return cls.pointSource
-        elif isinstance(source, PhasedArraySource2D):
+        elif isinstance(source, (PhasedArraySource2D, PhasedArraySource3D)):
             return cls.phasedArraySource
         elif isinstance(source, (FocusedSource2D, FocusedSource3D)):
             return cls.focusedSource
-        elif isinstance(source, PlanarSource2D):
+        elif isinstance(source, (PlanarSource2D, PlanarSource3D)):
             return cls.planarSource
 
     @classmethod
@@ -93,7 +99,9 @@ class PointSourceSettings(_BaseSourceSettings):
     position: List[float]
 
     @classmethod
-    def from_source(cls, source: PointSource2D) -> "PointSourceSettings":
+    def from_source(
+        cls, source: Union[PointSource2D, PointSource3D]
+    ) -> "PointSourceSettings":
         """Instantiate the source settings from a source."""
         return cls(
             transducerType=TransducerType.pointSource,
@@ -101,12 +109,18 @@ class PointSourceSettings(_BaseSourceSettings):
             delay=source._delay,
         )
 
-    def to_ndk_source(self) -> PointSource2D:
+    def to_ndk_source(self) -> Union[PointSource2D, PointSource3D]:
         """Instantiate the NDK source from transducer settings."""
-        return PointSource2D(
-            position=self.position,
-            delay=self.delay,
-        )
+        if len(self.position) == 2:
+            return PointSource2D(
+                delay=self.delay,
+                position=self.position,
+            )
+        else:
+            return PointSource3D(
+                delay=self.delay,
+                position=self.position,
+            )
 
 
 class PhasedArraySettings(_BaseSourceSettings):
@@ -123,9 +137,13 @@ class PhasedArraySettings(_BaseSourceSettings):
     focalLength: float
     delay: float
     elementDelays: Optional[List[float]]
+    centerLine: Optional[List[float]]
+    height: Optional[float]
 
     @classmethod
-    def from_source(cls, source: PhasedArraySource2D) -> "PhasedArraySettings":
+    def from_source(
+        cls, source: Union[PhasedArraySource2D, PhasedArraySource3D]
+    ) -> "PhasedArraySettings":
         """Instantiate the source settings from a source."""
         return cls(
             transducerType=TransducerType.phasedArraySource,
@@ -141,20 +159,38 @@ class PhasedArraySettings(_BaseSourceSettings):
             element_delays=source._element_delays,
         )
 
-    def to_ndk_source(self) -> PhasedArraySource2D:
+    def to_ndk_source(self) -> Union[PhasedArraySource2D, PhasedArraySource3D]:
         """Instantiate the NDK source from transducer settings."""
-        return PhasedArraySource2D(
-            position=self.position,
-            direction=self.direction,
-            num_points=self.numPoints,
-            num_elements=self.numElements,
-            pitch=self.pitch,
-            element_width=self.elementWidth,
-            tilt_angle=self.tiltAngle,
-            focal_length=self.focalLength,
-            delay=self.delay,
-            element_delays=np.array(self.elementDelays) if self.elementDelays else None,
-        )
+        if len(self.position) == 2:
+            return PhasedArraySource2D(
+                position=self.position,
+                direction=self.direction,
+                num_points=self.numPoints,
+                num_elements=self.numElements,
+                pitch=self.pitch,
+                element_width=self.elementWidth,
+                tilt_angle=self.tiltAngle,
+                focal_length=self.focalLength,
+                delay=self.delay,
+                element_delays=self.elementDelays,
+            )
+        else:
+            assert self.centerLine is not None
+            assert self.height is not None
+            return PhasedArraySource3D(
+                position=self.position,
+                direction=self.direction,
+                num_points=self.numPoints,
+                num_elements=self.numElements,
+                pitch=self.pitch,
+                element_width=self.elementWidth,
+                tilt_angle=self.tiltAngle,
+                focal_length=self.focalLength,
+                delay=self.delay,
+                element_delays=self.elementDelays,
+                center_line=self.centerLine,
+                height=self.height,
+            )
 
 
 class FocusedSourceSettings(_BaseSourceSettings):
@@ -169,7 +205,9 @@ class FocusedSourceSettings(_BaseSourceSettings):
     delay: float
 
     @classmethod
-    def from_source(cls, source: FocusedSource2D) -> "FocusedSourceSettings":
+    def from_source(
+        cls, source: Union[FocusedSource2D, FocusedSource3D]
+    ) -> "FocusedSourceSettings":
         """Instantiate the source settings from a source."""
         return cls(
             transducerType=TransducerType.focusedSource,
@@ -181,16 +219,26 @@ class FocusedSourceSettings(_BaseSourceSettings):
             delay=source._delay,
         )
 
-    def to_ndk_source(self) -> FocusedSource2D:
+    def to_ndk_source(self) -> Union[FocusedSource2D, FocusedSource3D]:
         """Instantiate the NDK source from transducer settings."""
-        return FocusedSource2D(
-            position=self.position,
-            direction=self.direction,
-            aperture=self.aperture,
-            focal_length=self.focalLength,
-            num_points=self.numPoints,
-            delay=self.delay,
-        )
+        if len(self.position) == 2:
+            return FocusedSource2D(
+                position=self.position,
+                direction=self.direction,
+                aperture=self.aperture,
+                focal_length=self.focalLength,
+                num_points=self.numPoints,
+                delay=self.delay,
+            )
+        else:
+            return FocusedSource3D(
+                position=self.position,
+                direction=self.direction,
+                aperture=self.aperture,
+                focal_length=self.focalLength,
+                num_points=self.numPoints,
+                delay=self.delay,
+            )
 
 
 class PlanarSourceSettings(_BaseSourceSettings):
@@ -204,7 +252,9 @@ class PlanarSourceSettings(_BaseSourceSettings):
     position: List[float]
 
     @classmethod
-    def from_source(cls, source: PlanarSource2D) -> "PlanarSourceSettings":
+    def from_source(
+        cls, source: Union[PlanarSource2D, PlanarSource3D]
+    ) -> "PlanarSourceSettings":
         """Instantiate the source settings from a source."""
         return cls(
             transducerType=TransducerType.planarSource,
@@ -215,23 +265,35 @@ class PlanarSourceSettings(_BaseSourceSettings):
             position=source._position,
         )
 
-    def to_ndk_source(self) -> PlanarSource2D:
+    def to_ndk_source(self) -> Union[PlanarSource2D, PlanarSource3D]:
         """Instantiate the NDK source from transducer settings."""
-        return PlanarSource2D(
-            aperture=self.aperture,
-            delay=self.delay,
-            direction=self.direction,
-            num_points=self.numPoints,
-            position=self.position,
-        )
+        if len(self.position) == 2:
+            return PlanarSource2D(
+                aperture=self.aperture,
+                delay=self.delay,
+                direction=self.direction,
+                num_points=self.numPoints,
+                position=self.position,
+            )
+        else:
+            return PlanarSource3D(
+                aperture=self.aperture,
+                delay=self.delay,
+                direction=self.direction,
+                num_points=self.numPoints,
+                position=self.position,
+            )
 
 
 TRANSDUCER_SETTINGS: Dict[Type[Source], Type[_BaseSourceSettings]] = {
     PointSource2D: PointSourceSettings,
+    PointSource3D: PointSourceSettings,
     PhasedArraySource2D: PhasedArraySettings,
+    PhasedArraySource3D: PhasedArraySettings,
     FocusedSource2D: FocusedSourceSettings,
     FocusedSource3D: FocusedSourceSettings,
     PlanarSource2D: PlanarSourceSettings,
+    PlanarSource3D: PlanarSourceSettings,
 }
 
 
