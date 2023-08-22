@@ -35,6 +35,9 @@
     setTransducersPreBuiltValues(selectedScenario.transducers)
     setScenarioPreBuiltValues(selectedScenario.scenarioSettings)
 
+    document.getElementById("slicePosition").disabled = selectedScenario.is2d
+    document.getElementById("sliceAxis").disabled = selectedScenario.is2d
+
     allowRenderLayout()
     allowRunSimulation()
     renderLayout()
@@ -132,6 +135,7 @@
       aria-label="Axis"
       id="sliceAxis"
       onchange="valueChanged()"
+      disabled
     >
       <option value="" selected>Select an axis</option>
       <option value="x">X</option>
@@ -149,6 +153,7 @@
       id="slicePosition"
       placeholder="Type here"
       onchange="valueChanged()"
+      disabled
     />
   </div>
 </form>
