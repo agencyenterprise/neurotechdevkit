@@ -31,7 +31,7 @@ class BuiltInScenariosShelf(object):
         Return the instantiated built-in scenario with the given id.
 
         Args:
-            scenario_id (str): The id of the scenario.
+            scenario_id: The id of the scenario.
 
         Returns:
             The built-in scenario.
@@ -49,7 +49,7 @@ def get_built_in_scenarios() -> Dict[str, Dict]:
     Return a dictionary containing information about all the built-in scenarios.
 
     Returns:
-        The dictionary of built-in scenario infos.
+        The dictionary of built-in scenario info.
     """
     scenarios = {}
     for scenario_id, scenario in BUILT_IN_SCENARIOS.items():
@@ -90,9 +90,9 @@ def _instantiate_scenario(
     """Instantiate the scenario for the web app.
 
     Args:
-        is_prebuilt (bool): Whether the scenario is prebuilt or not.
-        is_2d (bool): Whether the scenario is 2D or not.
-        scenario_id (Optional[str]): The id of the scenario.
+        is_prebuilt: Whether the scenario is pre-built or not.
+        is_2d: Whether the scenario is 2D or not.
+        scenario_id: The id of the scenario.
 
     Returns:
         The instantiated scenario.
@@ -122,7 +122,7 @@ def _instantiate_scenario(
 
 def get_simulation_image(config: SimulateRequest) -> Tuple[str, str]:
     """
-    Simulate a scenario and return the result as a base64 gif or png.
+    Simulate a scenario and return the result as a base64 GIF or PNG.
 
     Args:
         config (SimulateRequest): The configuration for the scenario.

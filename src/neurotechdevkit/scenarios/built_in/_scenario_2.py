@@ -278,7 +278,7 @@ def _create_scenario_2_mask(material, grid, convert_2d=False) -> npt.NDArray[np.
 
     assert skull_mask.shape == brain_mask.shape
     if skull_mask.shape != grid.space.shape:
-        # resample the mask to match the grid
+        # re-sample the mask to match the grid
         scale_factor = np.array(grid.space.shape) / np.array(skull_mask.shape)
         skull_mask = scipy.ndimage.zoom(skull_mask, scale_factor, order=0)
         brain_mask = scipy.ndimage.zoom(brain_mask, scale_factor, order=0)
