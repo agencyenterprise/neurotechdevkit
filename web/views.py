@@ -15,7 +15,7 @@ bp = Blueprint("main", __name__, url_prefix="/")
 
 
 @bp.route("/")
-async def index():
+def index():
     """Render the index page, listing all the built-in scenarios."""
     title = "Neurotech Web App"
     return render_template(
@@ -28,7 +28,7 @@ async def index():
 
 
 @bp.route("/simulate", methods=["POST"])
-async def simulate():
+def simulate():
     """Simulate a scenario and return the result as a base64 gif or png."""
     try:
         config = SimulateRequest.parse_obj(request.json)
@@ -42,7 +42,7 @@ async def simulate():
 
 
 @bp.route("/render_layout", methods=["POST"])
-async def render_layout():
+def render_layout():
     """Render the layout of a scenario and return the result as a base64 png."""
     try:
         config = RenderLayoutRequest.parse_obj(request.json)
