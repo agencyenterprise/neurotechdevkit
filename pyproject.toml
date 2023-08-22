@@ -4,7 +4,10 @@ version = "v0.5.1"
 description = "Neurotech Development Kit: an open-source software library designed to enhance accessibility to cutting-edge neurotechnology"
 authors = ["AE Studio <bci@ae.studio>"]
 maintainers = ["AE Studio <bci@ae.studio>"]
-packages = [{include = "neurotechdevkit", from = "src" }]
+packages = [
+    {include = "neurotechdevkit", from = "src" },
+    {include = "web", from = "src" }
+    ]
 
 readme = "README.md"
 license = "Apache-2.0"

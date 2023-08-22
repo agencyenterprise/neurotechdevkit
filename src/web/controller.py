@@ -4,14 +4,15 @@ import io
 import tempfile
 from typing import Dict, Optional, Tuple, Union
 
-from neurotechdevkit.results import SteadyStateResult2D, SteadyStateResult3D
-from neurotechdevkit.scenarios import Scenario2D, Scenario3D
-from neurotechdevkit.scenarios.built_in import BUILT_IN_SCENARIOS
 from web.messages.requests import (
     IndexBuiltInScenario,
     RenderLayoutRequest,
     SimulateRequest,
 )
+
+from neurotechdevkit.results import SteadyStateResult2D, SteadyStateResult3D
+from neurotechdevkit.scenarios import Scenario2D, Scenario3D
+from neurotechdevkit.scenarios.built_in import BUILT_IN_SCENARIOS
 
 
 class BuiltInScenariosShelf(object):

@@ -1,7 +1,6 @@
 """Views for the web app."""
 from flask import Blueprint, jsonify, render_template, request
 from pydantic import ValidationError
-
 from web.controller import (
     get_built_in_scenarios,
     get_scenario_layout,

@@ -3,11 +3,11 @@ from enum import Enum
 from typing import Optional, Type, Union
 
 from pydantic import BaseModel, validator
+from web.messages.material_properties import MaterialProperties
+from web.messages.transducers import TRANSDUCER_SETTINGS, Transducer
 
 from neurotechdevkit.scenarios import Scenario2D, Scenario3D, SliceAxis
 from neurotechdevkit.scenarios import Target as NDKTarget
-from web.messages.material_properties import MaterialProperties
-from web.messages.transducers import TRANSDUCER_SETTINGS, Transducer
 
 
 class Axis(str, Enum):
