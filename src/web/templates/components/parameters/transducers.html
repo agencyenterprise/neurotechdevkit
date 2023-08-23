@@ -64,6 +64,7 @@
 
   function newTransducer() {
     // Called when button Add Transducer is pressed
+    document.getElementById("transducerType").value = "" // cleaning up selection
     showForm()
     hideSaveButton()
   }
@@ -178,7 +179,7 @@
     const focalLength = formData.focalLength
     const delay = formData.delay
     const aperture = formData.aperture
-    const centerLine = formData.centerLine
+    const centerLine = [formData.centerLineY, formData.centerLineX, formData.centerLineZ]
     const height = formData.height
     return {
       position,
@@ -285,7 +286,11 @@
     form.tiltAngle.value = transducer.tiltAngle
     form.focalLength.value = transducer.focalLength
     form.delay.value = transducer.delay
-    form.centerLine.value = transducer.centerLine
+    if (transducer.centerLine){
+      form.centerLineY.value = transducer.centerLine[0]
+      form.centerLineX.value = transducer.centerLine[1]
+      form.centerLineZ.value = transducer.centerLine[2]
+    }
     form.height.value = transducer.height
   }
 
@@ -391,7 +396,7 @@
       onchange="transducerSelected(this)"
       aria-label="Select a transducer"
     >
-      <option selected>-- Select transducer --</option>
+      <option value="" selected>-- Select transducer --</option>
       {% for transducerType, transducerTypeLabel in all_transducer_types %}
       <option value="{{transducerType}}">{{transducerTypeLabel}}</option>
       {% endfor %}
