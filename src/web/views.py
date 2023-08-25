@@ -9,6 +9,7 @@ from web.controller import (
 from web.messages.material_properties import MaterialName
 from web.messages.requests import RenderLayoutRequest, SimulateRequest
 from web.messages.transducers import TransducerType
+from web.simulation_runner import SimulationRunner
 
 bp = Blueprint("main", __name__, url_prefix="/")
 
@@ -20,6 +21,9 @@ async def index():
     return render_template(
         "index.html",
         title=title,
+        has_simulation=SimulationRunner().has_last_result,
+        is_running_simulation=SimulationRunner().is_running,
+        configuration=SimulationRunner().configuration,
         built_in_scenarios=get_built_in_scenarios(),
         all_materials=MaterialName.get_material_titles(),
         all_transducer_types=TransducerType.get_transducer_titles(),
@@ -27,7 +31,7 @@ async def index():
 
 
 @bp.route("/simulate", methods=["POST"])
-async def simulate():
+def simulate():
     """Simulate a scenario and return the result as a base64 GIF or PNG."""
     try:
         config = SimulateRequest.parse_obj(request.json)
@@ -35,9 +39,24 @@ async def simulate():
         # If the JSON data doesn't match the Pydantic model,
         # return a 400 Bad Request response
         return jsonify({"error": str(e)}), 400
-
-    data, image_format = get_simulation_image(config)
+    data, image_format = SimulationRunner().run(
+        get_simulation_image(config), config.dict()
+    )
     return f"<img src='data:image/{image_format};base64,{data}'/>"
+
+
+@bp.route("/simulate", methods=["GET"])
+def get_simulation():
+    """Get the result of a finished or running simulation as a base64 GIF or PNG."""
+    data, image_format = SimulationRunner().get()
+    return f"<img src='data:image/{image_format};base64,{data}'/>"
+
+
+@bp.route("/simulate", methods=["DELETE"])
+def remove_simulation():
+    """Remove the result of a finished or running simulation."""
+    SimulationRunner().initialize()
+    return "removed"
 
 
 @bp.route("/render_layout", methods=["POST"])

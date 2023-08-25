@@ -68,10 +68,24 @@ body,
   background-color: #bf2611;
 }
 
+.lock-icon {
+  background-color: #828088;
+  color: white;
+  border-radius: 50%;
+  font-size: 0.95em;
+  padding: 6px;
+  box-shadow: 0 0 0 0 rgba(0, 0, 0, 0.25);
+}
+
 #content_list_container {
   padding: 2rem;
 }
 
 #simulationType {
   background-color: #e4e5f1;
+}
+
+.disable-div {
+  pointer-events: none;
+  opacity: 0.4;
 }

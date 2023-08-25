@@ -140,11 +140,24 @@
 </div>
 <div class="mb-3">
   <label for="focalLength">Focal length</label>
+  <div class="form-check form-switch">
+    <input
+      class="form-check-input"
+      type="checkbox"
+      id="focalLengthCheck"
+      name="focalLengthCheck"
+      onchange="focalLengthCheckClick(this)"
+    />
+    <label class="form-check-label" for="focalLengthCheck"
+      >Set focal length</label
+    >
+  </div>
   <input
     type="number"
     class="form-control"
     name="focalLength"
     id="focalLength"
+    hidden
     required
   />
 </div>

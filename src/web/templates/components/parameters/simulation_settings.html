@@ -1,5 +1,5 @@
 <script>
-  function setSimulationSettingsPreBuiltValues(scenarioSettings) {
+  function setSimulationSettingsValues(scenarioSettings) {
     document.getElementById("simulationPrecision").value =
       scenarioSettings.simulationPrecision
     document.getElementById("centerFrequency").value =
@@ -31,6 +31,7 @@
     name="simulationPrecision"
     id="simulationPrecision"
     required
+    disabled
   />
 </div>
 <div class="mb-3">

@@ -2,6 +2,7 @@
 import matplotlib
 from flask import Flask
 from matplotlib import rc
+from web.simulation_runner import SimulationRunner
 
 
 def create_app():
@@ -16,6 +17,8 @@ def create_app():
     from web.views import bp
 
     app.register_blueprint(bp)
+
+    SimulationRunner().initialize()
 
     return app
 

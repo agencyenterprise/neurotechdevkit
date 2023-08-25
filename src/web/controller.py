@@ -120,7 +120,7 @@ def _instantiate_scenario(
     return scenario
 
 
-def get_simulation_image(config: SimulateRequest) -> Tuple[str, str]:
+async def get_simulation_image(config: SimulateRequest) -> Tuple[str, str]:
     """
     Simulate a scenario and return the result as a base64 GIF or PNG.
 

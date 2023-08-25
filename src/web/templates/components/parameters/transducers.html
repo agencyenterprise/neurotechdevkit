@@ -80,7 +80,7 @@
     renderAddedTransducers()
   }
 
-  function setTransducersPreBuiltValues(transducers) {
+  function setTransducersValues(transducers) {
     // Called by the main script to set the transducers values
     addedTransducers.splice(0, addedTransducers.length)
 
@@ -128,8 +128,16 @@
   }
 
   function getFocusedSourceParams(formData) {
-    const position = [formData.positionY, formData.positionX, formData.positionZ]
-    const direction = [formData.directionY, formData.directionX, formData.directionZ]
+    let position = [formData.positionY, formData.positionX]
+    if (!scenarioIs2d()){
+      position.push(formData.positionZ)
+    }
+
+    let direction = [formData.directionY, formData.directionX]
+    if (!scenarioIs2d()){
+      direction.push(formData.directionZ)
+    }
+
     const aperture = formData.aperture
     const focalLength = formData.focalLength
     const numPoints = formData.numPoints
@@ -145,7 +153,10 @@
   }
 
   function getPointSourceParams(formData) {
-    const position = [formData.positionY, formData.positionX, formData.positionZ]
+    let position = [formData.positionY, formData.positionX]
+    if (!scenarioIs2d()){
+      position.push(formData.positionZ)
+    }
     const delay = formData.delay
     return {
       position,
@@ -154,8 +165,14 @@
   }
 
   function getPlanarSourceParams(formData) {
-    const position = [formData.positionY, formData.positionX, formData.positionZ]
-    const direction = [formData.directionY, formData.directionX, formData.directionZ]
+    let position = [formData.positionY, formData.positionX]
+    if (!scenarioIs2d()){
+      position.push(formData.positionZ)
+    }
+    let direction = [formData.directionY, formData.directionX]
+    if (!scenarioIs2d()){
+      direction.push(formData.directionZ)
+    }
     const aperture = formData.aperture
     const numPoints = formData.numPoints
     const delay = formData.delay
@@ -169,18 +186,34 @@
   }
 
   function getPhasedArraySourceParams(formData) {
-    const position = [formData.positionY, formData.positionX, formData.positionZ]
-    const direction = [formData.directionY, formData.directionX, formData.directionZ]
+    let position = [formData.positionY, formData.positionX]
+    if (!scenarioIs2d()){
+      position.push(formData.positionZ)
+    }
+    let direction = [formData.directionY, formData.directionX]
+    if (!scenarioIs2d()){
+      direction.push(formData.directionZ)
+    }
     const numPoints = formData.numPoints
     const numElements = formData.numElements
     const pitch = formData.pitch
     const elementWidth = formData.elementWidth
     const tiltAngle = formData.tiltAngle
-    const focalLength = formData.focalLength
     const delay = formData.delay
     const aperture = formData.aperture
-    const centerLine = [formData.centerLineY, formData.centerLineX, formData.centerLineZ]
-    const height = formData.height
+
+    let focalLength = null
+    if (formData.focalLengthCheck){
+      focalLength = formData.focalLength
+    }
+
+    let centerLine = null
+    let height = null
+    if (!scenarioIs2d()){
+      height = formData.height
+      centerLine = [formData.centerLineY, formData.centerLineX, formData.centerLineZ]
+    }
+
     return {
       position,
       direction,
@@ -284,7 +317,11 @@
     form.pitch.value = transducer.pitch
     form.elementWidth.value = transducer.elementWidth
     form.tiltAngle.value = transducer.tiltAngle
-    form.focalLength.value = transducer.focalLength
+    if (transducer.focalLength){
+      form.focalLengthCheck.checked = true
+      form.focalLength.value = transducer.focalLength
+      form.focalLength.removeAttribute("hidden")
+    }
     form.delay.value = transducer.delay
     if (transducer.centerLine){
       form.centerLineY.value = transducer.centerLine[0]
@@ -351,6 +388,16 @@
     }
     // if there are no transducers, disable the run simulation button
     allowRunSimulation()
+  }
+
+  function focalLengthCheckClick(input){
+    const focalLength = input.parentElement.parentElement.querySelector("#focalLength")
+    if (input.checked){
+      focalLength.removeAttribute("hidden")
+    } else {
+      focalLength.setAttribute("hidden", true)
+      focalLength.value = ""
+    }
   }
 </script>
 
