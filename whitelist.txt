@@ -21,6 +21,7 @@ colormaps
 compressional
 config
 coords
+coroutine
 der
 devito
 dimensionality
