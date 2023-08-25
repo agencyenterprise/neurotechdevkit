@@ -39,23 +39,29 @@ def simulate():
         # If the JSON data doesn't match the Pydantic model,
         # return a 400 Bad Request response
         return jsonify({"error": str(e)}), 400
-    data, image_format = SimulationRunner().run(
-        get_simulation_image(config), config.dict()
-    )
-    return f"<img src='data:image/{image_format};base64,{data}'/>"
+    result = SimulationRunner().run(get_simulation_image(config), config.dict())
+    if result.type == "simulation":
+        data, image_format = result.data
+        return f"<img src='data:image/{image_format};base64,{data}'/>"
+    elif result.type == "no_simulation":
+        return jsonify({"error": "No result"}), 400
 
 
 @bp.route("/simulate", methods=["GET"])
 def get_simulation():
     """Get the result of a finished or running simulation as a base64 GIF or PNG."""
-    data, image_format = SimulationRunner().get()
-    return f"<img src='data:image/{image_format};base64,{data}'/>"
+    result = SimulationRunner().get()
+    if result.type == "simulation":
+        data, image_format = result.data
+        return f"<img src='data:image/{image_format};base64,{data}'/>"
+    elif result.type == "no_simulation":
+        return jsonify({"error": "No result"}), 400
 
 
 @bp.route("/simulate", methods=["DELETE"])
 def remove_simulation():
     """Remove the result of a finished or running simulation."""
-    SimulationRunner().initialize()
+    SimulationRunner().reset()
     return "removed"
 
 
