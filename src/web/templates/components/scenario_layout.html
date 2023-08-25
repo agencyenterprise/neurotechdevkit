@@ -1,4 +1,42 @@
 <script>
+  function clearPlotArea() {
+    document.getElementById("plotArea").innerHTML = ""
+  }
+
+  function showLoading(message) {
+    const loader = document.getElementById("loader")
+    loader.removeAttribute("hidden")
+    loader.querySelector(".spinner-border").removeAttribute("hidden")
+    document.getElementById("loadingMessage").innerHTML = message
+  }
+
+  function hideLoading() {
+    const loader = document.getElementById("loader")
+    loader.setAttribute("hidden", true)
+    loader.querySelector(".spinner-border").setAttribute("hidden", true)
+    document.getElementById("loadingMessage").innerHTML = ""
+  }
+
+  function showCancelSimulation() {
+    document.getElementById("cancelSimulation").removeAttribute("hidden")
+  }
+
+  function showRunSimulation() {
+    document.getElementById("runSimulation").removeAttribute("hidden")
+    hideCleanSimulation()
+    hideCancelSimulation()
+    allowRunSimulation()
+    allowViewScenarioParameters()
+    enableParametersPanel()
+  }
+
+  function hideCancelSimulation() {
+    document.getElementById("cancelSimulation").setAttribute("hidden", true)
+  }
+
+  function hideRunSimulation() {
+    document.getElementById("runSimulation").setAttribute("hidden", true)
+  }
   function allowRunSimulation() {
     const is2d = document.getElementById("is2d").checked
 
@@ -8,16 +46,27 @@
       disallowRunSimulation()
     }
   }
+
   function disallowRunSimulation() {
     document.getElementById("runSimulation").setAttribute("disabled", true)
   }
 
-  function clearPlotArea() {
-    document.getElementById("plotArea").innerHTML = ""
+  function showCleanSimulation() {
+    document.getElementById("cleanSimulation").removeAttribute("hidden")
+    hideRunSimulation()
+    hideCancelSimulation()
+    hideLoading()
+  }
+
+  function hideCleanSimulation() {
+    document.getElementById("cleanSimulation").setAttribute("hidden", true)
   }
 
   function runSimulation(button) {
-    BtnLoading(button)
+    showLoading("Running simulation...")
+    showCancelSimulation()
+    disableParametersPanel()
+    hideRunSimulation()
     clearPlotArea()
 
     const is2d = document.getElementById("is2d").checked
@@ -47,8 +96,45 @@
         document.getElementById("plotArea").innerHTML = text
       })
       .then(() => {
-        BtnReset(button)
+        showCleanSimulation()
       })
+  }
+
+  function getSimulation() {
+    disableParametersPanel()
+    showCancelSimulation()
+    const button = document.getElementById("runSimulation")
+    showLoading("Running simulation...")
+    BtnLoading(button)
+    const url = "{{ url_for('main.get_simulation') }}"
+    fetch(url, {
+      method: "GET",
+    })
+      .then((response) => response.text())
+      .then((text) => {
+        document.getElementById("plotArea").innerHTML = text
+      })
+      .then(() => {
+        BtnReset(button)
+        showCleanSimulation()
+      })
+  }
+
+  function cancelSimulation(button) {
+    hideLoading()
+    cleanSimulation(button)
+  }
+
+  function cleanSimulation(button) {
+    BtnLoading(button)
+    clearPlotArea()
+    const url = "{{ url_for('main.remove_simulation') }}"
+    fetch(url, {
+      method: "DELETE",
+    }).then(() => {
+      BtnReset(button)
+      showRunSimulation()
+    })
   }
 </script>
 <div class="container-fluid">
@@ -58,13 +144,50 @@
       id="runSimulation"
       type="button"
       class="btn btn-primary"
-      disabled
       onclick="runSimulation(this)"
+      disabled
     >
       Run Simulation
     </button>
+    <button
+      id="cancelSimulation"
+      type="button"
+      class="btn btn-warning"
+      onclick="cancelSimulation(this)"
+      hidden
+    >
+      Cancel Simulation
+    </button>
+    <button
+      id="cleanSimulation"
+      type="button"
+      class="btn btn-warning"
+      onclick="cleanSimulation(this)"
+      hidden
+    >
+      Clean Simulation
+    </button>
   </h1>
-  <div>
-    <div id="plotArea"></div>
+  <div class="row d-flex" id="loader" hidden>
+    <div class="d-flex flex-column align-items-center justify-content-center">
+      <div class="row">
+        <div
+          class="spinner-border"
+          role="status"
+          style="width: 10rem; height: 10rem"
+          hidden
+        >
+          <span class="sr-only">Loading...</span>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col m-3">
+          <span id="loadingMessage"></span>
+        </div>
+      </div>
+      <div class="row">
+        <div id="plotArea"></div>
+      </div>
+    </div>
   </div>
 </div>

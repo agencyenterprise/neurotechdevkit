@@ -119,7 +119,7 @@ class DefaultSettings(BaseModel):
         assert isinstance(center_frequency, float)
         material_properties = MaterialProperties.from_scenario(scenario)
         simulation_settings = SimulationSettings(
-            simulationPrecision=5,  # TODO: make this a parameter
+            simulationPrecision=6,  # TODO: make this a parameter
             centerFrequency=center_frequency,
             isSteadySimulation=True,  # default value
             materialProperties=material_properties,

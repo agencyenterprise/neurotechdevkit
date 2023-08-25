@@ -3,6 +3,7 @@ import re
 from enum import Enum
 from typing import Dict, List, Literal, Optional, Tuple, Type, Union
 
+import numpy as np
 from pydantic import BaseModel, Field
 from typing_extensions import Annotated
 
@@ -134,7 +135,7 @@ class PhasedArraySettings(_BaseSourceSettings):
     pitch: float
     elementWidth: float
     tiltAngle: float
-    focalLength: float
+    focalLength: Optional[float]
     delay: float
     elementDelays: Optional[List[float]]
     centerLine: Optional[List[float]]
@@ -145,6 +146,10 @@ class PhasedArraySettings(_BaseSourceSettings):
         cls, source: Union[PhasedArraySource2D, PhasedArraySource3D]
     ) -> "PhasedArraySettings":
         """Instantiate the source settings from a source."""
+        if source._focal_length == np.inf:
+            focal_length = None
+        else:
+            focal_length = source._focal_length
         return cls(
             transducerType=TransducerType.phasedArraySource,
             position=source._position,
@@ -154,7 +159,7 @@ class PhasedArraySettings(_BaseSourceSettings):
             pitch=source._pitch,
             element_width=source._element_width,
             tilt_angle=source._tilt_angle,
-            focal_length=source._focal_length,
+            focal_length=focal_length,
             delay=source._delay,
             element_delays=source._element_delays,
         )
@@ -170,7 +175,7 @@ class PhasedArraySettings(_BaseSourceSettings):
                 pitch=self.pitch,
                 element_width=self.elementWidth,
                 tilt_angle=self.tiltAngle,
-                focal_length=self.focalLength,
+                focal_length=self.focalLength or np.inf,
                 delay=self.delay,
                 element_delays=self.elementDelays,
             )
@@ -185,7 +190,7 @@ class PhasedArraySettings(_BaseSourceSettings):
                 pitch=self.pitch,
                 element_width=self.elementWidth,
                 tilt_angle=self.tiltAngle,
-                focal_length=self.focalLength,
+                focal_length=self.focalLength or np.inf,
                 delay=self.delay,
                 element_delays=self.elementDelays,
                 center_line=self.centerLine,
