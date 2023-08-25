@@ -91,12 +91,17 @@
       },
       body: JSON.stringify(data),
     })
-      .then((response) => response.text())
-      .then((text) => {
-        document.getElementById("plotArea").innerHTML = text
+      .then((response) => {
+        if (response.ok) return response.text()
+        return ""
       })
-      .then(() => {
-        showCleanSimulation()
+      .then((text) => {
+        if (text) {
+          document.getElementById("plotArea").innerHTML = text
+          showCleanSimulation()
+        } else {
+          showRunSimulation()
+        }
       })
   }
 
@@ -105,18 +110,22 @@
     showCancelSimulation()
     const button = document.getElementById("runSimulation")
     showLoading("Running simulation...")
-    BtnLoading(button)
     const url = "{{ url_for('main.get_simulation') }}"
     fetch(url, {
       method: "GET",
     })
-      .then((response) => response.text())
-      .then((text) => {
-        document.getElementById("plotArea").innerHTML = text
+      .then((response) => {
+        hideLoading()
+        if (response.ok) return response.text()
+        return ""
       })
-      .then(() => {
-        BtnReset(button)
-        showCleanSimulation()
+      .then((text) => {
+        if (text) {
+          document.getElementById("plotArea").innerHTML = text
+          showCleanSimulation()
+        } else {
+          showRunSimulation()
+        }
       })
   }
 
