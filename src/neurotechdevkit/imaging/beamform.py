@@ -180,7 +180,6 @@ def delay_and_sum_matrix(
 
     # Helper parameters
     depth_pixels, width_pixels = x.shape
-    num_pixels = x.size
 
     # Convert to xarray for more intuitive broadcasting
     x_dataarray = xr.DataArray(x, dims=("z", "x"))  # keep as 0-index
@@ -261,53 +260,12 @@ def delay_and_sum_matrix(
         1j * (2 * np.pi * freq_carrier) * das_ds.tau
     )
 
-    # Convert "x", "z", "channel" coords to 0-indices, in case they have been
-    # set to something else
-    das_ds = das_ds.drop_indexes(das_ds.indexes.keys()).reset_coords(drop=True)
-
-    # Convert from semi-sparse (z, x, channel)-shape array of time indices
-    # to list of [z, x, time, channel] indices, and corresponding weights
-    # Drop pixels that are not within the receive aperture of given channels
-    tmp_dim_order = ("z", "x", "channel", "interp")
-    das_ds_flat = das_ds.stack(
-        nonzero=tmp_dim_order,
-    ).dropna(dim="nonzero", how="all")
-    assert (
-        das_ds_flat["time_idx_round"].notnull().all()
-    ), "Should have dropped null time indices"
-    assert das_ds_flat["weights"].notnull().all(), "Should have dropped null weights."
-    assert len(das_ds_flat.dims) == 1, "Expected to have stacked all dimensions"
-    assert (
-        das_ds_flat[["time_idx_round", "weights"]]
-        .count()
-        .equals(das_ds[["time_idx_round", "weights"]].count())
-    ), ".dropna shouldn't change count."
-
-    z_x_multi_indices = np.row_stack((das_ds_flat.z, das_ds_flat.x))
-    np.testing.assert_allclose(
-        das_ds_flat.time_idx_round,
-        das_ds_flat.time_idx_round.astype(int),
-        rtol=0,
-        atol=1e-6,
-        err_msg="Expected time indices to be integers.",
-    )
-    time_channel_multi_indices = np.row_stack(
-        (das_ds_flat.time_idx_round.astype(int), das_ds_flat.channel)
-    )
-
-    # Convert from [x, z, time, channel] indices to [x_z, time_channel] indices
-    z_x_flat_indices = np.ravel_multi_index(
-        tuple(z_x_multi_indices), (depth_pixels, width_pixels)
-    )
-    time_channel_flat_indices = np.ravel_multi_index(
-        tuple(time_channel_multi_indices), (num_time_samples, num_channels)
-    )
-
-    # Construct delay-and-sum sparse matrix
-    shape = (num_pixels, num_time_samples * num_channels)
-    das_matrix = csr_array(
-        (das_ds_flat["weights"].values, (z_x_flat_indices, time_channel_flat_indices)),
-        shape=shape,
+    das_matrix = _construct_delay_and_sum_matrix(
+        das_ds=das_ds,
+        width_pixels=width_pixels,
+        depth_pixels=depth_pixels,
+        num_time_samples=num_time_samples,
+        num_channels=num_channels,
     )
 
     return das_matrix
@@ -513,7 +471,6 @@ def _interpolate_onto_pixel_grid(
         - time_idx_round: rounded (int) time indices along new interp dimension
         - is_valid_time_idx: boolean mask whether each time index is valid
     """
-
     if method == InterpolationMethod.NEAREST:
         interp_weights = xr.DataArray([1], dims=("interp",))
         is_valid_time_idx = (time_idx_float >= 0) & (
@@ -547,3 +504,81 @@ def _interpolate_onto_pixel_grid(
         )
 
     return interp_weights, time_idx_round, is_valid_time_idx
+
+
+def _construct_delay_and_sum_matrix(
+    das_ds: xr.Dataset,
+    *,
+    width_pixels: int,
+    depth_pixels: int,
+    num_time_samples: int,
+    num_channels: int,
+) -> csr_array:
+    """Convert Dataset to sparse matrix for delay-and-sum beamforming.
+
+    Handles a lot of the bookkeeping for converting from a semi-dense array to a
+    sparse matrix.
+
+    Args:
+        das_ds: Dataset containing the following variables:
+            - time_idx_round: time indices (int) along interp dimension
+            - weights: interpolation weights along interp dimension
+        width_pixels: number of pixels in the width (x) dimension.
+        depth_pixels: number of pixels in the depth (z) dimension.
+        num_time_samples: number of time samples in the I/Q signals.
+        num_channels: number of channels/elements in the transducer array.
+
+    Returns:
+        delay-and-sum sparse matrix. Shape: (num_pixels, num_samples*num_channels)
+    """
+    # Convert "x", "z", "channel" coords to 0-indices, in case they have been
+    # set to something else
+    das_ds = das_ds.drop_indexes(das_ds.indexes.keys()).reset_coords(drop=True)
+
+    # Convert from semi-sparse (z, x, channel)-shape array of time indices
+    # to list of [z, x, time, channel] indices, and corresponding weights
+    # Drop pixels that are not within the receive aperture of given channels
+    tmp_dim_order = ("z", "x", "channel", "interp")
+    das_ds_flat = das_ds.stack(
+        nonzero=tmp_dim_order,
+    ).dropna(dim="nonzero", how="all")
+    assert (
+        das_ds_flat["time_idx_round"].notnull().all()
+    ), "Should have dropped null time indices"
+    assert das_ds_flat["weights"].notnull().all(), "Should have dropped null weights."
+    assert len(das_ds_flat.dims) == 1, "Expected to have stacked all dimensions"
+    assert (
+        das_ds_flat[["time_idx_round", "weights"]]
+        .count()
+        .equals(das_ds[["time_idx_round", "weights"]].count())
+    ), ".dropna shouldn't change count."
+
+    # Convert to multi-indices
+    z_x_multi_indices = np.row_stack((das_ds_flat.z, das_ds_flat.x))
+    np.testing.assert_allclose(
+        das_ds_flat.time_idx_round,
+        das_ds_flat.time_idx_round.astype(int),
+        rtol=0,
+        atol=1e-6,
+        err_msg="Expected time indices to be integers.",
+    )
+    time_channel_multi_indices = np.row_stack(
+        (das_ds_flat.time_idx_round.astype(int), das_ds_flat.channel)
+    )
+
+    # Convert from [x, z, time, channel] indices to [x_z, time_channel] indices
+    z_x_flat_indices = np.ravel_multi_index(
+        tuple(z_x_multi_indices), (depth_pixels, width_pixels)
+    )
+    time_channel_flat_indices = np.ravel_multi_index(
+        tuple(time_channel_multi_indices), (num_time_samples, num_channels)
+    )
+
+    # Construct delay-and-sum sparse matrix
+    shape = (depth_pixels * width_pixels, num_time_samples * num_channels)
+    das_matrix = csr_array(
+        (das_ds_flat["weights"].values, (z_x_flat_indices, time_channel_flat_indices)),
+        shape=shape,
+    )
+
+    return das_matrix
