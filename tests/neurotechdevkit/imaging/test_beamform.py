@@ -2,13 +2,13 @@ from typing import Any
 
 import numpy as np
 import pytest
-from scipy.sparse import csr_array
 import xarray as xr
+from scipy.sparse import csr_array
 
 from neurotechdevkit.imaging.beamform import (
+    _calculate_time_of_flight,
     _directivity,
     _optimize_f_number,
-    _calculate_time_of_flight,
     beamform_delay_and_sum,
     delay_and_sum_matrix,
 )
