@@ -193,36 +193,18 @@ def delay_and_sum_matrix(
     )  # keep as 0-index
     z_channels = xr.DataArray(np.zeros(x_channels.shape), dims=("channel",))
 
-    # Effective transmit-distance from each element to each pixel
-    tx_distance = tx_delays_dataarray * speed_sound + np.sqrt(
-        (x_dataarray - x_channels) ** 2 + (z_dataarray - z_channels) ** 2
+    # Calculate time-of-flight/propagation times, from start to receive.
+    tau = _calculate_time_of_flight(
+        x_dataarray=x_dataarray,
+        z_dataarray=z_dataarray,
+        x_channels=x_channels,
+        z_channels=z_channels,
+        tx_delays_dataarray=tx_delays_dataarray,
+        speed_sound=speed_sound,
+        depth_pixels=depth_pixels,
+        width_pixels=width_pixels,
+        num_channels=num_channels,
     )
-    assert tx_distance.sizes == {
-        "x": width_pixels,
-        "z": depth_pixels,
-        "channel": num_channels,
-    }, "Expected one transmit distance per pixel and channel."
-    # transmit-pulse reaches pixel, based on the "closest" transducer channel/element
-    tx_distance = tx_distance.min(dim="channel")
-    assert tx_distance.sizes == {
-        "x": width_pixels,
-        "z": depth_pixels,
-    }, "Expected transmit delays to be calculated for each pixel."
-
-    # Receive-delay:
-    # Calculate distances from each pixel to each receive-element/channel
-    rx_distance = np.sqrt(
-        (x_dataarray - x_channels) ** 2 + (z_dataarray - z_channels) ** 2
-    )
-    assert rx_distance.sizes == {  # type: ignore
-        # https://github.com/pydata/xarray/issues/6524
-        "x": width_pixels,
-        "z": depth_pixels,
-        "channel": num_channels,
-    }, "Expected one receive delay per pixel and channel."
-
-    # Wave propagation times
-    tau = (tx_distance + rx_distance) / speed_sound
 
     # Convert wave propagation time to sample index (fast-time)
     # Keep `tau` for later use
@@ -411,3 +393,76 @@ def _directivity(theta, element_width, wavelength):
         directivity of a single element/channel
     """
     return np.cos(theta) * np.sinc(element_width / wavelength * np.sin(theta))
+
+
+def _calculate_time_of_flight(
+    x_dataarray: xr.DataArray,
+    z_dataarray: xr.DataArray,
+    x_channels: xr.DataArray,
+    z_channels: xr.DataArray,
+    tx_delays_dataarray: xr.DataArray,
+    speed_sound: float,
+    depth_pixels: int,
+    width_pixels: int,
+    num_channels: int,
+) -> xr.DataArray:
+    """Calculate time of flight (including transmit delays) for each pixel and channel.
+
+    "Time-of-flight" refers to the time it takes for an ultrasound wave to
+    travel from the transducer element to a specific point in the imaging field
+    and then back to the transducer after being reflected by an object.
+
+    Args:
+        x_dataarray: x-coordinates (width) of the image grid.
+        z_dataarray: z-coordinates (depth) of the image grid.
+        x_channels: x-coordinates (width) of the transducer elements.
+        z_channels: z-coordinates (depth) of the transducer elements.
+        tx_delays_dataarray: transmit delays (seconds) for each channel.
+        speed_sound: speed of sound in the medium (m/s).
+        depth_pixels: number of pixels in the depth (z) dimension.
+            Used for validating array sizes.
+        width_pixels: number of pixels in the width (x) dimension.
+            Used for validating array sizes.
+        num_channels: number of channels/elements in the transducer array.
+            Used for validating array sizes.
+
+    Returns:
+        time of flight (seconds) for each pixel and channel.
+    """
+    # Effective transmit-distance from each element to each pixel
+    tx_distance = tx_delays_dataarray * speed_sound + np.sqrt(
+        (x_dataarray - x_channels) ** 2 + (z_dataarray - z_channels) ** 2
+    )
+    assert tx_distance.sizes == {
+        "z": depth_pixels,
+        "x": width_pixels,
+        "channel": num_channels,
+    }, "Expected one transmit distance per pixel and channel."
+    # transmit-pulse reaches pixel, based on the "closest" transducer channel/element
+    tx_distance = tx_distance.min(dim="channel")
+    assert tx_distance.sizes == {
+        "z": depth_pixels,
+        "x": width_pixels,
+    }, "Expected transmit delays to be calculated for each pixel."
+
+    # Receive-delay:
+    # Calculate distances from each pixel to each receive-element/channel
+    rx_distance = np.sqrt(
+        (x_dataarray - x_channels) ** 2 + (z_dataarray - z_channels) ** 2
+    )
+    assert rx_distance.sizes == {  # type: ignore
+        # https://github.com/pydata/xarray/issues/6524
+        "z": depth_pixels,
+        "x": width_pixels,
+        "channel": num_channels,
+    }, "Expected one receive delay per pixel and channel."
+
+    tau = (tx_distance + rx_distance) / speed_sound
+    assert tau.sizes == {  # type: ignore
+        # https://github.com/pydata/xarray/issues/6524
+        "z": depth_pixels,
+        "x": width_pixels,
+        "channel": num_channels,
+    }, "Expected one time-of-flight per pixel and channel."
+
+    return tau

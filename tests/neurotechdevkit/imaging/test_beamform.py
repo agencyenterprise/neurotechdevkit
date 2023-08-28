@@ -42,6 +42,35 @@ def optimize_f_number_inputs() -> dict[str, Any]:
     return inputs
 
 
+@pytest.fixture
+def xarray_inputs(simple_inputs: dict[str, Any]) -> dict[str, Any]:
+    """Used as input to _calculate_time_of_flight()"""
+    IMG_DIMS = ["z", "x"]
+    num_channels = simple_inputs["num_channels"]
+    pitch = simple_inputs["pitch"]
+    depth_pixels, width_pixels = simple_inputs["x"].shape
+
+    inputs = {
+        "x_dataarray": xr.DataArray(simple_inputs["x"], dims=IMG_DIMS),
+        "z_dataarray": xr.DataArray(simple_inputs["z"], dims=IMG_DIMS),
+        "x_channels": xr.DataArray(
+            (np.arange(num_channels) - (num_channels - 1) / 2) * pitch,
+            dims=("channel",),
+        ),
+        "z_channels": xr.DataArray(np.zeros(num_channels), dims=("channel",)),
+        "tx_delays_dataarray": xr.DataArray(
+            simple_inputs["tx_delays"], dims=("channel",)
+        ),
+        "speed_sound": simple_inputs["speed_sound"],
+        "width_pixels": width_pixels,
+        "depth_pixels": depth_pixels,
+        "num_channels": num_channels,
+    }
+
+    return inputs
+
+
+# Tests for main functions
 def test_delay_and_sum_matrix(simple_inputs):
     das_matrix = delay_and_sum_matrix(**simple_inputs)
     assert isinstance(das_matrix, csr_array)
@@ -113,3 +142,15 @@ def test_directivity(optimize_f_number_inputs):
     theta = np.pi / 2
     directivity = _directivity(theta, element_width, wavelength)
     np.testing.assert_almost_equal(directivity, 0, decimal=8)
+
+
+def test_calculate_time_of_flight(xarray_inputs):
+    """Test that the time of flight is a non-negative float"""
+    tof = _calculate_time_of_flight(**xarray_inputs)
+    assert isinstance(tof, xr.DataArray), "Time of flight should be a DataArray"
+    assert tof.dtype == float, "Time of flight should be a float"
+    assert (tof >= 0).all(), "Time of flight should be non-negative"
+    assert tof.z.isel(z=-1) == tof.z.max(), "Expected z to be monotonically increasing"
+    assert (
+        tof.isel(z=-1) >= tof
+    ).all(), "Time of flight should be monotonically increasing in depth"
