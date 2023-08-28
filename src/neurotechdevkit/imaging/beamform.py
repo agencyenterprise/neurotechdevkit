@@ -115,7 +115,26 @@ def delay_and_sum_matrix(
     method: InterpolationMethod = InterpolationMethod.LINEAR,
 ) -> csr_array:
     """
-    Calculate the delay-and-sum sparse matrix for beamforming I/Q signals.
+     Calculate the delay-and-sum sparse matrix for beamforming I/Q signals.
+
+    Args:
+        num_time_samples: Number of time samples in the I/Q signals.
+        num_channels: Number of channels/elements in the transducer array.
+        x: x-coordinates (width) of the image grid (shape: width_pixels x depth_pixels).
+        z: z-coordinates (depth) of the image grid (shape: width_pixels x depth_pixels).
+        pitch: Center-to-center distance between two adjacent elements/channels (m).
+        tx_delays: Transmit delays (seconds) for each channel (length: num_channels).
+        freq_sampling: Sampling frequency of the I/Q signals (Hz).
+        freq_carrier: Carrier/center frequency of the I/Q signals (Hz).
+        start_time: Start time of the I/Q signal (s). Default is 0.
+        speed_sound: Speed of sound in the medium (m/s). Default is 1540.
+        f_number: Receive f-number or focal ratio.
+            If None, it will be estimated based on width and bandwidth.
+        width: Width of each channel/element in the array (m).
+            Required if f_number is None.
+        bandwidth: Fractional bandwidth at -6dB.
+            Required if f_number is None.
+        method: Interpolation method across time dimension.
 
     Returns:
         delay-and-sum matrix. Shape: (num_pixels, num_samples*num_channels)
@@ -126,12 +145,13 @@ def delay_and_sum_matrix(
         - The sensor array is linear.
         - The sensor array is parallel to the x-axis and centered at (0, 0).
 
-    Notes:
+    Implementation notes:
         - Alternatively, delay-and-sum can be implemented using an explicit
             for-loop over the delays. However, Python for-loops are much
             slower than  optimized sparse matrix multiplication.
         - Memory usage for the delay-and-sum matrix is:
             O(num_pixels * num_channels * num_interpolation_points).
+        - We use the `xarray` library to simplify broadcasting and indexing.
 
     For details on delay-and-sum by matrix-multiplication:
         https://doi.org/10.1016/j.ultras.2020.106309
