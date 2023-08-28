@@ -218,19 +218,16 @@ def delay_and_sum_matrix(
 
     # Each channel only needs to consider pixels within its receive aperture
     # (i.e., angle-of-view = 2*alpha)
-    if f_number > 0:
-        # assume linear array at z=0
-        half_aperture = z_dataarray / (2 * f_number)
-        is_within_aperture = np.abs(x_dataarray - x_channels) <= half_aperture
-        assert is_within_aperture.sizes == {  # type: ignore
-            # https://github.com/pydata/xarray/issues/6524
-            "z": depth_pixels,
-            "x": width_pixels,
-            "channel": num_channels,
-        }, "Expected to know whether each pixel was within each channel's aperture."
-        das_ds = das_ds.where(is_within_aperture)
-    else:
-        assert f_number == 0, "f-number must be non-negative."
+    receptive_field = _calculate_receptive_fields(
+        f_number=f_number,
+        x_dataarray=x_dataarray,
+        z_dataarray=z_dataarray,
+        x_channels=x_channels,
+        depth_pixels=depth_pixels,
+        width_pixels=width_pixels,
+        num_channels=num_channels,
+    )
+    das_ds = das_ds.where(receptive_field)
 
     # We have discrete time samples, which do not correspond exactly to the
     # pixel grid. Interpolate to find the pixel grid values
@@ -466,3 +463,51 @@ def _calculate_time_of_flight(
     }, "Expected one time-of-flight per pixel and channel."
 
     return tau
+
+
+def _calculate_receptive_fields(
+    f_number: float,
+    x_dataarray: xr.DataArray,
+    z_dataarray: xr.DataArray,
+    x_channels: xr.DataArray,
+    depth_pixels: float,
+    width_pixels: float,
+    num_channels: float,
+) -> xr.DataArray:
+    """Calculate which pixels are within the receptive field of each channel.
+
+    Args:
+        f_number: receive f-number or focal ratio.
+        x_dataarray: x-coordinates (width) of the image grid.
+        z_dataarray: z-coordinates (depth) of the image grid.
+        x_channels: x-coordinates (width) of the transducer elements.
+        depth_pixels: number of pixels in the depth (z) dimension.
+            Used for validating array sizes.
+        width_pixels: number of pixels in the width (x) dimension.
+            Used for validating array sizes.
+        num_channels: number of channels/elements in the transducer array.
+            Used for validating array sizes.
+
+    Returns:
+        Boolean DataArray indicating whether each pixel is within the receptive
+        field of each channel.
+    """
+    if f_number == 0:
+        # All pixels are within receptive field
+        is_within_aperture = xr.ones_like(x_dataarray, dtype=bool)
+        is_within_aperture = xr.broadcast_like(is_within_aperture, x_channels)
+
+    else:
+        assert f_number > 0, "f-number must be non-negative."
+        # assume linear array at z=0
+        half_aperture = z_dataarray / (2 * f_number)
+        is_within_aperture = np.abs(x_dataarray - x_channels) <= half_aperture
+
+    assert is_within_aperture.sizes == {  # type: ignore
+        # https://github.com/pydata/xarray/issues/6524
+        "z": depth_pixels,
+        "x": width_pixels,
+        "channel": num_channels,
+    }, "Expected to know whether each pixel was within each channel's aperture."
+
+    return is_within_aperture
