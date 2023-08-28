@@ -193,13 +193,9 @@ def delay_and_sum_matrix(
     )  # keep as 0-index
     z_channels = xr.DataArray(np.zeros(x_channels.shape), dims=("channel",))
 
-    # Effective transmit-distance from each (interpolated) element to each pixel
-    # TODO: interpolate transducers for better estimation of delays
-    # For now, don't interpolate
-    x_channels_interp = x_channels
-    z_channels_interp = z_channels
+    # Effective transmit-distance from each element to each pixel
     tx_distance = tx_delays_dataarray * speed_sound + np.sqrt(
-        (x_dataarray - x_channels_interp) ** 2 + (z_dataarray - z_channels_interp) ** 2
+        (x_dataarray - x_channels) ** 2 + (z_dataarray - z_channels) ** 2
     )
     assert tx_distance.sizes == {
         "x": width_pixels,
