@@ -1,7 +1,7 @@
 """Beam-form I/Q signals for ultrasound imaging."""
 
 from enum import IntEnum, unique
-from typing import Optional
+from typing import Optional, Tuple
 
 import numpy as np
 import numpy.typing as npt
@@ -231,40 +231,18 @@ def delay_and_sum_matrix(
 
     # We have discrete time samples, which do not correspond exactly to the
     # pixel grid. Interpolate to find the pixel grid values
-    if method == InterpolationMethod.NEAREST:
-        interp_weights = xr.DataArray([1], dims=("interp",))
-        is_valid_time_idx = (das_ds["time_idx"] >= 0) & (
-            das_ds["time_idx"] <= (num_time_samples - 1)
-        )
-        das_ds = das_ds.where(is_valid_time_idx)
-        das_ds["time_idx_round"] = das_ds["time_idx"].round()
-    elif method == InterpolationMethod.LINEAR:
-        # E.g., a time index of 2.3 gets 0.7*pixel_2 + 0.3*pixel_3
-        is_valid_time_idx = (das_ds["time_idx"] >= 0) & (
-            das_ds["time_idx"] <= (num_time_samples - 1)
-        )
-        das_ds = das_ds.where(is_valid_time_idx)
-        # Weighted sum of two nearest time samples
-        interp_weights = xr.concat(
-            [
-                1 - (das_ds["time_idx"] % 1),  # how close to upper time sample?
-                das_ds["time_idx"] % 1,  # how close to lower time sample?
-            ],
-            dim="interp",
-        )
-        das_ds["time_idx_round"] = xr.concat(  # type: ignore
-            # https://github.com/pydata/xarray/issues/6524
-            [
-                np.floor(das_ds["time_idx"]),  # closest time sample below
-                np.ceil(das_ds["time_idx"]),  # closest time sample above
-            ],
-            dim="interp",
-        )
-    else:
-        raise NotImplementedError(
-            "Interpolation method not supported: {}".format(method)
-        )
+    (
+        interp_weights,
+        das_ds["time_idx_round"],
+        is_valid_time_idx,
+    ) = _interpolate_onto_pixel_grid(
+        time_idx_float=das_ds["time_idx"],
+        max_time_samples=num_time_samples,
+        method=method,
+    )
+    das_ds = das_ds.where(is_valid_time_idx)
 
+    # Check for potential underlying errors
     if das_ds["time_idx"].count() == 0:
         raise ValueError(
             "No I/Q time indices correspond to valid measurements within the "
@@ -283,7 +261,6 @@ def delay_and_sum_matrix(
         1j * (2 * np.pi * freq_carrier) * das_ds.tau
     )
 
-    # In case, e.g., "x", "z", and "channel" are not 0-indexed
     # Convert "x", "z", "channel" coords to 0-indices, in case they have been
     # set to something else
     das_ds = das_ds.drop_indexes(das_ds.indexes.keys()).reset_coords(drop=True)
@@ -495,13 +472,16 @@ def _calculate_receptive_fields(
     if f_number == 0:
         # All pixels are within receptive field
         is_within_aperture = xr.ones_like(x_dataarray, dtype=bool)
-        is_within_aperture = xr.broadcast_like(is_within_aperture, x_channels)
+        is_within_aperture = is_within_aperture.broadcast_like(x_channels)
 
     else:
         assert f_number > 0, "f-number must be non-negative."
         # assume linear array at z=0
         half_aperture = z_dataarray / (2 * f_number)
-        is_within_aperture = np.abs(x_dataarray - x_channels) <= half_aperture
+        is_within_aperture = (  # type: ignore
+            np.abs(x_dataarray - x_channels) <= half_aperture  # type: ignore
+        )
+        # https://github.com/pydata/xarray/issues/6524
 
     assert is_within_aperture.sizes == {  # type: ignore
         # https://github.com/pydata/xarray/issues/6524
@@ -511,3 +491,59 @@ def _calculate_receptive_fields(
     }, "Expected to know whether each pixel was within each channel's aperture."
 
     return is_within_aperture
+
+
+def _interpolate_onto_pixel_grid(
+    time_idx_float: xr.DataArray,
+    max_time_samples: int,
+    method: InterpolationMethod,
+) -> Tuple[xr.DataArray, xr.DataArray, xr.DataArray]:
+    """Calculate interpolation weights for delay-and-sum matrix.
+
+    We have discrete time samples, which do not correspond exactly to the pixel
+    grid. This function interpolates to find the values along the pixel grid
+
+    Arguments:
+        time_idx_float: time indices (float) that don't fall on exact time grid
+        max_time_samples: maximum number of time samples in the I/Q signals
+        method: interpolation method across time dimension
+
+    Returns:
+        - interp_weights: interpolation weights for new interp dimension
+        - time_idx_round: rounded (int) time indices along new interp dimension
+        - is_valid_time_idx: boolean mask whether each time index is valid
+    """
+
+    if method == InterpolationMethod.NEAREST:
+        interp_weights = xr.DataArray([1], dims=("interp",))
+        is_valid_time_idx = (time_idx_float >= 0) & (
+            time_idx_float <= (max_time_samples - 1)
+        )
+        time_idx_round = time_idx_float.round()
+    elif method == InterpolationMethod.LINEAR:
+        # E.g., a time index of 2.3 gets 0.7*pixel_2 + 0.3*pixel_3
+        is_valid_time_idx = (time_idx_float >= 0) & (
+            time_idx_float <= (max_time_samples - 1)
+        )
+        # Weighted sum of two nearest time samples
+        interp_weights = xr.concat(
+            [
+                1 - (time_idx_float % 1),  # how close to upper time sample?
+                time_idx_float % 1,  # how close to lower time sample?
+            ],
+            dim="interp",
+        )
+        time_idx_round = xr.concat(  # type: ignore
+            # https://github.com/pydata/xarray/issues/6524
+            [
+                np.floor(time_idx_float),  # closest time sample below
+                np.ceil(time_idx_float),  # closest time sample above
+            ],
+            dim="interp",
+        )
+    else:
+        raise NotImplementedError(
+            "Interpolation method not supported: {}".format(method)
+        )
+
+    return interp_weights, time_idx_round, is_valid_time_idx
