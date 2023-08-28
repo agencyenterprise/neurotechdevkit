@@ -145,31 +145,16 @@ def delay_and_sum_matrix(
     assert x.shape == z.shape, "Expected image grid x and z to have the same shape."
     assert len(tx_delays) == num_channels, "Expected one transmit-delay per channel."
     if f_number is None:
-        # Optimize f-number based on other parameters
         assert width is not None, "Element width is required to estimate f-number."
         assert (
             bandwidth is not None
         ), "Element bandwidth is required to estimate f-number."
-        assert 0 < bandwidth < 2, "Fractional bandwidth at -6dB must be in (0, 2)."
-
-        # Eq. 14 of https://doi.org/10.1016/j.ultras.2020.106309
-        wavelength_min = speed_sound / (freq_carrier * (1 + bandwidth / 2))
-
-        # Eq. 11 of https://doi.org/10.1016/j.ultras.2020.106309
-        def directivity(theta, width, wavelength):
-            return np.cos(theta) * np.sinc(width / wavelength * np.sin(theta))
-
-        optimal_directivity = 0.71
-
-        # Eq. 13 of https://doi.org/10.1016/j.ultras.2020.106309
-        result = minimize_scalar(
-            lambda theta: np.abs(
-                directivity(theta, width, wavelength_min) - optimal_directivity
-            ),
-            bounds=(0, np.pi / 2),
+        f_number = _optimize_f_number(
+            element_width=width,
+            bandwidth_fractional=bandwidth,
+            freq_carrier=freq_carrier,
+            speed_sound=speed_sound,
         )
-        alpha = result.x
-        f_number = 1 / (2 * np.tan(alpha))
     assert isinstance(f_number, float)
     assert f_number >= 0, "f-number must be non-negative."
 
@@ -354,3 +339,59 @@ def delay_and_sum_matrix(
     )
 
     return das_matrix
+
+
+def _optimize_f_number(
+    element_width: float,
+    bandwidth_fractional: float,
+    freq_carrier: float,  # Hz
+    speed_sound: float,  # m/s
+) -> float:
+    """Optimize f-number based on other parameters.
+
+    Args:
+        element_width: width of each element/channel in the array (m)
+        bandwidth_fractional: fractional bandwidth at -6dB
+        freq_carrier: center/carrier frequency of the input signals (Hz)
+        speed_sound: speed of sound (m/s)
+
+    Returns:
+        f-number, also known as the focal ratio or f-stop
+    """
+    assert (
+        0 < bandwidth_fractional < 2
+    ), "Fractional bandwidth at -6dB must be in (0, 2)."
+
+    # Eq. 14 of https://doi.org/10.1016/j.ultras.2020.106309
+    wavelength_min = speed_sound / (freq_carrier * (1 + bandwidth_fractional / 2))
+
+    optimal_directivity = 0.71
+
+    # Eq. 13 of https://doi.org/10.1016/j.ultras.2020.106309
+    result = minimize_scalar(
+        lambda theta: np.abs(
+            _directivity(theta, element_width, wavelength_min) - optimal_directivity
+        ),
+        bounds=(0, np.pi / 2),
+    )
+    alpha = result.x
+    f_number = 1 / (2 * np.tan(alpha))
+
+    return f_number
+
+
+def _directivity(theta, element_width, wavelength):
+    """Calculate directivity of a single element/channel.
+
+    Eq. 11 of https://doi.org/10.1016/j.ultras.2020.106309
+    "For a piston-like element in a soft baffle"
+
+    Args:
+        theta: receive_angle (radians)
+        element_width: width of each element/channel in the array (m)
+        wavelength: sound wavelength (m)
+
+    Returns:
+        directivity of a single element/channel
+    """
+    return np.cos(theta) * np.sinc(element_width / wavelength * np.sin(theta))
