@@ -1,33 +1,38 @@
+from typing import Any
+
 import numpy as np
 import pytest
 from scipy.sparse import csr_array
+import xarray as xr
 
 from neurotechdevkit.imaging.beamform import (
     _directivity,
     _optimize_f_number,
+    _calculate_time_of_flight,
     beamform_delay_and_sum,
     delay_and_sum_matrix,
 )
 
 
 @pytest.fixture
-def simple_inputs():
+def simple_inputs() -> dict[str, Any]:
     fs = 1e5  # Hz
     inputs = {
         "num_time_samples": 10,
         "num_channels": 5,
-        "x": np.array([[0, 1], [0, 1], [0, 1]]) * 1e-4,  # meters
-        "z": np.array([[1, 1], [2, 2], [3, 3]]) * 1e-4,  # meters
+        "x": np.array([[0, 1, 2], [0, 1, 2]]) * 1e-4,  # meters
+        "z": np.array([[0, 0, 0], [1, 1, 1]]) * 1e-4,  # meters
         "pitch": 0.5,
         "tx_delays": np.arange(5) / fs,
         "freq_sampling": fs,
         "freq_carrier": fs / 4,
+        "speed_sound": 1540,
     }
     return inputs
 
 
 @pytest.fixture
-def optimize_f_number_inputs():
+def optimize_f_number_inputs() -> dict[str, Any]:
     inputs = {
         "element_width": 1e-4,
         "bandwidth_fractional": 0.5,
@@ -48,7 +53,7 @@ def test_delay_and_sum_matrix(simple_inputs):
 
 def test_delay_and_sum_matrix_outside_aperture(simple_inputs):
     # Error-case where image is outside of aperture
-    simple_inputs["x"] = np.array([[1, 2], [1, 2], [1, 2]]) * 1e3
+    simple_inputs["x"] = np.array([[1, 2, 3], [1, 2, 3]]) * 1e3
     simple_inputs["f_number"] = 1.5
     with pytest.raises(ValueError):
         delay_and_sum_matrix(**simple_inputs)

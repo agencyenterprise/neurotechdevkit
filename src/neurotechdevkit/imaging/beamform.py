@@ -42,14 +42,14 @@ def beamform_delay_and_sum(
             Shape: (time_samples, num_channels) or
                 (time_samples, num_channels, num_echoes)
             channels usually correspond to transducer elements.
-        x: 2-D array specifying the x-coordinates of the [x, z] image grid.
-        z: 2-D array specifying the z-coordinates of the [x, z] image grid.
+        x: 2-D array specifying the x-coordinates of the [z, x] image grid.
+        z: 2-D array specifying the z-coordinates of the [z, x] image grid.
         freq_sampling: sampling frequency of the input signals.
         freq_carrier: center/carrier frequency of the input signals.
         **kwargs: additional arguments passed to `delay_and_sum_matrix`
 
     Returns:
-        Beamformed signals at the specified [x, z] image grid.
+        Beamformed signals at the specified [z, x] image grid.
 
     Notes:
         - For a linear array: x = 0, z = 0 corresponds to the center of the transducer.
@@ -74,8 +74,8 @@ def beamform_delay_and_sum(
     assert np.iscomplexobj(
         iq_signals
     ), "Expected iq_signals to be complex-valued I/Q signals."
-    assert x.ndim == 2, "Expected x to have shape (width_pixels, depth_pixels)."
-    assert z.ndim == 2, "Expected z to have shape (width_pixels, depth_pixels)."
+    assert x.ndim == 2, "Expected x to have shape (depth_pixels, width_pixels)."
+    assert z.ndim == 2, "Expected z to have shape (depth_pixels, width_pixels)."
     assert x.shape == z.shape, "Expected image grid x and z to have the same shape."
 
     # Check for potential underlying errors before allocating memory
@@ -120,8 +120,8 @@ def delay_and_sum_matrix(
     Args:
         num_time_samples: Number of time samples in the I/Q signals.
         num_channels: Number of channels/elements in the transducer array.
-        x: x-coordinates (width) of the image grid (shape: width_pixels x depth_pixels).
-        z: z-coordinates (depth) of the image grid (shape: width_pixels x depth_pixels).
+        x: x-coordinates (width) of the image grid (shape: depth_pixels x width_pixels).
+        z: z-coordinates (depth) of the image grid (shape: depth_pixels x width_pixels).
         pitch: Center-to-center distance between two adjacent elements/channels (m).
         tx_delays: Transmit delays (seconds) for each channel (length: num_channels).
         freq_sampling: Sampling frequency of the I/Q signals (Hz).
@@ -160,8 +160,8 @@ def delay_and_sum_matrix(
     assert num_time_samples > 0, "Number of time samples must be positive."
     assert num_channels > 0, "Number of channels/elements must be positive."
     assert (x.size > 0) and (z.size > 0), "Number of pixels must be positive."
-    assert x.ndim == 2, "Expected x to have shape (width_pixels, depth_pixels)."
-    assert z.ndim == 2, "Expected z to have shape (width_pixels, depth_pixels)."
+    assert x.ndim == 2, "Expected x to have shape (depth_pixels, width_pixels)."
+    assert z.ndim == 2, "Expected z to have shape (depth_pixels, width_pixels)."
     assert x.shape == z.shape, "Expected image grid x and z to have the same shape."
     assert len(tx_delays) == num_channels, "Expected one transmit-delay per channel."
     if f_number is None:
@@ -179,15 +179,15 @@ def delay_and_sum_matrix(
     assert f_number >= 0, "f-number must be non-negative."
 
     # Helper parameters
-    width_pixels, depth_pixels = x.shape
+    depth_pixels, width_pixels = x.shape
     num_pixels = x.size
 
     # Convert to xarray for more intuitive broadcasting
-    x_dataarray = xr.DataArray(x, dims=("x", "z"))  # keep as 0-index
-    z_dataarray = xr.DataArray(z, dims=("x", "z"))
+    x_dataarray = xr.DataArray(x, dims=("z", "x"))  # keep as 0-index
+    z_dataarray = xr.DataArray(z, dims=("z", "x"))
     tx_delays_dataarray = xr.DataArray(tx_delays, dims=("channel",))
 
-    # transducer centered on (0, 0) parallel to x-axis
+    # assume transducer centered on (0, 0) parallel to x-axis
     x_channels = xr.DataArray(
         (np.arange(num_channels) - (num_channels - 1) / 2) * pitch, dims=("channel",)
     )  # keep as 0-index
@@ -229,8 +229,8 @@ def delay_and_sum_matrix(
     das_ds = tau.to_dataset(name="tau")
     das_ds["time_idx"] = (tau - start_time) * freq_sampling
     assert das_ds.sizes == {
-        "x": width_pixels,
         "z": depth_pixels,
+        "x": width_pixels,
         "channel": num_channels,
     }, "Expected one fast-time index and weight per pixel/channel combo."
 
@@ -242,8 +242,8 @@ def delay_and_sum_matrix(
         is_within_aperture = np.abs(x_dataarray - x_channels) <= half_aperture
         assert is_within_aperture.sizes == {  # type: ignore
             # https://github.com/pydata/xarray/issues/6524
-            "x": width_pixels,
             "z": depth_pixels,
+            "x": width_pixels,
             "channel": num_channels,
         }, "Expected to know whether each pixel was within each channel's aperture."
         das_ds = das_ds.where(is_within_aperture)
@@ -309,10 +309,10 @@ def delay_and_sum_matrix(
     # set to something else
     das_ds = das_ds.drop_indexes(das_ds.indexes.keys()).reset_coords(drop=True)
 
-    # Convert from semi-sparse (x, z, channel)-shape array of time indices
-    # to list of [x, z, time, channel] indices, and corresponding weights
+    # Convert from semi-sparse (z, x, channel)-shape array of time indices
+    # to list of [z, x, time, channel] indices, and corresponding weights
     # Drop pixels that are not within the receive aperture of given channels
-    tmp_dim_order = ("x", "z", "channel", "interp")
+    tmp_dim_order = ("z", "x", "channel", "interp")
     das_ds_flat = das_ds.stack(
         nonzero=tmp_dim_order,
     ).dropna(dim="nonzero", how="all")
@@ -327,7 +327,7 @@ def delay_and_sum_matrix(
         .equals(das_ds[["time_idx_round", "weights"]].count())
     ), ".dropna shouldn't change count."
 
-    x_z_multi_indices = np.row_stack((das_ds_flat.x, das_ds_flat.z))
+    z_x_multi_indices = np.row_stack((das_ds_flat.z, das_ds_flat.x))
     np.testing.assert_allclose(
         das_ds_flat.time_idx_round,
         das_ds_flat.time_idx_round.astype(int),
@@ -340,8 +340,8 @@ def delay_and_sum_matrix(
     )
 
     # Convert from [x, z, time, channel] indices to [x_z, time_channel] indices
-    x_z_flat_indices = np.ravel_multi_index(
-        tuple(x_z_multi_indices), (width_pixels, depth_pixels)
+    z_x_flat_indices = np.ravel_multi_index(
+        tuple(z_x_multi_indices), (depth_pixels, width_pixels)
     )
     time_channel_flat_indices = np.ravel_multi_index(
         tuple(time_channel_multi_indices), (num_time_samples, num_channels)
@@ -350,7 +350,7 @@ def delay_and_sum_matrix(
     # Construct delay-and-sum sparse matrix
     shape = (num_pixels, num_time_samples * num_channels)
     das_matrix = csr_array(
-        (das_ds_flat["weights"].values, (x_z_flat_indices, time_channel_flat_indices)),
+        (das_ds_flat["weights"].values, (z_x_flat_indices, time_channel_flat_indices)),
         shape=shape,
     )
 
