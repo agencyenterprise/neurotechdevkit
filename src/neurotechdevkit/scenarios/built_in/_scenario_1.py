@@ -8,7 +8,8 @@ import numpy.typing as npt
 from ... import rendering, sources
 from ...grid import Grid
 from ...materials import Material
-from .._base import Scenario, Scenario2D, Scenario3D, SliceAxis, Target
+from .._base import Scenario, Scenario2D, Scenario3D, Target
+from .._utils import SliceAxis
 
 
 class Scenario1(Scenario):

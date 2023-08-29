@@ -10,7 +10,7 @@ import shutil
 import tarfile
 from dataclasses import dataclass
 from io import BytesIO
-from typing import Any, Union
+from typing import Any, Union, Optional
 
 import numpy as np
 import numpy.typing as npt
@@ -20,8 +20,9 @@ from matplotlib.animation import FuncAnimation
 import neurotechdevkit
 
 from .. import rendering, scenarios
-from ..scenarios._utils import drop_element, slice_field
+from ..scenarios._utils import drop_element, slice_field, SliceAxis
 from . import _metrics as metrics
+from ..grid import Grid
 
 DATA_FILENAME = "data.gz"
 
@@ -281,13 +282,25 @@ class SteadyStateResult2D(SteadyStateResult):
                 upsample_factor=self.scenario.material_outline_upsample_factor,
             )
         if show_target:
-            rendering.draw_target(
-                ax, self.scenario.target_center, self.scenario.target_radius
-            )
+            if not hasattr(self.scenario, "target"):
+                print(
+                    "WARNING: No target was specified in the scenario. "
+                    "Not showing target layer."
+                )
+            else:
+                rendering.draw_target(
+                    ax, self.scenario.target_center, self.scenario.target_radius
+                )
         if show_sources:
-            for source in self.scenario.sources:
-                drawing_params = rendering.SourceDrawingParams.from_source(source)
-                rendering.draw_source(ax, drawing_params)
+            if not hasattr(self.scenario, "sources"):
+                print(
+                    "WARNING: No sources were specified in the scenario. "
+                    "Not showing source layer."
+                )
+            else:
+                for source in self.scenario.sources:
+                    drawing_params = rendering.SourceDrawingParams.from_source(source)
+                    rendering.draw_source(ax, drawing_params)
 
         rendering.configure_result_plot(
             fig=fig,
@@ -419,6 +432,143 @@ class SteadyStateResult3D(SteadyStateResult):
         documentation for more information on the GUI.
         """
         rendering.render_amplitudes_3d_with_napari(self)
+
+    def _validate_slice_args(
+        self, slice_axis: int | None, slice_position: float | None
+    ) -> None:
+        """Validate that slicing axis and position are within scenario range.
+
+        `slice_axis` should be either 0, 1, or 2 (for X, Y, Z).
+        `slice_position` must be within boundaries for `slice_axis` extent.
+
+        Args:
+            slice_axis: the axis along which to slice the 3D field to be recorded. If
+                None, then the complete field will be recorded. Use 0 for X axis, 1
+                for Y axis and 2 for Z axis.
+            slice_position: the position (in meters) along the slice axis at
+                which the slice of the 3D field should be made.
+
+        Raises:
+            ValueError if axis is not 0, 1, 2.
+            ValueError if `slice_position` falls outside the current range of
+                `slice_axis`.
+            ValueError if  `slice_axis` is None but `slice_position` is not None and
+                vice versa.
+        """
+        if slice_axis not in (0, 1, 2):
+            raise ValueError(
+                "Unexpected value received for `slice_axis`. ",
+                "Expected axis are 0 (X), 1 (Y) and/or 2 (Z).",
+            )
+        if (slice_axis is None and slice_position is not None) or (
+            slice_axis is not None and slice_position is None
+        ):
+            raise ValueError(
+                "Both `slice_axis` and `slice_position` must be passed together "
+                "to correctly define how to slice the field. "
+            )
+
+        origin = np.array(self.scenario.origin, dtype=float)
+        extent = self.scenario.extent
+
+        current_range = (origin[slice_axis], origin[slice_axis] + extent[slice_axis])
+        if (slice_position < current_range[0]) or (slice_position > current_range[1]):
+            raise ValueError(
+                "`slice_position` is out of range for `slice_axis`. ",
+                f"Received value {slice_position} and "
+                f"current range is {current_range}.",
+            )
+
+    def get_steady_state_result_2d(
+        self,
+        slice_axis: Optional[SliceAxis] = None,
+        slice_position: Optional[float] = None,
+    ) -> SteadyStateResult2D:
+        """Return a 2D steady-state result from a 3D steady-state result.
+
+        This function will take a slice of the 3D steady-state result and return a 2D
+        steady-state result of the slice. A slice through the scenario can be specified
+        via `slice_axis` and `slice_position`. Eg. to take a slice at z=0.01 m, use
+        `slice_axis=2` and `slice_position=0.01`. If `slice_axis` and `slice_position`
+        are not specified, the slice will be taken along the scenario's `slice_axis` and
+        `slice_position`.
+        
+        !!! warning
+            When taking a 2D slice of a 3D steady-state result, the sources and target
+            are not being accounted for and will not be preserved in the 2D result.
+
+        Args:
+            slice_axis (Optional[SliceAxis], optional): The axis along which to slice
+                the 3D field to be recorded. If None, then the complete field will be
+                recorded. Use 0 for X axis, 1 for Y axis and 2 for Z axis. Defaults to
+                None.
+            slice_position (Optional[float], optional): The position (in meters) along
+                the slice axis at which the slice of the 3D field should be made.
+                Defaults to None.
+
+        Returns:
+            A SteadyStateResult2D object containing the 2D slice of the 3D steady-state
+            simulation results.
+        """
+        
+        if slice_axis is None and slice_position is None:
+            slice_axis = self.scenario.slice_axis
+            slice_position = self.scenario.slice_position
+
+        self.scenario._validate_slice_args(slice_axis, slice_position)
+
+        assert slice_axis is not None
+        assert slice_position is not None
+
+        wavefield = self.wavefield
+        if wavefield is not None:
+            wavefield = slice_field(
+                self.steady_state, self.scenario, slice_axis, slice_position
+            )
+
+        assert self.steady_state is not None
+        steady_state = slice_field(
+            self.steady_state, self.scenario, slice_axis, slice_position
+        )
+
+        grid = Grid.make_grid(
+            extent=drop_element(self.scenario.extent, slice_axis),
+            speed_water=1500,  # m/s
+            ppw=6,  # desired resolution for complexity=fast
+            center_frequency=self.scenario.center_frequency,
+        )
+
+        scenario = scenarios.Scenario2D(
+            center_frequency = self.scenario.center_frequency,
+            material_properties = self.scenario.material_properties,
+            material_masks = {
+                material_id: slice_field(
+                    mask, self.scenario, slice_axis, slice_position
+                )
+                for material_id, mask in self.scenario.material_masks.items()
+            },
+            origin = list(drop_element(np.array(self.scenario.origin, dtype=float), slice_axis)),
+            sources = None,
+            material_outline_upsample_factor = self.scenario.material_outline_upsample_factor,
+            target = None,
+            problem = None,
+            grid = grid,
+        )
+        scenario.compile_problem()
+
+        result = SteadyStateResult2D(
+            scenario=scenario,
+            center_frequency=self.center_frequency,
+            effective_dt=self.effective_dt,
+            pde=self.pde,
+            shot=self.shot,
+            wavefield=self.wavefield,
+            traces=self.traces,
+        )
+
+        result.steady_state = steady_state
+
+        return result
 
 
 def _extract_steady_state_amplitude(

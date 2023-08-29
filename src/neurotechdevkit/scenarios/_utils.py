@@ -4,7 +4,14 @@ import numpy as np
 import numpy.typing as npt
 import stride
 from stride.utils import wavelets
+from enum import IntEnum
 
+class SliceAxis(IntEnum):
+    """Axis along which to slice the 3D field to be recorded."""
+
+    X = 0
+    Y = 1
+    Z = 2
 
 def choose_wavelet_for_mode(simulation_mode: str) -> str:
     """Return the appropriate wavelet name for a given simulation mode.

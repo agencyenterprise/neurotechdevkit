@@ -4,7 +4,6 @@ import abc
 import asyncio
 import os
 from dataclasses import dataclass
-from enum import IntEnum
 from types import SimpleNamespace
 from typing import Mapping, Optional, Union
 
@@ -33,19 +32,12 @@ from ._utils import (
     create_grid_circular_mask,
     create_grid_spherical_mask,
     drop_element,
+    SliceAxis,
     slice_field,
     wavelet_helper,
 )
 
 nest_asyncio.apply()
-
-
-class SliceAxis(IntEnum):
-    """Axis along which to slice the 3D field to be recorded."""
-
-    X = 0
-    Y = 1
-    Z = 2
 
 
 @dataclass
