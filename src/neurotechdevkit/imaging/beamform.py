@@ -467,8 +467,8 @@ def _interpolate_onto_pixel_grid(
         method: interpolation method across time dimension
 
     Returns:
-        - interp_weights: interpolation weights for new interp dimension
-        - time_idx_round: rounded (int) time indices along new interp dimension
+        - interp_weights: interpolation weights for new `interp` dimension
+        - time_idx_round: rounded (int) time indices
         - is_valid_time_idx: boolean mask whether each time index is valid
     """
     if method == InterpolationMethod.NEAREST:
@@ -521,8 +521,8 @@ def _construct_delay_and_sum_matrix(
 
     Args:
         das_ds: Dataset containing the following variables:
-            - time_idx_round: time indices (int) along interp dimension
-            - weights: interpolation weights along interp dimension
+            - time_idx_round: time indices (int)
+            - weights: interpolation weights along `interp` dimension
         width_pixels: number of pixels in the width (x) dimension.
         depth_pixels: number of pixels in the depth (z) dimension.
         num_time_samples: number of time samples in the I/Q signals.

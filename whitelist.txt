@@ -4,6 +4,7 @@ antiparallel
 args
 aubry
 backend
+baseband
 beamform
 beamformed
 beamforming
@@ -23,6 +24,7 @@ coords
 der
 devito
 dimensionality
+directivity
 docstring
 doi
 downsampling
@@ -67,6 +69,7 @@ ndk
 neurotechdevkit
 np
 numpy
+Nyquist
 offsetbox
 opacities
 parula

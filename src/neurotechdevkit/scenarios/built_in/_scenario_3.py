@@ -70,7 +70,7 @@ class Scenario3(Scenario2D):
     ):
         """Compiles the problem for the scenario.
 
-        Imaging scenarios have a special requirement of needing heteroegeous
+        Imaging scenarios have a special requirement of needing heterogeneous
         material to image.
         """
         assert self.grid is not None
