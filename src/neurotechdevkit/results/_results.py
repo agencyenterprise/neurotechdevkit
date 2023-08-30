@@ -282,14 +282,14 @@ class SteadyStateResult2D(SteadyStateResult):
                 upsample_factor=self.scenario.material_outline_upsample_factor,
             )
         if show_target:
-            if not hasattr(self.scenario, "_target"):
+            try:
+                rendering.draw_target(
+                    ax, self.scenario.target_center, self.scenario.target_radius
+                )
+            except AssertionError:
                 print(
                     "WARNING: No target was specified in the scenario. "
                     "Not showing target layer."
-                )
-            else:
-                rendering.draw_target(
-                    ax, self.scenario.target_center, self.scenario.target_radius
                 )
         if show_sources:
             if not hasattr(self.scenario, "sources"):
@@ -523,12 +523,11 @@ class SteadyStateResult3D(SteadyStateResult):
         wavefield = self.wavefield
         if wavefield is not None:
             wavefield = slice_field(
-                self.steady_state, self.scenario, slice_axis, slice_position
+                self.wavefield, self.scenario, slice_axis, slice_position
             )
 
-        assert self.steady_state is not None
         steady_state = slice_field(
-            self.steady_state, self.scenario, slice_axis, slice_position
+            self.get_steady_state(), self.scenario, slice_axis, slice_position
         )
 
         grid = Grid.make_grid(
