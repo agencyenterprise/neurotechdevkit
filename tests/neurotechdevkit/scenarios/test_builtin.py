@@ -31,6 +31,7 @@ def center_frequency(request):
     return request.param
 
 
+@pytest.mark.integration
 def test_compile_problem(scenario_cls, center_frequency):
     """Test compiling each built-in scenario's default problem."""
     scenario = scenario_cls()
