@@ -203,6 +203,9 @@ class SteadyStateResult(Result):
             A dictionary with the objects to be saved to disk.
         """
         material_outline = self.scenario.material_outline_upsample_factor
+        sources = None
+        if hasattr(self.scenario, "sources"):
+            sources = self.scenario.sources
         save_data = {
             "result_type": self.__class__,
             "material_masks": self.scenario.material_masks,
@@ -212,7 +215,7 @@ class SteadyStateResult(Result):
             "is_3d": isinstance(self.scenario, scenarios.Scenario3D),
             "origin": self.scenario.origin,
             "grid": self.scenario.grid,
-            "sources": self.scenario.sources,
+            "sources": sources,
             "problem": self.scenario.problem,
             "center_frequency": self.center_frequency,
             "effective_dt": self.effective_dt,
@@ -282,14 +285,14 @@ class SteadyStateResult2D(SteadyStateResult):
                 upsample_factor=self.scenario.material_outline_upsample_factor,
             )
         if show_target:
-            try:
-                rendering.draw_target(
-                    ax, self.scenario.target_center, self.scenario.target_radius
-                )
-            except AssertionError:
+            if self.scenario.target is None:
                 print(
                     "WARNING: No target was specified in the scenario. "
                     "Not showing target layer."
+                )
+            else:
+                rendering.draw_target(
+                    ax, self.scenario.target_center, self.scenario.target_radius
                 )
         if show_sources:
             if not hasattr(self.scenario, "sources"):

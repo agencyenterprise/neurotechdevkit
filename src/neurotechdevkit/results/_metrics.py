@@ -159,7 +159,7 @@ def calculate_focal_gain(result: results.SteadyStateResult) -> float:
     Returns:
         The focal gain (in dB)
     """
-    if not hasattr(result.scenario, "_target"):
+    if result.scenario.get_target_mask() is None:
         print(
             "WARNING: No target was specified in the scenario. "
             "Not calculating focal gain."
@@ -216,7 +216,7 @@ def calculate_i_ta_target(result: results.SteadyStateResult) -> float:
     Returns:
         the time-averaged intensity averaged over the target region (in W/m^2).
     """
-    if not hasattr(result.scenario, "_target"):
+    if result.scenario.get_target_mask() is None:
         print(
             "WARNING: No target was specified in the scenario. "
             "Not calculating time-averaged intensity in target."
@@ -252,7 +252,7 @@ def calculate_i_ta_off_target(result: results.SteadyStateResult) -> float:
         the time-averaged intensity averaged over the brain but outside of the target
             region (in W/m^2).
     """
-    if not hasattr(result.scenario, "_target"):
+    if result.scenario.get_target_mask() is None:
         print(
             "WARNING: No target was specified in the scenario. "
             "Not calculating time-averaged intensity off target."
@@ -282,7 +282,7 @@ def calculate_i_pa_target(result: results.SteadyStateResult) -> float:
     Returns:
         the pulse-averaged intensity averaged over the target region (in W/m^2).
     """
-    if not hasattr(result.scenario, "_target"):
+    if result.scenario.get_target_mask() is None:
         print(
             "WARNING: No target was specified in the scenario. "
             "Not calculating pulse-averaged intensity in target."
@@ -310,7 +310,7 @@ def calculate_i_pa_off_target(result: results.SteadyStateResult) -> float:
         the pulse-averaged intensity averaged over the brain but outside of the target
             region (in W/m^2).
     """
-    if not hasattr(result.scenario, "_target"):
+    if result.scenario.get_target_mask() is None:
         print(
             "WARNING: No target was specified in the scenario. "
             "Not calculating pulse-averaged intensity off target."

@@ -195,11 +195,15 @@ class Scenario(abc.ABC):
     @property
     def target_center(self) -> npt.NDArray[np.float_]:
         """The coordinates of the center of the target region (in meters)."""
+        if self.target is None:
+            return None
         return np.array(self.target.center, dtype=float)
 
     @property
     def target_radius(self) -> float:
         """The radius of the target region (in meters)."""
+        if self.target is None:
+            return None
         return self.target.radius
 
     @property
@@ -251,7 +255,8 @@ class Scenario(abc.ABC):
     @property
     def target(self) -> Target:
         """The target in the scenario."""
-        assert hasattr(self, "_target")
+        if not hasattr(self, "_target"):
+            return None
         return self._target
 
     @target.setter
@@ -811,6 +816,8 @@ class Scenario2D(Scenario):
 
     def get_target_mask(self) -> npt.NDArray[np.bool_]:
         """Return the mask for the target region."""
+        if self.target is None:
+            return None
         target_mask = create_grid_circular_mask(
             grid=self.problem.grid,
             origin=np.array(self.origin, dtype=float),
@@ -897,12 +904,23 @@ class Scenario2D(Scenario):
                 upsample_factor=self.material_outline_upsample_factor,
             )
         if show_target:
-            rendering.draw_target(ax, self.target_center, self.target_radius)
+            if self.target is None:
+                print(
+                    "WARNING: No target was specified in the scenario. "
+                    "Not showing target layer."
+                )
+            else:
+                rendering.draw_target(ax, self.target_center, self.target_radius)
         if show_sources:
-            assert self.sources
-            for source in self.sources:
-                drawing_params = rendering.SourceDrawingParams.from_source(source)
-                rendering.draw_source(ax, drawing_params)
+            if not hasattr(self, "sources"):
+                print(
+                    "WARNING: No sources were specified in the scenario. "
+                    "Not showing source layer."
+                )
+            else:
+                for source in self.sources:
+                    drawing_params = rendering.SourceDrawingParams.from_source(source)
+                    rendering.draw_source(ax, drawing_params)
 
         rendering.configure_layout_plot(
             fig=fig,
