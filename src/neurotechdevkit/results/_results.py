@@ -282,7 +282,7 @@ class SteadyStateResult2D(SteadyStateResult):
                 upsample_factor=self.scenario.material_outline_upsample_factor,
             )
         if show_target:
-            if not hasattr(self.scenario, "target"):
+            if not hasattr(self.scenario, "_target"):
                 print(
                     "WARNING: No target was specified in the scenario. "
                     "Not showing target layer."
@@ -565,7 +565,6 @@ class SteadyStateResult3D(SteadyStateResult):
             wavefield=self.wavefield,
             traces=self.traces,
         )
-
         result.steady_state = steady_state
 
         return result
