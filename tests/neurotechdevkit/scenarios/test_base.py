@@ -295,7 +295,6 @@ def test_wavefield_slice_selects_right_position(
     """Verify that _wavefield_slice modifies the right position."""
     dx = tester_with_fixed_extra_space.dx
     origin = tester_with_fixed_extra_space.origin
-    print(dx, origin)
     selected_axis = 1
     updated_slices = tester_with_fixed_extra_space._wavefield_slice(
         slice_axis=selected_axis,

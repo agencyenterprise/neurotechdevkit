@@ -3230,12 +3230,12 @@ diagrams = ["jinja2", "railroad-diagrams"]
 
 [[package]]
 name = "pyrevolve"
-version = "2.2.2"
+version = "2.2.3"
 description = "Python wrapper for Revolve checkpointing"
 optional = false
 python-versions = "*"
 files = [
-    {file = "pyrevolve-2.2.2.tar.gz", hash = "sha256:82d862d07262eeee7a6496b4b67cd1c0b803a0b5a8748f94f7389a7b620ec103"},
+    {file = "pyrevolve-2.2.3.tar.gz", hash = "sha256:c019e85280da1038f6d746208faec621a99c72439b8ee9b9db0740bc51b14b87"},
 ]
 
 [package.dependencies]

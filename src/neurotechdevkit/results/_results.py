@@ -120,28 +120,6 @@ class Result(abc.ABC):
         ...
 
 
-def get_scenario_id(scenario: scenarios.Scenario) -> str:
-    """
-    Get the scenario id from a scenario based on the scenario class.
-
-    Args:
-        scenario (scenarios.Scenario): the instance of the scenario.
-
-    Raises:
-        ValueError: raised if the scenario is not found in ndk.scenarios.built_in
-
-    Returns:
-        str: the scenario id.
-    """
-    for (
-        scenario_id,
-        scenario_class,
-    ) in neurotechdevkit.scenarios.built_in.BUILT_IN_SCENARIOS.items():
-        if isinstance(scenario, scenario_class):
-            return scenario_id
-    raise ValueError("Scenario not found in neurotechdevkit.scenarios.built_in")
-
-
 @dataclass
 class SteadyStateResult(Result):
     """A base container for holding the results of a steady-state simulation.
@@ -223,17 +201,26 @@ class SteadyStateResult(Result):
         Returns:
             A dictionary with the objects to be saved to disk.
         """
+        material_outline = self.scenario.material_outline_upsample_factor
         save_data = {
-            "result_type": type(self).__name__,
-            "scenario_id": get_scenario_id(self.scenario),
+            "result_type": self.__class__,
             "material_masks": self.scenario.material_masks,
+            "material_properties": self.scenario.material_properties,
+            "material_outline_upsample_factor": material_outline,
+            "target": self.scenario.target,
+            "is_3d": isinstance(self.scenario, scenarios.Scenario3D),
             "origin": self.scenario.origin,
+            "grid": self.scenario.grid,
             "sources": self.scenario.sources,
             "problem": self.scenario.problem,
             "center_frequency": self.center_frequency,
             "effective_dt": self.effective_dt,
             "steady_state": self.get_steady_state(),
         }
+        if isinstance(self.scenario, scenarios.Scenario3D):
+            save_data["slice_axis"] = self.scenario.slice_axis
+            save_data["slice_position"] = self.scenario.slice_position
+            save_data["viewer_config_3d"] = self.scenario.viewer_config_3d
 
         return save_data
 
@@ -581,17 +568,26 @@ class PulsedResult(Result):
         Returns:
             A dictionary with the objects to be saved to disk.
         """
+        material_outline = self.scenario.material_outline_upsample_factor
         save_data = {
-            "result_type": type(self).__name__,
-            "scenario_id": get_scenario_id(self.scenario),
+            "result_type": self.__class__,
             "material_masks": self.scenario.material_masks,
+            "material_properties": self.scenario.material_properties,
+            "material_outline_upsample_factor": material_outline,
+            "target": self.scenario.target,
+            "is_3d": isinstance(self.scenario, scenarios.Scenario3D),
             "origin": self.scenario.origin,
+            "grid": self.scenario.grid,
             "sources": self.scenario.sources,
             "problem": self.scenario.problem,
             "center_frequency": self.center_frequency,
             "effective_dt": self.effective_dt,
             "wavefield": self.wavefield,
         }
+        if isinstance(self.scenario, scenarios.Scenario3D):
+            save_data["slice_axis"] = self.scenario.slice_axis
+            save_data["slice_position"] = self.scenario.slice_position
+            save_data["viewer_config_3d"] = self.scenario.viewer_config_3d
 
         return save_data
 
@@ -1238,6 +1234,37 @@ def _assert_stored_with_same_version(stored_version_filename: str):
         )
 
 
+def _get_scenario_params(save_data: dict) -> dict:
+    """Get the scenario parameters from the save data.
+
+    Args:
+        save_data (dict): the data saved in the tarball file.
+
+    Returns:
+        dict: the scenario parameters.
+    """
+    scenario_params = {
+        "material_masks": save_data["material_masks"],
+        "material_properties": save_data["material_properties"],
+        "material_outline_upsample_factor": save_data[
+            "material_outline_upsample_factor"
+        ],
+        "target": save_data["target"],
+        "origin": save_data["origin"],
+        "grid": save_data["grid"],
+        "sources": save_data["sources"],
+        "problem": save_data["problem"],
+        "center_frequency": save_data["center_frequency"],
+    }
+    if "slice_axis" in save_data:
+        scenario_params["slice_axis"] = save_data["slice_axis"]
+    if "slice_position" in save_data:
+        scenario_params["slice_position"] = save_data["slice_position"]
+    if "viewer_config_3d" in save_data:
+        scenario_params["viewer_config_3d"] = save_data["viewer_config_3d"]
+    return scenario_params
+
+
 def load_result_from_disk(filepath: str | pathlib.Path) -> Result:
     """Load a result from the tarball file stored on disk.
 
@@ -1268,14 +1295,15 @@ def load_result_from_disk(filepath: str | pathlib.Path) -> Result:
         with gzip.open(f"./extraction_dir/{DATA_FILENAME}", "rb") as f:
             save_data = pickle.load(f)
 
-        import neurotechdevkit as ndk
-
         print("Recreating the scenario for the result from saved metadata...")
-        scenario = neurotechdevkit.scenarios.built_in.BUILT_IN_SCENARIOS[
-            save_data["scenario_id"]
-        ]()
 
-        result_type = getattr(ndk.results, save_data["result_type"])
+        scenario_params = _get_scenario_params(save_data)
+
+        scenario: scenarios.Scenario2D | scenarios.Scenario3D
+        if save_data["is_3d"]:
+            scenario = neurotechdevkit.scenarios.Scenario3D(**scenario_params)
+        else:
+            scenario = neurotechdevkit.scenarios.Scenario2D(**scenario_params)
 
         fields_kwargs = dict(
             scenario=scenario,
@@ -1286,16 +1314,11 @@ def load_result_from_disk(filepath: str | pathlib.Path) -> Result:
             wavefield=save_data.get("wavefield"),
             traces=None,
         )
-        scenario.center_frequency = save_data["center_frequency"]
-        scenario.problem = save_data["problem"]
-        scenario.grid = scenario.problem.grid
-        scenario.material_masks = save_data["material_masks"]
-        scenario.origin = save_data["origin"]
 
         if save_data.get("steady_state") is not None:
             fields_kwargs.update(steady_state=save_data["steady_state"])
 
-        return result_type(**fields_kwargs)
+        return save_data["result_type"](**fields_kwargs)
     except FileNotFoundError:
         raise
     except Exception as e:

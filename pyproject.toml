@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "neurotechdevkit"
-version = "v0.3.2"
+version = "v0.4.0"
 description = "Neurotech Development Kit: an open-source software library designed to enhance accessibility to cutting-edge neurotechnology"
 authors = ["AE Studio <bci@ae.studio>"]
 maintainers = ["AE Studio <bci@ae.studio>"]
