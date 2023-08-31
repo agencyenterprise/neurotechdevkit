@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from typing import Tuple, List
+
 import numpy as np
 import numpy.typing as npt
 import scipy.ndimage
@@ -171,7 +173,7 @@ def calculate_focal_pressure(
 
 def calculate_focal_position(
     result: results.SteadyStateResult, layer: str | None = None
-) -> float:
+) -> Tuple[np.int_, ...]:
     """Calculate the focal position of the simulation result for a particular layer.
 
     The focal position is the position of peak pressure.
@@ -416,10 +418,10 @@ def calculate_focal_fwhm(
         # Convert axis to index
         axis = ["x", "y", "z"].index(axis.lower())
 
-    # Extract slice going through the focal position
+    # Extract 1-D slice going through the focal position along `axis`
     focal_position_idx = calculate_focal_position(result, layer=layer)
     ss_amp_masked = _get_steady_state_in_layer(result, layer=layer)
-    slicer = list(focal_position_idx)
+    slicer: List[np.int_ | slice] = list(focal_position_idx)
     slicer[axis] = slice(None)
     focal_slice = ss_amp_masked[tuple(slicer)]
 
@@ -481,7 +483,7 @@ class Conversions:
 def _get_steady_state_in_layer(
     result: results.SteadyStateResult,
     layer: str | None = None,
-) -> npt.NDArray[np.float_]:
+) -> npt.NDArray | np.ma.MaskedArray:
     """Get the steady-state pressure amplitude within a particular layer.
 
     Args:
