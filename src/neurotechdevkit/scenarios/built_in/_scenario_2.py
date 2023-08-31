@@ -69,12 +69,14 @@ class Scenario2(Scenario):
     }
 
     def _make_grid(
-        self, extent: Union[Tuple[float, float], Tuple[float, float, float]]
+        self,
+        extent: Union[Tuple[float, float], Tuple[float, float, float]],
+        points_per_wavelength: int = 6,
     ) -> Grid:
         grid = Grid.make_grid(
             extent=extent,
             speed_water=1500,  # m/s
-            ppw=6,  # desired resolution for complexity=fast
+            ppw=points_per_wavelength,  # desired resolution for complexity=fast
             center_frequency=self.center_frequency,
         )
         return grid
@@ -174,9 +176,9 @@ class Scenario2_2D(Scenario2D, Scenario2):
     ]
     material_outline_upsample_factor = 4
 
-    def make_grid(self):
+    def make_grid(self, **kwargs):
         """Make the grid for scenario 2 2D."""
-        self.grid = self._make_grid(BenchmarkExtent.BENCHMARK_8.value[:2])
+        self.grid = self._make_grid(BenchmarkExtent.BENCHMARK_8.value[:2], **kwargs)
         self.material_masks = self._make_material_masks(
             mask_file_name=BenchmarkSkullMaskFile.BENCHMARK_8.value, convert_2d=True
         )
@@ -296,9 +298,9 @@ class Scenario2_3D(Scenario2, Scenario3D):
     slice_position = 0.0
     material_outline_upsample_factor = 4
 
-    def make_grid(self):
+    def make_grid(self, **kwargs):
         """Make the grid for scenario 2 3D."""
-        self.grid = self._make_grid(BenchmarkExtent.BENCHMARK_8.value)
+        self.grid = self._make_grid(BenchmarkExtent.BENCHMARK_8.value, **kwargs)
         self.material_masks = self._make_material_masks(
             mask_file_name=BenchmarkSkullMaskFile.BENCHMARK_8.value, convert_2d=False
         )
@@ -316,9 +318,9 @@ class Scenario2_2D_Benchmark7(Scenario2_2D):
     # origin at [top, center] of extent
     origin = [0.0, -0.035]  # m
 
-    def make_grid(self):
+    def make_grid(self, **kwargs):
         """Make the grid for 2-D version of Benchmark 7."""
-        self.grid = self._make_grid(BenchmarkExtent.BENCHMARK_7.value[:2])
+        self.grid = self._make_grid(BenchmarkExtent.BENCHMARK_7.value[:2], **kwargs)
         self.material_masks = self._make_material_masks(
             mask_file_name=BenchmarkSkullMaskFile.BENCHMARK_7.value, convert_2d=True
         )
@@ -336,9 +338,9 @@ class Scenario2_3D_Benchmark7(Scenario2_3D):
     # origin at [top, center, center] of extent
     origin = [0.0, -0.035, -0.035]  # m
 
-    def make_grid(self):
+    def make_grid(self, **kwargs):
         """Make the grid for Benchmark 7."""
-        self.grid = self._make_grid(BenchmarkExtent.BENCHMARK_7.value)
+        self.grid = self._make_grid(BenchmarkExtent.BENCHMARK_7.value, **kwargs)
         self.material_masks = self._make_material_masks(
             mask_file_name=BenchmarkSkullMaskFile.BENCHMARK_7.value, convert_2d=False
         )
