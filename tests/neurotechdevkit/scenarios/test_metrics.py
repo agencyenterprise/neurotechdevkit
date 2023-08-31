@@ -6,7 +6,10 @@ import pytest
 from neurotechdevkit.results._metrics import (
     Conversions,
     calculate_all_metrics,
+    calculate_focal_pressure,
+    calculate_focal_volume,
     calculate_focal_gain,
+    calculate_focal_fwhm,
     calculate_i_pa_off_target,
     calculate_i_pa_target,
     calculate_i_ta_off_target,
@@ -30,7 +33,12 @@ def patched_metric_fns(monkeypatch):
     monkeypatch.setattr(
         metrics, "calculate_mechanical_index", lambda result, layer: 0.1234
     )
+    monkeypatch.setattr(
+        metrics, "calculate_focal_pressure", lambda result, layer: 8.2e5
+    )
+    monkeypatch.setattr(metrics, "calculate_focal_volume", lambda result, layer: 123)
     monkeypatch.setattr(metrics, "calculate_focal_gain", lambda result: 2.4)
+    monkeypatch.setattr(metrics, "calculate_focal_fwhm", lambda result, axis, layer: 6)
     monkeypatch.setattr(metrics, "calculate_i_ta_target", lambda result: 2.34e-3)
     monkeypatch.setattr(metrics, "calculate_i_ta_off_target", lambda result: 3.45e-3)
     monkeypatch.setattr(metrics, "calculate_i_pa_target", lambda result: 45.6)
@@ -113,13 +121,17 @@ def test_calculate_all_metrics_has_correct_structure(fake_result, patched_metric
     metrics = calculate_all_metrics(fake_result)
     for _, data in metrics.items():
         assert set(data.keys()) == {"value", "unit-of-measurement", "description"}
-        assert isinstance(data["value"], float)
+        assert isinstance(data["value"], (float, int))
 
 
 def test_calculate_all_metrics_has_expected_metrics(fake_result, patched_metric_fns):
     """Verify that the metrics data contains the expected set of metrics"""
     expected_metrics = [
+        "focal_pressure",
+        "focal_volume",
         "focal_gain",
+        "FWHM_x",
+        "FWHM_y",
         "mechanical_index_all",
         "mechanical_index_brain",
         "mechanical_index_water",
@@ -137,7 +149,11 @@ def test_calculate_all_metrics_conversions(fake_result, patched_metric_fns):
     correct.
     """
     metrics = calculate_all_metrics(fake_result)
+    np.testing.assert_allclose(metrics["focal_pressure"]["value"], 8.2e5)
+    assert metrics["focal_volume"]["value"] == 123
     np.testing.assert_allclose(metrics["focal_gain"]["value"], 2.4)
+    assert metrics["FWHM_x"]["value"] == 6
+    assert metrics["FWHM_y"]["value"] == 6
     np.testing.assert_allclose(metrics["mechanical_index_all"]["value"], 0.1234)
     np.testing.assert_allclose(metrics["mechanical_index_brain"]["value"], 0.1234)
     np.testing.assert_allclose(metrics["mechanical_index_water"]["value"], 0.1234)

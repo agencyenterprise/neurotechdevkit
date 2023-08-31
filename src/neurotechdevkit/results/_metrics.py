@@ -9,7 +9,7 @@ from . import _results as results
 
 def calculate_all_metrics(
     result: results.SteadyStateResult,
-) -> dict[str, dict[str, float | str]]:
+) -> dict[str, dict[str, float | int | str]]:
     """Calculate all metrics for the steady-state result and return as a dictionary.
 
     The keys for the dictionary are the names of the metrics. The value for each metric
