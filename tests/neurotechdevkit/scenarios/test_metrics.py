@@ -18,9 +18,11 @@ from neurotechdevkit.results._metrics import (
 )
 from neurotechdevkit.results._results import SteadyStateResult2D
 
+GRID_SHAPE = (21, 31)
 CENTER_FREQUENCY = 1.5e6
 AMBIENT_PRESSURE = 2.5e6
 PEAK_PRESSURE = 6.3e6
+PEAK_PRESSURE_SHAPE = (2, 2)
 SPEED_OF_SOUND = 1800.0
 DENSITY = 1200.0
 
@@ -52,8 +54,10 @@ def fake_steady_state_matrix():
     The array has a shape of (21, 31) with a constant value of 2.5e6 everywhere except
     for four pixels which have a value of 6.3e6 in the lower half.
     """
-    steady_state = AMBIENT_PRESSURE * np.ones((21, 31))
-    steady_state[15:17, 24:26] = PEAK_PRESSURE
+    steady_state = AMBIENT_PRESSURE * np.ones(GRID_SHAPE)
+    steady_state[
+        15 : (15 + PEAK_PRESSURE_SHAPE[0]), 24 : (24 + PEAK_PRESSURE_SHAPE[1])
+    ] = PEAK_PRESSURE
     return steady_state
 
 
@@ -188,7 +192,31 @@ def test_calculate_mechanical_index_with_bottom_layer(fake_result):
     np.testing.assert_allclose(metric_value, expected)
 
 
-def test_calculate_focal_gain(fake_result):
+@pytest.mark.parametrize(
+    "layer, expected_focal_pressure",
+    [(None, PEAK_PRESSURE), ("water", AMBIENT_PRESSURE), ("brain", PEAK_PRESSURE)],
+)
+def test_calculate_focal_pressure(
+    fake_result: SteadyStateResult2D, layer: str | None, expected_focal_pressure: float
+):
+    """Verify that the focal pressure is calculated as expected"""
+    metric_value = calculate_focal_pressure(fake_result, layer=layer)
+    np.testing.assert_allclose(metric_value, expected_focal_pressure)
+
+
+@pytest.mark.parametrize(
+    "layer, expected_focal_volume",
+    [(None, np.prod(PEAK_PRESSURE_SHAPE)), ("brain", np.prod(PEAK_PRESSURE_SHAPE))],
+)
+def test_calculate_focal_volume(
+    fake_result: SteadyStateResult2D, layer: str | None, expected_focal_volume: int
+):
+    """Verify that the focal pressure is calculated as expected"""
+    metric_value = calculate_focal_volume(fake_result, layer=layer)
+    np.testing.assert_allclose(metric_value, expected_focal_volume)
+
+
+def test_calculate_focal_gain(fake_result: SteadyStateResult2D):
     """Verify that the focal gain is calculated as expected"""
     metric_value = calculate_focal_gain(fake_result)
     # 16 pixels in the target region, 4 with high pressure
@@ -196,6 +224,30 @@ def test_calculate_focal_gain(fake_result):
     denominator = AMBIENT_PRESSURE
     expected = 10 * np.log10(numerator / denominator)
     np.testing.assert_allclose(metric_value, expected)
+
+
+@pytest.mark.parametrize(
+    "axis,layer,expected_fwhm",
+    [
+        (0, None, PEAK_PRESSURE_SHAPE[0]),
+        (1, None, PEAK_PRESSURE_SHAPE[1]),
+        ("x", "brain", PEAK_PRESSURE_SHAPE[0]),
+        ("y", "brain", PEAK_PRESSURE_SHAPE[1]),
+    ],
+)
+def test_calculate_focal_fwhm(
+    fake_result: SteadyStateResult2D,
+    axis: str | int,
+    layer: str | None,
+    expected_fwhm: int,
+):
+    """Verify that the full-width at half-maximum is calculated as expected"""
+    assert PEAK_PRESSURE > (AMBIENT_PRESSURE * 2), (
+        "This test's expected values are invalid if the peak pressure is not"
+        " 2x larger than the ambient pressure"
+    )
+    metric_value = calculate_focal_fwhm(fake_result, axis=axis, layer=layer)
+    np.testing.assert_allclose(metric_value, expected_fwhm)
 
 
 def test_calculate_i_ta_off_target(fake_result):
