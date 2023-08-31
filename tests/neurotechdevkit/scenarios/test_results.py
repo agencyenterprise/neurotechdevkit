@@ -489,3 +489,35 @@ def test_creation_of_pulsed_3d_results_sliced(result_args, recorded_slice):
     )
     result = create_pulsed_result(**result_args)
     assert isinstance(result, PulsedResult3D)
+
+
+@pytest.mark.parametrize("slice_args", [(3, 0.0), (None, 0.0), (1, None), (1, 0.5)])
+def test_validate_slice_args(fake_ss_result_3d, a_test_scenario_3d, slice_args):
+    """Validates that raises error if trying to perform invalid slice"""
+    fake_ss_result_3d.scenario = a_test_scenario_3d
+    with pytest.raises(ValueError):
+        fake_ss_result_3d._validate_slice_args(*slice_args)
+
+
+def test_get_steady_state_result_2d(
+    fake_ss_result_3d, ss_data_3d, a_test_scenario_3d, a_test_scenario_2d
+):
+    """Verify that slicing a SteadyStateResult3D produces a SteadyStateResult2D."""
+    data, expected_steady_state = ss_data_3d
+    fake_ss_result_3d.scenario = a_test_scenario_3d
+    assert len(a_test_scenario_3d.sources) == 1
+    fake_ss_result_3d.wavefield = data
+    fake_ss_result_3d.steady_state = expected_steady_state
+    slice_axis = 2
+    slice_position = fake_ss_result_3d.scenario.origin[slice_axis]
+    result = fake_ss_result_3d.get_steady_state_result_2d(
+        slice_axis=slice_axis, slice_position=slice_position
+    )
+
+    assert isinstance(result, SteadyStateResult2D)
+    assert result.center_frequency == fake_ss_result_3d.center_frequency
+    assert result.effective_dt == fake_ss_result_3d.effective_dt
+    np.testing.assert_allclose(
+        result.steady_state, fake_ss_result_3d.steady_state[:, :, 0]
+    )
+    assert_scenario_match(result.scenario, a_test_scenario_2d)

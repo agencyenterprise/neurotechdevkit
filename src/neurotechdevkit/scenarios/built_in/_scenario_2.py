@@ -11,8 +11,8 @@ import scipy.ndimage
 from ... import rendering, sources
 from ...grid import Grid
 from ...materials import Material
-from .._base import Scenario, Scenario2D, Scenario3D, Target
-from .._utils import SliceAxis
+from .._base import Scenario, Scenario2D, Scenario3D
+from .._utils import SliceAxis, Target
 
 
 class Scenario2(Scenario):

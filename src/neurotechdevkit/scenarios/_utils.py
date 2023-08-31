@@ -1,10 +1,30 @@
 from __future__ import annotations
 
+from dataclasses import dataclass
+from enum import IntEnum
+
 import numpy as np
 import numpy.typing as npt
 import stride
 from stride.utils import wavelets
-from enum import IntEnum
+
+
+@dataclass
+class Target:
+    """A class for containing metadata for a target.
+
+    Attributes:
+        target_id: the string id of the target.
+        center: the location of the center of the target (in meters).
+        radius: the radius of the target (in meters).
+        description: a text describing the target.
+    """
+
+    target_id: str
+    center: list[float]
+    radius: float
+    description: str
+
 
 class SliceAxis(IntEnum):
     """Axis along which to slice the 3D field to be recorded."""
@@ -12,6 +32,7 @@ class SliceAxis(IntEnum):
     X = 0
     Y = 1
     Z = 2
+
 
 def choose_wavelet_for_mode(simulation_mode: str) -> str:
     """Return the appropriate wavelet name for a given simulation mode.

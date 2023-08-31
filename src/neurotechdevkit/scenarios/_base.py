@@ -3,7 +3,6 @@ from __future__ import annotations
 import abc
 import asyncio
 import os
-from dataclasses import dataclass
 from types import SimpleNamespace
 from typing import Mapping, Optional, Union
 
@@ -28,33 +27,17 @@ from ._time import (
     select_simulation_time_for_steady_state,
 )
 from ._utils import (
+    SliceAxis,
+    Target,
     choose_wavelet_for_mode,
     create_grid_circular_mask,
     create_grid_spherical_mask,
     drop_element,
-    SliceAxis,
     slice_field,
     wavelet_helper,
 )
 
 nest_asyncio.apply()
-
-
-@dataclass
-class Target:
-    """A class for containing metadata for a target.
-
-    Attributes:
-        target_id: the string id of the target.
-        center: the location of the center of the target (in meters).
-        radius: the radius of the target (in meters).
-        description: a text describing the target.
-    """
-
-    target_id: str
-    center: list[float]
-    radius: float
-    description: str
 
 
 class Scenario(abc.ABC):
@@ -195,15 +178,11 @@ class Scenario(abc.ABC):
     @property
     def target_center(self) -> npt.NDArray[np.float_]:
         """The coordinates of the center of the target region (in meters)."""
-        if self.target is None:
-            return None
         return np.array(self.target.center, dtype=float)
 
     @property
     def target_radius(self) -> float:
         """The radius of the target region (in meters)."""
-        if self.target is None:
-            return None
         return self.target.radius
 
     @property
@@ -255,8 +234,7 @@ class Scenario(abc.ABC):
     @property
     def target(self) -> Target:
         """The target in the scenario."""
-        if not hasattr(self, "_target"):
-            return None
+        assert hasattr(self, "_target")
         return self._target
 
     @target.setter
@@ -816,8 +794,6 @@ class Scenario2D(Scenario):
 
     def get_target_mask(self) -> npt.NDArray[np.bool_]:
         """Return the mask for the target region."""
-        if self.target is None:
-            return None
         target_mask = create_grid_circular_mask(
             grid=self.problem.grid,
             origin=np.array(self.origin, dtype=float),
@@ -904,23 +880,12 @@ class Scenario2D(Scenario):
                 upsample_factor=self.material_outline_upsample_factor,
             )
         if show_target:
-            if self.target is None:
-                print(
-                    "WARNING: No target was specified in the scenario. "
-                    "Not showing target layer."
-                )
-            else:
-                rendering.draw_target(ax, self.target_center, self.target_radius)
+            rendering.draw_target(ax, self.target_center, self.target_radius)
         if show_sources:
-            if not hasattr(self, "sources"):
-                print(
-                    "WARNING: No sources were specified in the scenario. "
-                    "Not showing source layer."
-                )
-            else:
-                for source in self.sources:
-                    drawing_params = rendering.SourceDrawingParams.from_source(source)
-                    rendering.draw_source(ax, drawing_params)
+            assert self.sources
+            for source in self.sources:
+                drawing_params = rendering.SourceDrawingParams.from_source(source)
+                rendering.draw_source(ax, drawing_params)
 
         rendering.configure_layout_plot(
             fig=fig,
