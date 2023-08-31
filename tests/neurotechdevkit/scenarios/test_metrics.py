@@ -6,10 +6,10 @@ import pytest
 from neurotechdevkit.results._metrics import (
     Conversions,
     calculate_all_metrics,
+    calculate_focal_fwhm,
+    calculate_focal_gain,
     calculate_focal_pressure,
     calculate_focal_volume,
-    calculate_focal_gain,
-    calculate_focal_fwhm,
     calculate_i_pa_off_target,
     calculate_i_pa_target,
     calculate_i_ta_off_target,

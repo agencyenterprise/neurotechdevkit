@@ -29,9 +29,7 @@ def calculate_all_metrics(
         "focal_pressure": {
             "value": calculate_focal_pressure(result, layer="brain"),
             "unit-of-measurement": "Pa",
-            "description": (
-                "The peak pressure amplitude within the brain."
-            ),
+            "description": ("The peak pressure amplitude within the brain."),
         },
         "focal_volume": {
             "value": calculate_focal_volume(result, layer="brain"),
@@ -42,7 +40,7 @@ def calculate_all_metrics(
                 " region is above 50%% of the maximum pressure amplitude, the"
                 " volume of largest connected region is returned. Also called"
                 " the -6 dB focal volume."
-            )
+            ),
         },
         "focal_gain": {
             "value": calculate_focal_gain(result),
@@ -65,7 +63,7 @@ def calculate_all_metrics(
                     " focal width."
                 ),
             }
-            for axis in ("x", "y", "z")[:result.steady_state.ndim]
+            for axis in ("x", "y", "z")[: result.get_steady_state().ndim]
         },
         "I_ta_target": {
             "value": Conversions.convert(
@@ -183,14 +181,13 @@ def calculate_focal_position(
         layer: the layer within which to calculate the focal position. If None, the
             default, the focal position is calculated over the entire simulation
             space.
-    
+
     Returns:
         The focal position (as grid index tuple)
     """
     ss_amp_masked = _get_steady_state_in_layer(result, layer=layer)
     focal_position = np.unravel_index(
-        np.argmax(ss_amp_masked, axis=None),
-        ss_amp_masked.shape
+        np.argmax(ss_amp_masked, axis=None), ss_amp_masked.shape
     )
     return focal_position
 
@@ -361,7 +358,8 @@ def calculate_i_pa_off_target(result: results.SteadyStateResult) -> float:
 
 
 def calculate_focal_volume(
-    result: results.SteadyStateResult, layer: str | None = "brain",
+    result: results.SteadyStateResult,
+    layer: str | None = "brain",
 ) -> float:
     """Calculate the focal volume of the simulation result.
 
@@ -481,7 +479,8 @@ class Conversions:
 
 
 def _get_steady_state_in_layer(
-    result: results.SteadyStateResult, layer: str | None = None,
+    result: results.SteadyStateResult,
+    layer: str | None = None,
 ) -> npt.NDArray[np.float_]:
     """Get the steady-state pressure amplitude within a particular layer.
 
