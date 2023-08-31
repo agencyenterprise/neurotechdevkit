@@ -31,6 +31,21 @@ class BenchmarkExtent(enum.Enum):
     BENCHMARK_8 = (0.225, 0.170, 0.190)  # m
 
 
+@enum.unique
+class BenchmarkSkullMaskFile(enum.Enum):
+    """Aliases for the skull mask filename for each Scenario2 benchmark."""
+
+    BENCHMARK_7 = "skull_mask_bm7_dx_0.5mm.mat"
+    BENCHMARK_8 = "skull_mask_bm8_dx_0.5mm.mat"
+
+
+class BenchmarkExtent(enum.Enum):
+    """Aliases for the extent for each Scenario2 benchmark."""
+
+    BENCHMARK_7 = (0.120, 0.070, 0.070)  # m
+    BENCHMARK_8 = (0.225, 0.170, 0.190)  # m
+
+
 class Scenario2(Scenario):
     """Specific implementation detail for scenario 2.
 
