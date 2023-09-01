@@ -491,12 +491,18 @@ def test_creation_of_pulsed_3d_results_sliced(result_args, recorded_slice):
     assert isinstance(result, PulsedResult3D)
 
 
-@pytest.mark.parametrize("slice_args", [(3, 0.0), (None, 0.0), (1, None), (1, 0.5)])
-def test_validate_slice_args(fake_ss_result_3d, a_test_scenario_3d, slice_args):
+@pytest.mark.parametrize(
+    "slice_axis, slice_position", [(3, 0.0), (None, 0.0), (1, None), (1, 0.5)]
+)
+def test_validate_slice_args(
+    fake_ss_result_3d, a_test_scenario_3d, slice_axis, slice_position
+):
     """Validates that raises error if trying to perform invalid slice"""
     fake_ss_result_3d.scenario = a_test_scenario_3d
     with pytest.raises(ValueError):
-        fake_ss_result_3d._validate_slice_args(*slice_args)
+        fake_ss_result_3d._validate_slice_args(
+            slice_axis=slice_axis, slice_position=slice_position
+        )
 
 
 def test_get_steady_state_result_2d(

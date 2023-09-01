@@ -674,20 +674,17 @@ class Scenario(abc.ABC):
             ValueError if axis is not 0, 1, 2.
             ValueError if `slice_position` falls outside the current range of
                 `slice_axis`.
-            ValueError if  `slice_axis` is None but `slice_position` is not None and
-                vice versa.
+            ValueError if  `slice_axis` is None or `slice_position` is None.
         """
+        if slice_axis is None or slice_position is None:
+            raise ValueError(
+                "Both `slice_axis` and `slice_position` must be passed together "
+                "to correctly define how to slice the field. "
+            )
         if slice_axis not in (0, 1, 2):
             raise ValueError(
                 "Unexpected value received for `slice_axis`. ",
                 "Expected axis are 0 (X), 1 (Y) and/or 2 (Z).",
-            )
-        if (slice_axis is None and slice_position is not None) or (
-            slice_axis is not None and slice_position is None
-        ):
-            raise ValueError(
-                "Both `slice_axis` and `slice_position` must be passed together "
-                "to correctly define how to slice the field. "
             )
 
         origin = np.array(self.origin, dtype=float)

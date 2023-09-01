@@ -443,20 +443,17 @@ class SteadyStateResult3D(SteadyStateResult):
             ValueError if axis is not 0, 1, 2.
             ValueError if `slice_position` falls outside the current range of
                 `slice_axis`.
-            ValueError if  `slice_axis` is None but `slice_position` is not None and
-                vice versa.
+            ValueError if  `slice_axis` is None or `slice_position` is None.
         """
+        if slice_axis is None or slice_position is None:
+            raise ValueError(
+                "Both `slice_axis` and `slice_position` must be passed together "
+                "to correctly define how to slice the field. "
+            )
         if slice_axis not in (0, 1, 2):
             raise ValueError(
                 "Unexpected value received for `slice_axis`. ",
                 "Expected axis are 0 (X), 1 (Y) and/or 2 (Z).",
-            )
-        if (slice_axis is None and slice_position is not None) or (
-            slice_axis is not None and slice_position is None
-        ):
-            raise ValueError(
-                "Both `slice_axis` and `slice_position` must be passed together "
-                "to correctly define how to slice the field. "
             )
 
         origin = np.array(self.scenario.origin, dtype=float)
@@ -489,13 +486,13 @@ class SteadyStateResult3D(SteadyStateResult):
             are not being accounted for and will not be preserved in the 2D result.
 
         Args:
-            slice_axis (Optional[SliceAxis], optional): The axis along which to slice
-                the 3D field to be recorded. If None, then the complete field will be
-                recorded. Use 0 for X axis, 1 for Y axis and 2 for Z axis. Defaults to
-                None.
-            slice_position (Optional[float], optional): The position (in meters) along
-                the slice axis at which the slice of the 3D field should be made.
-                Defaults to None.
+            slice_axis: The axis along which to slice the 3D field to be recorded. If
+                None, then the complete field will be recorded. Use 0 for X axis, 1 for
+                Y axis and 2 for Z axis. Defaults to None.
+            slice_position: The position (in meters) along the slice axis at which the
+                slice of the 3D field should be made. Position must be within the slice
+                axis range. Eg. for a slice with origin -0.035 and extent 0.07, the
+                valid range is [-0.035, 0.035]. Defaults to None.
 
         Returns:
             A SteadyStateResult2D object containing the 2D slice of the 3D steady-state
@@ -595,8 +592,8 @@ class SteadyStateResult3D(SteadyStateResult):
             shot=self.shot,
             wavefield=wavefield,
             traces=self.traces,
+            steady_state=steady_state,
         )
-        result.steady_state = steady_state
 
         return result
 
