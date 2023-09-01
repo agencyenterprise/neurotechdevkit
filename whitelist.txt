@@ -73,12 +73,14 @@ precomputed
 reproducibility
 resampling
 ricker
+scipy
 sliceaxis
 stackoverflow
 str
 struct
 structs
 suptitle
+thresholding
 timesteps
 transcranial
 undersampling
@@ -90,6 +92,7 @@ viridis
 vmax
 vmin
 voxel
+voxels
 vp
 wavefield
 waveforms

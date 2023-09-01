@@ -380,14 +380,14 @@ def calculate_focal_volume(
     """
     ss_amp_brain_masked = _get_steady_state_in_layer(result, layer=layer)
     above_threshold = ss_amp_brain_masked >= (0.5 * ss_amp_brain_masked.max())
-    # scipy.ndimage.label expects a normal numpy array, so let's fill the masked array
+    # `scipy.ndimage.label`` expects a normal numpy array, so let's fill the masked array
     if isinstance(above_threshold, np.ma.MaskedArray):
         above_threshold = above_threshold.filled(False)
     # Get contiguous regions
     labeled_mask, _ = scipy.ndimage.label(above_threshold)
     # Count the occurrences of each label in the labeled array
     unique_labels, label_counts = np.unique(labeled_mask, return_counts=True)
-    # Exclude background, which scipy.ndimage.label() labels as 0
+    # Exclude background, which `scipy.ndimage.label` labels as 0
     label_counts = label_counts[unique_labels != 0]
     assert label_counts.sum(), "Expected >=1 connected regions above 50% threshold"
     # Get size of largest connected component
