@@ -521,17 +521,22 @@ class SteadyStateResult3D(SteadyStateResult):
             source_args = {
                 "position": drop_element(source.position, slice_axis),
                 "direction": drop_element(source.unit_direction, slice_axis),
-                "aperture": source.aperture,
-                "focal_length": source.focal_length,
                 "num_points": source.num_points,
-                "delay": source.delay,
             }
-            if type(source) == sources.PhasedArraySource3D:
+            if isinstance(source, sources.PhasedArraySource3D):
+                if source.element_delays is None:
+                    source_args["tilt_angle"] = source.tilt_angle
+                    source_args["focal_length"] = source.focal_length
+                    source_args["delay"] = source.delay
                 source_args["num_elements"] = source.num_elements
                 source_args["pitch"] = source.pitch
                 source_args["element_width"] = source.element_width
-                source_args["tilt_angle"] = source.tilt_angle
                 source_args["element_delays"] = source.element_delays
+            else:
+                source_args["aperture"] = source.aperture
+                source_args["delay"] = source.delay
+                if not isinstance(source, sources.UnfocusedSource):
+                    source_args["focal_length"] = source.focal_length
             sources_2d.append(source_type[type(source)](**source_args))
 
         target = Target(
