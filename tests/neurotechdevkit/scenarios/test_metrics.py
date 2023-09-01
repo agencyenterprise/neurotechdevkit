@@ -1,4 +1,5 @@
 from types import SimpleNamespace
+from typing import Optional
 
 import numpy as np
 import pytest
@@ -197,7 +198,9 @@ def test_calculate_mechanical_index_with_bottom_layer(fake_result):
     [(None, PEAK_PRESSURE), ("water", AMBIENT_PRESSURE), ("brain", PEAK_PRESSURE)],
 )
 def test_calculate_focal_pressure(
-    fake_result: SteadyStateResult2D, layer: str | None, expected_focal_pressure: float
+    fake_result: SteadyStateResult2D,
+    layer: Optional[str],
+    expected_focal_pressure: float,
 ):
     """Verify that the focal pressure is calculated as expected"""
     metric_value = calculate_focal_pressure(fake_result, layer=layer)
@@ -209,7 +212,7 @@ def test_calculate_focal_pressure(
     [(None, np.prod(PEAK_PRESSURE_SHAPE)), ("brain", np.prod(PEAK_PRESSURE_SHAPE))],
 )
 def test_calculate_focal_volume(
-    fake_result: SteadyStateResult2D, layer: str | None, expected_focal_volume: int
+    fake_result: SteadyStateResult2D, layer: Optional[str], expected_focal_volume: int
 ):
     """Verify that the focal pressure is calculated as expected"""
     metric_value = calculate_focal_volume(fake_result, layer=layer)
@@ -238,7 +241,7 @@ def test_calculate_focal_gain(fake_result: SteadyStateResult2D):
 def test_calculate_focal_fwhm(
     fake_result: SteadyStateResult2D,
     axis: str | int,
-    layer: str | None,
+    layer: Optional[str],
     expected_fwhm: int,
 ):
     """Verify that the full-width at half-maximum is calculated as expected"""
