@@ -1,5 +1,5 @@
 from types import SimpleNamespace
-from typing import Optional
+from typing import Optional, Union
 
 import numpy as np
 import pytest
@@ -240,7 +240,7 @@ def test_calculate_focal_gain(fake_result: SteadyStateResult2D):
 )
 def test_calculate_focal_fwhm(
     fake_result: SteadyStateResult2D,
-    axis: str | int,
+    axis: Union[str, int],
     layer: Optional[str],
     expected_fwhm: int,
 ):
