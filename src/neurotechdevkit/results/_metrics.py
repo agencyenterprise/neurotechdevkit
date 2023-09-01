@@ -429,7 +429,7 @@ def calculate_focal_fwhm(
     focal_position_axis_idx = focal_position_idx[axis]
     above_half_max = focal_slice >= (0.5 * focal_slice[focal_position_axis_idx])
 
-    # scipy.ndimage.label expects a normal numpy array, so let's fill the masked array
+    # `scipy.ndimage.label` expects a normal numpy array, so let's fill the masked array
     if isinstance(above_half_max, np.ma.MaskedArray):
         above_half_max = above_half_max.filled(False)
     labeled_mask, _ = scipy.ndimage.label(above_half_max)
