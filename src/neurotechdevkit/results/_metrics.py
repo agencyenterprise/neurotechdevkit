@@ -380,7 +380,7 @@ def calculate_focal_volume(
     """
     ss_amp_brain_masked = _get_steady_state_in_layer(result, layer=layer)
     above_threshold = ss_amp_brain_masked >= (0.5 * ss_amp_brain_masked.max())
-    # `scipy.ndimage.label`` expects a normal numpy array, so let's fill the masked array
+    # `scipy.ndimage.label` expects a normal numpy array, so let's fill the masked array
     if isinstance(above_threshold, np.ma.MaskedArray):
         above_threshold = above_threshold.filled(False)
     # Get contiguous regions
