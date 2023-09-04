@@ -184,7 +184,7 @@ phased_array = ndk.sources.PhasedArraySource2D(
     num_elements=20,
     pitch=1.5e-3,
     element_width=1.2e-3,
-    element_delays=np.linspace(0, 1e-5, 20).tolist(),
+    element_delays=np.linspace(0, 1e-5, 20),
     num_points=1000,
 )
 scenario.sources = [phased_array]
