@@ -19,7 +19,7 @@ from neurotechdevkit.scenarios.built_in import BUILT_IN_SCENARIOS
 class BuiltInScenariosShelf(object):
     """Singleton class for storing the already instantiated built-in scenarios."""
 
-    scenarios: Dict[str, Scenario2D] = {}
+    scenarios: Dict[str, Dict[float, Union[Scenario2D, Scenario3D]]] = {}
 
     def __new__(cls):
         """Create a new instance of the BuiltInScenariosShelf class."""
@@ -27,7 +27,9 @@ class BuiltInScenariosShelf(object):
             cls.instance = super(BuiltInScenariosShelf, cls).__new__(cls)
         return cls.instance
 
-    def get(self, scenario_id: str) -> Scenario2D:
+    def get(
+        self, scenario_id: str, center_frequency: float
+    ) -> Union[Scenario2D, Scenario3D]:
         """
         Return the instantiated built-in scenario with the given id.
 
@@ -38,11 +40,15 @@ class BuiltInScenariosShelf(object):
             The built-in scenario.
         """
         if scenario_id not in self.scenarios:
+            self.scenarios[scenario_id] = {}
+
+        if center_frequency not in self.scenarios[scenario_id]:
             builtin_scenario = BUILT_IN_SCENARIOS[scenario_id]()
+            builtin_scenario.center_frequency = center_frequency
             builtin_scenario.make_grid()
             builtin_scenario.compile_problem()
-            self.scenarios[scenario_id] = builtin_scenario
-        return self.scenarios[scenario_id]
+            self.scenarios[scenario_id][center_frequency] = builtin_scenario
+        return self.scenarios[scenario_id][center_frequency]
 
 
 def get_built_in_scenarios() -> Dict[str, Dict]:
@@ -76,6 +82,7 @@ def get_scenario_layout(config: RenderLayoutRequest) -> str:
         config.scenarioSettings.isPreBuilt,
         config.is2d,
         config.scenarioSettings.scenario_id,
+        config.simulationSettings.centerFrequency,
     )
     _configure_scenario(scenario, config)
     fig = scenario.render_layout(show_sources=len(scenario.sources) > 0)
@@ -87,7 +94,10 @@ def get_scenario_layout(config: RenderLayoutRequest) -> str:
 
 
 def _instantiate_scenario(
-    is_prebuilt: bool, is_2d: bool, scenario_id: Optional[str]
+    is_prebuilt: bool,
+    is_2d: bool,
+    scenario_id: Optional[str],
+    center_frequency: float,
 ) -> Union[Scenario2D, Scenario3D]:
     """Instantiate the scenario for the web app.
 
@@ -95,13 +105,14 @@ def _instantiate_scenario(
         is_prebuilt: Whether the scenario is pre-built or not.
         is_2d: Whether the scenario is 2D or not.
         scenario_id: The id of the scenario.
+        center_frequency: The center frequency of the scenario.
 
     Returns:
         The instantiated scenario.
     """
     if is_prebuilt:
         assert scenario_id is not None
-        builtin_scenario = BuiltInScenariosShelf().get(scenario_id)
+        builtin_scenario = BuiltInScenariosShelf().get(scenario_id, center_frequency)
         material_properties = {
             key: value for key, value in builtin_scenario.material_properties.items()
         }
@@ -136,6 +147,7 @@ async def get_simulation_image(config: SimulateRequest) -> Tuple[str, str]:
         config.scenarioSettings.isPreBuilt,
         config.is2d,
         config.scenarioSettings.scenario_id,
+        config.simulationSettings.centerFrequency,
     )
     _configure_scenario(scenario, config)
     scenario.compile_problem()
@@ -169,7 +181,6 @@ def _configure_scenario(
     if config_target := config.target:
         scenario.target = config_target.to_ndk_target()
 
-    scenario.center_frequency = config.simulationSettings.centerFrequency
     if isinstance(scenario, Scenario3D) and config.scenarioSettings.sliceAxis:
         scenario.slice_axis = config.scenarioSettings.sliceAxis.to_ndk_axis()
         assert config.scenarioSettings.slicePosition is not None
