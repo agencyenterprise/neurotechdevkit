@@ -37,7 +37,7 @@ class Source(abc.ABC):
         self,
         *,
         position: npt.ArrayLike,
-        direction: list[float],
+        direction: npt.ArrayLike,
         aperture: float,
         focal_length: float,
         num_points: int,
@@ -162,7 +162,7 @@ class PointSource(Source):
     def __init__(
         self,
         *,
-        position: list[float],
+        position: npt.ArrayLike,
         num_dim: int = 2,
         delay: float = 0.0,
     ) -> None:
@@ -209,7 +209,7 @@ class PointSource2D(PointSource):
     def __init__(
         self,
         *,
-        position: list[float],
+        position: npt.ArrayLike,
         delay: float = 0.0,
     ) -> None:
         """Initialize a new 2-D point source."""
@@ -226,7 +226,7 @@ class PointSource3D(PointSource):
     def __init__(
         self,
         *,
-        position: list[float],
+        position: npt.ArrayLike,
         delay: float = 0.0,
     ) -> None:
         """Initialize a new 3-D point source."""
@@ -486,8 +486,8 @@ class UnfocusedSource(Source, abc.ABC):
     def __init__(
         self,
         *,
-        position: list[float],
-        direction: list[float],
+        position: npt.ArrayLike,
+        direction: npt.ArrayLike,
         aperture: float,
         num_points: int,
         delay: float = 0.0,
@@ -624,8 +624,8 @@ class PhasedArraySource(Source):
     def __init__(
         self,
         *,
-        position: list[float],
-        direction: list[float],
+        position: npt.ArrayLike,
+        direction: npt.ArrayLike,
         num_points: int,
         num_elements: int,
         pitch: float,
@@ -633,7 +633,7 @@ class PhasedArraySource(Source):
         tilt_angle: float = 0.0,
         focal_length: float = np.inf,
         delay: float = 0.0,
-        element_delays: list[float] | None = None,
+        element_delays: npt.ArrayLike | None = None,
     ) -> None:
         """Initialize a new phased array source."""
         self._validate_input_configuration(
@@ -736,7 +736,7 @@ class PhasedArraySource(Source):
         tilt_angle: float,
         focal_length: float,
         delay: float,
-        element_delays: list[float] | None,
+        element_delays: npt.ArrayLike | None,
     ) -> None:
         """Check that the input arguments for delays yield a valid configuration.
 
@@ -981,7 +981,7 @@ class PhasedArraySource(Source):
 
     def _set_element_delays(
         self,
-        element_delays: list[float] | None,
+        element_delays: npt.ArrayLike | None,
     ) -> npt.NDArray[np.float_]:
         """
         Calculate delays (in seconds) per element of the phased array.
@@ -1173,9 +1173,9 @@ class PhasedArraySource3D(PhasedArraySource):
     def __init__(
         self,
         *,
-        position: list[float],
-        direction: list[float],
-        center_line: list[float],
+        position: npt.ArrayLike,
+        direction: npt.ArrayLike,
+        center_line: npt.ArrayLike,
         num_points: int,
         num_elements: int,
         pitch: float,
@@ -1184,7 +1184,7 @@ class PhasedArraySource3D(PhasedArraySource):
         tilt_angle: float = 0.0,
         focal_length: float = np.inf,
         delay: float = 0.0,
-        element_delays: list[float] | None = None,
+        element_delays: npt.ArrayLike | None = None,
     ) -> None:
         """Initialize a new phased array source."""
         self._height = height
@@ -1235,7 +1235,7 @@ class PhasedArraySource3D(PhasedArraySource):
 
     @staticmethod
     def _validate_center_line(
-        center_line: list[float], direction: npt.NDArray[np.float_]
+        center_line: npt.ArrayLike, direction: npt.NDArray[np.float_]
     ) -> npt.NDArray[np.float_]:
         """Ensure that the center line input parameter is a valid one.
 
