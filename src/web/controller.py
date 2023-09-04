@@ -4,6 +4,7 @@ import io
 import tempfile
 from typing import Dict, Optional, Tuple, Union
 
+import matplotlib.pyplot as plt
 from web.messages.requests import (
     IndexBuiltInScenario,
     RenderLayoutRequest,
@@ -81,6 +82,7 @@ def get_scenario_layout(config: RenderLayoutRequest) -> str:
     buf = io.BytesIO()
     fig.savefig(buf, format="png")
     data = base64.b64encode(buf.getbuffer()).decode("ascii")
+    plt.close(fig)
     return data
 
 
@@ -145,6 +147,7 @@ async def get_simulation_image(config: SimulateRequest) -> Tuple[str, str]:
         buf = io.BytesIO()
         fig.savefig(buf, format="png")
         data = base64.b64encode(buf.getbuffer()).decode("ascii")
+        plt.close(fig)
         return data, "png"
     else:
         pulse_result = scenario.simulate_pulse()
@@ -154,6 +157,7 @@ async def get_simulation_image(config: SimulateRequest) -> Tuple[str, str]:
             tmpfile.seek(0)
             buf = io.BytesIO(tmpfile.read())
             data = base64.b64encode(buf.getbuffer()).decode("ascii")
+            plt.close(animation._fig)
             return data, "gif"
 
 
