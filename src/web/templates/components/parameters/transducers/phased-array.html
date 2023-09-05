@@ -1,16 +1,5 @@
 <div class="row">
   <div class="col mb-3">
-    <label for="positionY">Position Y</label>
-    <input
-      type="number"
-      step="0.01"
-      class="form-control"
-      id="positionY"
-      name="positionY"
-      required
-    />
-  </div>
-  <div class="col mb-3">
     <label for="positionX">Position X</label>
     <input
       type="number"
@@ -18,6 +7,19 @@
       class="form-control"
       name="positionX"
       id="positionX"
+      placeholder="0.0"
+      required
+    />
+  </div>
+  <div class="col mb-3">
+    <label for="positionY">Position Y</label>
+    <input
+      type="number"
+      step="0.01"
+      class="form-control"
+      id="positionY"
+      name="positionY"
+      placeholder="0.0"
       required
     />
   </div>
@@ -29,22 +31,12 @@
       class="form-control"
       id="positionZ"
       name="positionZ"
+      placeholder="0.0"
       required
     />
   </div>
 </div>
 <div class="row">
-  <div class="col mb-3">
-    <label for="directionY">Direction Y</label>
-    <input
-      type="number"
-      step="0.01"
-      class="form-control"
-      name="directionY"
-      id="directionY"
-      required
-    />
-  </div>
   <div class="col mb-3">
     <label for="directionX">Direction X</label>
     <input
@@ -53,6 +45,19 @@
       class="form-control"
       name="directionX"
       id="directionX"
+      placeholder="1.0"
+      required
+    />
+  </div>
+  <div class="col mb-3">
+    <label for="directionY">Direction Y</label>
+    <input
+      type="number"
+      step="0.01"
+      class="form-control"
+      name="directionY"
+      id="directionY"
+      placeholder="0.0"
       required
     />
   </div>
@@ -64,22 +69,12 @@
       class="form-control"
       name="directionZ"
       id="directionZ"
+      placeholder="0.0"
       required
     />
   </div>
 </div>
 <div class="row" data-3d-only="true" hidden>
-  <div class="col mb-3">
-    <label for="centerLineY">Center Line Y</label>
-    <input
-      type="number"
-      step="0.01"
-      class="form-control"
-      id="centerLineY"
-      name="centerLineY"
-      required
-    />
-  </div>
   <div class="col mb-3">
     <label for="centerLineX">Center Line X</label>
     <input
@@ -88,6 +83,19 @@
       class="form-control"
       name="centerLineX"
       id="centerLineX"
+      placeholder="0.0"
+      required
+    />
+  </div>
+  <div class="col mb-3">
+    <label for="centerLineY">Center Line Y</label>
+    <input
+      type="number"
+      step="0.01"
+      class="form-control"
+      id="centerLineY"
+      name="centerLineY"
+      placeholder="0.0"
       required
     />
   </div>
@@ -99,6 +107,7 @@
       class="form-control"
       id="centerLineZ"
       name="centerLineZ"
+      placeholder="1.0"
       required
     />
   </div>
@@ -110,6 +119,7 @@
     class="form-control"
     name="numPoints"
     id="numPoints"
+    placeholder="20000"
     required
   />
 </div>
@@ -120,6 +130,7 @@
     class="form-control"
     name="numElements"
     id="numElements"
+    placeholder="16"
     required
   />
 </div>
@@ -131,6 +142,7 @@
     class="form-control"
     name="pitch"
     id="pitch"
+    placeholder="0.0015"
     required
   />
 </div>
@@ -142,6 +154,7 @@
     class="form-control"
     name="elementWidth"
     id="elementWidth"
+    placeholder="0.0012"
     required
   />
 </div>
@@ -153,6 +166,7 @@
     class="form-control"
     name="tiltAngle"
     id="tiltAngle"
+    placeholder="30"
     required
   />
 </div>
@@ -180,17 +194,6 @@
     required
   />
 </div>
-<div class="mb-3">
-  <label for="delay">Delay</label>
-  <input
-    type="number"
-    step="0.01"
-    class="form-control"
-    name="delay"
-    id="delay"
-    required
-  />
-</div>
 <div class="mb-3" data-3d-only="true" hidden>
   <label for="height">Height</label>
   <input
@@ -199,6 +202,19 @@
     class="form-control"
     name="height"
     id="height"
+    placeholder="0.005"
+    required
+  />
+</div>
+<div class="mb-3">
+  <label for="delay">Delay</label>
+  <input
+    type="number"
+    step="0.01"
+    class="form-control"
+    name="delay"
+    id="delay"
+    placeholder="0.0"
     required
   />
 </div>

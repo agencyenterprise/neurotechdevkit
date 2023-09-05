@@ -49,7 +49,7 @@ class Target(BaseModel):
 
     def to_ndk_target(self) -> NDKTarget:
         """Get the NDK target from the target."""
-        center = [self.centerY, self.centerX]
+        center = [self.centerX, self.centerY]
         if self.centerZ is not None:
             center.append(self.centerZ)
         return NDKTarget(
@@ -63,8 +63,8 @@ class Target(BaseModel):
     def from_ndk_target(cls, target: NDKTarget) -> "Target":
         """Get the target from the NDK target."""
         return cls(
-            centerX=target.center[1],
-            centerY=target.center[0],
+            centerX=target.center[0],
+            centerY=target.center[1],
             centerZ=target.center[2] if len(target.center) > 2 else None,
             radius=target.radius,
         )
