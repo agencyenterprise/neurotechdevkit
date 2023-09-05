@@ -424,49 +424,6 @@ class SteadyStateResult3D(SteadyStateResult):
         """
         rendering.render_amplitudes_3d_with_napari(self)
 
-    def _validate_slice_args(
-        self, slice_axis: int | None, slice_position: float | None
-    ) -> None:
-        """Validate that slicing axis and position are within scenario range.
-
-        `slice_axis` should be either 0, 1, or 2 (for X, Y, Z).
-        `slice_position` must be within boundaries for `slice_axis` extent.
-
-        Args:
-            slice_axis: the axis along which to slice the 3D field to be recorded. If
-                None, then the complete field will be recorded. Use 0 for X axis, 1
-                for Y axis and 2 for Z axis.
-            slice_position: the position (in meters) along the slice axis at
-                which the slice of the 3D field should be made.
-
-        Raises:
-            ValueError if axis is not 0, 1, 2.
-            ValueError if `slice_position` falls outside the current range of
-                `slice_axis`.
-            ValueError if  `slice_axis` is None or `slice_position` is None.
-        """
-        if slice_axis is None or slice_position is None:
-            raise ValueError(
-                "Both `slice_axis` and `slice_position` must be passed together "
-                "to correctly define how to slice the field. "
-            )
-        if slice_axis not in (0, 1, 2):
-            raise ValueError(
-                "Unexpected value received for `slice_axis`. ",
-                "Expected axis are 0 (X), 1 (Y) and/or 2 (Z).",
-            )
-
-        origin = np.array(self.scenario.origin, dtype=float)
-        extent = self.scenario.extent
-
-        current_range = (origin[slice_axis], origin[slice_axis] + extent[slice_axis])
-        if (slice_position < current_range[0]) or (slice_position > current_range[1]):
-            raise ValueError(
-                "`slice_position` is out of range for `slice_axis`. ",
-                f"Received value {slice_position} and "
-                f"current range is {current_range}.",
-            )
-
     def get_steady_state_result_2d(
         self,
         slice_axis: Optional[SliceAxis] = None,
