@@ -11,6 +11,16 @@
     setMaterialPropertiesPreBuiltValues(scenarioSettings.materialProperties)
   }
 
+  function validateSimulationSettingsValues() {
+    let form = document.getElementById("simulationSettingsForm")
+    if (!form.checkValidity()) {
+      $("#simulation-settings-accordion-item").collapse("show")
+      form.reportValidity()
+      return false
+    }
+    return true
+  }
+
   function getSimulationSettingsParams() {
     let params = {
       materialProperties: getMaterialPropertiesParams(),
@@ -22,40 +32,42 @@
     return params
   }
 </script>
-
-<div class="mb-3">
-  <label
-    for="simulationPrecision"
-    data-bs-toggle="tooltip"
-    data-bs-placement="right"
-    title="The number of points per wavelength"
-    >Simulation Precision</label
-  >
-  <input
-    type="number"
-    class="form-control"
-    name="simulationPrecision"
-    id="simulationPrecision"
-    required
-    disabled
-  />
-</div>
-<div class="mb-3">
-  <label
-    for="centerFrequency"
-    data-bs-toggle="tooltip"
-    data-bs-placement="right"
-    title="The center frequency of the transducers (in Hz)"
-    >Center Frequency</label
-  >
-  <input
-    type="number"
-    class="form-control"
-    name="centerFrequency"
-    id="centerFrequency"
-    required
-  />
-</div>
+<form id="simulationSettingsForm">
+  <div class="mb-3">
+    <label
+      for="simulationPrecision"
+      data-bs-toggle="tooltip"
+      data-bs-placement="right"
+      title="The number of points per wavelength"
+      >Simulation Precision</label
+    >
+    <input
+      type="number"
+      class="form-control"
+      name="simulationPrecision"
+      id="simulationPrecision"
+      required
+      disabled
+    />
+  </div>
+  <div class="mb-3">
+    <label
+      for="centerFrequency"
+      data-bs-toggle="tooltip"
+      data-bs-placement="right"
+      title="The center frequency of the transducers (in Hz)"
+      >Center Frequency</label
+    >
+    <input
+      type="number"
+      class="form-control"
+      name="centerFrequency"
+      id="centerFrequency"
+      onchange="valueChanged()"
+      required
+    />
+  </div>
+</form>
 <div class="mb-3">
   <label for="materialsAccordion">Material properties</label>
   {% include 'components/parameters/materials.html' %}

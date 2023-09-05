@@ -9,7 +9,7 @@
     >
     <input
       type="number"
-      step="0.01"
+      step="any"
       class="form-control"
       name="positionX"
       id="positionX"
@@ -27,7 +27,7 @@
     >
     <input
       type="number"
-      step="0.01"
+      step="any"
       class="form-control"
       id="positionY"
       name="positionY"
@@ -45,12 +45,12 @@
     >
     <input
       type="number"
-      step="0.01"
+      step="any"
       class="form-control"
       id="positionZ"
       name="positionZ"
       placeholder="0.0"
-      required
+      data-3d-input-only="true"
     />
   </div>
 </div>
@@ -65,7 +65,7 @@
     >
     <input
       type="number"
-      step="0.01"
+      step="any"
       class="form-control"
       name="directionX"
       id="directionX"
@@ -83,7 +83,7 @@
     >
     <input
       type="number"
-      step="0.01"
+      step="any"
       class="form-control"
       name="directionY"
       id="directionY"
@@ -101,12 +101,12 @@
     >
     <input
       type="number"
-      step="0.01"
+      step="any"
       class="form-control"
       name="directionZ"
       id="directionZ"
       placeholder="0.0"
-      required
+      data-3d-input-only="true"
     />
   </div>
 </div>
@@ -121,12 +121,12 @@
     >
     <input
       type="number"
-      step="0.01"
+      step="any"
       class="form-control"
       name="centerLineX"
       id="centerLineX"
       placeholder="0.0"
-      required
+      data-3d-input-only="true"
     />
   </div>
   <div class="col mb-3">
@@ -139,12 +139,12 @@
     >
     <input
       type="number"
-      step="0.01"
+      step="any"
       class="form-control"
       id="centerLineY"
       name="centerLineY"
       placeholder="0.0"
-      required
+      data-3d-input-only="true"
     />
   </div>
   <div class="col mb-3">
@@ -157,12 +157,12 @@
     >
     <input
       type="number"
-      step="0.01"
+      step="any"
       class="form-control"
       id="centerLineZ"
       name="centerLineZ"
       placeholder="1.0"
-      required
+      data-3d-input-only="true"
     />
   </div>
 </div>
@@ -210,7 +210,7 @@
   >
   <input
     type="number"
-    step="0.01"
+    step="any"
     class="form-control"
     name="pitch"
     id="pitch"
@@ -228,7 +228,7 @@
   >
   <input
     type="number"
-    step="0.01"
+    step="any"
     class="form-control"
     name="elementWidth"
     id="elementWidth"
@@ -246,7 +246,7 @@
   >
   <input
     type="number"
-    step="0.01"
+    step="any"
     class="form-control"
     name="tiltAngle"
     id="tiltAngle"
@@ -255,12 +255,8 @@
   />
 </div>
 <div class="mb-3">
-  <label
-    for="focalLength"
-    data-bs-toggle="tooltip"
-    data-bs-placement="right"
-    title="The focal length (in meters) of the transducer"
-    >Focal length</label
+  <label data-bs-toggle="tooltip" data-bs-placement="right"
+    >Set Focal Length</label
   >
   <div class="form-check form-switch">
     <input
@@ -270,19 +266,24 @@
       name="focalLengthCheck"
       onchange="focalLengthCheckClick(this)"
     />
-    <label class="form-check-label" for="focalLengthCheck"
-      >Set focal length</label
-    >
   </div>
-  <input
-    type="number"
-    step="0.01"
-    class="form-control"
-    name="focalLength"
-    id="focalLength"
-    hidden
-    required
-  />
+  <div class="mb-3 ms-3" data-focal-length="true" hidden>
+    <label
+      for="focalLength"
+      data-bs-toggle="tooltip"
+      data-bs-placement="right"
+      title="The focal length (in meters) of the transducer"
+      >Focal length</label
+    >
+    <input
+      type="number"
+      step="any"
+      class="form-control"
+      name="focalLength"
+      id="focalLength"
+      placeholder="0"
+    />
+  </div>
 </div>
 <div class="mb-3" data-3d-only="true" hidden>
   <label
@@ -294,12 +295,12 @@
   >
   <input
     type="number"
-    step="0.01"
+    step="any"
     class="form-control"
     name="height"
     id="height"
     placeholder="0.005"
-    required
+    data-3d-input-only="true"
   />
 </div>
 <div class="mb-3">
@@ -312,7 +313,7 @@
   >
   <input
     type="number"
-    step="0.01"
+    step="any"
     class="form-control"
     name="delay"
     id="delay"

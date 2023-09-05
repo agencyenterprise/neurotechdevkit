@@ -6,6 +6,16 @@
     document.getElementById("radius").value = target.radius
   }
 
+  function validateTargetValues() {
+    let form = document.getElementById("targetForm")
+    if (!form.checkValidity()) {
+      $("#target-accordion-item").collapse("show")
+      form.reportValidity()
+      return false
+    }
+    return true
+  }
+
   function getTargetParams() {
     let params = {}
     params["centerX"] = document.getElementById("centerX").value
@@ -15,77 +25,79 @@
     return params
   }
 </script>
-<div class="mb-3 row">
-  <div class="col">
+<form id="targetForm">
+  <div class="mb-3 row">
+    <div class="col">
+      <label
+        for="centerX"
+        data-bs-toggle="tooltip"
+        data-bs-placement="right"
+        title="The location of the center of the target (in meters)"
+        >Center X</label
+      >
+      <input
+        type="number"
+        step="any"
+        class="form-control"
+        name="centerX"
+        id="centerX"
+        onchange="valueChanged()"
+        required
+      />
+    </div>
+    <div class="col">
+      <label
+        for="centerY"
+        data-bs-toggle="tooltip"
+        data-bs-placement="right"
+        title="The location of the center of the target (in meters)"
+        >Center Y</label
+      >
+      <input
+        type="number"
+        step="any"
+        class="form-control"
+        id="centerY"
+        name="centerY"
+        onchange="valueChanged()"
+        required
+      />
+    </div>
+    <div class="col" data-3d-only="true" hidden>
+      <label
+        for="centerZ"
+        data-bs-toggle="tooltip"
+        data-bs-placement="right"
+        title="The location of the center of the target (in meters)"
+        >Center Z</label
+      >
+      <input
+        type="number"
+        step="any"
+        class="form-control"
+        id="centerZ"
+        name="centerZ"
+        onchange="valueChanged()"
+        data-3d-input-only="true"
+      />
+    </div>
+  </div>
+  <div class="mb-3">
     <label
-      for="centerX"
+      for="radius"
       data-bs-toggle="tooltip"
       data-bs-placement="right"
-      title="The location of the center of the target (in meters)"
-      >Center X</label
+      title="The radius of the target (in meters)"
+      >Radius</label
     >
     <input
       type="number"
-      step="0.01"
+      step="any"
       class="form-control"
-      name="centerX"
-      id="centerX"
+      name="radius"
+      id="radius"
       onchange="valueChanged()"
       required
     />
   </div>
-  <div class="col">
-    <label
-      for="centerY"
-      data-bs-toggle="tooltip"
-      data-bs-placement="right"
-      title="The location of the center of the target (in meters)"
-      >Center Y</label
-    >
-    <input
-      type="number"
-      step="0.01"
-      class="form-control"
-      id="centerY"
-      name="centerY"
-      onchange="valueChanged()"
-      required
-    />
-  </div>
-  <div class="col" data-3d-only="true" hidden>
-    <label
-      for="centerZ"
-      data-bs-toggle="tooltip"
-      data-bs-placement="right"
-      title="The location of the center of the target (in meters)"
-      >Center Z</label
-    >
-    <input
-      type="number"
-      step="0.01"
-      class="form-control"
-      id="centerZ"
-      name="centerZ"
-      onchange="valueChanged()"
-      required
-    />
-  </div>
-</div>
-<div class="mb-3">
-  <label
-    for="radius"
-    data-bs-toggle="tooltip"
-    data-bs-placement="right"
-    title="The radius of the target (in meters)"
-    >Radius</label
-  >
-  <input
-    type="number"
-    step="0.01"
-    class="form-control"
-    name="radius"
-    id="radius"
-    onchange="valueChanged()"
-    required
-  />
-</div>
+</form>

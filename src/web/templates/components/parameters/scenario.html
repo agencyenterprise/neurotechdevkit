@@ -11,7 +11,23 @@
   }
 
   function valueChanged() {
-    renderLayout()
+    let hasError = false
+    if (!validateTargetValues()){
+      hasError = true
+    } else if (!validateDisplayValues()){
+      hasError = true
+    } else if(!validateSimulationSettingsValues()) {
+      hasError = true
+    } else if (!validateMaterialValues()){
+      hasError = true
+    }
+
+    if (hasError){
+      disallowRunSimulation()
+      clearPlotArea()
+    } else {
+      renderLayout()
+    }
   }
 
   function scenarioSelected(scenarioInput){
