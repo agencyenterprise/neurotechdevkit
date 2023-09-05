@@ -63,7 +63,7 @@
   }
 
   function runSimulation(button) {
-    showLoading("Running simulation...")
+    showLoading("Running Simulation...")
     showCancelSimulation()
     disableParametersPanel()
     hideRunSimulation()
@@ -109,7 +109,7 @@
     disableParametersPanel()
     showCancelSimulation()
     const button = document.getElementById("runSimulation")
-    showLoading("Running simulation...")
+    showLoading("Running Simulation...")
     const url = "{{ url_for('main.get_simulation') }}"
     fetch(url, {
       method: "GET",
