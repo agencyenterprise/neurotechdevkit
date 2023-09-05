@@ -74,13 +74,15 @@
     const transducersParams = getTransducersParams()
     const targetParams = getTargetParams()
     const simulationSettingsParams = getSimulationSettingsParams()
+    const displaySettingsParams = is2d ? null : getDisplaySettingsParams()
 
     const data = {
-      is2d: is2d,
+      is2d,
       scenarioSettings: scenarioParams,
       transducers: transducersParams,
       target: targetParams,
       simulationSettings: simulationSettingsParams,
+      displaySettings: displaySettingsParams,
     }
 
     const url = "{{ url_for('main.simulate') }}"

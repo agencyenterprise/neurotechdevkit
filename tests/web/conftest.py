@@ -5,9 +5,8 @@ import pytest
 def request_payload_example():
     return {
         "is2d": True,
+        "displaySettings": None,
         "scenarioSettings": {
-            "sliceAxis": None,
-            "slicePosition": None,
             "isPreBuilt": True,
             "scenarioId": "Scenario0",
         },

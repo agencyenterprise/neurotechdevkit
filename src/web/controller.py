@@ -181,10 +181,9 @@ def _configure_scenario(
     if config_target := config.target:
         scenario.target = config_target.to_ndk_target()
 
-    if isinstance(scenario, Scenario3D) and config.scenarioSettings.sliceAxis:
-        scenario.slice_axis = config.scenarioSettings.sliceAxis.to_ndk_axis()
-        assert config.scenarioSettings.slicePosition is not None
-        scenario.slice_position = config.scenarioSettings.slicePosition
+    if isinstance(scenario, Scenario3D) and config.displaySettings:
+        scenario.slice_axis = config.displaySettings.sliceAxis.to_ndk_axis()
+        scenario.slice_position = config.displaySettings.slicePosition
 
     config_material_properties = config.simulationSettings.materialProperties
     if config_material_properties:
