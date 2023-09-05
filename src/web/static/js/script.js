@@ -8,3 +8,7 @@ function BtnReset(elem) {
   $(elem).prop("disabled", false)
   $(elem).html($(elem).attr("data-original-text"))
 }
+
+$(document).ready(function () {
+  $('[data-bs-toggle="tooltip"]').tooltip()
+})

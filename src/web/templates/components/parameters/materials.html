@@ -58,7 +58,13 @@
     >
       <div class="accordion-body">
         <div class="mb-3">
-          <label for="{{material}}Vp">VP</label>
+          <label
+            for="{{material}}Vp"
+            data-bs-toggle="tooltip"
+            data-bs-placement="right"
+            title="The speed of sound (in m/s)"
+            >VP</label
+          >
           <input
             type="number"
             class="form-control"
@@ -68,7 +74,13 @@
           />
         </div>
         <div class="mb-3">
-          <label for="{{material}}Rho">RHO</label>
+          <label
+            for="{{material}}Rho"
+            data-bs-toggle="tooltip"
+            data-bs-placement="right"
+            title="The mass density (in kg/m³)"
+            >RHO</label
+          >
           <input
             type="number"
             class="form-control"
@@ -78,7 +90,13 @@
           />
         </div>
         <div class="mb-3">
-          <label for="{{material}}Alpha">Alpha</label>
+          <label
+            for="{{material}}Alpha"
+            data-bs-toggle="tooltip"
+            data-bs-placement="right"
+            title="The absorption (in dB/cm)"
+            >Alpha</label
+          >
           <input
             type="number"
             step="0.01"
@@ -89,7 +107,14 @@
           />
         </div>
         <div class="mb-3">
-          <label for="{{material}}RenderColor" class="form-label">Color</label>
+          <label
+            for="{{material}}RenderColor"
+            class="form-label"
+            data-bs-toggle="tooltip"
+            data-bs-placement="right"
+            title="The color used when rendering this material in the scenario layout plot"
+            >Color</label
+          >
           <input
             type="color"
             class="form-control form-control-color"

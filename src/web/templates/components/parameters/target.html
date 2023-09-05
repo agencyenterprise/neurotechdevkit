@@ -15,9 +15,15 @@
     return params
   }
 </script>
-<div class="row">
+<div class="mb-3 row">
   <div class="col">
-    <label for="centerX">Center X</label>
+    <label
+      for="centerX"
+      data-bs-toggle="tooltip"
+      data-bs-placement="right"
+      title="The location of the center of the target (in meters)"
+      >Center X</label
+    >
     <input
       type="number"
       step="0.01"
@@ -29,7 +35,13 @@
     />
   </div>
   <div class="col">
-    <label for="centerY">Center Y</label>
+    <label
+      for="centerY"
+      data-bs-toggle="tooltip"
+      data-bs-placement="right"
+      title="The location of the center of the target (in meters)"
+      >Center Y</label
+    >
     <input
       type="number"
       step="0.01"
@@ -41,7 +53,13 @@
     />
   </div>
   <div class="col" data-3d-only="true" hidden>
-    <label for="centerZ">Center Z</label>
+    <label
+      for="centerZ"
+      data-bs-toggle="tooltip"
+      data-bs-placement="right"
+      title="The location of the center of the target (in meters)"
+      >Center Z</label
+    >
     <input
       type="number"
       step="0.01"
@@ -54,7 +72,13 @@
   </div>
 </div>
 <div class="mb-3">
-  <label for="radius">Radius</label>
+  <label
+    for="radius"
+    data-bs-toggle="tooltip"
+    data-bs-placement="right"
+    title="The radius of the target (in meters)"
+    >Radius</label
+  >
   <input
     type="number"
     step="0.01"

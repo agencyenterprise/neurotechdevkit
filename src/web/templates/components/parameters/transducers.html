@@ -93,26 +93,33 @@
   function transducerSelected(transducerComponent) {
     // Called when the user changes the value of the <select> component
     let params = null
+    let transducerSettingsComponent = document.getElementById(
+      "transducerSettings"
+    )
     switch (transducerComponent.value) {
       case "focusedSource":
         params = document.getElementById("focusedOptions").innerHTML
-        document.getElementById("transducerSettings").innerHTML = params
+        transducerSettingsComponent.innerHTML = params
         break
       case "pointSource":
         params = document.getElementById("pointOptions").innerHTML
-        document.getElementById("transducerSettings").innerHTML = params
+        transducerSettingsComponent.innerHTML = params
         break
       case "planarSource":
         params = document.getElementById("planarOptions").innerHTML
-        document.getElementById("transducerSettings").innerHTML = params
+        transducerSettingsComponent.innerHTML = params
         break
       case "phasedArraySource":
         params = document.getElementById("phasedArrayOptions").innerHTML
-        document.getElementById("transducerSettings").innerHTML = params
+        transducerSettingsComponent.innerHTML = params
         break
       default:
         cleanTransducerSettings()
     }
+    transducerSettingsComponent.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(function (tooltip) {
+      // initialize bootstrap tooltips
+      $(tooltip).tooltip()
+    })
   }
 
   function getTransducersParams() {
