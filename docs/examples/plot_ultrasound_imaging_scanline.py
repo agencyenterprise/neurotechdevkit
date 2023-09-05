@@ -26,6 +26,8 @@
 # resulting image.
 
 # %%
+from typing import List
+
 import matplotlib.pyplot as plt
 import numpy as np
 import tqdm.notebook
@@ -34,6 +36,7 @@ import neurotechdevkit as ndk
 
 # Imaging modules
 from neurotechdevkit.imaging import beamform, demodulate, util
+from neurotechdevkit.results import PulsedResult2D, SteadyStateResult2D
 from neurotechdevkit.scenarios.built_in import Scenario3
 from neurotechdevkit.sources import PhasedArraySource2D
 
@@ -69,7 +72,7 @@ rng = np.random.default_rng(
 # scattering, and microscopic heterogeneities cause diffuse scattering.
 #
 # To mimic these properties, we create ultrasound phantoms that are similarly
-# heterogenous across different scales. Their bulk acoustic impedance differs
+# heterogeneous across different scales. Their bulk acoustic impedance differs
 # from the background medium (water), and their within-phantom impednances also
 # vary at small scales.
 #
@@ -88,10 +91,12 @@ def create_scenario(tilt_angle: float = 0.0) -> Scenario3:
     """Helper function to initialize scenario with different tilt angles."""
     scenario = Scenario3()
     scenario.center_frequency = TONE_CENTER_FREQUENCY
-    source_position = np.array([0.01, 0.0])
-    unit_direction = np.array([1.0, 0.0])
+    source_position = [0.01, 0.0]
+    unit_direction = [1.0, 0.0]
     # Focus at the depth of the agar phantom
-    focal_length = np.dot((scenario.target.center - source_position), unit_direction)
+    focal_length = np.dot(
+        (scenario.target.center - np.asarray(source_position)), unit_direction
+    )
 
     source = PhasedArraySource2D(
         position=source_position,
@@ -153,8 +158,9 @@ for idx, attribute in enumerate(["vp", "rho", "alpha"]):
 # strongest echoes.
 
 # %%
-result = create_scenario().simulate_steady_state()
-result.render_steady_state_amplitudes()
+result_steady_state = create_scenario().simulate_steady_state()
+assert isinstance(result_steady_state, SteadyStateResult2D)
+result_steady_state.render_steady_state_amplitudes()
 
 # %%
 # Run pulse for imaging
@@ -332,7 +338,7 @@ iq_signals_beamformed = beamform.beamform_delay_and_sum(
     x=imaging_x_mesh,
     z=imaging_z_mesh,
     pitch=pitch,
-    tx_delays=scenario.sources[0].element_delays,
+    tx_delays=source.element_delays,
     freq_sampling=freq_sampling,
     freq_carrier=TONE_CENTER_FREQUENCY,
     f_number=None,
@@ -403,14 +409,16 @@ TILT_ANGLES_DEG = np.linspace(-40, 40, NUM_TILTS, endpoint=True)
 # %%
 scenario = create_scenario(tilt_angle=TILT_ANGLES_DEG[0])
 assert len(scenario.sources) == 1
-result = scenario.simulate_steady_state()
-result.render_steady_state_amplitudes()
+result_steady_state = scenario.simulate_steady_state()
+assert isinstance(result_steady_state, SteadyStateResult2D)
+result_steady_state.render_steady_state_amplitudes()
 
 # %%
 scenario = create_scenario(tilt_angle=TILT_ANGLES_DEG[-1])
 assert len(scenario.sources) == 1
-result = scenario.simulate_steady_state()
-result.render_steady_state_amplitudes()
+result_steady_state = scenario.simulate_steady_state()
+assert isinstance(result_steady_state, SteadyStateResult2D)
+result_steady_state.render_steady_state_amplitudes()
 
 # %% [markdown]
 # The steady-state figures show that the tilted ultrasound beams
@@ -424,9 +432,9 @@ result.render_steady_state_amplitudes()
 # reflected/scattered acoustic waves We can then compound the different plane
 # waves to improve the spatial resolution
 
-results = [None] * len(TILT_ANGLES_DEG)
+results: List[PulsedResult2D] = []
 # keep track of the tx delays used
-element_delays_list = [None] * len(TILT_ANGLES_DEG)
+element_delays_list = []
 
 for idx, tilt_angle in enumerate(
     tqdm.notebook.tqdm(TILT_ANGLES_DEG, desc="Simulating pulses", unit="pulse")
@@ -436,10 +444,11 @@ for idx, tilt_angle in enumerate(
     # Set the tilt angle, which will automatically re-calculate the element delays
     scenario = create_scenario(tilt_angle=tilt_angle)
     assert len(scenario.sources) == 1
-    element_delays_list[idx] = scenario.sources[0].element_delays
-    results[idx] = scenario.simulate_pulse(
-        simulation_time=calc_simulation_time(scenario)
-    )
+    source = scenario.sources[0]
+    assert isinstance(source, ndk.sources.PhasedArraySource)
+    element_delays_list.append(source.element_delays)
+    result = scenario.simulate_pulse(simulation_time=calc_simulation_time(scenario))
+    results.append(result)
 
 # %% [markdown]
 # Let's follow the same steps as above for reconstructing each scan-line image.
