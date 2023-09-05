@@ -11,8 +11,13 @@ images.
 
 In this notebook, we continue using NDK to simulate the image captured by an
 ultrasound transducer, as a follow up to the `plot_ultrasound_imaging_scanline`
-example. We'll follow a similar three step process: 1. transmit pulse 2. receive
-echo 3. reconstruct image
+example.
+
+We'll follow a similar three step process:
+
+1. transmit pulse
+2. receive echo
+3. reconstruct image
 
 Here, we'll use a phased array transducer to transmit multiple unfocused plane
 waves at different angles. We'll then receive the echoes and reconstruct the
@@ -119,9 +124,10 @@ scenario.render_layout()
 
 # %%
 # Plot the relevant material metrics
-# vp - speed of sound
-# rho - density
-# alpha - attenuation
+#
+# - vp - speed of sound
+# - rho - density
+# - alpha - attenuation
 fig, axs = plt.subplots(1, 3, figsize=(15, 5))
 
 for idx, attribute in enumerate(["vp", "rho", "alpha"]):

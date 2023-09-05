@@ -13,6 +13,7 @@ create detailed images.
 Ultrasound can be used to measure many different phenomena. Here, we will
 demonstrate the most common type of ultrasound imaging: B-Mode. B-Mode imaging
 consists of 3 steps:
+
 1. transmit pulse: a transducer emits high-frequency sound waves into the
    body. These waves are reflected by large tissue boundaries and diffusely
    scattered by small irregularities (e.g. cell boundaries).
@@ -124,9 +125,9 @@ scenario.render_layout()
 
 # %%
 # Plot the relevant material metrics
-# vp - speed of sound
-# rho - density
-# alpha - attenuation
+# - vp - speed of sound
+# - rho - density
+# - alpha - attenuation
 fig, axs = plt.subplots(1, 3, figsize=(15, 5))
 
 for idx, attribute in enumerate(["vp", "rho", "alpha"]):
