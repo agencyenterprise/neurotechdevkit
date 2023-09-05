@@ -89,3 +89,18 @@ body,
   pointer-events: none;
   opacity: 0.4;
 }
+
+.tooltip-inner {
+  background-color: white;
+  color: black;
+}
+
+.bs-tooltip-top .tooltip-arrow::before,
+.bs-tooltip-auto[data-popper-placement^="top"] .tooltip-arrow::before {
+  border-top-color: white;
+}
+
+.bs-tooltip-top .tooltip-arrow::before,
+.bs-tooltip-auto[data-popper-placement^="right"] .tooltip-arrow::before {
+  border-right-color: white;
+}

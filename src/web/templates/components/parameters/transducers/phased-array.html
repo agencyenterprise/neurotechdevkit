@@ -1,6 +1,12 @@
 <div class="row">
   <div class="col mb-3">
-    <label for="positionX">Position X</label>
+    <label
+      for="positionX"
+      data-bs-toggle="tooltip"
+      data-bs-placement="right"
+      title="The coordinate (in meters) of the point at the center of the transducer"
+      >Position X</label
+    >
     <input
       type="number"
       step="0.01"
@@ -12,7 +18,13 @@
     />
   </div>
   <div class="col mb-3">
-    <label for="positionY">Position Y</label>
+    <label
+      for="positionY"
+      data-bs-toggle="tooltip"
+      data-bs-placement="right"
+      title="The coordinate (in meters) of the point at the center of the transducer"
+      >Position Y</label
+    >
     <input
       type="number"
       step="0.01"
@@ -24,7 +36,13 @@
     />
   </div>
   <div class="col mb-3" data-3d-only="true" hidden>
-    <label for="positionY">Position Z</label>
+    <label
+      for="positionZ"
+      data-bs-toggle="tooltip"
+      data-bs-placement="right"
+      title="The coordinate (in meters) of the point at the center of the transducer"
+      >Position Z</label
+    >
     <input
       type="number"
       step="0.01"
@@ -38,7 +56,13 @@
 </div>
 <div class="row">
   <div class="col mb-3">
-    <label for="directionX">Direction X</label>
+    <label
+      for="directionX"
+      data-bs-toggle="tooltip"
+      data-bs-placement="right"
+      title="Indicate the direction the source is pointing"
+      >Direction X</label
+    >
     <input
       type="number"
       step="0.01"
@@ -50,7 +74,13 @@
     />
   </div>
   <div class="col mb-3">
-    <label for="directionY">Direction Y</label>
+    <label
+      for="directionY"
+      data-bs-toggle="tooltip"
+      data-bs-placement="right"
+      title="Indicate the direction the source is pointing"
+      >Direction Y</label
+    >
     <input
       type="number"
       step="0.01"
@@ -62,7 +92,13 @@
     />
   </div>
   <div class="col mb-3" data-3d-only="true" hidden>
-    <label for="directionZ">Direction Z</label>
+    <label
+      for="directionZ"
+      data-bs-toggle="tooltip"
+      data-bs-placement="right"
+      title="Indicate the direction the source is pointing"
+      >Direction Z</label
+    >
     <input
       type="number"
       step="0.01"
@@ -76,7 +112,13 @@
 </div>
 <div class="row" data-3d-only="true" hidden>
   <div class="col mb-3">
-    <label for="centerLineX">Center Line X</label>
+    <label
+      for="centerLineX"
+      data-bs-toggle="tooltip"
+      data-bs-placement="right"
+      title="The input value for the direction the center of elements should have"
+      >Center Line X</label
+    >
     <input
       type="number"
       step="0.01"
@@ -88,7 +130,13 @@
     />
   </div>
   <div class="col mb-3">
-    <label for="centerLineY">Center Line Y</label>
+    <label
+      for="centerLineY"
+      data-bs-toggle="tooltip"
+      data-bs-placement="right"
+      title="The input value for the direction the center of elements should have"
+      >Center Line Y</label
+    >
     <input
       type="number"
       step="0.01"
@@ -100,7 +148,13 @@
     />
   </div>
   <div class="col mb-3">
-    <label for="centerLineY">Center Line Z</label>
+    <label
+      for="centerLineZ"
+      data-bs-toggle="tooltip"
+      data-bs-placement="right"
+      title="The input value for the direction the center of elements should have"
+      >Center Line Z</label
+    >
     <input
       type="number"
       step="0.01"
@@ -113,7 +167,13 @@
   </div>
 </div>
 <div class="mb-3">
-  <label for="numPoints">Points</label>
+  <label
+    for="numPoints"
+    data-bs-toggle="tooltip"
+    data-bs-placement="right"
+    title="The number of point sources to use when simulating the transducer"
+    >Points</label
+  >
   <input
     type="number"
     class="form-control"
@@ -124,7 +184,13 @@
   />
 </div>
 <div class="mb-3">
-  <label for="numElements">Elements</label>
+  <label
+    for="numElements"
+    data-bs-toggle="tooltip"
+    data-bs-placement="right"
+    title="The number of elements of the phased array"
+    >Elements</label
+  >
   <input
     type="number"
     class="form-control"
@@ -135,7 +201,13 @@
   />
 </div>
 <div class="mb-3">
-  <label for="pitch">Pitch</label>
+  <label
+    for="pitch"
+    data-bs-toggle="tooltip"
+    data-bs-placement="right"
+    title="The distance (in meters) between the centers of neighboring elements in the phased array"
+    >Pitch</label
+  >
   <input
     type="number"
     step="0.01"
@@ -147,7 +219,13 @@
   />
 </div>
 <div class="mb-3">
-  <label for="elementWidth">Element width</label>
+  <label
+    for="elementWidth"
+    data-bs-toggle="tooltip"
+    data-bs-placement="right"
+    title="The width (in meters) of each individual element of the array"
+    >Element width</label
+  >
   <input
     type="number"
     step="0.01"
@@ -159,7 +237,13 @@
   />
 </div>
 <div class="mb-3">
-  <label for="tiltAngle">Tilt angle</label>
+  <label
+    for="tiltAngle"
+    data-bs-toggle="tooltip"
+    data-bs-placement="right"
+    title="The desired tilt angle (in degrees) of the wavefront"
+    >Tilt angle</label
+  >
   <input
     type="number"
     step="0.01"
@@ -171,7 +255,13 @@
   />
 </div>
 <div class="mb-3">
-  <label for="focalLength">Focal length</label>
+  <label
+    for="focalLength"
+    data-bs-toggle="tooltip"
+    data-bs-placement="right"
+    title="The focal length (in meters) of the transducer"
+    >Focal length</label
+  >
   <div class="form-check form-switch">
     <input
       class="form-check-input"
@@ -195,7 +285,13 @@
   />
 </div>
 <div class="mb-3" data-3d-only="true" hidden>
-  <label for="height">Height</label>
+  <label
+    for="height"
+    data-bs-toggle="tooltip"
+    data-bs-placement="right"
+    title="The height (in meters) of the elements of the array"
+    >Height</label
+  >
   <input
     type="number"
     step="0.01"
@@ -207,7 +303,13 @@
   />
 </div>
 <div class="mb-3">
-  <label for="delay">Delay</label>
+  <label
+    for="delay"
+    data-bs-toggle="tooltip"
+    data-bs-placement="right"
+    title="The delay (in seconds) that the source will wait before emitting"
+    >Delay</label
+  >
   <input
     type="number"
     step="0.01"

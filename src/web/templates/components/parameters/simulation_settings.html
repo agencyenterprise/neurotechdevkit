@@ -24,7 +24,13 @@
 </script>
 
 <div class="mb-3">
-  <label for="simulationPrecision">Simulation precision</label>
+  <label
+    for="simulationPrecision"
+    data-bs-toggle="tooltip"
+    data-bs-placement="right"
+    title="The number of points per wavelength"
+    >Simulation precision</label
+  >
   <input
     type="number"
     class="form-control"
@@ -35,7 +41,13 @@
   />
 </div>
 <div class="mb-3">
-  <label for="centerFrequency">Center frequency</label>
+  <label
+    for="centerFrequency"
+    data-bs-toggle="tooltip"
+    data-bs-placement="right"
+    title="The center frequency of the transducers (in Hz)"
+    >Center frequency</label
+  >
   <input
     type="number"
     class="form-control"
@@ -58,7 +70,13 @@
         name="flexRadioDefault"
         id="simulationTypePulsed"
       />
-      <label class="form-check-label" for="simulationTypePulsed">
+      <label
+        class="form-check-label"
+        for="simulationTypePulsed"
+        data-bs-toggle="tooltip"
+        data-bs-placement="right"
+        title="The transducers will emit a pulse containing a few cycles of oscillation and then let the pulse propagate out to all edges of the scenario"
+      >
         Pulsed
       </label>
     </div>
@@ -70,7 +88,13 @@
         id="simulationTypeSteady"
         checked
       />
-      <label class="form-check-label" for="simulationTypeSteady">
+      <label
+        class="form-check-label"
+        for="simulationTypeSteady"
+        data-bs-toggle="tooltip"
+        data-bs-placement="right"
+        title="The transducers will emit pressure waves with a continuous waveform until steady-state has been reached"
+      >
         Steady state
       </label>
     </div>

@@ -114,7 +114,14 @@
         onchange="togglePreBuiltDiv()"
         checked
       />
-      <label class="btn btn-primary" for="isPreBuilt">Prebuilt</label>
+      <label
+        class="btn btn-primary"
+        for="isPreBuilt"
+        data-bs-toggle="tooltip"
+        data-bs-placement="right"
+        title="Use a prebuilt scenario with a target and transducers"
+        >Prebuilt</label
+      >
 
       <input
         type="radio"
@@ -125,7 +132,14 @@
         onchange="toggleCTFileDiv()"
         disabled
       />
-      <label class="btn btn-primary" for="isCtScan">CT Scan</label>
+      <label
+        class="btn btn-primary"
+        for="isCtScan"
+        data-bs-toggle="tooltip"
+        data-bs-placement="right"
+        title="Load a CT scan from a file"
+        >CT Scan</label
+      >
     </div>
   </div>
 
@@ -145,7 +159,14 @@
     </div>
   </div>
   <div id="sliceAxisDiv" class="mb-3" data-3d-only="true" hidden>
-    <label for="sliceAxis" class="form-label">Axis</label>
+    <label
+      for="sliceAxis"
+      class="form-label"
+      data-bs-toggle="tooltip"
+      data-bs-placement="right"
+      title="Axis along which to slice the 3D field to be recorded"
+      >Axis</label
+    >
     <select
       class="form-select"
       aria-label="Axis"
@@ -160,7 +181,13 @@
     </select>
   </div>
   <div id="slicePositionDiv" class="mb-3" data-3d-only="true" hidden>
-    <label for="slicePosition" class="form-label" for="slicePosition"
+    <label
+      for="slicePosition"
+      class="form-label"
+      for="slicePosition"
+      data-bs-toggle="tooltip"
+      data-bs-placement="right"
+      title="The position (in meters) along the slice axis at which the slice of the 3D field should be made"
       >Distance from Origin (m)</label
     >
     <input
