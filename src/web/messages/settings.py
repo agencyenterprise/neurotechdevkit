@@ -70,11 +70,16 @@ class Target(BaseModel):
         )
 
 
+class DisplaySettings(BaseModel):
+    """Display settings model for slicing when running 3D simulations."""
+
+    sliceAxis: Axis
+    slicePosition: float
+
+
 class ScenarioSettings(BaseModel):
     """Scenario settings model for the scenario settings."""
 
-    sliceAxis: Optional[Axis]
-    slicePosition: Optional[float]
     isPreBuilt: bool
     scenarioId: Optional[str]
 
@@ -106,6 +111,7 @@ class DefaultSettings(BaseModel):
     is2d: bool
     scenarioSettings: ScenarioSettings
     transducers: list[Transducer]
+    displaySettings: Optional[DisplaySettings]
     target: Optional[Target]
     simulationSettings: SimulationSettings
 
@@ -127,9 +133,15 @@ class DefaultSettings(BaseModel):
         scenario_settings = ScenarioSettings(
             scenarioId=scenario_id,
             isPreBuilt=True,
-            sliceAxis=Axis.from_ndk_axis(getattr(scenario, "slice_axis", None)),
-            slicePosition=getattr(scenario, "slice_position", None),
         )
+        if is_2d:
+            display_settings = None
+        else:
+            display_settings = DisplaySettings(
+                sliceAxis=Axis.from_ndk_axis(scenario.slice_axis),
+                slicePosition=scenario.slice_position,
+            )
+
         scenario_target = scenario.target
         assert isinstance(scenario_target, NDKTarget)
         target = Target.from_ndk_target(scenario_target)
@@ -146,4 +158,5 @@ class DefaultSettings(BaseModel):
             transducers=transducers,
             target=target,
             simulationSettings=simulation_settings,
+            displaySettings=display_settings,
         )

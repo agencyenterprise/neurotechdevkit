@@ -1,0 +1,58 @@
+<script>
+  function getDisplaySettingsParams() {
+    const sliceAxis = document.getElementById("sliceAxis").value
+    const slicePosition = document.getElementById("slicePosition").value
+    let params = {
+      sliceAxis: sliceAxis,
+      slicePosition: slicePosition,
+    }
+    return params
+  }
+
+  function setDisplayValues(displaySettings) {
+    document.getElementById("sliceAxis").value = displaySettings.sliceAxis
+    document.getElementById("slicePosition").value =
+      displaySettings.slicePosition
+  }
+</script>
+
+<div id="sliceAxisDiv" class="mb-3">
+  <label
+    for="sliceAxis"
+    class="form-label"
+    data-bs-toggle="tooltip"
+    data-bs-placement="right"
+    title="Axis along which to slice the 3D field to be recorded"
+    >Axis</label
+  >
+  <select
+    class="form-select"
+    aria-label="Axis"
+    id="sliceAxis"
+    onchange="valueChanged()"
+  >
+    <option value="" selected>Select an axis</option>
+    <option value="x">X</option>
+    <option value="y">Y</option>
+    <option value="z">Z</option>
+  </select>
+</div>
+<div id="slicePositionDiv" class="mb-3">
+  <label
+    for="slicePosition"
+    class="form-label"
+    for="slicePosition"
+    data-bs-toggle="tooltip"
+    data-bs-placement="right"
+    title="The position (in meters) along the slice axis at which the slice of the 3D field should be made"
+    >Distance from Origin (m)</label
+  >
+  <input
+    type="number"
+    step="0.01"
+    class="form-control"
+    id="slicePosition"
+    placeholder="0.0"
+    onchange="valueChanged()"
+  />
+</div>
