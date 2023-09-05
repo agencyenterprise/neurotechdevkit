@@ -196,7 +196,8 @@ result = scenario.simulate_pulse(simulation_time=calc_simulation_time(scenario))
 # measured at the ultrasound sensor elements. Let's visualize them.
 
 # %%
-# The receivers at N sensor elements give us data traces of [N, num_fast_time_samples]
+# The receivers at N sensor elements give us data traces of shape:
+# `[N, num_fast_time_samples]`
 num_channels = result.shot.num_receivers
 assert num_channels > 0
 time_arr = result.traces.time.grid
@@ -208,7 +209,7 @@ freq_sampling = 1 / result.traces.time.step
 print("Sampling frequency [Hz]: {:.2e}".format(freq_sampling))
 
 # %%
-# Reshape to [time, channels] shape
+# Reshape to `[time, channels]` shape
 rf_signals = result.traces.data.T
 
 # %%
@@ -466,7 +467,7 @@ rf_signal_max_len = max(rf_signal_lengths)
 rf_signal_max_len_idx = np.argmax(rf_signal_lengths)
 time = results[rf_signal_max_len_idx].traces.time.grid
 
-# Shape: [num_fast_time_samples, num_elements, num_pulses]
+# Shape: `[num_fast_time_samples, num_elements, num_pulses]`
 rf_signals = np.zeros(
     (rf_signal_max_len, ARRAY_NUM_ELEMENTS, len(results)),
     dtype=float,

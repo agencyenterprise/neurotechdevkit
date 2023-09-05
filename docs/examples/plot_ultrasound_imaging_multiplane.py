@@ -215,7 +215,8 @@ for idx, tilt_angle in enumerate(
 # and can't access the full wavefield.
 
 # %%
-# The receivers at N sensor elements give us data traces of [N, num_fast_time_samples]
+# The receivers at N sensor elements give us data traces of shape:
+# `[N, num_fast_time_samples]`
 assert results[0].traces.data.shape == (
     ARRAY_NUM_ELEMENTS,
     len(results[0].traces.time.grid),
@@ -236,7 +237,7 @@ rf_signal_max_len = max(rf_signal_lengths)
 rf_signal_max_len_idx = np.argmax(rf_signal_lengths)
 time = results[rf_signal_max_len_idx].traces.time.grid
 
-# Shape: [num_fast_time_samples, num_elements, num_pulses]
+# Shape: `[num_fast_time_samples, num_elements, num_pulses]`
 rf_signals = np.zeros(
     (rf_signal_max_len, ARRAY_NUM_ELEMENTS, len(results)),
     dtype=float,
