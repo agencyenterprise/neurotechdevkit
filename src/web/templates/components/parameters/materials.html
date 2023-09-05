@@ -6,7 +6,6 @@
         let materialComponent = document.getElementById(`${key}`)
         materialComponent.setAttribute("hidden", true)
         materialComponent.getElementsByTagName('form')[0].noValidate = true
-        console.log(materialComponent.getElementsByTagName('form')[0])
         continue
       }
       document.getElementById(`${key}Vp`).value = materialProperties[key].vp
