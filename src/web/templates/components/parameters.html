@@ -65,16 +65,32 @@
       })
   }
 
+  function collapseParameters(){
+    // close all accordion items
+    const accordion = document.getElementById('parameters-accordion');
+    const myCollapse = accordion.getElementsByClassName('collapse')[0];
+    const bsCollapse = new bootstrap.Collapse(myCollapse, {
+      toggle: true
+    });
+  }
+
   function changeSimulationType(is2d) {
     if (is2d) {
       document.querySelectorAll('[data-3d-only="true"]').forEach((element) => {
         element.setAttribute("hidden", true)
       })
+      document.querySelectorAll('[data-3d-input-only="true"]').forEach((element) => {
+        element.removeAttribute("required")
+      })
     } else {
       document.querySelectorAll('[data-3d-only="true"]').forEach((element) => {
         element.removeAttribute("hidden")
       })
+      document.querySelectorAll('[data-3d-input-only="true"]').forEach((element) => {
+        element.setAttribute("required", true)
+      })
     }
+    collapseParameters()
     clearPlotArea()
     disallowRenderLayout()
     disallowRunSimulation()

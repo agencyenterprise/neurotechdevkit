@@ -3,7 +3,10 @@
     for (let key in materialProperties) {
       if (!materialProperties[key]){
         // hiding the material as it is not part of the scenario
-        document.getElementById(`${key}`).setAttribute("hidden", true)
+        let materialComponent = document.getElementById(`${key}`)
+        materialComponent.setAttribute("hidden", true)
+        materialComponent.getElementsByTagName('form')[0].noValidate = true
+        console.log(materialComponent.getElementsByTagName('form')[0])
         continue
       }
       document.getElementById(`${key}Vp`).value = materialProperties[key].vp
@@ -13,6 +16,7 @@
       document.getElementById(`${key}RenderColor`).value =
         materialProperties[key].renderColor
       document.getElementById(`${key}`).removeAttribute("hidden")
+      document.getElementById(`${key}`).getElementsByTagName('form')[0].noValidate = false
     }
   }
 
@@ -33,6 +37,23 @@
       }
     }
     return params
+  }
+
+  function validateMaterialValues(){
+    const accordion = document.getElementById("materialsAccordion")
+    let forms = accordion.getElementsByTagName("form")
+    for (let form of forms) {
+      if (form.noValidate) {
+        continue
+      }
+      if (!form.checkValidity()) {
+        $("#simulation-settings-accordion-item").collapse("show")
+        $("#"+form.name).collapse("show")
+        form.reportValidity()
+        return false
+      }
+    }
+    return true
   }
 </script>
 <div class="accordion accordion-flush" id="materialsAccordion">
@@ -57,73 +78,78 @@
       data-bs-parent="#materialsAccordion"
     >
       <div class="accordion-body">
-        <div class="mb-3">
-          <label
-            for="{{material}}Vp"
-            data-bs-toggle="tooltip"
-            data-bs-placement="right"
-            title="The speed of sound (in m/s)"
-            >VP</label
-          >
-          <input
-            type="number"
-            class="form-control"
-            name="{{material}}Vp"
-            id="{{material}}Vp"
-            required
-          />
-        </div>
-        <div class="mb-3">
-          <label
-            for="{{material}}Rho"
-            data-bs-toggle="tooltip"
-            data-bs-placement="right"
-            title="The mass density (in kg/m³)"
-            >RHO</label
-          >
-          <input
-            type="number"
-            class="form-control"
-            name="{{material}}Rho"
-            id="{{material}}Rho"
-            required
-          />
-        </div>
-        <div class="mb-3">
-          <label
-            for="{{material}}Alpha"
-            data-bs-toggle="tooltip"
-            data-bs-placement="right"
-            title="The absorption (in dB/cm)"
-            >Alpha</label
-          >
-          <input
-            type="number"
-            step="0.01"
-            class="form-control"
-            name="{{material}}Alpha"
-            id="{{material}}Alpha"
-            required
-          />
-        </div>
-        <div class="mb-3">
-          <label
-            for="{{material}}RenderColor"
-            class="form-label"
-            data-bs-toggle="tooltip"
-            data-bs-placement="right"
-            title="The color used when rendering this material in the scenario layout plot"
-            >Color</label
-          >
-          <input
-            type="color"
-            class="form-control form-control-color"
-            name="{{material}}RenderColor"
-            id="{{material}}RenderColor"
-            title="Choose your color"
-            onchange="valueChanged()"
-          />
-        </div>
+        <form name="flush-collapse{{loop.index}}">
+          <div class="mb-3">
+            <label
+              for="{{material}}Vp"
+              data-bs-toggle="tooltip"
+              data-bs-placement="right"
+              title="The speed of sound (in m/s)"
+              >VP</label
+            >
+            <input
+              type="number"
+              class="form-control"
+              name="{{material}}Vp"
+              id="{{material}}Vp"
+              onchange="valueChanged()"
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <label
+              for="{{material}}Rho"
+              data-bs-toggle="tooltip"
+              data-bs-placement="right"
+              title="The mass density (in kg/m³)"
+              >RHO</label
+            >
+            <input
+              type="number"
+              class="form-control"
+              name="{{material}}Rho"
+              id="{{material}}Rho"
+              onchange="valueChanged()"
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <label
+              for="{{material}}Alpha"
+              data-bs-toggle="tooltip"
+              data-bs-placement="right"
+              title="The absorption (in dB/cm)"
+              >Alpha</label
+            >
+            <input
+              type="number"
+              step="any"
+              class="form-control"
+              name="{{material}}Alpha"
+              id="{{material}}Alpha"
+              onchange="valueChanged()"
+              required
+            />
+          </div>
+          <div class="mb-3">
+            <label
+              for="{{material}}RenderColor"
+              class="form-label"
+              data-bs-toggle="tooltip"
+              data-bs-placement="right"
+              title="The color used when rendering this material in the scenario layout plot"
+              >Color</label
+            >
+            <input
+              type="color"
+              class="form-control form-control-color"
+              name="{{material}}RenderColor"
+              id="{{material}}RenderColor"
+              title="Choose your color"
+              onchange="valueChanged()"
+            />
+          </div>
+        </form>
       </div>
     </div>
   </div>

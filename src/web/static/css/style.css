@@ -104,3 +104,15 @@ body,
 .bs-tooltip-auto[data-popper-placement^="right"] .tooltip-arrow::before {
   border-right-color: white;
 }
+
+/* Remove Arrows from inputs */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type="number"] {
+  -moz-appearance: textfield;
+}

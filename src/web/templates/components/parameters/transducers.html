@@ -55,11 +55,16 @@
     document.getElementById("transducerSettings").innerHTML = ""
   }
 
-  function addTransducer() {
+  function addTransducer(button) {
     // Called when button Add at the end of the form is pressed
-    storeTransducer()
-    hideForm()
-    renderLayout()
+    if (button.form.checkValidity()){
+      storeTransducer()
+      hideForm()
+      renderLayout()
+    } else {
+      button.form.reportValidity()
+    }
+
   }
 
   function newTransducer() {
@@ -69,10 +74,14 @@
     hideSaveButton()
   }
 
-  function saveTransducer(transducerIndex) {
+  function saveTransducer(button, transducerIndex) {
     // Called when button Save at the end of the form is pressed
-    storeTransducer(transducerIndex)
-    renderLayout()
+    if (button.form.checkValidity()){
+      storeTransducer(transducerIndex)
+      renderLayout()
+    } else {
+      button.form.reportValidity()
+    }
   }
 
   function clearAllTransducers() {
@@ -398,12 +407,18 @@
   }
 
   function focalLengthCheckClick(input){
-    const focalLength = input.parentElement.parentElement.querySelector("#focalLength")
+    const focalLength = input.form.querySelector("#focalLength")
     if (input.checked){
-      focalLength.removeAttribute("hidden")
-    } else {
-      focalLength.setAttribute("hidden", true)
+      document.querySelectorAll('[data-focal-length="true"]').forEach((element) => {
+        element.removeAttribute("hidden")
+      })
+      focalLength.required = true
       focalLength.value = ""
+    } else {
+      document.querySelectorAll('[data-focal-length="true"]').forEach((element) => {
+        element.setAttribute("hidden", true)
+      })
+      focalLength.removeAttribute("required")
     }
   }
 </script>
@@ -478,7 +493,7 @@
       data-transducer-id="-1"
       id="saveTransducerButton"
       class="btn btn-primary btn-block"
-      onclick="saveTransducer(this.dataset.transducerId)"
+      onclick="saveTransducer(this, this.dataset.transducerId)"
       hidden
     >
       Save Transducer
