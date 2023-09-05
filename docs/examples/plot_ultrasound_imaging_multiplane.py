@@ -1,23 +1,27 @@
-# %% [markdown]
-# # Ultrasound imaging simulation
-#
-# Ultrasound imaging is a medical imaging technique that uses sound waves to
-# create visual representations of internal body structures. It is widely used
-# in various medical fields, including obstetrics and cardiology, for diagnostic
-# purposes. The technology relies on the principle that sound waves can
-# penetrate and scatter off tissues, generating echoes that are then used to
-# create detailed images.
-#
-# In this notebook, we continue using NDK to simulate the image captured by an
-# ultrasound transducer, as a follow up to the
-# `plot_ultrasound_imaging_scanline` example. We'll follow a similar three step
-# process:
-# 1. transmit pulse
-# 2. receive echo
-# 3. reconstruct image
-#
-# For more details, check out the `plot_ultrasound_imaging_scanline` example
-# first.
+# -*- coding: utf-8 -*-
+"""
+# Ultrasound imaging simulation with multi-plane waves
+
+Ultrasound imaging is a medical imaging technique that uses sound waves to
+create visual representations of internal body structures. It is widely used in
+various medical fields, including obstetrics and cardiology, for diagnostic
+purposes. The technology relies on the principle that sound waves can penetrate
+and scatter off tissues, generating echoes that are then used to create detailed
+images.
+
+In this notebook, we continue using NDK to simulate the image captured by an
+ultrasound transducer, as a follow up to the `plot_ultrasound_imaging_scanline`
+example. We'll follow a similar three step process: 1. transmit pulse 2. receive
+echo 3. reconstruct image
+
+Here, we'll use a phased array transducer to transmit multiple unfocused plane
+waves at different angles. We'll then receive the echoes and reconstruct the
+image using the same beamforming and demodulation techniques as the
+`plot_ultrasound_imaging_scanline` example.
+
+For more details, check out the `plot_ultrasound_imaging_scanline` example
+first.
+"""
 
 # %%
 from typing import List

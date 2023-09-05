@@ -1,29 +1,32 @@
-# %% [markdown]
-# # Ultrasound imaging simulation
-#
-# Ultrasound imaging is a medical imaging technique that uses sound waves to
-# create visual representations of internal body structures. It is widely used
-# in various medical fields, including obstetrics and cardiology, for diagnostic
-# purposes. The technology relies on the principle that sound waves can
-# penetrate and scatter off tissues, generating echoes that are then used to
-# create detailed images.
-#
-# Ultrasound can be used to measure many different phenomena. Here, we will
-# demonstrate the most common type of ultrasound imaging: B-Mode. B-Mode imaging
-# consists of 3 steps:
-# 1. transmit pulse: a transducer emits high-frequency sound waves into the
-#    body. These waves are reflected by large tissue boundaries and diffusely
-#    scattered by small irregularities (e.g. cell boundaries).
-# 2. receive echo: some of these sound waves echo back to the transducer, which
-#    records and digitizes them.
-# 3. reconstruct image: a "beamforming" algorithm converts the pressure
-#    time-series into an image of the tissue.
-#
-# Just as we can use NDK to simulate sound waves for focused ultrasound, we can
-# use NDK to simulate the transmitted and received sound waves for ultrasound
-# imaging. Ultrasound imaging simulations allow us to easily manipulate
-# parameters, such as frequency and focal point, and see how they affect the
-# resulting image.
+# -*- coding: utf-8 -*-
+"""
+Ultrasound imaging simulation
+====================================
+
+Ultrasound imaging is a medical imaging technique that uses sound waves to
+create visual representations of internal body structures. It is widely used
+in various medical fields, including obstetrics and cardiology, for diagnostic
+purposes. The technology relies on the principle that sound waves can
+penetrate and scatter off tissues, generating echoes that are then used to
+create detailed images.
+
+Ultrasound can be used to measure many different phenomena. Here, we will
+demonstrate the most common type of ultrasound imaging: B-Mode. B-Mode imaging
+consists of 3 steps:
+1. transmit pulse: a transducer emits high-frequency sound waves into the
+   body. These waves are reflected by large tissue boundaries and diffusely
+   scattered by small irregularities (e.g. cell boundaries).
+2. receive echo: some of these sound waves echo back to the transducer, which
+   records and digitizes them.
+3. reconstruct image: a "beamforming" algorithm converts the pressure
+   time-series into an image of the tissue.
+
+Just as we can use NDK to simulate sound waves for focused ultrasound, we can
+use NDK to simulate the transmitted and received sound waves for ultrasound
+imaging. Ultrasound imaging simulations allow us to easily manipulate
+parameters, such as frequency and focal point, and see how they affect the
+resulting image.
+"""
 
 # %%
 from typing import List
