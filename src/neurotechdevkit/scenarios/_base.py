@@ -3,8 +3,6 @@ from __future__ import annotations
 import abc
 import asyncio
 import os
-from dataclasses import dataclass
-from enum import IntEnum
 from types import SimpleNamespace
 from typing import Mapping, Optional, Union
 
@@ -29,6 +27,8 @@ from ._time import (
     select_simulation_time_for_steady_state,
 )
 from ._utils import (
+    SliceAxis,
+    Target,
     choose_wavelet_for_mode,
     create_grid_circular_mask,
     create_grid_spherical_mask,
@@ -38,31 +38,6 @@ from ._utils import (
 )
 
 nest_asyncio.apply()
-
-
-class SliceAxis(IntEnum):
-    """Axis along which to slice the 3D field to be recorded."""
-
-    X = 0
-    Y = 1
-    Z = 2
-
-
-@dataclass
-class Target:
-    """A class for containing metadata for a target.
-
-    Attributes:
-        target_id: the string id of the target.
-        center: the location of the center of the target (in meters).
-        radius: the radius of the target (in meters).
-        description: a text describing the target.
-    """
-
-    target_id: str
-    center: list[float]
-    radius: float
-    description: str
 
 
 class Scenario(abc.ABC):
@@ -711,20 +686,17 @@ class Scenario(abc.ABC):
             ValueError if axis is not 0, 1, 2.
             ValueError if `slice_position` falls outside the current range of
                 `slice_axis`.
-            ValueError if  `slice_axis` is None but `slice_position` is not None and
-                vice versa.
+            ValueError if  `slice_axis` is None or `slice_position` is None.
         """
+        if slice_axis is None or slice_position is None:
+            raise ValueError(
+                "Both `slice_axis` and `slice_position` must be passed together "
+                "to correctly define how to slice the field. "
+            )
         if slice_axis not in (0, 1, 2):
             raise ValueError(
                 "Unexpected value received for `slice_axis`. ",
                 "Expected axis are 0 (X), 1 (Y) and/or 2 (Z).",
-            )
-        if (slice_axis is None and slice_position is not None) or (
-            slice_axis is not None and slice_position is None
-        ):
-            raise ValueError(
-                "Both `slice_axis` and `slice_position` must be passed together "
-                "to correctly define how to slice the field. "
             )
 
         origin = np.array(self.origin, dtype=float)

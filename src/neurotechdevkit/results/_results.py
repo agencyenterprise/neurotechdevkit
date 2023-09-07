@@ -10,7 +10,7 @@ import shutil
 import tarfile
 from dataclasses import dataclass
 from io import BytesIO
-from typing import Any, Union
+from typing import Any, Optional, Union
 
 import numpy as np
 import numpy.typing as npt
@@ -19,8 +19,9 @@ from matplotlib.animation import FuncAnimation
 
 import neurotechdevkit
 
-from .. import rendering, scenarios
-from ..scenarios._utils import drop_element, slice_field
+from .. import rendering, scenarios, sources
+from ..grid import Grid
+from ..scenarios._utils import SliceAxis, Target, drop_element, slice_field
 from . import _metrics as metrics
 
 DATA_FILENAME = "data.gz"
@@ -202,6 +203,9 @@ class SteadyStateResult(Result):
             A dictionary with the objects to be saved to disk.
         """
         material_outline = self.scenario.material_outline_upsample_factor
+        sources = None
+        if hasattr(self.scenario, "sources"):
+            sources = self.scenario.sources
         save_data = {
             "result_type": self.__class__,
             "material_masks": self.scenario.material_masks,
@@ -211,7 +215,7 @@ class SteadyStateResult(Result):
             "is_3d": isinstance(self.scenario, scenarios.Scenario3D),
             "origin": self.scenario.origin,
             "grid": self.scenario.grid,
-            "sources": self.scenario.sources,
+            "sources": sources,
             "problem": self.scenario.problem,
             "center_frequency": self.center_frequency,
             "effective_dt": self.effective_dt,
@@ -419,6 +423,136 @@ class SteadyStateResult3D(SteadyStateResult):
         documentation for more information on the GUI.
         """
         rendering.render_amplitudes_3d_with_napari(self)
+
+    def get_steady_state_result_2d(
+        self,
+        slice_axis: Optional[SliceAxis] = None,
+        slice_position: Optional[float] = None,
+    ) -> SteadyStateResult2D:
+        """Return a 2D steady-state result from a 3D steady-state result.
+
+        This function will take a slice of the 3D steady-state result and return a 2D
+        steady-state result of the slice. A slice through the scenario can be specified
+        via `slice_axis` and `slice_position`. Eg. to take a slice at z=0.01 m, use
+        `slice_axis=2` and `slice_position=0.01`. If `slice_axis` and `slice_position`
+        are not specified, the slice will be taken along the scenario's `slice_axis` and
+        `slice_position`.
+
+        !!! warning
+            When taking a 2D slice of a 3D steady-state result, the sources and target
+            are not being accounted for and will not be preserved in the 2D result.
+
+        Args:
+            slice_axis: The axis along which to slice the 3D field to be recorded. If
+                None, then the complete field will be recorded. Use 0 for X axis, 1 for
+                Y axis and 2 for Z axis. Defaults to None.
+            slice_position: The position (in meters) along the slice axis at which the
+                slice of the 3D field should be made. Position must be within the slice
+                axis range. Eg. for a slice with origin -0.035 and extent 0.07, the
+                valid range is [-0.035, 0.035]. Defaults to None.
+
+        Returns:
+            A SteadyStateResult2D object containing the 2D slice of the 3D steady-state
+            simulation results.
+        """
+        if slice_axis is None and slice_position is None:
+            slice_axis = self.scenario.slice_axis
+            slice_position = self.scenario.slice_position
+
+        self.scenario._validate_slice_args(slice_axis, slice_position)
+
+        assert slice_axis is not None
+        assert slice_position is not None
+
+        sources_2d = []
+        source_type = {
+            sources.FocusedSource3D: sources.FocusedSource2D,
+            sources.PlanarSource3D: sources.PlanarSource2D,
+            sources.PhasedArraySource3D: sources.PhasedArraySource2D,
+        }
+        for source in self.scenario.sources:
+            assert type(source) in source_type
+            source_args = {
+                "position": drop_element(source.position, slice_axis),
+                "direction": drop_element(source.unit_direction, slice_axis),
+                "num_points": source.num_points,
+            }
+            if isinstance(source, sources.PhasedArraySource3D):
+                if source.element_delays is None:
+                    source_args["tilt_angle"] = source.tilt_angle
+                    source_args["focal_length"] = source.focal_length
+                    source_args["delay"] = source.delay
+                source_args["num_elements"] = source.num_elements
+                source_args["pitch"] = source.pitch
+                source_args["element_width"] = source.element_width
+                source_args["element_delays"] = source.element_delays
+            else:
+                source_args["aperture"] = source.aperture
+                source_args["delay"] = source.delay
+                if not isinstance(source, sources.UnfocusedSource):
+                    source_args["focal_length"] = source.focal_length
+            sources_2d.append(source_type[type(source)](**source_args))
+
+        target = Target(
+            self.scenario.target.target_id,
+            self.scenario.target.center.copy(),
+            self.scenario.target.radius,
+            self.scenario.target.description,
+        )
+        target.center.pop(slice_axis)
+
+        extent = drop_element(self.scenario.extent, slice_axis)
+        assert len(extent) == 2
+        grid = Grid.make_grid(
+            extent=(float(extent[0]), float(extent[1])),
+            speed_water=1500,  # m/s
+            ppw=6,  # desired resolution for complexity=fast
+            center_frequency=self.scenario.center_frequency,
+        )
+
+        material_outline = self.scenario.material_outline_upsample_factor
+        scenario = scenarios.Scenario2D(
+            center_frequency=self.scenario.center_frequency,
+            material_properties=self.scenario.material_properties,
+            material_masks={
+                material_id: slice_field(
+                    mask, self.scenario, slice_axis, slice_position
+                )
+                for material_id, mask in self.scenario.material_masks.items()
+            },
+            origin=list(
+                drop_element(np.array(self.scenario.origin, dtype=float), slice_axis)
+            ),
+            sources=sources_2d,
+            material_outline_upsample_factor=material_outline,
+            target=target,
+            problem=None,
+            grid=grid,
+        )
+        scenario.compile_problem()
+
+        wavefield = self.wavefield
+        if wavefield is not None:
+            wavefield = slice_field(
+                self.wavefield, self.scenario, slice_axis, slice_position
+            )
+
+        steady_state = slice_field(
+            self.get_steady_state(), self.scenario, slice_axis, slice_position
+        )
+
+        result = SteadyStateResult2D(
+            scenario=scenario,
+            center_frequency=self.center_frequency,
+            effective_dt=self.effective_dt,
+            pde=self.pde,
+            shot=self.shot,
+            wavefield=wavefield,
+            traces=self.traces,
+            steady_state=steady_state,
+        )
+
+        return result
 
 
 def _extract_steady_state_amplitude(
