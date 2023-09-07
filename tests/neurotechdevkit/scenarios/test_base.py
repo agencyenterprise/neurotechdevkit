@@ -135,7 +135,7 @@ def test_setup_shot_sources_locations(tester_with_time, a_source, sim_mode):
     """
     assert tester_with_time.problem.geometry.num_locations == 0
     shot = tester_with_time._setup_shot(
-        [a_source], freq_hz=50.0, simulation_mode=sim_mode
+        [a_source], receiver_coords=[], freq_hz=50.0, simulation_mode=sim_mode
     )
     assert tester_with_time.problem.geometry.num_locations == a_source.num_points
     shot_locations = shot.sources
@@ -144,10 +144,29 @@ def test_setup_shot_sources_locations(tester_with_time, a_source, sim_mode):
 
 
 @pytest.mark.parametrize("sim_mode", ["steady-state", "pulsed"])
+def test_setup_shot_receiver_locations(tester_with_time, a_source, sim_mode):
+    """The shot should add the sources and receiver to the problem and itself."""
+    assert tester_with_time.problem.geometry.num_locations == 0
+    receiver_coords = [a_source.position]
+    shot = tester_with_time._setup_shot(
+        [a_source],
+        receiver_coords=receiver_coords,
+        freq_hz=50.0,
+        simulation_mode=sim_mode,
+    )
+    assert tester_with_time.problem.geometry.num_locations == (
+        a_source.num_points + len(receiver_coords)
+    )
+    shot_locations = shot.sources + shot.receivers
+    problem_locations = tester_with_time.problem.geometry.locations
+    assert shot_locations == problem_locations
+
+
+@pytest.mark.parametrize("sim_mode", ["steady-state", "pulsed"])
 def test_setup_shot_attributes(tester_with_time, a_source, sim_mode):
     """Verify some of the attributes of the shot match expectations"""
     shot = tester_with_time._setup_shot(
-        [a_source], freq_hz=50.0, simulation_mode=sim_mode
+        [a_source], receiver_coords=[], freq_hz=50.0, simulation_mode=sim_mode
     )
     assert shot.id == 0
     assert shot.problem == tester_with_time.problem
@@ -162,7 +181,7 @@ def test_setup_shot_wavelet_for_steady_state(tester_with_time, a_source):
     test_shot.py.
     """
     shot = tester_with_time._setup_shot(
-        [a_source], freq_hz=50.0, simulation_mode="steady-state"
+        [a_source], receiver_coords=[], freq_hz=50.0, simulation_mode="steady-state"
     )
     time = tester_with_time.problem.time
     expected_wavelet = wavelet_helper("continuous_wave", time=time, freq_hz=50.0)
@@ -179,7 +198,7 @@ def test_setup_shot_wavelet_for_pulsed(tester_with_time, a_source):
     test_shot.py.
     """
     shot = tester_with_time._setup_shot(
-        [a_source], freq_hz=50.0, simulation_mode="pulsed"
+        [a_source], receiver_coords=[], freq_hz=50.0, simulation_mode="pulsed"
     )
     time = tester_with_time.problem.time
     expected_wavelet = wavelet_helper("tone_burst", time=time, freq_hz=50.0)
