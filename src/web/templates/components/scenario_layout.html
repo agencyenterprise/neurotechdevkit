@@ -19,6 +19,7 @@
 
   function showCancelSimulation() {
     document.getElementById("cancelSimulation").removeAttribute("hidden")
+    allowViewScenarioParameters()
   }
 
   function showRunSimulation() {
@@ -56,6 +57,7 @@
     hideRunSimulation()
     hideCancelSimulation()
     hideLoading()
+    allowViewScenarioParameters()
   }
 
   function hideCleanSimulation() {

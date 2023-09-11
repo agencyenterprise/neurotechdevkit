@@ -85,11 +85,6 @@ body,
   background-color: #e4e5f1;
 }
 
-.disable-div {
-  pointer-events: none;
-  opacity: 0.4;
-}
-
 .tooltip-inner {
   background-color: white;
   color: black;

@@ -89,59 +89,61 @@
   }
 </script>
 <form>
-  <div class="mb-3">
-    <div class="btn-group">
-      <input
-        type="radio"
-        class="btn-check"
-        name="options"
-        id="isPreBuilt"
-        autocomplete="off"
-        onchange="togglePreBuiltDiv()"
-        checked
-      />
-      <label
-        class="btn btn-primary"
-        for="isPreBuilt"
-        data-bs-toggle="tooltip"
-        data-bs-placement="right"
-        title="Use a prebuilt scenario with a target and transducers"
-        >Prebuilt</label
-      >
+  <fieldset>
+    <div class="mb-3">
+      <div class="btn-group">
+        <input
+          type="radio"
+          class="btn-check"
+          name="options"
+          id="isPreBuilt"
+          autocomplete="off"
+          onchange="togglePreBuiltDiv()"
+          checked
+        />
+        <label
+          class="btn btn-primary"
+          for="isPreBuilt"
+          data-bs-toggle="tooltip"
+          data-bs-placement="right"
+          title="Use a prebuilt scenario with a target and transducers"
+          >Prebuilt</label
+        >
 
-      <input
-        type="radio"
-        class="btn-check"
-        name="options"
-        id="isCtScan"
-        autocomplete="off"
-        onchange="toggleCTFileDiv()"
-        disabled
-      />
-      <label
-        class="btn btn-primary"
-        for="isCtScan"
-        data-bs-toggle="tooltip"
-        data-bs-placement="right"
-        title="Load a CT scan from a file"
-        >CT Scan</label
-      >
+        <input
+          type="radio"
+          class="btn-check"
+          name="options"
+          id="isCtScan"
+          autocomplete="off"
+          onchange="toggleCTFileDiv()"
+          disabled
+        />
+        <label
+          class="btn btn-primary"
+          for="isCtScan"
+          data-bs-toggle="tooltip"
+          data-bs-placement="right"
+          title="Load a CT scan from a file"
+          >CT Scan</label
+        >
+      </div>
     </div>
-  </div>
 
-  <div class="mb-3">
-    <div id="preBuiltDiv">
-      <label for="scenario" class="form-label">Scenarios:</label>
-      <select
-        name="scenario"
-        id="scenario"
-        class="form-select"
-        onchange="scenarioSelected(this)"
-      ></select>
+    <div class="mb-3">
+      <div id="preBuiltDiv">
+        <label for="scenario" class="form-label">Scenarios:</label>
+        <select
+          name="scenario"
+          id="scenario"
+          class="form-select"
+          onchange="scenarioSelected(this)"
+        ></select>
+      </div>
+      <div id="ctFileDiv" hidden>
+        <label for="ctFile" class="form-label" for="ctFile">CT File</label>
+        <input class="form-control" type="file" id="ctFile" />
+      </div>
     </div>
-    <div id="ctFileDiv" hidden>
-      <label for="ctFile" class="form-label" for="ctFile">CT File</label>
-      <input class="form-control" type="file" id="ctFile" />
-    </div>
-  </div>
+  </fieldset>
 </form>
