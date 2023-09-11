@@ -98,13 +98,25 @@
   }
 
   function disableParametersPanel(){
-    var element = document.getElementById("parameters");
-    element.classList.add("disable-div");
+    const fieldsets = document.getElementsByTagName("fieldset")
+    var fieldSetList = Array.prototype.slice.call(fieldsets);
+    fieldSetList.forEach((element) => {
+      element.setAttribute("disabled", true)
+    })
+    document.querySelectorAll('[data-delete-transducer="true"]').forEach((element) => {
+      element.setAttribute("hidden", true)
+    })
   }
 
   function enableParametersPanel(){
-    var element = document.getElementById("parameters");
-    element.classList.remove("disable-div");
+    const fieldsets = document.getElementsByTagName("fieldset")
+    var fieldSetList = Array.prototype.slice.call(fieldsets);
+    fieldSetList.forEach((element) => {
+      element.removeAttribute("disabled")
+    })
+    document.querySelectorAll('[data-delete-transducer="true"]').forEach((element) => {
+      element.removeAttribute("hidden")
+    })
   }
 
   window.onload = function () {
@@ -145,28 +157,30 @@
   <span>Parameters</span>
 </h1>
 <div id="parameters">
-  <div class="mb-3 btn-group">
-    <input
-      type="radio"
-      class="btn-check"
-      name="options"
-      id="is2d"
-      autocomplete="off"
-      onchange="changeSimulationType(is2d=true)"
-      checked
-    />
-    <label class="btn btn-primary" for="is2d">2D</label>
+  <fieldset>
+    <div class="mb-3 btn-group">
+      <input
+        type="radio"
+        class="btn-check"
+        name="options"
+        id="is2d"
+        autocomplete="off"
+        onchange="changeSimulationType(is2d=true)"
+        checked
+      />
+      <label class="btn btn-primary" for="is2d">2D</label>
 
-    <input
-      type="radio"
-      class="btn-check"
-      name="options"
-      id="is3d"
-      autocomplete="off"
-      onchange="changeSimulationType(is2d=false)"
-    />
-    <label class="btn btn-primary" for="is3d">3D</label>
-  </div>
+      <input
+        type="radio"
+        class="btn-check"
+        name="options"
+        id="is3d"
+        autocomplete="off"
+        onchange="changeSimulationType(is2d=false)"
+      />
+      <label class="btn btn-primary" for="is3d">3D</label>
+    </div>
+  </fieldset>
   <form id="parameters-form">
     <div class="accordion accordion-flush" id="parameters-accordion">
       <div class="accordion-item">
