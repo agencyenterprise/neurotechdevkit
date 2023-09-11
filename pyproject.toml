@@ -23,6 +23,8 @@ classifiers = [
 "Documentation" = "https://agencyenterprise.github.io/neurotechdevkit/"
 "Bug Tracker" = "https://github.com/agencyenterprise/neurotechdevkit/issues"
 
+[tool.poetry.scripts]
+ndk-ui = "web.app:run"
 
 [tool.poetry.dependencies]
 python = ">=3.9,<3.12"

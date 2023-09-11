@@ -40,7 +40,7 @@ docs:
 	poetry run mkdocs build
 
 web-development:
-	poetry run flask --app src/web/app.py --debug run
+	poetry run python src/web/app.py
 
 web:
 	poetry run gunicorn -b 0.0.0.0 -w 1 --timeout 99999999 'src.web.app:app'
