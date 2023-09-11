@@ -37,7 +37,7 @@ If you don't want to install NDK's dependencies on your machine, you can run it 
 
 * Run the container, which will start a jupyter notebook server:
    ```
-   docker compose up
+   docker compose up ndk
    ```
 
 * Connect to the jupyter notebook directly in your browser or with your IDE.

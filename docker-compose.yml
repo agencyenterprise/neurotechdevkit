@@ -7,3 +7,10 @@ services:
       - ./notebooks:/ndk/notebooks
     ports:
       - 8888:8888
+
+  ndk-ui:
+    image: ghcr.io/agencyenterprise/neurotechdevkit:latest
+    working_dir: /ndk
+    command: python src/web/app.py
+    ports:
+      - 5000:5000
