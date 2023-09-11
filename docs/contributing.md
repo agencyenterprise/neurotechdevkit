@@ -42,6 +42,16 @@ If you don't want to install NDK's dependencies on your machine, you can run it 
 
 * Connect to the jupyter notebook directly in your browser or with your IDE.
 
+
+Alternatively, you can start the web user interface with:
+
+   ```
+   docker compose up ndk-ui
+   ```
+
+* Open the address `http://127.0.0.1:5000/` in your browser to access it.
+
+
 #### Running locally
 
 This project requires Python `>=3.9` and `<3.11` to be installed. You can find the Python version you have installed by running `python --version` in a terminal. If you don't have Python installed or are running an unsupported version, you can download a supported version from [python.org](https://www.python.org/downloads/).
