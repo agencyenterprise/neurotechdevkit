@@ -40,7 +40,7 @@ docs:
 	poetry run mkdocs build
 
 web-development:
-	poetry run python src/web/app.py
+	poetry run ndk-ui
 
 web:
 	poetry run gunicorn -b 0.0.0.0 -w 1 --timeout 99999999 'src.web.app:app'
