@@ -1,0 +1,10 @@
+{
+    "ignorePatterns": [
+      {
+        "pattern": "CONTRIBUTING.md"
+      },
+      {
+        "pattern": "README.md"
+      }
+    ]
+}
