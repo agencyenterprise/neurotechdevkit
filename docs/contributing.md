@@ -124,7 +124,7 @@ The release job will:
 1. generate a new package version using semantic versioning provided by [release on push](https://github.com/rymndhng/release-on-push-action/tree/master/)
 1. update the `pyproject.toml` version using `poetry`
 1. commit the updated `pyproject.toml` file using the [git-auto-commit action](https://github.com/stefanzweifel/git-auto-commit-action/tree/v4/)
-1. push the package to pypi using [poetry publish](JRubics/poetry-publish@v1.16)
+1. push the package to pypi using [poetry publish](https://github.com/JRubics/poetry-publish)
 1. build a new docker image and tag it with the previously generated semantic version
 
 Pull requests merged with the tag `norelease` will not trigger any of the actions listed above.
