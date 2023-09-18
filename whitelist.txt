@@ -22,6 +22,7 @@ compressional
 config
 coords
 coroutine
+dataset
 der
 devito
 dimensionality
@@ -33,6 +34,7 @@ dt
 dx
 eg
 enum
+eq
 et
 ffmpeg
 fft
