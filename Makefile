@@ -1,7 +1,7 @@
-.PHONY:help lint lint-check test test-coverage test-unit test-integration docs
+.PHONY:help lint lint-check test test-coverage test-unit test-integration docs web
 
 help:
-	@echo "Available commands are: \n*lint, lint-check, spellcheck, test, test-unit, test-integration docs"
+	@echo "Available commands are: \n*lint, lint-check, spellcheck, test, test-unit, test-integration docs web"
 
 lint:
 	poetry run isort src tests docs/examples
@@ -38,3 +38,6 @@ test-integration:
 
 docs:
 	poetry run mkdocs build
+
+web:
+	poetry run python web/web_server.py

@@ -10,6 +10,7 @@ import nest_asyncio
 import numpy as np
 import numpy.typing as npt
 import stride
+from matplotlib.figure import Figure
 from mosaic.types import Struct
 from stride.problem import StructuredData
 
@@ -860,7 +861,7 @@ class Scenario2D(Scenario):
         show_sources: bool = True,
         show_target: bool = True,
         show_material_outlines: bool = False,
-    ) -> None:
+    ) -> Figure:
         """Create a matplotlib figure showing the 2D scenario layout.
 
         The grid can be turned on via: `plt.grid(True)`
@@ -906,6 +907,7 @@ class Scenario2D(Scenario):
             extent=self.extent,
             origin=np.array(self.origin, dtype=float),
         )
+        return fig
 
 
 class Scenario3D(Scenario):
@@ -1050,7 +1052,7 @@ class Scenario3D(Scenario):
         show_sources: bool = True,
         show_target: bool = True,
         show_material_outlines: bool = False,
-    ) -> None:
+    ) -> Figure:
         """Create a matplotlib figure showing a 2D slice of the scenario layout.
 
         In order to visualize the 3D scenario in a 2D plot, a slice through the scenario
@@ -1113,6 +1115,7 @@ class Scenario3D(Scenario):
             horizontal_label=horz_name,
             title=f"Scenario Layout\nSlice: {slice_name} = {slice_position} m",
         )
+        return fig
 
     def render_layout_3d(
         self,

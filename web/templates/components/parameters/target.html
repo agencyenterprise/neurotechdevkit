@@ -1,0 +1,44 @@
+<script>
+  function getTargetParams() {
+    let params = {}
+    params["centerX"] = document.getElementById("centerX").value
+    params["centerY"] = document.getElementById("centerY").value
+    params["radius"] = document.getElementById("radius").value
+    return params
+  }
+</script>
+<div class="row">
+  <div class="col">
+    <label for="centerX">Center X</label>
+    <input
+      type="number"
+      class="form-control"
+      name="centerX"
+      id="centerX"
+      value="0.0"
+      required
+    />
+  </div>
+  <div class="col">
+    <label for="centerY">Center Y</label>
+    <input
+      type="number"
+      class="form-control"
+      id="centerY"
+      name="centerY"
+      value="0.0"
+      required
+    />
+  </div>
+</div>
+<div class="mb-3">
+  <label for="radius">Radius</label>
+  <input
+    type="number"
+    class="form-control"
+    name="radius"
+    id="radius"
+    value="0.0"
+    required
+  />
+</div>
