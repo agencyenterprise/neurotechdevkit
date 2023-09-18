@@ -558,6 +558,22 @@ class UnfocusedSource(Source, abc.ABC):
             delay=delay,
         )
 
+    def to_dict(self) -> dict:
+        """
+        Return a dictionary representation of the source.
+
+        Returns:
+            A dictionary representation of the source.
+        """
+        return {
+            "position": self._position,
+            "direction": self._direction,
+            "aperture": self._aperture,
+            "focal_length": self._focal_length,
+            "num_points": self._num_points,
+            "delay": self._delay,
+        }
+
 
 class PlanarSource2D(UnfocusedSource):
     """A planar source in 2D.

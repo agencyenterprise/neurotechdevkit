@@ -28,7 +28,7 @@ async def simulate():
     """Simulate a scenario and return the result as a base64 gif or png."""
     print("received on simulate:", request.json)
     try:
-        config = SimulateRequest.model_validate(request.json)
+        config = SimulateRequest.parse_obj(request.json)
     except ValidationError as e:
         # If the JSON data doesn't match the Pydantic model,
         # return a 400 Bad Request response
@@ -43,7 +43,7 @@ async def render_layout():
     """Render the layout of a scenario and return the result as a base64 png."""
     print("received on render_layout:", request.json)
     try:
-        config = RenderLayoutRequest.model_validate(request.json)
+        config = RenderLayoutRequest.parse_obj(request.json)
     except ValidationError as e:
         raise e
         # If the JSON data doesn't match the Pydantic model,
