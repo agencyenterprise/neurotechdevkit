@@ -164,6 +164,7 @@ async def get_simulation_image(config: SimulateRequest) -> Tuple[str, str]:
     else:
         pulse_result = scenario.simulate_pulse()
         animation = pulse_result.render_pulsed_simulation_animation()
+        assert hasattr(animation, "_fig")
         with tempfile.NamedTemporaryFile(suffix=".gif") as tmpfile:
             animation.save(tmpfile.name, writer="imagemagick", fps=30)
             tmpfile.seek(0)

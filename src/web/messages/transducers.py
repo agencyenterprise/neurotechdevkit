@@ -150,18 +150,25 @@ class PhasedArraySettings(_BaseSourceSettings):
             focal_length = None
         else:
             focal_length = source._focal_length
+
+        element_delays = None
+        if isinstance(source._configured_element_delays, list):
+            element_delays = source._configured_element_delays
+        elif isinstance(source._configured_element_delays, np.ndarray):
+            element_delays = source._configured_element_delays.tolist()
+
         return cls(
             transducerType=TransducerType.phasedArraySource,
             position=source._position,
             direction=source._direction,
-            num_points=source._num_points,
-            num_elements=source._num_elements,
+            numPoints=source._num_points,
+            numElements=source._num_elements,
             pitch=source._pitch,
-            element_width=source._element_width,
-            tilt_angle=source._tilt_angle,
-            focal_length=focal_length,
+            elementWidth=source._element_width,
+            tiltAngle=source._tilt_angle,
+            focalLength=focal_length,
             delay=source._delay,
-            element_delays=source._element_delays,
+            elementDelays=element_delays,
         )
 
     def to_ndk_source(self) -> Union[PhasedArraySource2D, PhasedArraySource3D]:

@@ -662,7 +662,7 @@ class PhasedArraySource(Source):
             num_points=num_points,
             delay=delay,
         )
-
+        self._configured_element_delays = element_delays
         self._element_delays = self._set_element_delays(element_delays)
 
     @abc.abstractproperty
@@ -1325,7 +1325,6 @@ class PhasedArraySource3D(PhasedArraySource):
         n_remaining = n_points - points.shape[0]
 
         if n_remaining > 0:
-
             # First compute the center
             x_width = x_max - x_min
             centre = np.array([(x_min + x_max) / 2, height / 2])

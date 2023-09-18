@@ -262,7 +262,6 @@ class Scenario2_3D(Scenario2, Scenario3D):
 
 
 def _create_scenario_2_mask(material, grid, convert_2d=False) -> npt.NDArray[np.bool_]:
-
     cur_dir = pathlib.Path(__file__).parent
     data_file = cur_dir / "data" / "skull_mask_bm8_dx_0.5mm.mat"
     mat_data = hdf5storage.loadmat(str(data_file))

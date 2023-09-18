@@ -47,7 +47,7 @@ gunicorn = "^21.2.0"
 pyrevolve = ">=2.2.3"
 
 [tool.poetry.group.dev.dependencies]
-black = "^22.8.0"
+black = {extras = ["jupyter"], version = "^23.9.1"}
 flake8 = "^5.0.4"
 isort = "^5.10.1"
 mypy = "^0.990"

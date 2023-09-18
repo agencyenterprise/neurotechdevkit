@@ -271,7 +271,7 @@ rf_signal_visualize = rf_signals[:, channel_idxs, pulse_idxs]
 
 # Plot with some offsets
 CHANNEL_OFFSET = 1000
-_ = plt.plot(
+plt.plot(
     time[valid_time_mask] * 1e3,
     rf_signal_visualize[valid_time_mask]
     + np.linspace(-0.5, 0.5, num=NUM_VISUALIZE, endpoint=True)
@@ -282,9 +282,9 @@ _ = plt.plot(
         for (channel_idx, echo_idx) in zip(channel_idxs, pulse_idxs)
     ],
 )
-_ = plt.legend()
-_ = plt.title("Example radiofrequency signals (RF)")
-_ = plt.xlabel("time [ms]")
+plt.legend()
+plt.title("Example radiofrequency signals (RF)")
+plt.xlabel("time [ms]")
 
 # %% [markdown]
 # Plotting across elements (for a single shot) shows the typical

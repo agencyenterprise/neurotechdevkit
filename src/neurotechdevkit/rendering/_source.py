@@ -134,10 +134,13 @@ def create_source_drawing_artist(
     lower_right = position + hw
 
     bbox = Bbox([upper_left, lower_right])
-    bbox = TransformedBbox(bbox, transform)
+    transformed_bbox = TransformedBbox(bbox, transform)
 
     img_box = BboxImage(
-        bbox, resample=True, interpolation="antialiased", interpolation_stage="rgba"
+        transformed_bbox,
+        resample=True,
+        interpolation="antialiased",
+        interpolation_stage="rgba",
     )
     img_box.set_data(transformed_img)
     return img_box
@@ -203,10 +206,13 @@ def create_source_legend_artist(
     lower_right = loc + delta
 
     bbox = Bbox([upper_left, lower_right])
-    bbox = TransformedBbox(bbox, transform)
+    transformed_bbox = TransformedBbox(bbox, transform)
 
     img_box = BboxImage(
-        bbox, resample=True, interpolation="antialiased", interpolation_stage="rgba"
+        transformed_bbox,
+        resample=True,
+        interpolation="antialiased",
+        interpolation_stage="rgba",
     )
     img_box.set_data(cropped_img)
     return img_box
