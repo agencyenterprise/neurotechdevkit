@@ -1,0 +1,20 @@
+.parameters {
+  background-color: #344054;
+  color: white;
+}
+
+.main-grid {
+  background-color: #1d2939;
+  color: white;
+}
+
+.row {
+  height: 100%;
+  width: 100%;
+  display: table-row;
+}
+
+.row .no-float {
+  display: table-cell;
+  float: none;
+}

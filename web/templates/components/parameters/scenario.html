@@ -1,0 +1,86 @@
+<script>
+  function togglePreBuiltDiv() {
+    document.getElementById("preBuiltDiv").hidden = false
+    document.getElementById("ctFileDiv").hidden = true
+  }
+
+  function toggleCTFileDiv() {
+    document.getElementById("preBuiltDiv").hidden = true
+    document.getElementById("ctFileDiv").hidden = false
+  }
+
+  function getScenarioParams() {
+    let params = {}
+    params["axis"] = document.getElementById("axis").value
+    params["distance_from_origin"] =
+      document.getElementById("distanceFromOrigin").value
+    params["is_prebuilt"] = document.getElementById("isPrebuilt").checked
+    if (params["is_prebuilt"]) {
+      params["scenario_id"] = document.getElementById("scenario").value
+    } else {
+      params["ct_file"] = document.getElementById("ct-file").value
+    }
+    return params
+  }
+</script>
+<form>
+  <div class="mb-3">
+    <div class="btn-group">
+      <input
+        type="radio"
+        class="btn-check"
+        name="options"
+        id="isPrebuilt"
+        autocomplete="off"
+        onchange="togglePreBuiltDiv()"
+        checked
+      />
+      <label class="btn btn-secondary" for="isPrebuilt">Prebuilt</label>
+
+      <input
+        type="radio"
+        class="btn-check"
+        name="options"
+        id="isCtScan"
+        autocomplete="off"
+        onchange="toggleCTFileDiv()"
+      />
+      <label class="btn btn-secondary" for="isCtScan">CT Scan</label>
+    </div>
+  </div>
+
+  <div class="mb-3">
+    <div id="preBuiltDiv">
+      <label for="scenario" class="form-label">Scenarios:</label>
+      <select name="scenario" id="scenario" class="form-select">
+        {% for scenario in scenarios %} {% if scenario.is_2d %}
+        <option value="{{scenario.id}}">{{scenario.name}}</option>
+        {% endif %} {% endfor %}
+      </select>
+    </div>
+    <div id="ctFileDiv" hidden>
+      <label for="ct-file" class="form-label" for="ct-file">CT File</label>
+      <input class="form-control" type="file" id="ct-file" />
+    </div>
+  </div>
+  <div class="mb-3">
+    <label for="axis" class="form-label" for="axis">Axis</label>
+    <select class="form-select" aria-label="Axis" id="axis">
+      <option value="" selected>Select Axis</option>
+      <option value="x">X</option>
+      <option value="y">Y</option>
+      <option value="z">Z</option>
+    </select>
+  </div>
+  <div class="mb-3">
+    <label for="axis" class="form-label" for="distanceFromOrigin"
+      >Distance from Origin (mm)</label
+    >
+    <input
+      type="number"
+      class="form-control"
+      id="distanceFromOrigin"
+      placeholder="Type here"
+    />
+  </div>
+</form>

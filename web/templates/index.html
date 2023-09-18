@@ -1,0 +1,64 @@
+{% extends "base.html" %} {% block content %}
+
+<script>
+  function renderLayout(button) {
+    BtnLoading(button)
+    const is2d = document.getElementById("is2d").checked
+    const scenarioParams = getScenarioParams()
+    const transducersParams = getTransducersParams()
+    const targetParams = getTargetParams()
+    const simulationSettingsParams = getSimulationSettingsParams()
+
+    const data = {
+      is_2d: is2d,
+      scenario: scenarioParams,
+      transducers: transducersParams,
+      target: targetParams,
+      simulation_settings: simulationSettingsParams,
+    }
+    console.log("the data -> ", JSON.stringify(data))
+
+    // const url = "{{ url_for('render_layout') }}"
+    // fetch(url, {
+    //   method: "POST",
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //   },
+    //   body: JSON.stringify(data),
+    // }).then((response) => {
+    //   const plotArea = document.getElementById("plot-content-base64")
+    //   BtnReset(button)
+    // })
+
+    const url = "{{ url_for('render_layout') }}"
+    fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    })
+      .then((response) => response.text())
+      .then((text) => {
+        const plotArea = document.getElementById("plot-content-base64")
+        plotArea.innerHTML = text
+        // $('#plot-content-base64').html(text);
+      })
+      .then(() => {
+        BtnReset(button)
+      })
+  }
+</script>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-3 no-float parameters">
+      {% include 'components/parameters.html' %}
+    </div>
+    <div class="col-md-9 no-float main-grid">
+      {% include 'components/scenario_layout.html' %}
+    </div>
+  </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,70 @@
+<script>
+  function getSimulationSettingsParams() {
+    let params = {}
+    params["simulation_precision"] = document.getElementById(
+      "simulationPrecision"
+    ).value
+    params["center_frequency"] =
+      document.getElementById("centerFrequency").value
+    params["simulation_type"] = document.getElementById("simulationType").value
+    params["material_properties"] = getMaterialPropertiesParams()
+    return params
+  }
+</script>
+
+<div class="mb-3">
+  <label for="simulationPrecision">Simulation precision</label>
+  <input
+    type="number"
+    class="form-control"
+    name="simulationPrecision"
+    id="simulationPrecision"
+    value="5"
+    required
+  />
+</div>
+<div class="mb-3">
+  <label for="centerFrequency">Center frequency</label>
+  <input
+    type="number"
+    class="form-control"
+    name="centerFrequency"
+    id="centerFrequency"
+    value="500000"
+    required
+  />
+</div>
+<div class="mb-3">
+  <label for="materialsAccordion">Material properties</label>
+  <div class="form-control">
+    {% include 'components/parameters/materials.html' %}
+  </div>
+</div>
+<div class="mb-3">
+  <label for="simulationType">Simulation type</label>
+  <div id="simulationType" class="form-control">
+    <div class="form-check">
+      <input
+        class="form-check-input"
+        type="radio"
+        name="flexRadioDefault"
+        id="simulationTypePulsed"
+      />
+      <label class="form-check-label" for="simulationTypePulsed">
+        Pulsed
+      </label>
+    </div>
+    <div class="form-check">
+      <input
+        class="form-check-input"
+        type="radio"
+        name="flexRadioDefault"
+        id="simulationTypeSteady"
+        checked
+      />
+      <label class="form-check-label" for="simulationTypeSteady">
+        Steady state
+      </label>
+    </div>
+  </div>
+</div>
