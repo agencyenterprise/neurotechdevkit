@@ -38,6 +38,7 @@ mkdocs-gallery = "0.7.6"
 xarray = ">=2022.3.0"
 flask = "^2.3.2"
 pydantic = "<2"
+waitress = "^2.1.2"
 
 [tool.poetry.group.dev.dependencies]
 black = "^22.8.0"

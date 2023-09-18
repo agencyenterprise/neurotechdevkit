@@ -1,7 +1,7 @@
-.PHONY:help lint lint-check test test-coverage test-unit test-integration docs web
+.PHONY:help lint lint-check test test-coverage test-unit test-integration docs web web-development
 
 help:
-	@echo "Available commands are: \n*lint, lint-check, spellcheck, test, test-unit, test-integration docs web"
+	@echo "Available commands are: \n*lint, lint-check, spellcheck, test, test-unit, test-integration docs web web-development"
 
 lint:
 	poetry run isort web src tests docs/examples
@@ -39,5 +39,8 @@ test-integration:
 docs:
 	poetry run mkdocs build
 
-web:
+web-development:
 	poetry run flask --app web/app.py --debug run
+
+web:
+	poetry run waitress-serve --call 'web.app:create_app'
