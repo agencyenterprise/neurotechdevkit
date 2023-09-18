@@ -147,10 +147,11 @@ class DefaultSettings(BaseModel):
         target = Target.from_ndk_target(scenario_target)
 
         transducers = []
-        for source in scenario.sources:
-            settings_model = TRANSDUCER_SETTINGS[type(source)]
-            transducer_settings = settings_model.from_source(source)
-            transducers.append(transducer_settings)
+        if hasattr(scenario, "sources") and scenario.sources is not None:
+            for source in scenario.sources:
+                settings_model = TRANSDUCER_SETTINGS[type(source)]
+                transducer_settings = settings_model.from_source(source)
+                transducers.append(transducer_settings)
 
         return cls(
             is2d=is_2d,
