@@ -45,6 +45,7 @@ class MaterialName(Enum):
     corticalBone = "cortical_bone"
     skin = "skin"
     tumor = "tumor"
+    agarHydrogel = "agar_hydrogel"
 
     @classmethod
     def get_material_titles(cls) -> List[Tuple[str, str]]:

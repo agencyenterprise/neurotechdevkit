@@ -43,6 +43,7 @@ DEFAULT_MATERIALS = {
     "cortical_bone": _BaseMaterial(vp=2800.0, rho=1850.0, render_color="#FAF0CA"),
     "trabecular_bone": _BaseMaterial(vp=2300.0, rho=1700.0, render_color="#EBD378"),
     "brain": _BaseMaterial(vp=1560.0, rho=1040.0, render_color="#DB504A"),
+    "agar_hydrogel": _BaseMaterial(vp=1485.0, rho=1050.0, render_color="#E9E6C9"),
     # these numbers for tumor material are made up
     # TODO: research reasonable values
     "tumor": _BaseMaterial(vp=1650.0, rho=1150.0, render_color="#94332F"),
