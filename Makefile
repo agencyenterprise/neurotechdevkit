@@ -43,4 +43,4 @@ web-development:
 	poetry run flask --app web/app.py --debug run
 
 web:
-	poetry run waitress-serve --call 'web.app:create_app'
+	poetry run gunicorn -w 4 'web.app:app'
