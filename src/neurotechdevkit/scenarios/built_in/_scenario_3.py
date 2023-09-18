@@ -10,19 +10,8 @@ from mosaic.types import Struct
 from ...grid import Grid
 from ...materials import Material
 from ...problem import Problem
-from ...sources import PhasedArraySource2D
 from .._base import Scenario2D, Target
 from .._utils import create_grid_circular_mask
-
-# Phased array transducer parameters
-ARRAY_PITCH = 300e-6  # meters
-ARRAY_ELEMENT_WIDTH = 270e-6  # meters
-ARRAY_NUM_ELEMENTS = 128
-TRANSDUCER_6DB_PULSE_ECHO_FRACTIONAL_BANDWIDTH = (
-    0.5  # transmit/receive frequency bandwidth as a fraction of center frequency
-)
-SOURCE_POSITION = [0.01, 0.0]
-UNIT_DIRECTION = [1.0, 0.0]
 
 
 class Scenario3(Scenario2D):
@@ -59,19 +48,6 @@ class Scenario3(Scenario2D):
         ),
     }
     target = PREDEFINED_TARGET_OPTIONS["agar-phantom-center"]
-
-    sources = [
-        PhasedArraySource2D(
-            position=SOURCE_POSITION,
-            direction=UNIT_DIRECTION,
-            num_elements=ARRAY_NUM_ELEMENTS,
-            num_points=ARRAY_NUM_ELEMENTS * 4,
-            tilt_angle=0,
-            focal_length=np.inf,
-            pitch=ARRAY_PITCH,
-            element_width=ARRAY_ELEMENT_WIDTH,
-        )
-    ]
 
     _extent = np.array([0.1, 0.1])  # m
     origin = [0, -_extent[1] / 2]

@@ -116,6 +116,14 @@ def _instantiate_scenario(
         material_properties = {
             key: value for key, value in builtin_scenario.material_properties.items()
         }
+        sources = []
+        if (
+            hasattr(builtin_scenario, "sources")
+            and builtin_scenario.sources is not None
+        ):
+            for source in builtin_scenario.sources:
+                sources.append(source)
+
         scenario_class = Scenario2D if is_2d else Scenario3D
         scenario = scenario_class(
             center_frequency=builtin_scenario.center_frequency,
@@ -123,7 +131,7 @@ def _instantiate_scenario(
             material_masks=builtin_scenario.material_masks,
             material_outline_upsample_factor=16,  # TODO: make this configurable
             origin=builtin_scenario.origin,
-            sources=[source for source in builtin_scenario.sources],
+            sources=sources,
             target=builtin_scenario.target,
             problem=builtin_scenario.problem,
             grid=builtin_scenario.grid,
