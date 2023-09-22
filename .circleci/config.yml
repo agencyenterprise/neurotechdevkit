@@ -39,16 +39,6 @@ jobs:
           command: |
             OFFLINE=true make docs
 
-      - run:
-          name: Move HTML files into their own directories
-          command: |
-            for file in $(find . -name "*.html"); do
-              dir=$(dirname "$file")
-              base=$(basename "$file" .html)
-              mkdir -p "$dir/$base"
-              mv "$file" "$dir/$base/index.html"
-            done
-
       - save_cache:
           key: docs-{{ epoch }}
           paths:
