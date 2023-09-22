@@ -2186,6 +2186,24 @@ files = [
 ]
 
 [[package]]
+name = "mkdocs-offline-links-plugin"
+version = "0.1.0"
+description = ""
+optional = false
+python-versions = ">=3.9"
+files = []
+develop = false
+
+[package.dependencies]
+mkdocs = ">=1.5.0"
+
+[package.source]
+type = "git"
+url = "https://github.com/charlesincharge/mkdocs-offline-links-plugin.git"
+reference = "HEAD"
+resolved_reference = "c807fb0ffd79d3776ac20d38bacefff28fcc70aa"
+
+[[package]]
 name = "mkdocstrings"
 version = "0.21.2"
 description = "Automatic documentation from sources, for MkDocs."
@@ -4565,4 +4583,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<3.12"
-content-hash = "8215fd779d7a2cf4d184f76f125657518d3011f6ed3204f1488c83b2cf791dd0"
+content-hash = "7a1ccbc1d0705978be50d966641bd95ca387d7b119dbd853951ed2c5bd4fb527"
