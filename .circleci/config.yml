@@ -37,7 +37,7 @@ jobs:
       - run:
           name: Build HTML
           command: |
-            make docs
+            OFFLINE=true make docs
 
       - save_cache:
           key: docs-{{ epoch }}
