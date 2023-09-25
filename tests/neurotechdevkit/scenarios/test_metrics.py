@@ -1,6 +1,8 @@
+from pathlib import Path
 from types import SimpleNamespace
 from typing import Optional, Union
 
+import hdf5storage
 import numpy as np
 import pytest
 
@@ -18,6 +20,7 @@ from neurotechdevkit.results._metrics import (
     calculate_mechanical_index,
 )
 from neurotechdevkit.results._results import SteadyStateResult2D
+from neurotechdevkit.scenarios.built_in import Scenario1_2D
 
 GRID_SHAPE = (21, 31)
 CENTER_FREQUENCY = 1.5e6
@@ -310,3 +313,65 @@ def test_unknown_conversion():
     """Unknown conversions should raise a ValueError"""
     with pytest.raises(ValueError):
         Conversions.convert("foo", "bar", 2.3)
+
+
+def test_compare_metrics_to_aubry2022():
+    """Tests FWHM calculation against Aubry et al. (2022) code:
+
+    To download the test data, see:
+        https://zenodo.org/record/6020543
+
+    To calculate the reference metrics, see:
+        https://github.com/agencyenterprise/transcranial-ultrasound-benchmarks/blob/master/strideMetrics.m
+    which is forked from:
+        https://github.com/ucl-bug/transcranial-ultrasound-benchmarks
+    """
+    steady_state_file = Path(__file__).parent.joinpath(
+        "test_data", "PH1-BM4-SC1_STRIDE.mat"
+    )
+    steady_state = hdf5storage.loadmat(str(steady_state_file))["p_amp"]
+
+    # _metrics.py expects a Results object
+    # Benchmark 4 corresponds to scenario 1
+    # The simulation resolution was slightly different, but
+    # let's use the object to wrap the data anyway
+    scenario = Scenario1_2D()
+    scenario.make_grid()
+    scenario.compile_problem()
+    result = SteadyStateResult2D(
+        scenario=scenario,
+        steady_state=steady_state,
+        center_frequency=scenario.center_frequency,
+        effective_dt=None,
+        pde=None,
+        shot=None,
+        wavefield=None,
+        traces=None,
+    )
+
+    # Calculate metrics on Aubry et al. 2022 results
+    metrics = calculate_all_metrics(result)
+
+    # Load in metrics calculated with published MATLAB code
+    expected_metrics_file = Path(__file__).parent.joinpath(
+        "test_data", "metrics-BM4-SC1_STRIDE.mat"
+    )
+    expected_metrics = hdf5storage.loadmat(str(expected_metrics_file))
+
+    # Check expected metrics
+    np.testing.assert_approx_equal(
+        metrics["focal_pressure"]["value"],
+        expected_metrics["max_amp_field1"].squeeze(),
+    )
+    assert (
+        metrics["focal_volume"]["value"]
+        == expected_metrics["focal_volume_num_vox_field1"].squeeze()
+    ), "Focal volume does not match expected"
+    for dim in ("x", "y"):
+        # FWHM in NDK is calculated as a whole number of pixels,
+        # while the MATLAB code estimates the FWHM with interpolation
+        np.testing.assert_almost_equal(
+            metrics[f"FWHM_{dim}"]["value"],
+            expected_metrics[f"FWHM_{dim}_field1"].squeeze(),
+            decimal=0,
+        )
