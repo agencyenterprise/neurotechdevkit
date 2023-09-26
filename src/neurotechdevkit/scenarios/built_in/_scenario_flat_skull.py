@@ -13,8 +13,7 @@ from .._utils import SliceAxis, Target
 
 
 class ScenarioFlatSkull(Scenario):
-    """Flat 3-layer bone covered by skin, with water above the skin and brain
-    below the bone.
+    """Flat 3-layer bone covered by skin, with water above and brain below.
 
     This scenario corresponds to benchmark 4 of the following paper:
 
