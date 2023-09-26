@@ -7,6 +7,7 @@ from ._scenario_2 import (
     Scenario2_3D,
     Scenario2_3D_Benchmark7,
 )
+from ._scenario_3 import Scenario3
 
 __all__ = [
     "Scenario0",
@@ -16,6 +17,7 @@ __all__ = [
     "Scenario2_3D",
     "Scenario2_2D_Benchmark7",
     "Scenario2_3D_Benchmark7",
+    "Scenario3",
 ]
 
 BUILT_IN_SCENARIOS = {
@@ -26,4 +28,5 @@ BUILT_IN_SCENARIOS = {
     "Scenario2_3D": Scenario2_3D,
     "Scenario2_2D_Benchmark7": Scenario2_2D_Benchmark7,
     "Scenario2_3D_Benchmark7": Scenario2_3D_Benchmark7,
+    "Scenario3": Scenario3,
 }

@@ -6,8 +6,8 @@ import numpy.typing as npt
 from ...grid import Grid
 from ...materials import Material
 from ...sources import FocusedSource2D
-from .._base import Scenario2D, Target
-from .._utils import create_grid_circular_mask, create_grid_elliptical_mask
+from .._base import Scenario2D
+from .._utils import Target, create_grid_circular_mask, create_grid_elliptical_mask
 
 
 class Scenario0(Scenario2D):

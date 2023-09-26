@@ -3,8 +3,6 @@ from __future__ import annotations
 import abc
 import asyncio
 import os
-from dataclasses import dataclass
-from enum import IntEnum
 from types import SimpleNamespace
 from typing import Mapping, Optional, Union
 
@@ -29,6 +27,8 @@ from ._time import (
     select_simulation_time_for_steady_state,
 )
 from ._utils import (
+    SliceAxis,
+    Target,
     choose_wavelet_for_mode,
     create_grid_circular_mask,
     create_grid_spherical_mask,
@@ -38,31 +38,6 @@ from ._utils import (
 )
 
 nest_asyncio.apply()
-
-
-class SliceAxis(IntEnum):
-    """Axis along which to slice the 3D field to be recorded."""
-
-    X = 0
-    Y = 1
-    Z = 2
-
-
-@dataclass
-class Target:
-    """A class for containing metadata for a target.
-
-    Attributes:
-        target_id: the string id of the target.
-        center: the location of the center of the target (in meters).
-        radius: the radius of the target (in meters).
-        description: a text describing the target.
-    """
-
-    target_id: str
-    center: list[float]
-    radius: float
-    description: str
 
 
 class Scenario(abc.ABC):
@@ -77,6 +52,8 @@ class Scenario(abc.ABC):
 
     # The list of sources in the scenario.
     sources: list[Source]
+    # Coordinates of point receivers in the scenario
+    receiver_coords: npt.NDArray[np.float_] | list[npt.NDArray[np.float_]] = []
 
     material_outline_upsample_factor: int = 16
 
@@ -572,11 +549,20 @@ class Scenario(abc.ABC):
         Returns:
             The `SubProblem` to use for the simulation.
         """
-        shot = self._setup_shot(self.sources, self.center_frequency, simulation_mode)
+        shot = self._setup_shot(
+            sources=self.sources,
+            receiver_coords=self.receiver_coords,
+            freq_hz=self.center_frequency,
+            simulation_mode=simulation_mode,
+        )
         return self.problem.sub_problem(shot.id)
 
     def _setup_shot(
-        self, sources: list[Source], freq_hz: float, simulation_mode: str
+        self,
+        sources: list[Source],
+        receiver_coords: npt.NDArray[np.float_] | list[npt.NDArray[np.float_]],
+        freq_hz: float,
+        simulation_mode: str,
     ) -> stride.Shot:
         """Create the stride `Shot` for the simulation.
 
@@ -596,11 +582,12 @@ class Scenario(abc.ABC):
             name=wavelet_name, freq_hz=freq_hz, time=problem.grid.time
         )
         return create_shot(
-            problem,
-            sources,
-            np.array(np.array(self.origin, dtype=float), dtype=float),
-            wavelet,
-            self.dx,
+            problem=problem,
+            sources=sources,
+            receiver_coords=receiver_coords,
+            origin=np.array(np.array(self.origin, dtype=float), dtype=float),
+            wavelet=wavelet,
+            dx=self.dx,
         )
 
     def _create_pde(self) -> stride.IsoAcousticDevito:
@@ -699,20 +686,17 @@ class Scenario(abc.ABC):
             ValueError if axis is not 0, 1, 2.
             ValueError if `slice_position` falls outside the current range of
                 `slice_axis`.
-            ValueError if  `slice_axis` is None but `slice_position` is not None and
-                vice versa.
+            ValueError if  `slice_axis` is None or `slice_position` is None.
         """
+        if slice_axis is None or slice_position is None:
+            raise ValueError(
+                "Both `slice_axis` and `slice_position` must be passed together "
+                "to correctly define how to slice the field. "
+            )
         if slice_axis not in (0, 1, 2):
             raise ValueError(
                 "Unexpected value received for `slice_axis`. ",
                 "Expected axis are 0 (X), 1 (Y) and/or 2 (Z).",
-            )
-        if (slice_axis is None and slice_position is not None) or (
-            slice_axis is not None and slice_position is None
-        ):
-            raise ValueError(
-                "Both `slice_axis` and `slice_position` must be passed together "
-                "to correctly define how to slice the field. "
             )
 
         origin = np.array(self.origin, dtype=float)

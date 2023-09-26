@@ -4,9 +4,14 @@ antiparallel
 args
 aubry
 backend
+baseband
+beamform
+beamformed
+beamforming
 bitrate
 boehm
 boolean
+Butterworth
 clim
 cmap
 cmaps
@@ -19,6 +24,7 @@ coords
 der
 devito
 dimensionality
+directivity
 docstring
 doi
 downsampling
@@ -48,6 +54,8 @@ ipython
 javascript
 jshtml
 jupyter
+kwargs
+Lanczos
 legalcode
 linestyle
 loc
@@ -61,6 +69,7 @@ ndk
 neurotechdevkit
 np
 numpy
+Nyquist
 offsetbox
 opacities
 parula
@@ -73,6 +82,7 @@ precomputed
 reproducibility
 resampling
 ricker
+scipy
 sliceaxis
 stackoverflow
 str
@@ -81,6 +91,7 @@ structs
 suptitle
 timesteps
 transcranial
+undersampled
 undersampling
 unformatted
 upsample
@@ -94,5 +105,7 @@ voxels
 vp
 wavefield
 waveforms
+Welch's
+xarray
 xy
 s̅
