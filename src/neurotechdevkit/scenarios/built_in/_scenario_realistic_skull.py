@@ -289,7 +289,7 @@ class ScenarioRealisticSkull_3D(ScenarioRealisticSkull, Scenario3D):
         )
 
 
-class ScenarioRealisticSkull_2D_Benchmark7(ScenarioRealisticSkull_2D):
+class ScenarioRealisticSkullCropped_2D(ScenarioRealisticSkull_2D):
     """An adaptation of ScenarioRealisticSkull 2D that uses the benchmark 7 sub-extent.
 
     From Aubry et al. (2022):
@@ -309,7 +309,7 @@ class ScenarioRealisticSkull_2D_Benchmark7(ScenarioRealisticSkull_2D):
         )
 
 
-class ScenarioRealisticSkull_3D_Benchmark7(ScenarioRealisticSkull_3D):
+class ScenarioRealisticSkullCropped_3D(ScenarioRealisticSkull_3D):
     """An adaptation of ScenarioRealisticSkull 3D that uses the benchmark 7 sub-extent.
 
     From Aubry et al. (2022):

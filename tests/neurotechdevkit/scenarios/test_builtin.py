@@ -7,9 +7,9 @@ from neurotechdevkit.scenarios.built_in import (
     ScenarioFlatSkull_2D,
     ScenarioFlatSkull_3D,
     ScenarioRealisticSkull_2D,
-    ScenarioRealisticSkull_2D_Benchmark7,
+    ScenarioRealisticSkullCropped_2D,
     ScenarioRealisticSkull_3D,
-    ScenarioRealisticSkull_3D_Benchmark7,
+    ScenarioRealisticSkullCropped_3D,
     ScenarioUltrasoundPhantom,
 )
 
@@ -21,8 +21,8 @@ from neurotechdevkit.scenarios.built_in import (
         ScenarioFlatSkull_3D,
         ScenarioRealisticSkull_2D,
         ScenarioRealisticSkull_3D,
-        ScenarioRealisticSkull_2D_Benchmark7,
-        ScenarioRealisticSkull_3D_Benchmark7,
+        ScenarioRealisticSkullCropped_2D,
+        ScenarioRealisticSkullCropped_3D,
         ScenarioUltrasoundPhantom,
     ]
 )
