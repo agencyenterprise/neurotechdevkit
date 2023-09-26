@@ -10,8 +10,14 @@ from .._base import Scenario2D
 from .._utils import Target, create_grid_circular_mask, create_grid_elliptical_mask
 
 
-class Scenario0(Scenario2D):
-    """Scenario 0."""
+class ScenarioSimple(Scenario2D):
+    """A simple quickstart toy scenario.
+
+    Consists of a 2-D elliptical skull with a tumor in the brain.
+
+    Enables users to dive in and experiment with their first simulation
+    immediately.
+    """
 
     center_frequency = 5e5  # Hz
     target = Target(
@@ -41,7 +47,7 @@ class Scenario0(Scenario2D):
     }
 
     def _make_material_masks(self) -> Mapping[str, npt.NDArray[np.bool_]]:
-        """Make the material masks for scenario 0."""
+        """Make the scenario's material masks."""
         material_layers = [
             "water",
             "cortical_bone",
@@ -49,7 +55,7 @@ class Scenario0(Scenario2D):
             "tumor",
         ]
         material_masks = {
-            name: _create_scenario_0_mask(
+            name: _create_scenario_mask(
                 name, self.grid, np.array(self.origin, dtype=float)
             )
             for name in material_layers
@@ -57,7 +63,7 @@ class Scenario0(Scenario2D):
         return material_masks
 
     def make_grid(self):
-        """Make the grid for scenario 0."""
+        """Make the scenario grid."""
         self.grid = Grid.make_grid(
             extent=(0.05, 0.04),  # m
             speed_water=1500,  # m/s
@@ -67,7 +73,7 @@ class Scenario0(Scenario2D):
         self.material_masks = self._make_material_masks()
 
 
-def _create_scenario_0_mask(material, grid, origin):
+def _create_scenario_mask(material, grid, origin):
     if material == "water":
         outer_skull_mask = _create_skull_interface_mask(grid, origin)
         water_mask = ~outer_skull_mask

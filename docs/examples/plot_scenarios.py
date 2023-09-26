@@ -20,17 +20,17 @@ def plot_scenario(chosen_scenario):
 
 
 # %%
-# Simulating scenario: scenario 0
+# Simulating scenario: scenario-simple
 # ===================================
-plot_scenario(ndk.scenarios.built_in.Scenario0)
+plot_scenario(ndk.scenarios.built_in.ScenarioSimple)
 
 # %%
-# Simulating scenario: scenario 1 2D
+# Simulating scenario: scenario-flat-skull 2D
 # ===================================
-plot_scenario(ndk.scenarios.built_in.Scenario1_2D)
+plot_scenario(ndk.scenarios.built_in.ScenarioFlatSkull_2D)
 
 # %%
-# Simulating scenario: scenario 2 2D
+# Simulating scenario: scenario-realistic-skull 2D
 # ===================================
 plot_scenario(ndk.scenarios.built_in.Scenario2_2D)
 

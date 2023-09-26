@@ -77,7 +77,7 @@ class Scenario2(Scenario):
         ]
         assert self.grid.space is not None, "Grid-space must be created first."
         material_masks = {
-            name: _create_scenario_2_mask(
+            name: _create_scenario_mask(
                 name,
                 output_shape=self.grid.space.shape,
                 mask_file_name=mask_file_name,
@@ -329,7 +329,7 @@ class Scenario2_3D_Benchmark7(Scenario2_3D):
         )
 
 
-def _create_scenario_2_mask(
+def _create_scenario_mask(
     material: str,
     output_shape: Tuple[int],
     mask_file_name: str = BenchmarkSkullMaskFile.BENCHMARK_8.value,  # m

@@ -12,15 +12,15 @@
     options:
       show_root_heading: true
 
-::: neurotechdevkit.scenarios.built_in.Scenario0
+::: neurotechdevkit.scenarios.built_in.ScenarioSimple
     options:
       show_root_heading: true
 
-::: neurotechdevkit.scenarios.built_in.Scenario1_2D
+::: neurotechdevkit.scenarios.built_in.ScenarioFlatSkull_2D
     options:
       show_root_heading: true
 
-::: neurotechdevkit.scenarios.built_in.Scenario1_3D
+::: neurotechdevkit.scenarios.built_in.ScenarioFlatSkull_3D
     options:
       show_root_heading: true
 
