@@ -18,23 +18,23 @@ from .._utils import SliceAxis, Target
 
 @enum.unique
 class BenchmarkSkullMaskFile(enum.Enum):
-    """Aliases for the skull mask filename for each Scenario2 benchmark."""
+    """Aliases for the skull mask filename for each ScenarioRealisticSkull benchmark."""
 
     BENCHMARK_7 = "skull_mask_bm7_dx_0.5mm.mat"
     BENCHMARK_8 = "skull_mask_bm8_dx_0.5mm.mat"
 
 
 class BenchmarkExtent(enum.Enum):
-    """Aliases for the extent for each Scenario2 benchmark."""
+    """Aliases for the extent for each ScenarioRealisticSkull benchmark."""
 
     BENCHMARK_7 = (0.120, 0.070, 0.070)  # m
     BENCHMARK_8 = (0.225, 0.170, 0.190)  # m
 
 
-class Scenario2(Scenario):
-    """Specific implementation detail for scenario 2.
+class ScenarioRealisticSkull(Scenario):
+    """A scenario containing a full skull and brain mesh immersed in water.
 
-    Scenario 2 is based on benchmark 8 of the following paper:
+    This scenario corresponds to benchmark 8 of the following paper:
 
         Jean-Francois Aubry, Oscar Bates, Christian Boehm, et al., "Benchmark problems
         for transcranial ultrasound simulation: Intercomparison of compressional wave
@@ -69,7 +69,7 @@ class Scenario2(Scenario):
         mask_file_name: str = BenchmarkSkullMaskFile.BENCHMARK_8.value,
         convert_2d: bool = False,
     ) -> Mapping[str, npt.NDArray[np.bool_]]:
-        """Make the material masks for scenario 2."""
+        """Make the scenario's material masks."""
         material_layers = [
             "water",
             "cortical_bone",
@@ -88,10 +88,10 @@ class Scenario2(Scenario):
         return material_masks
 
 
-class Scenario2_2D(Scenario2D, Scenario2):
-    """A 2D implementation of scenario 2.
+class ScenarioRealisticSkull_2D(Scenario2D, ScenarioRealisticSkull):
+    """A 2D implementation of ScenarioRealisticSkull.
 
-    Scenario 2 is based on benchmark 8 of the following paper:
+    ScenarioRealisticSkull is based on benchmark 8 of the following paper:
 
         Jean-Francois Aubry, Oscar Bates, Christian Boehm, et al., "Benchmark problems
         for transcranial ultrasound simulation: Intercomparison of compressional wave
@@ -160,17 +160,17 @@ class Scenario2_2D(Scenario2D, Scenario2):
     material_outline_upsample_factor = 4
 
     def make_grid(self):
-        """Make the grid for scenario 2 2D."""
+        """Make the scenario's 2D grid."""
         self.grid = self._make_grid(BenchmarkExtent.BENCHMARK_8.value[:2])
         self.material_masks = self._make_material_masks(
             mask_file_name=BenchmarkSkullMaskFile.BENCHMARK_8.value, convert_2d=True
         )
 
 
-class Scenario2_3D(Scenario2, Scenario3D):
-    """A 3D implementation of scenario 2.
+class ScenarioRealisticSkull_3D(ScenarioRealisticSkull, Scenario3D):
+    """A 3D implementation of ScenarioRealisticSkull.
 
-    Scenario 2 is based on benchmark 8 of the following paper:
+    ScenarioRealisticSkull is based on benchmark 8 of the following paper:
 
         Jean-Francois Aubry, Oscar Bates, Christian Boehm, et al., "Benchmark problems
         for transcranial ultrasound simulation: Intercomparison of compressional wave
@@ -282,15 +282,15 @@ class Scenario2_3D(Scenario2, Scenario3D):
     material_outline_upsample_factor = 4
 
     def make_grid(self):
-        """Make the grid for scenario 2 3D."""
+        """Make the scenario's 3D grid."""
         self.grid = self._make_grid(BenchmarkExtent.BENCHMARK_8.value)
         self.material_masks = self._make_material_masks(
             mask_file_name=BenchmarkSkullMaskFile.BENCHMARK_8.value, convert_2d=False
         )
 
 
-class Scenario2_2D_Benchmark7(Scenario2_2D):
-    """An adaptation of scenario 2 2D that uses the benchmark 7 sub-extent.
+class ScenarioRealisticSkull_2D_Benchmark7(ScenarioRealisticSkull_2D):
+    """An adaptation of ScenarioRealisticSkull 2D that uses the benchmark 7 sub-extent.
 
     From Aubry et al. (2022):
         > Benchmark 7... uses a subset of the skull mask and the
@@ -309,8 +309,8 @@ class Scenario2_2D_Benchmark7(Scenario2_2D):
         )
 
 
-class Scenario2_3D_Benchmark7(Scenario2_3D):
-    """An adaptation of scenario 2 3D that uses the benchmark 7 sub-extent.
+class ScenarioRealisticSkull_3D_Benchmark7(ScenarioRealisticSkull_3D):
+    """An adaptation of ScenarioRealisticSkull 3D that uses the benchmark 7 sub-extent.
 
     From Aubry et al. (2022):
         > Benchmark 7... uses a subset of the skull mask and the
@@ -335,7 +335,7 @@ def _create_scenario_mask(
     mask_file_name: str = BenchmarkSkullMaskFile.BENCHMARK_8.value,  # m
     convert_2d: bool = False,
 ) -> npt.NDArray[np.bool_]:
-    """Create material mask for scenario 2.
+    """Create the scenario's material mask.
 
     Args:
         material: name of the material to create the mask for

@@ -32,6 +32,6 @@ plot_scenario(ndk.scenarios.built_in.ScenarioFlatSkull_2D)
 # %%
 # Simulating scenario: scenario-realistic-skull 2D
 # ===================================
-plot_scenario(ndk.scenarios.built_in.Scenario2_2D)
+plot_scenario(ndk.scenarios.built_in.ScenarioRealisticSkull_2D)
 
 # %%
