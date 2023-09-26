@@ -7,7 +7,7 @@ from ._scenario_realistic_skull import (
     ScenarioRealisticSkull_3D,
     ScenarioRealisticSkull_3D_Benchmark7,
 )
-from ._scenario_ultrasound_phantom import Scenario3
+from ._scenario_ultrasound_phantom import ScenarioUltrasoundPhantom
 
 __all__ = [
     "ScenarioSimple",
@@ -17,7 +17,7 @@ __all__ = [
     "ScenarioRealisticSkull_3D",
     "ScenarioRealisticSkull_2D_Benchmark7",
     "ScenarioRealisticSkull_3D_Benchmark7",
-    "Scenario3",
+    "ScenarioUltrasoundPhantom",
 ]
 
 BUILT_IN_SCENARIOS = {
@@ -28,5 +28,5 @@ BUILT_IN_SCENARIOS = {
     "ScenarioRealisticSkull_3D": ScenarioRealisticSkull_3D,
     "ScenarioRealisticSkull_2D_Benchmark7": ScenarioRealisticSkull_2D_Benchmark7,
     "ScenarioRealisticSkull_3D_Benchmark7": ScenarioRealisticSkull_3D_Benchmark7,
-    "Scenario3": Scenario3,
+    "ScenarioUltrasoundPhantom": ScenarioUltrasoundPhantom,
 }

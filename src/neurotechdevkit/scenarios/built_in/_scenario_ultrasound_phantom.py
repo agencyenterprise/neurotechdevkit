@@ -14,7 +14,7 @@ from .._base import Scenario2D, Target
 from .._utils import create_grid_circular_mask
 
 
-class Scenario3(Scenario2D):
+class ScenarioUltrasoundPhantom(Scenario2D):
     """Imaging Scenario: grainy phantoms in water."""
 
     _PHANTOM_RADIUS = 0.01  # m
