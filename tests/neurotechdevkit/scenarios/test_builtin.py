@@ -1,4 +1,4 @@
-"""Test built-in scenario 2."""
+"""Test built-in scenarios."""
 
 import pytest
 
@@ -6,10 +6,10 @@ from neurotechdevkit.scenarios.built_in import (
     ScenarioSimple,
     ScenarioFlatSkull_2D,
     ScenarioFlatSkull_3D,
-    Scenario2_2D,
-    Scenario2_2D_Benchmark7,
-    Scenario2_3D,
-    Scenario2_3D_Benchmark7,
+    ScenarioRealisticSkull_2D,
+    ScenarioRealisticSkull_2D_Benchmark7,
+    ScenarioRealisticSkull_3D,
+    ScenarioRealisticSkull_3D_Benchmark7,
     Scenario3,
 )
 
@@ -19,10 +19,10 @@ from neurotechdevkit.scenarios.built_in import (
         ScenarioSimple,
         ScenarioFlatSkull_2D,
         ScenarioFlatSkull_3D,
-        Scenario2_2D,
-        Scenario2_3D,
-        Scenario2_2D_Benchmark7,
-        Scenario2_3D_Benchmark7,
+        ScenarioRealisticSkull_2D,
+        ScenarioRealisticSkull_3D,
+        ScenarioRealisticSkull_2D_Benchmark7,
+        ScenarioRealisticSkull_3D_Benchmark7,
         Scenario3,
     ]
 )

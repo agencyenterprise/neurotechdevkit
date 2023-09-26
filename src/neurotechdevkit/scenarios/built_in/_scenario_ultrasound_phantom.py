@@ -55,7 +55,7 @@ class Scenario3(Scenario2D):
     material_outline_upsample_factor = 4
 
     def make_grid(self):
-        """Make the grid for scenario 2 3D."""
+        """Make the scenario's 3D grid."""
         self.grid = Grid.make_grid(
             extent=self._extent,
             speed_water=1500,  # m/s
