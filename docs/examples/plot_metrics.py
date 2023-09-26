@@ -14,7 +14,7 @@ This example demonstrates how to display the metrics collected from the simulati
 # ## Rendering scenario
 import neurotechdevkit as ndk
 
-scenario = ndk.built_in.Scenario0()
+scenario = ndk.built_in.ScenarioSimple()
 scenario.make_grid()
 scenario.compile_problem()
 result = scenario.simulate_steady_state()

@@ -12,16 +12,16 @@ from .._base import Scenario, Scenario2D, Scenario3D
 from .._utils import SliceAxis, Target
 
 
-class Scenario1(Scenario):
-    """Specific implementation detail for scenario 1.
+class ScenarioFlatSkull(Scenario):
+    """Flat 3-layer bone covered by skin, with water above the skin and brain
+    below the bone.
 
-    Scenario 1 is based on benchmark 4 of the following paper:
+    This scenario corresponds to benchmark 4 of the following paper:
 
-        Jean-Francois Aubry, Oscar Bates, Christian Boehm, et al., "Benchmark problems
-        for transcranial ultrasound simulation: Intercomparison of compressional wave
-        models",
-        The Journal of the Acoustical Society of America 152, 1003 (2022);
-        doi: 10.1121/10.0013426
+        Jean-Francois Aubry, Oscar Bates, Christian Boehm, et al., "Benchmark
+        problems for transcranial ultrasound simulation: Intercomparison of
+        compressional wave models", The Journal of the Acoustical Society of
+        America 152, 1003 (2022); doi: 10.1121/10.0013426
         https://asa.scitation.org/doi/pdf/10.1121/10.0013426
     """
 
@@ -39,7 +39,7 @@ class Scenario1(Scenario):
     }
 
     def _make_material_masks(self) -> Mapping[str, npt.NDArray[np.bool_]]:
-        """Make the material masks for scenario 1."""
+        """Make the scenario's material masks."""
         material_layers = [
             "water",
             "skin",
@@ -48,7 +48,7 @@ class Scenario1(Scenario):
             "brain",
         ]
         material_masks = {
-            name: _create_scenario_1_mask(name, self.grid) for name in material_layers
+            name: _create_scenario_mask(name, self.grid) for name in material_layers
         }
         return material_masks
 
@@ -56,7 +56,7 @@ class Scenario1(Scenario):
         self, extent: Union[Tuple[float, float], Tuple[float, float, float]]
     ) -> Grid:
         """
-        Make the grid for scenario 1.
+        Make the scenario's grid.
 
         Args:
             extent: the extent of the grid
@@ -73,10 +73,10 @@ class Scenario1(Scenario):
         return grid
 
 
-class Scenario1_2D(Scenario1, Scenario2D):
-    """A 2D implementation of scenario 1.
+class ScenarioFlatSkull_2D(ScenarioFlatSkull, Scenario2D):
+    """A 2D implementation of ScenarioFlatSkull.
 
-    Scenario 1 is based on benchmark 4 of the following paper:
+    ScenarioFlatSkull is based on benchmark 4 of the following paper:
 
         Jean-Francois Aubry, Oscar Bates, Christian Boehm, et al., "Benchmark problems
         for transcranial ultrasound simulation: Intercomparison of compressional wave
@@ -100,16 +100,16 @@ class Scenario1_2D(Scenario1, Scenario2D):
     material_outline_upsample_factor = 8
 
     def make_grid(self):
-        """Make the grid for scenario 1 2D."""
+        """Make the scenario's 2D grid."""
         extent = (0.12, 0.07)
         self.grid = self._make_grid(extent)
         self.material_masks = self._make_material_masks()
 
 
-class Scenario1_3D(Scenario1, Scenario3D):
-    """A 3D implementation of scenario 1.
+class ScenarioFlatSkull_3D(ScenarioFlatSkull, Scenario3D):
+    """A 3D implementation of ScenarioFlatSkull.
 
-    Scenario 1 is based on benchmark 4 of the following paper:
+    ScenarioFlatSkull is based on benchmark 4 of the following paper:
 
         Jean-Francois Aubry, Oscar Bates, Christian Boehm, et al., "Benchmark problems
         for transcranial ultrasound simulation: Intercomparison of compressional wave
@@ -160,13 +160,13 @@ class Scenario1_3D(Scenario1, Scenario3D):
     material_outline_upsample_factor = 8
 
     def make_grid(self):
-        """Make the grid for scenario 1 3D."""
+        """Make the scenario's 3D grid."""
         extent = (0.12, 0.07, 0.07)
         self.grid = self._make_grid(extent)
         self.material_masks = self._make_material_masks()
 
 
-def _create_scenario_1_mask(material, grid):
+def _create_scenario_mask(material, grid):
 
     # layers are defined by X position
     dx = grid.space.spacing[0]

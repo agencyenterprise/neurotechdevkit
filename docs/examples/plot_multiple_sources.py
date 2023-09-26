@@ -17,7 +17,7 @@ for complex wave patterns that open up new possibilities for therapies.
 # %%
 import neurotechdevkit as ndk
 
-scenario = ndk.built_in.Scenario0()
+scenario = ndk.built_in.ScenarioSimple()
 
 s1 = ndk.sources.FocusedSource2D(
     position=[0.01, 0.0],

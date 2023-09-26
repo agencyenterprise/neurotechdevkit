@@ -11,7 +11,7 @@ import neurotechdevkit as ndk
 
 CENTER_FREQUENCY = 6e5
 
-scenario = ndk.scenarios.built_in.Scenario0()
+scenario = ndk.scenarios.built_in.ScenarioSimple()
 
 # Customizing material properties
 scenario.material_properties = {

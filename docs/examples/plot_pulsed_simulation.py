@@ -9,7 +9,7 @@ using ndk
 # %%
 import neurotechdevkit as ndk
 
-scenario = ndk.built_in.Scenario0()
+scenario = ndk.built_in.ScenarioSimple()
 scenario.make_grid()
 scenario.compile_problem()
 result = scenario.simulate_pulse()
