@@ -41,7 +41,7 @@ import neurotechdevkit as ndk
 # Imaging modules
 from neurotechdevkit.imaging import beamform, demodulate, util
 from neurotechdevkit.results import PulsedResult2D, SteadyStateResult2D
-from neurotechdevkit.scenarios.built_in import Scenario3
+from neurotechdevkit.scenarios.built_in import ScenarioUltrasoundPhantom
 from neurotechdevkit.sources import PhasedArraySource2D
 
 # %%
@@ -91,9 +91,9 @@ rng = np.random.default_rng(
 # %%
 
 
-def create_scenario(tilt_angle: float = 0.0) -> Scenario3:
+def create_scenario(tilt_angle: float = 0.0) -> ScenarioUltrasoundPhantom:
     """Helper function to initialize scenario with different tilt angles."""
-    scenario = Scenario3()
+    scenario = ScenarioUltrasoundPhantom()
     scenario.center_frequency = TONE_CENTER_FREQUENCY
     source_position = [0.01, 0.0]
     unit_direction = [1.0, 0.0]
@@ -171,7 +171,7 @@ result_steady_state.render_steady_state_amplitudes()
 scenario = create_scenario()
 
 
-def calc_simulation_time(scenario: Scenario3):
+def calc_simulation_time(scenario: ScenarioUltrasoundPhantom):
     simulation_time = ndk.scenarios._time.select_simulation_time_for_pulsed(
         grid=scenario.grid,
         materials=scenario.materials,

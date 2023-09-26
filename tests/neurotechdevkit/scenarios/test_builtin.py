@@ -10,7 +10,7 @@ from neurotechdevkit.scenarios.built_in import (
     ScenarioRealisticSkull_2D_Benchmark7,
     ScenarioRealisticSkull_3D,
     ScenarioRealisticSkull_3D_Benchmark7,
-    Scenario3,
+    ScenarioUltrasoundPhantom,
 )
 
 
@@ -23,7 +23,7 @@ from neurotechdevkit.scenarios.built_in import (
         ScenarioRealisticSkull_3D,
         ScenarioRealisticSkull_2D_Benchmark7,
         ScenarioRealisticSkull_3D_Benchmark7,
-        Scenario3,
+        ScenarioUltrasoundPhantom,
     ]
 )
 def scenario_cls(request):
