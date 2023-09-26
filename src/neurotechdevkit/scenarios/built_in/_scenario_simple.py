@@ -11,12 +11,9 @@ from .._utils import Target, create_grid_circular_mask, create_grid_elliptical_m
 
 
 class ScenarioSimple(Scenario2D):
-    """A simple quickstart toy scenario.
+    """A simple scenario to get started with your first simulation.
 
     Consists of a 2-D elliptical skull with a tumor in the brain.
-
-    Enables users to dive in and experiment with their first simulation
-    immediately.
     """
 
     center_frequency = 5e5  # Hz

@@ -15,7 +15,7 @@ scenario.make_grid()
 
 The existing scenarios include:
 
-- `SCENARIO_SIMPLE` (2D) - a simple quickstart toy scenario that enables users to dive in and experiment with their first simulation immediately.
+- `SCENARIO_SIMPLE` (2D) - a simple quick-start toy scenario that enables users to dive in and experiment with their first simulation immediately.
 - `SCENARIO_FLAT_SKULL_3D` (3D) - a scenario containing a flat 3-layer bone covered by skin, with water above the skin and brain below the bone. This is based on benchmark 4 of [Jean-Francois Aubry, et al.](https://doi.org/10.1121/10.0013426).
 - `SCENARIO_REALISTIC_SKULL_3D` (3D) - a scenario containing a full skull and brain mesh immersed in water. This is based on benchmark 8 of [Jean-Francois Aubry, et al.](https://doi.org/10.1121/10.0013426).
 - `SCENARIO_FLAT_SKULL_2D` (2D) - a 2D version of `SCENARIO_FLAT_SKULL`.
