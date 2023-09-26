@@ -47,6 +47,7 @@ pytest-cov = "^4.0.0"
 pytest-asyncio = "^0.20.2"
 mkdocs-material = "^9.1.6"
 mkdocs-gallery = "^0.7.6"
+mkdocs-offline-links-plugin = { git = "https://github.com/agencyenterprise/mkdocs-offline-links-plugin.git" }
 mkdocstrings = {extras = ["python"], version = "^0.21.2"}
 codespell = "^2.2.4"
 pydocstyle = "^6.3.0"
