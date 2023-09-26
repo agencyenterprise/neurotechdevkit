@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import enum
 import pathlib
 from typing import Mapping, Tuple, Union
 
@@ -13,6 +14,21 @@ from ...grid import Grid
 from ...materials import Material
 from .._base import Scenario, Scenario2D, Scenario3D
 from .._utils import SliceAxis, Target
+
+
+@enum.unique
+class BenchmarkSkullMaskFile(enum.Enum):
+    """Aliases for the skull mask filename for each Scenario2 benchmark."""
+
+    BENCHMARK_7 = "skull_mask_bm7_dx_0.5mm.mat"
+    BENCHMARK_8 = "skull_mask_bm8_dx_0.5mm.mat"
+
+
+class BenchmarkExtent(enum.Enum):
+    """Aliases for the extent for each Scenario2 benchmark."""
+
+    BENCHMARK_7 = (0.120, 0.070, 0.070)  # m
+    BENCHMARK_8 = (0.225, 0.170, 0.190)  # m
 
 
 class Scenario2(Scenario):
@@ -49,7 +65,9 @@ class Scenario2(Scenario):
         return grid
 
     def _make_material_masks(
-        self, convert_2d: bool
+        self,
+        mask_file_name: str = BenchmarkSkullMaskFile.BENCHMARK_8.value,
+        convert_2d: bool = False,
     ) -> Mapping[str, npt.NDArray[np.bool_]]:
         """Make the material masks for scenario 2."""
         material_layers = [
@@ -57,8 +75,14 @@ class Scenario2(Scenario):
             "cortical_bone",
             "brain",
         ]
+        assert self.grid.space is not None, "Grid-space must be created first."
         material_masks = {
-            name: _create_scenario_2_mask(name, grid=self.grid, convert_2d=convert_2d)
+            name: _create_scenario_2_mask(
+                name,
+                output_shape=self.grid.space.shape,
+                mask_file_name=mask_file_name,
+                convert_2d=convert_2d,
+            )
             for name in material_layers
         }
         return material_masks
@@ -137,8 +161,10 @@ class Scenario2_2D(Scenario2D, Scenario2):
 
     def make_grid(self):
         """Make the grid for scenario 2 2D."""
-        self.grid = self._make_grid((0.225, 0.170))
-        self.material_masks = self._make_material_masks(convert_2d=True)
+        self.grid = self._make_grid(BenchmarkExtent.BENCHMARK_8.value[:2])
+        self.material_masks = self._make_material_masks(
+            mask_file_name=BenchmarkSkullMaskFile.BENCHMARK_8.value, convert_2d=True
+        )
 
 
 class Scenario2_3D(Scenario2, Scenario3D):
@@ -257,29 +283,90 @@ class Scenario2_3D(Scenario2, Scenario3D):
 
     def make_grid(self):
         """Make the grid for scenario 2 3D."""
-        self.grid = self._make_grid((0.225, 0.170, 0.190))
-        self.material_masks = self._make_material_masks(convert_2d=False)
+        self.grid = self._make_grid(BenchmarkExtent.BENCHMARK_8.value)
+        self.material_masks = self._make_material_masks(
+            mask_file_name=BenchmarkSkullMaskFile.BENCHMARK_8.value, convert_2d=False
+        )
 
 
-def _create_scenario_2_mask(material, grid, convert_2d=False) -> npt.NDArray[np.bool_]:
+class Scenario2_2D_Benchmark7(Scenario2_2D):
+    """An adaptation of scenario 2 2D that uses the benchmark 7 sub-extent.
 
+    From Aubry et al. (2022):
+        > Benchmark 7... uses a subset of the skull mask and the
+        > same relative transducer position as benchmark 8, with a reduced
+        > comparison domain size
+    """
+
+    # origin at [top, center] of extent
+    origin = [0.0, -0.035]  # m
+
+    def make_grid(self):
+        """Make the grid for 2-D version of Benchmark 7."""
+        self.grid = self._make_grid(BenchmarkExtent.BENCHMARK_7.value[:2])
+        self.material_masks = self._make_material_masks(
+            mask_file_name=BenchmarkSkullMaskFile.BENCHMARK_7.value, convert_2d=True
+        )
+
+
+class Scenario2_3D_Benchmark7(Scenario2_3D):
+    """An adaptation of scenario 2 3D that uses the benchmark 7 sub-extent.
+
+    From Aubry et al. (2022):
+        > Benchmark 7... uses a subset of the skull mask and the
+        > same relative transducer position as benchmark 8, with a reduced
+        > comparison domain size
+    """
+
+    # origin at [top, center, center] of extent
+    origin = [0.0, -0.035, -0.035]  # m
+
+    def make_grid(self):
+        """Make the grid for Benchmark 7."""
+        self.grid = self._make_grid(BenchmarkExtent.BENCHMARK_7.value)
+        self.material_masks = self._make_material_masks(
+            mask_file_name=BenchmarkSkullMaskFile.BENCHMARK_7.value, convert_2d=False
+        )
+
+
+def _create_scenario_2_mask(
+    material: str,
+    output_shape: Tuple[int],
+    mask_file_name: str = BenchmarkSkullMaskFile.BENCHMARK_8.value,  # m
+    convert_2d: bool = False,
+) -> npt.NDArray[np.bool_]:
+    """Create material mask for scenario 2.
+
+    Args:
+        material: name of the material to create the mask for
+        output_shape: shape of the simulation grid
+        mask_file_name: name of the mask file in the data directory
+        convert_2d: whether to take a 2D slice of the 3D mask
+
+    Returns:
+        boolean mask array indicating which voxels are of the given material
+    """
     cur_dir = pathlib.Path(__file__).parent
-    data_file = cur_dir / "data" / "skull_mask_bm8_dx_0.5mm.mat"
-    mat_data = hdf5storage.loadmat(str(data_file))
+    mask_file_abs_path = cur_dir.joinpath("data", mask_file_name)
+    mat_data = hdf5storage.loadmat(str(mask_file_abs_path))
 
     skull_mask = mat_data["skull_mask"].astype(np.bool_)
     brain_mask = mat_data["brain_mask"].astype(np.bool_)
+    assert skull_mask.shape == brain_mask.shape
 
     if convert_2d:
         # slice through the center of the transducer
-        Z_CENTER_IDX = 190
-        skull_mask = skull_mask[:, :, Z_CENTER_IDX]
-        brain_mask = brain_mask[:, :, Z_CENTER_IDX]
+        z_center_idx = skull_mask.shape[2] // 2
+        if mask_file_name == BenchmarkSkullMaskFile.BENCHMARK_7.value:
+            assert z_center_idx == 70
+        elif mask_file_name == BenchmarkSkullMaskFile.BENCHMARK_8.value:
+            assert z_center_idx == 190
+        skull_mask = skull_mask[:, :, z_center_idx]
+        brain_mask = brain_mask[:, :, z_center_idx]
 
-    assert skull_mask.shape == brain_mask.shape
-    if skull_mask.shape != grid.space.shape:
+    if skull_mask.shape != output_shape:
         # resample the mask to match the grid
-        scale_factor = np.array(grid.space.shape) / np.array(skull_mask.shape)
+        scale_factor = np.array(output_shape) / np.array(skull_mask.shape)
         skull_mask = scipy.ndimage.zoom(skull_mask, scale_factor, order=0)
         brain_mask = scipy.ndimage.zoom(brain_mask, scale_factor, order=0)
         # The resampling could have introduced some overlap between the masks.
