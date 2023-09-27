@@ -75,6 +75,7 @@
   }
 
   function changeSimulationType(is2d) {
+    // TODO: refactor this
     if (is2d) {
       document.querySelectorAll('[data-3d-only="true"]').forEach((element) => {
         element.setAttribute("hidden", true)
@@ -82,12 +83,24 @@
       document.querySelectorAll('[data-3d-input-only="true"]').forEach((element) => {
         element.removeAttribute("required")
       })
+      document.querySelectorAll('[data-2d-only="true"]').forEach((element) => {
+        element.removeAttribute("hidden")
+      })
+      document.querySelectorAll('[data-2d-input-only="true"]').forEach((element) => {
+        element.setAttribute("required", true)
+      })
     } else {
       document.querySelectorAll('[data-3d-only="true"]').forEach((element) => {
         element.removeAttribute("hidden")
       })
       document.querySelectorAll('[data-3d-input-only="true"]').forEach((element) => {
         element.setAttribute("required", true)
+      })
+      document.querySelectorAll('[data-2d-only="true"]').forEach((element) => {
+        element.setAttribute("hidden", true)
+      })
+      document.querySelectorAll('[data-2d-input-only="true"]').forEach((element) => {
+        element.removeAttribute("required")
       })
     }
     collapseParameters()
@@ -120,7 +133,6 @@
   }
 
   window.onload = function () {
-    
     const hasSimulation = {{has_simulation | tojson}}
     const isRunningSimulation = {{is_running_simulation | tojson}}
     const currentConfiguration = {{configuration | tojson}}
@@ -141,8 +153,7 @@
       } else {
         document.getElementById("is3d").checked = true
       }
-      const scenarioSelect = document.getElementById("scenario")
-      scenarioSelect.value = currentConfiguration.scenarioSettings.scenarioId
+      
       setScenarioValues(currentConfiguration)
     }
 
@@ -159,7 +170,6 @@
     if(isRunningSimulation){
       showCancelSimulation()
     }
-
   }
 </script>
 <h1>
@@ -190,7 +200,7 @@
       <label class="btn btn-primary" for="is3d">3D</label>
     </div>
   </fieldset>
-  <form id="parameters-form">
+  <form id="parametersForm">
     <div class="accordion accordion-flush" id="parameters-accordion">
       <div class="accordion-item">
         <h2 class="accordion-header">

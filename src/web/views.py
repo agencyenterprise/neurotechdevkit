@@ -24,10 +24,9 @@ DEFAULT_CENTER_FREQUENCY = 5e5
 @bp.route("/")
 async def index():
     """Render the index page, listing all the built-in scenarios."""
-    title = "Neurotech Web App"
     return render_template(
         "index.html",
-        title=title,
+        title="Neurotech Web App",
         has_simulation=SimulationRunner().has_last_result,
         is_running_simulation=SimulationRunner().is_running,
         configuration=SimulationRunner().configuration,
@@ -100,8 +99,10 @@ def ct_scan():
     selected_filename = ""
     for file in files:
         # TODO: check content before saving:
-        # TODO: validate the json file has the correct values, and that all material properties are present
-        # TODO: validate all layers from the CT file are matched with the json file mapping
+        # TODO: validate the json file has the correct values, and that all material
+        # properties are present
+        # TODO: validate all layers from the CT file are matched with the json file
+        # mapping
         filename = secure_filename(file.filename)
         if not filename.endswith(".json"):
             selected_filename = filename

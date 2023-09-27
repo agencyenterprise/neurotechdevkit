@@ -1,6 +1,7 @@
 """Controller for the web app."""
 import base64
 import io
+import json
 import pathlib
 import tempfile
 from dataclasses import dataclass
@@ -81,6 +82,16 @@ def get_built_in_scenarios() -> Dict[str, Dict]:
 class CTImage:
     data: np.ndarray
     spacing: tuple[float, float, float]  # voxel sizes in millimeter
+    masks_mapping: dict[str, int]  # map between material name and layer number
+
+
+def _load_masks(filepath: pathlib.Path) -> dict[str, int]:
+    with open(filepath, "r") as f:
+        content = json.load(f)
+    for key in content.keys():
+        if key not in DEFAULT_MATERIALS:
+            raise ValueError(f"Material {key} is not supported.")
+    return content
 
 
 def _load_ct(
@@ -89,8 +100,9 @@ def _load_ct(
     slice_axis: Optional[Axis],
     slice_position: Optional[float],
 ) -> CTImage:
-    # TODO: move this function to another place
     file = ct_folder / ct_path
+
+    masks_mapping = _load_masks(file.with_suffix(".json"))
 
     # TODO: Support different file types
     image = nib.load(file)
@@ -106,34 +118,24 @@ def _load_ct(
         elif slice_axis == Axis.z:
             position = int(slice_position / spacing[2] * 1000)
             array = array[:, :, position]
-    return CTImage(data=array, spacing=spacing)
+    return CTImage(data=array, spacing=spacing, masks_mapping=masks_mapping)
 
 
 def _make_shaped_grid(ct_image: CTImage) -> Grid:
     # TODO: move this function to another place)
+    # TODO: create new make shaped grid function, getting absorption as parameter
     grid = Grid.make_shaped_grid(
         shape=ct_image.data.shape, spacing=ct_image.spacing[0] / 1000
     )
     return grid
 
 
-def _get_material_masks(ct_image: np.ndarray) -> Dict[str, np.ndarray]:
+def _get_material_masks(ct_image: CTImage) -> Dict[str, np.ndarray]:
     mask_materials: str[np.ndarray] = {}
 
-    layer_labels = {  # TODO: make this configurable
-        "water": np.array([0, 3, 6, 9, 10]),
-        "brain": np.array([1, 2]),
-        "skin": np.array([5]),
-        "cortical_bone": np.array([7]),
-        "trabecular_bone": np.array([8]),
-    }
-    for material in layer_labels:
-        labels = layer_labels[material]
-        mask = np.zeros(np.shape(ct_image), dtype=bool)
-        for label in labels:
-            label_mask = ct_image == label
-            mask = mask | label_mask
-        mask_materials[material] = mask
+    for material, label_value in ct_image.masks_mapping.items():
+        label_mask = ct_image.data == label_value
+        mask_materials[material] = label_mask.astype(np.bool_)
 
     return mask_materials
 
@@ -162,7 +164,7 @@ def get_scenario_layout(config: RenderLayoutRequest) -> str:
             slice_position=config.scenarioSettings.ctSlicePosition,
         )
         scenario.grid = _make_shaped_grid(ct_image)
-        scenario.material_masks = _get_material_masks(ct_image.data)
+        scenario.material_masks = _get_material_masks(ct_image)
     _configure_scenario(scenario, config)
     fig = scenario.render_layout(show_sources=len(scenario.sources) > 0)
     buf = io.BytesIO()
@@ -252,7 +254,7 @@ async def get_simulation_image(
             slice_position=config.scenarioSettings.ctSlicePosition,
         )
         scenario.grid = _make_shaped_grid(ct_image)
-        scenario.material_masks = _get_material_masks(ct_image.data)
+        scenario.material_masks = _get_material_masks(ct_image)
     _configure_scenario(scenario, config)
     scenario.compile_problem()
 
