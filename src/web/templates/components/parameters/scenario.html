@@ -1,5 +1,5 @@
 <script>
-  let scenarioInfos = {{built_in_scenarios | tojson}};
+  let scenarioInfos = {{ built_in_scenarios | tojson}};
   function togglePreBuiltDiv() {
     document.getElementById("preBuiltDiv").hidden = false
     document.getElementById("ctFileDiv").hidden = true
@@ -12,17 +12,19 @@
 
   function valueChanged() {
     let hasError = false
-    if (!validateTargetValues()){
+    if (!validateTargetValues()) {
       hasError = true
-    } else if (!validateDisplayValues()){
+    } else if (!validateCTValues()) {
       hasError = true
-    } else if(!validateSimulationSettingsValues()) {
+    } else if (!validateDisplayValues()) {
       hasError = true
-    } else if (!validateMaterialValues()){
+    } else if (!validateSimulationSettingsValues()) {
+      hasError = true
+    } else if (!validateMaterialValues()) {
       hasError = true
     }
 
-    if (hasError){
+    if (hasError) {
       disallowRunSimulation()
       clearPlotArea()
     } else {
@@ -30,15 +32,33 @@
     }
   }
 
-  function scenarioSelected(scenarioInput){
+  function validateCTValues() {
+    let isValid = true;
+    // TODO: Check why I can't use a form here as the other "validate..." functions
+    if (document.getElementById("isCtScan").checked) {
+      if (document.getElementById("loadedCTs").value === "") {
+        isValid = false
+      } else if (document.getElementById("ctSliceAxis").value === "") {
+        isValid = false
+      } else if (document.getElementById("ctSlicePosition").value === "") {
+        isValid = false
+      }
+      if (!isValid) {
+        $("#ct-accordion-item").collapse("show")
+      }
+    }
+    return isValid
+  }
+
+  function scenarioSelected(scenarioInput) {
     clearPlotArea()
 
     const selection = scenarioInput.value;
-    if (selection===""){
+    if (selection === "") {
       disallowRunSimulation()
       disallowRenderLayout()
       clearAllTransducers()
-      document.getElementById("parameters-form").reset()
+      document.getElementById("parametersForm").reset()
       return;
     }
     const selectedScenario = scenarioInfos[selection]
@@ -47,11 +67,11 @@
     allowViewScenarioParameters()
   }
 
-  function setScenarioValues(scenario){
+  function setScenarioValues(scenario) {
     setTargetValues(scenario.target)
     setSimulationSettingsValues(scenario.simulationSettings)
     setTransducersValues(scenario.transducers)
-    if (!scenario.is2d){
+    if (!scenario.is2d) {
       setDisplayValues(scenario.displaySettings)
     }
   }
@@ -64,12 +84,14 @@
     if (isPreBuilt) {
       params["scenarioId"] = document.getElementById("scenario").value
     } else {
-      params["ctFile"] = document.getElementById("ctFile").value
+      params["ctFile"] = document.getElementById("loadedCTs").value
+      params["ctSliceAxis"] = document.getElementById("ctSliceAxis").value
+      params["ctSlicePosition"] = document.getElementById("ctSlicePosition").value
     }
     return params
   }
 
-  function setScenariosOptions(is2d){
+  function setScenariosOptions(is2d) {
     const scenarioSelect = document.getElementById("scenario")
     scenarioSelect.innerHTML = ""
 
@@ -87,62 +109,175 @@
       }
     }
   }
+
+  function filesChosen(fileInput) {
+    if (fileInput.files.length !== 2) {
+      return
+    }
+    const firstFileName = fileInput.files[0].name
+    const secondFileName = fileInput.files[1].name
+    if (firstFileName.split('.')[0] !== secondFileName.split('.')[0]) {
+      console.log('Files must have the same name')
+      return
+    }
+    document.getElementById("fileUploadButton").disabled = false
+  }
+
+  function fillDefaultValues() {
+    setSimulationSettingsValues({
+      "simulationPrecision": 6,
+      "centerFrequency": 5e5,
+      "isSteadySimulation": true,
+    })
+
+    setTargetValues({
+      "centerX": 0.2,
+      "centerY": 0.2,
+      "centerZ": '',
+      "radius": 0.05,
+    })
+  }
+
+  function ctSelected(ctInput) {
+    const selectedCT = ctInput.value
+    if (selectedCT === '') {
+      return
+    }
+    fillDefaultValues()
+    allowViewScenarioParameters()
+    valueChanged()
+  }
+
+  function fileUploadClicked() {
+    var input = document.getElementById("ctFiles")
+
+    var data = new FormData()
+    data.append('file_0', input.files[0], input.files[0].name);
+    data.append('file_1', input.files[1], input.files[1].name);
+
+    const url = "{{ url_for('main.ct_scan') }}"
+
+    fetch(url, {
+      method: 'POST',
+      body: data
+    }).then((response) => {
+      if (response.ok) {
+        return true, response.text()
+      }
+      else {
+        return false, response.text()
+      }
+    })
+      .then((success, text) => {
+        if (!success) {
+          console.log(text)
+          return
+        }
+        const message = JSON.parse(text);
+        const selectedCT = message.selected_ct
+        const availableCTs = message.available_cts
+        loadCTs(availableCTs, selectedCT)
+
+        document.getElementById("fileUploadButton").disabled = true
+        document.getElementById("ctFiles").value = ""
+        fillDefaultValues()
+        allowViewScenarioParameters()
+        renderLayout()
+      })
+  }
+
+  function loadCTs(availableCTs, selectedCT) {
+    const loadedCTsElement = document.getElementById("loadedCTs")
+    loadedCTsElement.innerHTML = ""
+    for (const ct of availableCTs) {
+      if (ct === selectedCT) {
+        loadedCTsElement.innerHTML += `<option value="${ct}" selected>${ct}</option>`
+      } else {
+        loadedCTsElement.innerHTML += `<option value="${ct}">${ct}</option>`
+      }
+    }
+    if (loadedCTs.length === 0) {
+      loadedCTsElement.innerHTML += `<option value="">No CTs loaded</option>`
+      loadedCTsElement.setAttribute("disabled", "disabled")
+      document.getElementById("ctSliceAxis").setAttribute("disabled", "disabled")
+      document.getElementById("ctSlicePosition").setAttribute("disabled", "disabled")
+    } else {
+      loadedCTsElement.removeAttribute("disabled")
+      document.getElementById("ctSliceAxis").removeAttribute("disabled")
+      document.getElementById("ctSlicePosition").removeAttribute("disabled")
+    }
+  }
+
 </script>
 <form>
   <fieldset>
     <div class="mb-3">
       <div class="btn-group">
-        <input
-          type="radio"
-          class="btn-check"
-          name="options"
-          id="isPreBuilt"
+        <input type="radio" class="btn-check" name="options" id="isPreBuilt"
           autocomplete="off"
-          onchange="togglePreBuiltDiv()"
-          checked
-        />
-        <label
-          class="btn btn-primary"
-          for="isPreBuilt"
-          data-bs-toggle="tooltip"
+          onchange="togglePreBuiltDiv()" checked />
+        <label class="btn btn-primary" for="isPreBuilt" data-bs-toggle="tooltip"
           data-bs-placement="right"
-          title="Use a prebuilt scenario with a target and transducers"
-          >Prebuilt</label
-        >
+          title="Use a prebuilt scenario with a target and transducers">Prebuilt</label>
 
-        <input
-          type="radio"
-          class="btn-check"
-          name="options"
-          id="isCtScan"
+        <input type="radio" class="btn-check" name="options" id="isCtScan"
           autocomplete="off"
-          onchange="toggleCTFileDiv()"
-          disabled
-        />
-        <label
-          class="btn btn-primary"
-          for="isCtScan"
-          data-bs-toggle="tooltip"
+          onchange="toggleCTFileDiv()" />
+        <label class="btn btn-primary" for="isCtScan" data-bs-toggle="tooltip"
           data-bs-placement="right"
-          title="Load a CT scan from a file"
-          >CT Scan</label
-        >
+          title="Load a CT scan from a file">CT Scan</label>
       </div>
     </div>
 
     <div class="mb-3">
       <div id="preBuiltDiv">
         <label for="scenario" class="form-label">Scenarios:</label>
-        <select
-          name="scenario"
-          id="scenario"
-          class="form-select"
-          onchange="scenarioSelected(this)"
-        ></select>
+        <select name="scenario" id="scenario" class="form-select"
+          onchange="scenarioSelected(this)"></select>
       </div>
       <div id="ctFileDiv" hidden>
-        <label for="ctFile" class="form-label" for="ctFile">CT File</label>
-        <input class="form-control" type="file" id="ctFile" />
+        <div class="mb-3">
+          <label class="form-label" for="loadedCTs">Available CTs</label>
+          <select class="form-select" size="3" name="loadedCTs" id="loadedCTs"
+            onchange="ctSelected(this)" required>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label for="ctSliceAxis" class="form-label" data-bs-toggle="tooltip"
+            data-bs-placement="right"
+            title="Axis along which to slice the 3D field to be recorded">Axis</label>
+          <select class="form-select" aria-label="Axis" id="ctSliceAxis"
+            name="ctSliceAxis" required onchange="valueChanged()">
+            <option value selected>Select an axis</option>
+            <option value="x">X</option>
+            <option value="y">Y</option>
+            <option value="z">Z</option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label for="ctSlicePosition" class="form-label"
+            data-bs-toggle="tooltip" data-bs-placement="right"
+            title="The position (in meters) along the slice axis at which the slice of the 3D field should be made">Distance
+            from Origin (m)</label>
+          <input type="number" step="any" class="form-control"
+            id="ctSlicePosition" name="ctSlicePosition"
+            placeholder="0.0" required 
+            onchange="valueChanged()"/>
+        </div>
+        <div class="mb-3">
+          <label for="ctFiles" class="form-label"
+            title="Select the CT file and the file containing the mapping between layers and masks">CT
+            and mapping
+            Files</label>
+          <input class="form-control" type="file" id="ctFiles"
+            onchange="filesChosen(this)" multiple />
+        </div>
+        <div class="mb-3">
+          <button id="fileUploadButton" class="btn btn-primary" type="button"
+            onclick="fileUploadClicked()" disabled>
+            Upload new CT
+          </button>
+        </div>
       </div>
     </div>
   </fieldset>

@@ -120,9 +120,18 @@
   }
 
   window.onload = function () {
+    
     const hasSimulation = {{has_simulation | tojson}}
     const isRunningSimulation = {{is_running_simulation | tojson}}
     const currentConfiguration = {{configuration | tojson}}
+
+    const defaultMaterialProperties = {{ all_material_properties | tojson }}
+    setMaterialProperties(defaultMaterialProperties)
+
+    const availableCTs = {{ available_cts | tojson }}
+    const selectedCT = null
+    loadCTs(availableCTs, selectedCT)
+
 
     setScenariosOptions((is2d = true)) // default is 2D
     if (currentConfiguration){

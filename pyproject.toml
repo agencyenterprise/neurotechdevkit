@@ -45,6 +45,8 @@ flask = {extras = ["async"], version = "^2.3.3"}
 pydantic = "<2"
 gunicorn = "^21.2.0"
 pyrevolve = ">=2.2.3"
+pynrrd = "^1.0.0"
+pydicom = "^2.4.3"
 
 [tool.poetry.group.dev.dependencies]
 black = {extras = ["jupyter"], version = "^23.9.1"}
