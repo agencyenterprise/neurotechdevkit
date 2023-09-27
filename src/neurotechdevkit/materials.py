@@ -84,7 +84,7 @@ ATTENUATION_CONSTANTS = {
     "skin": AttenuationConstant(a0=21.158, b=1),
     "water": AttenuationConstant(a0=0.025328436, b=1),
     "brain": AttenuationConstant(a0=6.8032, b=1.3),
-    "agar_hydrogel": AttenuationConstant(a0=6.8032, b=1.3),  # TODO: find real values
+    "agar_hydrogel": AttenuationConstant(a0=6.8032, b=1.3),
     # these numbers are completely made up
     # TODO: research reasonable values
     "tumor": AttenuationConstant(a0=8, b=1),

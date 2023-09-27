@@ -2325,6 +2325,24 @@ files = [
 ]
 
 [[package]]
+name = "mkdocs-offline-links-plugin"
+version = "0.1.0"
+description = "A MkDocs plugin to make links to other pages in the site work offline."
+optional = false
+python-versions = ">=3.9"
+files = []
+develop = false
+
+[package.dependencies]
+mkdocs = ">=1.5.0"
+
+[package.source]
+type = "git"
+url = "https://github.com/agencyenterprise/mkdocs-offline-links-plugin.git"
+reference = "HEAD"
+resolved_reference = "ff648260cc73dabb037b43d8b21ba912ae33de20"
+
+[[package]]
 name = "mkdocstrings"
 version = "0.21.2"
 description = "Automatic documentation from sources, for MkDocs."
@@ -4901,4 +4919,4 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<3.12"
-content-hash = "039cb069cf65d3265172f64efbcb387ec4007fbd4859dd16548db089a46ab33a"
+content-hash = "48bf1409698dbb3f0768d5685c2174e18da92c8059817a9a941d56ca359c2ea1"
