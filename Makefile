@@ -13,6 +13,13 @@ lint:
 	poetry run pyright
 
 spellcheck:
+	# If you are using an Apple Silicon Mac, there is currently an issue with
+	# pyenchant (https://github.com/pyenchant/pyenchant/issues/265) that prevents
+	# this spellcheck command from finding the enchant library (and en_US). 
+	# Until pyenchant is fixed, one workaround is to run:
+	#    `export PYENCHANT_LIBRARY_PATH=/opt/homebrew/lib/libenchant-2.dylib`
+	# in the terminal environment before you run `make spellcheck`
+	# See: https://github.com/pyenchant/pyenchant/issues/265#issuecomment-998965819
 	poetry run pylint --disable all --enable spelling --spelling-dict en_US --spelling-private-dict-file=whitelist.txt src
 
 lint-check:
