@@ -1,5 +1,7 @@
 """Views for the web app."""
-import os
+import shutil
+import tempfile
+from pathlib import Path
 
 from flask import Blueprint, current_app, jsonify, render_template, request
 from pydantic import ValidationError
@@ -10,6 +12,7 @@ from web.controller import (
     get_scenario_layout,
     get_simulation_image,
 )
+from web.ct import validate_ct
 from web.messages.material_properties import MaterialName
 from web.messages.requests import RenderLayoutRequest, SimulateRequest
 from web.messages.transducers import TransducerType
@@ -95,19 +98,31 @@ async def render_layout():
 
 @bp.route("/ct_scan", methods=["POST"])
 def ct_scan():
-    files = [request.files["file_0"], request.files["file_1"]]
+    """Upload a CT scan and return the available CT scans."""
+    files = list(request.files.values())
     selected_filename = ""
+    temp_dir = Path(tempfile.mkdtemp())
+    saved_files = []
     for file in files:
-        # TODO: check content before saving:
-        # TODO: validate the json file has the correct values, and that all material
-        # properties are present
-        # TODO: validate all layers from the CT file are matched with the json file
-        # mapping
         filename = secure_filename(file.filename)
         if not filename.endswith(".json"):
             selected_filename = filename
-        file.save(os.path.join(current_app.config["CT_FOLDER"], filename))
-    return {
-        "available_cts": get_available_cts(current_app.config["CT_FOLDER"]),
-        "selected_ct": selected_filename,
-    }
+        file.save(temp_dir / filename)
+        saved_files.append(filename)
+
+    try:
+        validate_ct(temp_dir, saved_files)
+        for filename in saved_files:
+            # moving files from the temporary directory to the CT_FOLDER
+            (temp_dir / filename).rename(current_app.config["CT_FOLDER"] / filename)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+    finally:
+        shutil.rmtree(temp_dir)
+
+    return jsonify(
+        {
+            "available_cts": get_available_cts(current_app.config["CT_FOLDER"]),
+            "selected_ct": selected_filename,
+        }
+    )

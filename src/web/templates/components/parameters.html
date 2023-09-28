@@ -74,36 +74,42 @@
     });
   }
 
+  function makeFieldsRequired(querySelector, required){
+    document.querySelectorAll(querySelector).forEach((element) => {
+      if (required){
+        element.setAttribute("required", true)
+      } else {
+        element.removeAttribute("required")
+      }
+    })
+  }
+  function hideFields(querySelector, shouldHide){
+    document.querySelectorAll(querySelector).forEach((element) => {
+      if (shouldHide){
+        element.setAttribute("hidden", true)
+      } else {
+        element.removeAttribute("hidden")
+      }
+    })
+  }
+
   function changeSimulationType(is2d) {
-    // TODO: refactor this
     if (is2d) {
-      document.querySelectorAll('[data-3d-only="true"]').forEach((element) => {
-        element.setAttribute("hidden", true)
-      })
-      document.querySelectorAll('[data-3d-input-only="true"]').forEach((element) => {
-        element.removeAttribute("required")
-      })
-      document.querySelectorAll('[data-2d-only="true"]').forEach((element) => {
-        element.removeAttribute("hidden")
-      })
-      document.querySelectorAll('[data-2d-input-only="true"]').forEach((element) => {
-        element.setAttribute("required", true)
-      })
+      makeFieldsRequired('[data-3d-input-only="true"]', false)
+      makeFieldsRequired('[data-2d-input-only="true"]', true)
+      hideFields('[data-3d-only="true"]', true)
+      hideFields('[data-2d-only="true"]', false)
     } else {
-      document.querySelectorAll('[data-3d-only="true"]').forEach((element) => {
-        element.removeAttribute("hidden")
-      })
-      document.querySelectorAll('[data-3d-input-only="true"]').forEach((element) => {
-        element.setAttribute("required", true)
-      })
-      document.querySelectorAll('[data-2d-only="true"]').forEach((element) => {
-        element.setAttribute("hidden", true)
-      })
-      document.querySelectorAll('[data-2d-input-only="true"]').forEach((element) => {
-        element.removeAttribute("required")
-      })
+      makeFieldsRequired('[data-3d-input-only="true"]', true)
+      makeFieldsRequired('[data-2d-input-only="true"]', false)
+      hideFields('[data-2d-only="true"]', true)
+      hideFields('[data-3d-only="true"]', false)
     }
+    resetAll(is2d)
     collapseParameters()
+  }
+
+  function resetAll(is2d){
     clearPlotArea()
     disallowRenderLayout()
     disallowRunSimulation()
@@ -185,8 +191,7 @@
         id="is2d"
         autocomplete="off"
         onchange="changeSimulationType(is2d=true)"
-        checked
-      />
+        checked />
       <label class="btn btn-primary" for="is2d">2D</label>
 
       <input
@@ -195,8 +200,7 @@
         name="options"
         id="is3d"
         autocomplete="off"
-        onchange="changeSimulationType(is2d=false)"
-      />
+        onchange="changeSimulationType(is2d=false)" />
       <label class="btn btn-primary" for="is3d">3D</label>
     </div>
   </fieldset>
@@ -210,16 +214,14 @@
             data-bs-toggle="collapse"
             data-bs-target="#scenario-accordion-item"
             aria-expanded="false"
-            aria-controls="scenario-accordion-item"
-          >
+            aria-controls="scenario-accordion-item">
             Scenario
           </button>
         </h2>
         <div
           id="scenario-accordion-item"
           class="accordion-collapse collapse show"
-          data-bs-parent="#parameters-accordion"
-        >
+          data-bs-parent="#parameters-accordion">
           <div class="accordion-body">
             {% include 'components/parameters/scenario.html' %}
           </div>
@@ -234,16 +236,14 @@
             data-bs-target="#display-accordion-item"
             aria-expanded="false"
             aria-controls="display-accordion-item"
-            disabled
-          >
+            disabled>
             Display
           </button>
         </h2>
         <div
           id="display-accordion-item"
           class="accordion-collapse collapse"
-          data-bs-parent="#parameters-accordion"
-        >
+          data-bs-parent="#parameters-accordion">
           <div class="accordion-body">
             {% include 'components/parameters/display.html' %}
           </div>
@@ -259,16 +259,14 @@
             data-bs-target="#transducers-accordion-item"
             aria-expanded="false"
             aria-controls="transducers-accordion-item"
-            disabled
-          >
+            disabled>
             Transducers
           </button>
         </h2>
         <div
           id="transducers-accordion-item"
           class="accordion-collapse collapse"
-          data-bs-parent="#parameters-accordion"
-        >
+          data-bs-parent="#parameters-accordion">
           <div class="accordion-body">
             {% include 'components/parameters/transducers.html' %}
           </div>
@@ -283,16 +281,14 @@
             data-bs-target="#target-accordion-item"
             aria-expanded="false"
             aria-controls="target-accordion-item"
-            disabled
-          >
+            disabled>
             Target
           </button>
         </h2>
         <div
           id="target-accordion-item"
           class="accordion-collapse collapse"
-          data-bs-parent="#parameters-accordion"
-        >
+          data-bs-parent="#parameters-accordion">
           <div class="accordion-body">
             {% include 'components/parameters/target.html' %}
           </div>
@@ -307,16 +303,14 @@
             data-bs-target="#simulation-settings-accordion-item"
             aria-expanded="false"
             aria-controls="simulation-settings-accordion-item"
-            disabled
-          >
+            disabled>
             Simulation Settings
           </button>
         </h2>
         <div
           id="simulation-settings-accordion-item"
           class="accordion-collapse collapse"
-          data-bs-parent="#parameters-accordion"
-        >
+          data-bs-parent="#parameters-accordion">
           <div class="accordion-body">
             {% include 'components/parameters/simulation_settings.html' %}
           </div>

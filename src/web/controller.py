@@ -1,23 +1,19 @@
 """Controller for the web app."""
 import base64
 import io
-import json
 import pathlib
 import tempfile
-from dataclasses import dataclass
 from typing import Dict, Optional, Tuple, Union
 
 import matplotlib.pyplot as plt
-import nibabel as nib
-import numpy as np
 from flask import current_app
+from web.ct import get_ct_image
 from web.messages.material_properties import Material, MaterialName, MaterialProperties
 from web.messages.requests import (
     IndexBuiltInScenario,
     RenderLayoutRequest,
     SimulateRequest,
 )
-from web.messages.settings import Axis
 
 from neurotechdevkit.grid import Grid
 from neurotechdevkit.materials import DEFAULT_MATERIALS, get_material
@@ -78,68 +74,6 @@ def get_built_in_scenarios() -> Dict[str, Dict]:
     return scenarios
 
 
-@dataclass
-class CTImage:
-    data: np.ndarray
-    spacing: tuple[float, float, float]  # voxel sizes in millimeter
-    masks_mapping: dict[str, int]  # map between material name and layer number
-
-
-def _load_masks(filepath: pathlib.Path) -> dict[str, int]:
-    with open(filepath, "r") as f:
-        content = json.load(f)
-    for key in content.keys():
-        if key not in DEFAULT_MATERIALS:
-            raise ValueError(f"Material {key} is not supported.")
-    return content
-
-
-def _load_ct(
-    ct_folder: pathlib.Path,
-    ct_path: str,
-    slice_axis: Optional[Axis],
-    slice_position: Optional[float],
-) -> CTImage:
-    file = ct_folder / ct_path
-
-    masks_mapping = _load_masks(file.with_suffix(".json"))
-
-    # TODO: Support different file types
-    image = nib.load(file)
-    spacing = image.header.get_zooms()
-    array = image.get_fdata()
-    if slice_axis is not None and slice_position is not None:
-        if slice_axis == Axis.x:
-            position = int(slice_position / spacing[0] * 1000)
-            array = array[position, :, :]
-        elif slice_axis == Axis.y:
-            position = int(slice_position / spacing[1] * 1000)
-            array = array[:, position, :]
-        elif slice_axis == Axis.z:
-            position = int(slice_position / spacing[2] * 1000)
-            array = array[:, :, position]
-    return CTImage(data=array, spacing=spacing, masks_mapping=masks_mapping)
-
-
-def _make_shaped_grid(ct_image: CTImage) -> Grid:
-    # TODO: move this function to another place)
-    # TODO: create new make shaped grid function, getting absorption as parameter
-    grid = Grid.make_shaped_grid(
-        shape=ct_image.data.shape, spacing=ct_image.spacing[0] / 1000
-    )
-    return grid
-
-
-def _get_material_masks(ct_image: CTImage) -> Dict[str, np.ndarray]:
-    mask_materials: str[np.ndarray] = {}
-
-    for material, label_value in ct_image.masks_mapping.items():
-        label_mask = ct_image.data == label_value
-        mask_materials[material] = label_mask.astype(np.bool_)
-
-    return mask_materials
-
-
 def get_scenario_layout(config: RenderLayoutRequest) -> str:
     """
     Render the layout of a scenario and return the result as a base64 png.
@@ -157,14 +91,16 @@ def get_scenario_layout(config: RenderLayoutRequest) -> str:
         config.simulationSettings.centerFrequency,
     )
     if not config.scenarioSettings.isPreBuilt:
-        ct_image = _load_ct(
-            ct_folder=current_app.config["CT_FOLDER"],
-            ct_path=config.scenarioSettings.ctFile,
+        assert config.scenarioSettings.ctFile is not None
+        ct_image = get_ct_image(
+            ct_path=current_app.config["CT_FOLDER"] / config.scenarioSettings.ctFile,
             slice_axis=config.scenarioSettings.ctSliceAxis,
             slice_position=config.scenarioSettings.ctSlicePosition,
         )
-        scenario.grid = _make_shaped_grid(ct_image)
-        scenario.material_masks = _get_material_masks(ct_image)
+        scenario.grid = Grid.make_shaped_grid(
+            shape=ct_image.data.shape, spacing=ct_image.spacing[0] / 1000
+        )
+        scenario.material_masks = ct_image.material_masks
     _configure_scenario(scenario, config)
     fig = scenario.render_layout(show_sources=len(scenario.sources) > 0)
     buf = io.BytesIO()
@@ -236,6 +172,7 @@ async def get_simulation_image(
 
     Args:
         config (SimulateRequest): The configuration for the scenario.
+        app_config(dict): The configuration of the app.
 
     Returns:
         Tuple[str, str]: The base64 encoded image and the image format.
@@ -247,14 +184,16 @@ async def get_simulation_image(
         config.simulationSettings.centerFrequency,
     )
     if not config.scenarioSettings.isPreBuilt:
-        ct_image = _load_ct(
-            ct_folder=app_config["CT_FOLDER"],
-            ct_path=config.scenarioSettings.ctFile,
+        assert config.scenarioSettings.ctFile is not None
+        ct_image = get_ct_image(
+            ct_path=app_config["CT_FOLDER"] / config.scenarioSettings.ctFile,
             slice_axis=config.scenarioSettings.ctSliceAxis,
             slice_position=config.scenarioSettings.ctSlicePosition,
         )
-        scenario.grid = _make_shaped_grid(ct_image)
-        scenario.material_masks = _get_material_masks(ct_image)
+        scenario.grid = Grid.make_shaped_grid(
+            shape=ct_image.data.shape, spacing=ct_image.spacing[0] / 1000
+        )
+        scenario.material_masks = ct_image.material_masks
     _configure_scenario(scenario, config)
     scenario.compile_problem()
 
@@ -281,14 +220,31 @@ async def get_simulation_image(
 
 
 def get_available_cts(cts_folder: pathlib.Path) -> list[str]:
+    """Get the list of available CTs.
+
+    Args:
+        cts_folder: Path to the folder containing the CTs.
+
+    Returns:
+        The list of available CTs.
+    """
     files = []
     for file in cts_folder.glob("**/*"):
-        if file.is_file() and file.suffix != ".json":
+        if file.is_file() and file.suffix in [".nii", ".zip"]:
+            print("file -> ", file)
             files.append(file.name)
     return files
 
 
 def get_default_material_properties(center_frequency: float) -> MaterialProperties:
+    """Get the default material properties with center frequency.
+
+    Args:
+        center_frequency: The center frequency of the scenario.
+
+    Returns:
+        The default material properties.
+    """
     material_properties = {}
     for ndk_material_name in DEFAULT_MATERIALS:
         ndk_material = get_material(ndk_material_name, center_frequency)
@@ -303,7 +259,12 @@ def _configure_scenario(
     scenario: Union[Scenario2D, Scenario3D],
     config: Union[RenderLayoutRequest, SimulateRequest],
 ):
-    """Configure a scenario based on the given configuration."""
+    """Configure a scenario based on the given configuration.
+
+    Args:
+        scenario: The scenario to configure.
+        config: The configuration.
+    """
     scenario.center_frequency = config.simulationSettings.centerFrequency
     if config_target := config.target:
         scenario.target = config_target.to_ndk_target()

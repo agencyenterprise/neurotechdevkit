@@ -29,6 +29,7 @@ def create_app():
 
 
 def assign_CT_FOLDER(app):
+    """Assign the CT_FOLDER to the app."""
     if not os.path.exists(CT_FOLDER):
         os.makedirs(CT_FOLDER)
     app.config["CT_FOLDER"] = CT_FOLDER

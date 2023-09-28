@@ -34,7 +34,7 @@ class Grid(stride.Grid):
 
     @staticmethod
     def make_shaped_grid(
-        shape: Tuple[int, int],
+        shape: Tuple[int, ...],
         spacing: float,
     ) -> "Grid":
         """Create an NDK Grid with the given shape.

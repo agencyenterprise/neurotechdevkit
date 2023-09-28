@@ -3,11 +3,13 @@
   function togglePreBuiltDiv() {
     document.getElementById("preBuiltDiv").hidden = false
     document.getElementById("ctFileDiv").hidden = true
+    resetAll(document.getElementById("is2d").checked)
   }
 
   function toggleCTFileDiv() {
     document.getElementById("preBuiltDiv").hidden = true
     document.getElementById("ctFileDiv").hidden = false
+    resetAll(document.getElementById("is2d").checked)
   }
 
   function valueChanged() {
@@ -87,7 +89,7 @@
 
   function getScenarioParams() {
     const isPreBuilt = document.getElementById("isPreBuilt").checked
-    const is3d = document.getElementById("is3d").checked
+    const is2d = document.getElementById("is2d").checked
     let params = {
       isPreBuilt: isPreBuilt,
     }
@@ -96,7 +98,7 @@
     } else {
       // ct file was loaded
       params["ctFile"] = document.getElementById("loadedCTs").value
-      if (!is3d){
+      if (is2d){
         // these attributes only exist for 2D
         params["ctSliceAxis"] = document.getElementById("ctSliceAxis").value
         params["ctSlicePosition"] = document.getElementById("ctSlicePosition").value
@@ -151,7 +153,7 @@
       "centerX": 0.2,
       "centerY": 0.2,
       "centerZ": is3d ? 0.2 : '',
-      "radius": 0.05,
+      "radius": 0.01,
     })
   }
 
@@ -165,7 +167,8 @@
     valueChanged()
   }
 
-  function fileUploadClicked() {
+  function fileUploadClicked(button) {
+    BtnLoading(button)
     var input = document.getElementById("ctFiles")
 
     var data = new FormData()
@@ -177,30 +180,32 @@
     fetch(url, {
       method: 'POST',
       body: data
-    }).then((response) => {
-      if (response.ok) {
-        return true, response.text()
-      }
-      else {
-        return false, response.text()
-      }
-    })
-      .then((success, text) => {
-        if (!success) {
-          console.log(text)
-          return
+    }).then(response => {
+        if (!response.ok) {
+            return Promise.reject(response);
         }
-        const message = JSON.parse(text);
+        return response.json();
+    })
+      .then(message => {
         const selectedCT = message.selected_ct
         const availableCTs = message.available_cts
         loadCTs(availableCTs, selectedCT)
 
-        document.getElementById("fileUploadButton").disabled = true
         document.getElementById("ctFiles").value = ""
         fillDefaultValues()
         allowViewScenarioParameters()
-        renderLayout()
+        valueChanged()
+        BtnReset(button)
+        document.getElementById("fileUploadButton").disabled = true
       })
+      .catch(response => {
+        response.json().then((error) => {
+          clearPlotArea()
+          document.getElementById("plotArea").innerHTML = error.error
+        })
+        BtnReset(button)
+        document.getElementById("fileUploadButton").disabled = true
+      });
   }
 
   function loadCTs(availableCTs, selectedCT) {
@@ -281,8 +286,8 @@
           <input type="number" step="any" class="form-control"
             id="ctSlicePosition" name="ctSlicePosition"
             data-2d-input-only="true"
-            placeholder="0.0" required 
-            onchange="valueChanged()"/>
+            placeholder="0.0" required
+            onchange="valueChanged()" />
         </div>
       </form>
       <div class="mb-3">
@@ -295,7 +300,7 @@
       </div>
       <div class="mb-3">
         <button id="fileUploadButton" class="btn btn-primary" type="button"
-          onclick="fileUploadClicked()" disabled>
+          onclick="fileUploadClicked(this)" disabled>
           Upload new CT
         </button>
       </div>
