@@ -5,6 +5,7 @@ from pathlib import Path
 
 from flask import Blueprint, current_app, jsonify, render_template, request
 from pydantic import ValidationError
+from web.computed_tomography import validate_ct
 from web.controller import (
     get_available_cts,
     get_built_in_scenarios,
@@ -12,7 +13,6 @@ from web.controller import (
     get_scenario_layout,
     get_simulation_image,
 )
-from web.ct import validate_ct
 from web.messages.material_properties import MaterialName
 from web.messages.requests import RenderLayoutRequest, SimulateRequest
 from web.messages.transducers import TransducerType
@@ -98,7 +98,7 @@ async def render_layout():
 
 @bp.route("/ct_scan", methods=["POST"])
 def ct_scan():
-    """Upload a CT scan and return the available CT scans."""
+    """Upload a Computed Tomography scan and return the available scans."""
     files = list(request.files.values())
     selected_filename = ""
     temp_dir = Path(tempfile.mkdtemp())

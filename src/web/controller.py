@@ -7,7 +7,7 @@ from typing import Dict, Optional, Tuple, Union
 
 import matplotlib.pyplot as plt
 from flask import current_app
-from web.ct import get_ct_image
+from web.computed_tomography import get_ct_image
 from web.messages.material_properties import Material, MaterialName, MaterialProperties
 from web.messages.requests import (
     IndexBuiltInScenario,
@@ -220,18 +220,17 @@ async def get_simulation_image(
 
 
 def get_available_cts(cts_folder: pathlib.Path) -> list[str]:
-    """Get the list of available CTs.
+    """Get the list of available Computed Tomography's.
 
     Args:
-        cts_folder: Path to the folder containing the CTs.
+        cts_folder: Path to the folder containing the Computed Tomography's.
 
     Returns:
-        The list of available CTs.
+        The list of available Computed Tomography's.
     """
     files = []
     for file in cts_folder.glob("**/*"):
         if file.is_file() and file.suffix in [".nii", ".zip"]:
-            print("file -> ", file)
             files.append(file.name)
     return files
 

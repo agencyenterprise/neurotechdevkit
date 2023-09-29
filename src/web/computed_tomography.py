@@ -1,4 +1,4 @@
-"""This module contains functions for loading CT images and their masks."""
+"""Contains functions for loading Computed Tomography images and their masks."""
 import json
 import pathlib
 import tempfile
@@ -17,8 +17,8 @@ from neurotechdevkit.materials import DEFAULT_MATERIALS
 
 
 @dataclass
-class CTImage:
-    """A CT image with its voxel spacing and material masks."""
+class ComputedTomographyImage:
+    """A Computed Tomography image with its voxel spacing and material masks."""
 
     data: np.ndarray
     spacing: Tuple[float, float, float]  # voxel sizes in millimeter
@@ -30,7 +30,7 @@ def _assign_masks(mapping: dict[str, int], data: np.ndarray) -> Dict[str, np.nda
 
     Args:
         mapping: A dictionary mapping material names to label values.
-        data: The CT image data.
+        data: The Computed Tomography image data.
 
     Returns:
         A dictionary of material masks with material names as keys.
@@ -60,7 +60,7 @@ def validate_ct(directory: pathlib.Path, files: list[str]):
     mapping = _load_mapping_file(directory / mapping_file)
     data_layers = set(np.unique(data).astype(np.int_))
     assert data_layers == set(mapping.values()), (
-        "The labels in the CT image do not match the labels in the masks file. "
+        "The labels in the CT image do not match the labels in the masks file."
         f"Expected labels: {data_layers}"
     )
 
@@ -153,7 +153,7 @@ def get_ct_image(
     ct_path: pathlib.Path,
     slice_axis: Optional[Axis],
     slice_position: Optional[float],
-) -> CTImage:
+) -> ComputedTomographyImage:
     """Load a CT image and its masks.
 
     Args:
@@ -180,4 +180,6 @@ def get_ct_image(
             array = array[:, :, position]
 
     material_masks = _assign_masks(mapping, array)
-    return CTImage(data=array, spacing=spacing, material_masks=material_masks)
+    return ComputedTomographyImage(
+        data=array, spacing=spacing, material_masks=material_masks
+    )

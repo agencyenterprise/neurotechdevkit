@@ -11,7 +11,7 @@ from neurotechdevkit.scenarios import Target as NDKTarget
 
 
 class Axis(str, Enum):
-    """Axis enum for the axis of CT scans."""
+    """Axis enum for the axis of Computed Tomography scans."""
 
     x = "x"
     y = "y"
