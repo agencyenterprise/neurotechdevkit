@@ -129,13 +129,21 @@
   }
 
   function filesChosen(fileInput) {
+    clearPlotArea()
+    if (fileInput.files.length == 0){
+      document.getElementById("fileUploadButton").disabled = true
+      return
+    }
     if (fileInput.files.length !== 2) {
+      document.getElementById("plotArea").innerHTML = "Please select two files"
+      document.getElementById("fileUploadButton").disabled = true
       return
     }
     const firstFileName = fileInput.files[0].name
     const secondFileName = fileInput.files[1].name
     if (firstFileName.split('.')[0] !== secondFileName.split('.')[0]) {
-      console.log('Files must have the same name')
+      document.getElementById("plotArea").innerHTML = 'Files must have the same name'
+      document.getElementById("fileUploadButton").disabled = true
       return
     }
     document.getElementById("fileUploadButton").disabled = false
