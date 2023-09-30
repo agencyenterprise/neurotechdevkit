@@ -1,15 +1,14 @@
 """Collection of smoke tests for the web app."""
 import json
-import pathlib
 
 import pytest
 from web.app import app
 
 
-@pytest.fixture(scope="module")
-def test_client():
+@pytest.fixture
+def test_client(tmp_path):
     """Create a test client for the flask app."""
-    app.config["CT_FOLDER"] = pathlib.Path("./")
+    app.config["CT_FOLDER"] = tmp_path
     with app.test_client() as testing_client:
         yield testing_client
 

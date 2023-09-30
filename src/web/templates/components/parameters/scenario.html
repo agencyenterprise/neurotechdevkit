@@ -149,7 +149,9 @@
     document.getElementById("fileUploadButton").disabled = false
   }
 
-  function fillDefaultValues() {
+  function fillDefaultValues(shape, spacing) {
+    console.log('shape', shape) 
+    console.log('spacing', spacing)
     setSimulationSettingsValues({
       "simulationPrecision": 6,
       "centerFrequency": 5e5,
@@ -158,11 +160,16 @@
     const is3d = document.getElementById("is3d").checked
 
     setTargetValues({
-      "centerX": 0.2,
-      "centerY": 0.2,
-      "centerZ": is3d ? 0.2 : '',
+      "centerX": (shape[1] * spacing[1] / 2)/1000,
+      "centerY": (shape[0] * spacing[0] / 2)/1000,
+      "centerZ": is3d ? (shape[2] * spacing[2] / 2)/1000 : '',
       "radius": 0.01,
     })
+  }
+
+  function constrainInputs(shape, spacing){
+    // TODO: calculate the max value possible of distance from Origin,
+    // and define the input max value with it
   }
 
   function ctSelected(ctInput) {
@@ -170,7 +177,10 @@
     if (selectedCT === '') {
       return
     }
-    fillDefaultValues()
+    const shape = JSON.parse(ctInput.selectedOptions[0].dataset.shape)
+    const spacing = JSON.parse(ctInput.selectedOptions[0].dataset.spacing)
+    constrainInputs(shape, spacing)
+    fillDefaultValues(shape, spacing)
     allowViewScenarioParameters()
     valueChanged()
   }
@@ -197,10 +207,13 @@
       .then(message => {
         const selectedCT = message.selected_ct
         const availableCTs = message.available_cts
-        loadCTs(availableCTs, selectedCT)
+        loadCTs(availableCTs, selectedCT.filename)
+        const shape = selectedCT.shape
+        const spacing = JSON.parse(selectedCT.spacing)
 
         document.getElementById("ctFiles").value = ""
-        fillDefaultValues()
+        constrainInputs(shape, spacing)
+        fillDefaultValues(shape, spacing)
         allowViewScenarioParameters()
         valueChanged()
         BtnReset(button)
@@ -220,10 +233,10 @@
     const loadedCTsElement = document.getElementById("loadedCTs")
     loadedCTsElement.innerHTML = ""
     for (const ct of availableCTs) {
-      if (ct === selectedCT) {
-        loadedCTsElement.innerHTML += `<option value="${ct}" selected>${ct}</option>`
+      if (ct.filename === selectedCT) {
+        loadedCTsElement.innerHTML += `<option value="${ct.filename}" data-shape="[${ct.shape}]" data-spacing="${ct.spacing}" selected>${ct.filename}</option>`
       } else {
-        loadedCTsElement.innerHTML += `<option value="${ct}">${ct}</option>`
+        loadedCTsElement.innerHTML += `<option value="${ct.filename}" data-shape="[${ct.shape}]" data-spacing="${ct.spacing}">${ct.filename}</option>`
       }
     }
     if (loadedCTs.length === 0) {

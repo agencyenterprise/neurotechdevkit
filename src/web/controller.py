@@ -1,7 +1,6 @@
 """Controller for the web app."""
 import base64
 import io
-import pathlib
 import tempfile
 from typing import Dict, Optional, Tuple, Union
 
@@ -217,22 +216,6 @@ async def get_simulation_image(
             data = base64.b64encode(buf.getbuffer()).decode("ascii")
             plt.close(animation._fig)
             return data, "gif"
-
-
-def get_available_cts(cts_folder: pathlib.Path) -> list[str]:
-    """Get the list of available Computed Tomography's.
-
-    Args:
-        cts_folder: Path to the folder containing the Computed Tomography's.
-
-    Returns:
-        The list of available Computed Tomography's.
-    """
-    files = []
-    for file in cts_folder.glob("**/*"):
-        if file.is_file() and file.suffix in [".nii", ".zip"]:
-            files.append(file.name)
-    return files
 
 
 def get_default_material_properties(center_frequency: float) -> MaterialProperties:

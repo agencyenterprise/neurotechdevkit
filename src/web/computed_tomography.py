@@ -4,7 +4,7 @@ import pathlib
 import tempfile
 import zipfile
 from dataclasses import dataclass
-from typing import Dict, Optional, Tuple, Union
+from typing import Dict, List, Optional, Tuple, Union
 
 import nibabel as nib
 import numpy as np
@@ -41,32 +41,6 @@ def _assign_masks(mapping: dict[str, int], data: np.ndarray) -> Dict[str, np.nda
         mask_materials[material] = label_mask.astype(np.bool_)
 
     return mask_materials
-
-
-def validate_ct(directory: pathlib.Path, files: list[str]):
-    """Validate the CT image and its masks.
-
-    Args:
-        directory: Path to the directory containing the CT image and its masks.
-        files: List of files in the directory.
-    """
-    assert (
-        len(files) == 2
-    ), f"Expected exactly two files but found {len(files)}: {files}"
-    ct_file, mapping_file = (
-        (files[0], files[1]) if files[1].endswith(".json") else (files[1], files[0])
-    )
-    data, _spacing = _load_ct_file(directory / ct_file)
-    mapping = _load_mapping_file(directory / mapping_file)
-    data_layers = set(np.unique(data).astype(np.int_))
-    assert data_layers == set(mapping.values()), (
-        "The labels in the CT image do not match the labels in the masks file."
-        f"Expected labels: {data_layers}"
-    )
-
-    for material in mapping.keys():
-        if material not in DEFAULT_MATERIALS:
-            raise ValueError(f"Material {material} is not supported.")
 
 
 def _load_nii(filepath: pathlib.Path) -> Tuple[np.ndarray, Tuple[float, float, float]]:
@@ -170,10 +144,10 @@ def get_ct_image(
 
     if slice_axis is not None and slice_position is not None:
         if slice_axis == Axis.x:
-            position = int(slice_position / spacing[0] * 1000)
+            position = int(slice_position / spacing[1] * 1000)
             array = array[position, :, :]
         elif slice_axis == Axis.y:
-            position = int(slice_position / spacing[1] * 1000)
+            position = int(slice_position / spacing[0] * 1000)
             array = array[:, position, :]
         elif slice_axis == Axis.z:
             position = int(slice_position / spacing[2] * 1000)
@@ -183,3 +157,62 @@ def get_ct_image(
     return ComputedTomographyImage(
         data=array, spacing=spacing, material_masks=material_masks
     )
+
+
+@dataclass
+class CTInfo:
+    """Information about a Computed Tomography."""
+
+    filename: str
+    shape: Tuple[int, ...]
+    spacing: str  # We need to convert the tuple to a string to be able to serialize it.
+
+
+def get_available_cts(cts_folder: pathlib.Path) -> List[CTInfo]:
+    """Get the list of available Computed Tomography's.
+
+    Args:
+        cts_folder: Path to the folder containing the Computed Tomography's.
+
+    Returns:
+        The list of available Computed Tomography's.
+    """
+    files: List[CTInfo] = []
+    for file in cts_folder.glob("**/*"):
+        if file.is_file() and file.suffix in [".nii", ".zip"]:
+            ct, spacing = _load_ct_file(file)
+            ct_info = CTInfo(
+                filename=file.name, shape=ct.shape, spacing=str(list(spacing))
+            )
+            files.append(ct_info)
+    return files
+
+
+def validate_ct(directory: pathlib.Path, files: list[str]) -> CTInfo:
+    """Validate the CT image and its masks.
+
+    Args:
+        directory: Path to the directory containing the CT image and its masks.
+        files: List of files in the directory.
+
+    Returns:
+        The CTInfo object.
+    """
+    assert (
+        len(files) == 2
+    ), f"Expected exactly two files but found {len(files)}: {files}"
+    ct_file, mapping_file = (
+        (files[0], files[1]) if files[1].endswith(".json") else (files[1], files[0])
+    )
+    data, spacing = _load_ct_file(directory / ct_file)
+    mapping = _load_mapping_file(directory / mapping_file)
+    data_layers = set(np.unique(data).astype(np.int_))
+    assert data_layers == set(mapping.values()), (
+        "The labels in the CT image do not match the labels in the masks file."
+        f"Expected labels: {data_layers}"
+    )
+
+    for material in mapping.keys():
+        if material not in DEFAULT_MATERIALS:
+            raise ValueError(f"Material {material} is not supported.")
+    return CTInfo(filename=ct_file, shape=data.shape, spacing=str(list(spacing)))

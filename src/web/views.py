@@ -5,9 +5,8 @@ from pathlib import Path
 
 from flask import Blueprint, current_app, jsonify, render_template, request
 from pydantic import ValidationError
-from web.computed_tomography import validate_ct
+from web.computed_tomography import get_available_cts, validate_ct
 from web.controller import (
-    get_available_cts,
     get_built_in_scenarios,
     get_default_material_properties,
     get_scenario_layout,
@@ -100,18 +99,15 @@ async def render_layout():
 def ct_scan():
     """Upload a Computed Tomography scan and return the available scans."""
     files = list(request.files.values())
-    selected_filename = ""
     temp_dir = Path(tempfile.mkdtemp())
     saved_files = []
     for file in files:
         filename = secure_filename(file.filename)
-        if not filename.endswith(".json"):
-            selected_filename = filename
         file.save(temp_dir / filename)
         saved_files.append(filename)
 
     try:
-        validate_ct(temp_dir, saved_files)
+        ct_info = validate_ct(temp_dir, saved_files)
         for filename in saved_files:
             # moving files from the temporary directory to the CT_FOLDER
             (temp_dir / filename).rename(current_app.config["CT_FOLDER"] / filename)
@@ -123,6 +119,10 @@ def ct_scan():
     return jsonify(
         {
             "available_cts": get_available_cts(current_app.config["CT_FOLDER"]),
-            "selected_ct": selected_filename,
+            "selected_ct": {
+                "filename": ct_info.filename,
+                "shape": ct_info.shape,
+                "spacing": ct_info.spacing,
+            },
         }
     )
