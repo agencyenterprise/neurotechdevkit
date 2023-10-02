@@ -10,12 +10,14 @@ using ndk
 import neurotechdevkit as ndk
 
 
-def plot_scenario(scenario_id):
-  print(f"Simulating scenario: {scenario_id}")
-  scenario = ndk.make(scenario_id)
-  scenario.render_layout()
-  result = scenario.simulate_steady_state()
-  result.render_steady_state_amplitudes(show_material_outlines=False)
+def plot_scenario(chosen_scenario):
+    print(f"Simulating scenario: {chosen_scenario.__name__}")
+    scenario = chosen_scenario()
+    scenario.make_grid()
+    scenario.compile_problem()
+    result = scenario.simulate_steady_state()
+    result.render_steady_state_amplitudes(show_material_outlines=False)
+
 
 # %%
 # Simulating scenario: scenario 0
