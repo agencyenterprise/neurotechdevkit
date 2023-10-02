@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Fixing Homer Simpson
+Customizing head shape with Homer Simpson
 ====================================
 
 For additional context, check out [FixingHomer.com](https://fixinghomer.com/).
@@ -99,15 +99,26 @@ scenario.material_masks = masks
 scenario.render_layout()
 
 # %%
+# Set up the Problem
 
 problem = ndk.problem.Problem(grid=grid)
 problem.add_material_fields(
     materials=scenario.materials,
     masks=scenario.material_masks,
 )
+
+# %%
+# Rendering the simulation
+
 scenario.problem = problem
 result = scenario.simulate_steady_state()
 assert isinstance(result, ndk.results.SteadyStateResult2D)
 result.render_steady_state_amplitudes(
     show_material_outlines=True
     )
+# %%
+
+# [FixingHomer.com](https://fixinghomer.com/)
+
+# %%
+
