@@ -46,6 +46,7 @@ pydantic = "<2"
 gunicorn = "^21.2.0"
 pyrevolve = ">=2.2.3"
 pydicom = "^2.4.3"
+nibabel = "^5.1.0"
 
 [tool.poetry.group.dev.dependencies]
 black = {extras = ["jupyter"], version = "^23.9.1"}
