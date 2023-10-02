@@ -7,9 +7,12 @@ For additional context, check out [FixingHomer.com](https://fixinghomer.com/).
 """
 
 # %%
-# The following step downloads and loads a the numpy material masks identified in the image from fixinghomer.com
+# The following step downloads and loads numpy material masks
+# The masks were generated using in the image from fixinghomer.com
 import numpy as np
 import pooch
+
+import neurotechdevkit as ndk
 
 masks_url = "https://neurotechdevkit.s3.us-west-2.amazonaws.com/homer_masks.npz"
 known_hash = "9f58e7d1f68f45466ee5fe848a83dd8eb676139672c44af5214231b3e3fe6fb9"
@@ -22,13 +25,14 @@ masks = {k: v.astype(np.bool_) for k, v in masks.items()}
 
 # %%
 # Setup the scenario using the NDK
-import neurotechdevkit as ndk
 
 extent = (
     0.1355,
     0.1205,
-)  # (x, y) in meters. This size matches the size of the image from fixinghomer.com at 272x242
-target_center = [0.036, 0.067]  #  target positioned on his brain
+)  # (x, y) in meters.
+# This size matches the size of the image from fixinghomer.com at 272x242
+
+target_center = [0.036, 0.067]  # target positioned on his brain
 target_radius = 0.004
 center_frequency = 5e5
 
@@ -39,7 +43,7 @@ brainstem_mat = ndk.materials.Material(
 
 # adjust cortical bone properties to handle the unusual head shape and skull thickness
 cortical_bone_mat = ndk.materials.Material(
-    vp=1800, rho=3350, alpha=2.37, render_color="#FAF0CA"  # mathes NDK default
+    vp=1800, rho=3350, alpha=2.37, render_color="#FAF0CA"  # matches NDK default
 )
 
 # Define the Scenario in 2 dimensions
@@ -57,7 +61,7 @@ scenario.target = ndk.scenarios.Target(
 )
 # %%
 # Next, we add the source transducer.
-# Note, the initial (failed) scenario from fixinghomer.com is left here commented out for reference.
+# The failed scenario shown on fixinghomer.com is commented here for reference.
 
 source_position = [0.02, 0.1]
 source_target = [0.037, 0.067]
