@@ -151,7 +151,7 @@
     document.getElementById("fileUploadButton").disabled = false
   }
 
-  function fillDefaultValues(shape, spacing) {
+  function fillDefaultValues() {
     setSimulationSettingsValues({
       "simulationPrecision": 6,
       "centerFrequency": 5e5,
@@ -160,9 +160,9 @@
     const is3d = document.getElementById("is3d").checked
 
     setTargetValues({
-      "centerX": (shape[1] * spacing[1] / 2)/1000,
-      "centerY": (shape[0] * spacing[0] / 2)/1000,
-      "centerZ": is3d ? (shape[2] * spacing[2] / 2)/1000 : '',
+      "centerX": ctDimensionPerAxis["x"] / 2,
+      "centerY": ctDimensionPerAxis["y"] / 2,
+      "centerZ": is3d ? ctDimensionPerAxis["z"] / 2 : '',
       "radius": 0.01,
     })
   }
@@ -192,7 +192,7 @@
     const shape = JSON.parse(ctInput.selectedOptions[0].dataset.shape)
     const spacing = JSON.parse(ctInput.selectedOptions[0].dataset.spacing)
     fillCTDimensions(shape, spacing)
-    fillDefaultValues(shape, spacing)
+    fillDefaultValues()
     allowViewScenarioParameters()
     valueChanged()
   }
@@ -225,7 +225,7 @@
 
         document.getElementById("ctFiles").value = ""
         fillCTDimensions(shape, spacing)
-        fillDefaultValues(shape, spacing)
+        fillDefaultValues()
         allowViewScenarioParameters()
         valueChanged()
         BtnReset(button)
