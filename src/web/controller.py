@@ -96,8 +96,12 @@ def get_scenario_layout(config: RenderLayoutRequest) -> str:
             slice_axis=config.scenarioSettings.ctSliceAxis,
             slice_position=config.scenarioSettings.ctSlicePosition,
         )
+        spacing = ct_image.spacing_in_meters
+        if config.is2d:
+            # TODO: This needs to take into account the slice axis
+            spacing = spacing[0:2]
         scenario.grid = Grid.make_shaped_grid(
-            shape=ct_image.data.shape, spacing=ct_image.spacing[0] / 1000
+            shape=ct_image.data.shape, spacing=spacing
         )
         scenario.material_masks = ct_image.material_masks
     _configure_scenario(scenario, config)

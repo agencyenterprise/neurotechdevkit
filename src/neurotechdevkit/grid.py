@@ -35,7 +35,7 @@ class Grid(stride.Grid):
     @staticmethod
     def make_shaped_grid(
         shape: Tuple[int, ...],
-        spacing: float,
+        spacing: Union[float, Tuple[float, ...]],
         extra: Union[int, Iterable[int]] = 50,
         absorbing: Union[int, Iterable[int]] = 40,
     ) -> "Grid":

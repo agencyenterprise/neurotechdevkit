@@ -24,6 +24,11 @@ class ComputedTomographyImage:
     spacing: Tuple[float, float, float]  # voxel sizes in millimeter
     material_masks: Dict[str, np.ndarray]
 
+    @property
+    def spacing_in_meters(self) -> Tuple[float, ...]:
+        """The voxel spacing in meters."""
+        return tuple(s / 1000 for s in self.spacing)
+
 
 @dataclass
 class ComputedTomographyInfo:
