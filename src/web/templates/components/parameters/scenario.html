@@ -1,5 +1,7 @@
 <script>
   let scenarioInfos = {{ built_in_scenarios | tojson}};
+  let ctDimensionPerAxis = {};
+
   function togglePreBuiltDiv() {
     document.getElementById("preBuiltDiv").hidden = false
     document.getElementById("ctFileDiv").hidden = true
@@ -150,8 +152,6 @@
   }
 
   function fillDefaultValues(shape, spacing) {
-    console.log('shape', shape) 
-    console.log('spacing', spacing)
     setSimulationSettingsValues({
       "simulationPrecision": 6,
       "centerFrequency": 5e5,
@@ -167,9 +167,18 @@
     })
   }
 
-  function constrainInputs(shape, spacing){
-    // TODO: calculate the max value possible of distance from Origin,
-    // and define the input max value with it
+  function fillCTDimensions(shape, spacing){
+    // Calculate the max value for each axis
+    ctDimensionPerAxis["x"] = (shape[1] * spacing[1]) / 1000
+    ctDimensionPerAxis["y"] = (shape[0] * spacing[0]) / 1000
+    ctDimensionPerAxis["z"] = (shape[2] * spacing[2]) / 1000
+  }
+
+  function ctSliceAxisChanged(input){
+    let ctSliceAxisValue = input.value
+    let ctSlicePositionInput = document.getElementById("ctSlicePosition")
+    ctSlicePositionInput.max = ctDimensionPerAxis[ctSliceAxisValue]
+    valueChanged()
   }
 
   function ctSelected(ctInput) {
@@ -177,9 +186,12 @@
     if (selectedCT === '') {
       return
     }
+    document.getElementById("ctSlicePosition").value = ""
+    document.getElementById("ctSlicePosition").removeAttribute("max")
+    document.getElementById("ctSliceAxis").value = ""
     const shape = JSON.parse(ctInput.selectedOptions[0].dataset.shape)
     const spacing = JSON.parse(ctInput.selectedOptions[0].dataset.spacing)
-    constrainInputs(shape, spacing)
+    fillCTDimensions(shape, spacing)
     fillDefaultValues(shape, spacing)
     allowViewScenarioParameters()
     valueChanged()
@@ -212,7 +224,7 @@
         const spacing = JSON.parse(selectedCT.spacing)
 
         document.getElementById("ctFiles").value = ""
-        constrainInputs(shape, spacing)
+        fillCTDimensions(shape, spacing)
         fillDefaultValues(shape, spacing)
         allowViewScenarioParameters()
         valueChanged()
@@ -292,7 +304,7 @@
             title="Axis along which to slice the 3D field to be recorded">Axis</label>
           <select class="form-select" aria-label="Axis" id="ctSliceAxis"
             data-2d-input-only="true"
-            name="ctSliceAxis" required onchange="valueChanged()">
+            name="ctSliceAxis" required onchange="ctSliceAxisChanged(this)">
             <option value selected>Select an axis</option>
             <option value="x">X</option>
             <option value="y">Y</option>
