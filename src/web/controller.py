@@ -13,6 +13,7 @@ from web.messages.requests import (
     RenderLayoutRequest,
     SimulateRequest,
 )
+from web.messages.settings import Axis
 
 from neurotechdevkit.grid import Grid
 from neurotechdevkit.materials import DEFAULT_MATERIALS, get_material
@@ -98,8 +99,13 @@ def get_scenario_layout(config: RenderLayoutRequest) -> str:
         )
         spacing = ct_image.spacing_in_meters
         if config.is2d:
-            # TODO: This needs to take into account the slice axis
-            spacing = spacing[0:2]
+            assert config.scenarioSettings.ctSliceAxis is not None
+            if config.scenarioSettings.ctSliceAxis == Axis.x:
+                spacing = (spacing[0], spacing[2])
+            elif config.scenarioSettings.ctSliceAxis == Axis.y:
+                spacing = (spacing[1], spacing[2])
+            else:
+                spacing = spacing = (spacing[0], spacing[1])
         scenario.grid = Grid.make_shaped_grid(
             shape=ct_image.data.shape, spacing=spacing
         )
