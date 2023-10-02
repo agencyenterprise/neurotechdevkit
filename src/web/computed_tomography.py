@@ -25,6 +25,15 @@ class ComputedTomographyImage:
     material_masks: Dict[str, np.ndarray]
 
 
+@dataclass
+class ComputedTomographyInfo:
+    """Information about a Computed Tomography."""
+
+    filename: str
+    shape: Tuple[int, ...]
+    spacing: str  # We need to convert the tuple to a string to be able to serialize it.
+
+
 def _assign_masks(mapping: dict[str, int], data: np.ndarray) -> Dict[str, np.ndarray]:
     """Assign the masks to the materials.
 
@@ -131,13 +140,12 @@ def get_ct_image(
     """Load a CT image and its masks.
 
     Args:
-        ct_folder: Path to the folder containing the CT image.
         ct_path: Path to the CT image file.
         slice_axis: The axis along which to slice the image.
         slice_position: The position along the slice axis.
 
     Returns:
-        A CTImage object.
+        A ComputedTomographyImage object.
     """
     array, spacing = _load_ct_file(ct_path)
     mapping = _load_mapping_file(ct_path.with_suffix(".json"))
@@ -159,17 +167,8 @@ def get_ct_image(
     )
 
 
-@dataclass
-class CTInfo:
-    """Information about a Computed Tomography."""
-
-    filename: str
-    shape: Tuple[int, ...]
-    spacing: str  # We need to convert the tuple to a string to be able to serialize it.
-
-
-def get_available_cts(cts_folder: pathlib.Path) -> List[CTInfo]:
-    """Get the list of available Computed Tomography's.
+def get_available_cts(cts_folder: pathlib.Path) -> List[ComputedTomographyInfo]:
+    """Get the list of available Computed Tomography's in the given directory.
 
     Args:
         cts_folder: Path to the folder containing the Computed Tomography's.
@@ -177,26 +176,26 @@ def get_available_cts(cts_folder: pathlib.Path) -> List[CTInfo]:
     Returns:
         The list of available Computed Tomography's.
     """
-    files: List[CTInfo] = []
+    files: List[ComputedTomographyInfo] = []
     for file in cts_folder.glob("**/*"):
         if file.is_file() and file.suffix in [".nii", ".zip"]:
             ct, spacing = _load_ct_file(file)
-            ct_info = CTInfo(
+            ct_info = ComputedTomographyInfo(
                 filename=file.name, shape=ct.shape, spacing=str(list(spacing))
             )
             files.append(ct_info)
     return files
 
 
-def validate_ct(directory: pathlib.Path, files: list[str]) -> CTInfo:
+def validate_ct(directory: pathlib.Path, files: list[str]) -> ComputedTomographyInfo:
     """Validate the CT image and its masks.
 
     Args:
         directory: Path to the directory containing the CT image and its masks.
-        files: List of files in the directory.
+        files: List of files in the directory to be checked.
 
     Returns:
-        The CTInfo object.
+        The ComputedTomographyInfo object.
     """
     assert (
         len(files) == 2
@@ -215,4 +214,6 @@ def validate_ct(directory: pathlib.Path, files: list[str]) -> CTInfo:
     for material in mapping.keys():
         if material not in DEFAULT_MATERIALS:
             raise ValueError(f"Material {material} is not supported.")
-    return CTInfo(filename=ct_file, shape=data.shape, spacing=str(list(spacing)))
+    return ComputedTomographyInfo(
+        filename=ct_file, shape=data.shape, spacing=str(list(spacing))
+    )
