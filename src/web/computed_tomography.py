@@ -157,11 +157,11 @@ def get_ct_image(
 
     if slice_axis is not None and slice_position is not None:
         if slice_axis == Axis.x:
-            position = int(slice_position / spacing[1] * 1000)
-            array = array[:, position, :]
-        elif slice_axis == Axis.y:
             position = int(slice_position / spacing[0] * 1000)
             array = array[position, :, :]
+        elif slice_axis == Axis.y:
+            position = int(slice_position / spacing[1] * 1000)
+            array = array[:, position, :]
         elif slice_axis == Axis.z:
             position = int(slice_position / spacing[2] * 1000)
             array = array[:, :, position]

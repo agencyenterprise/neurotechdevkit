@@ -169,8 +169,8 @@
 
   function fillCTDimensions(shape, spacing){
     // Calculate the max value for each axis
-    ctDimensionPerAxis["x"] = (shape[1] * spacing[1]) / 1000
-    ctDimensionPerAxis["y"] = (shape[0] * spacing[0]) / 1000
+    ctDimensionPerAxis["x"] = (shape[0] * spacing[0]) / 1000
+    ctDimensionPerAxis["y"] = (shape[1] * spacing[1]) / 1000
     ctDimensionPerAxis["z"] = (shape[2] * spacing[2]) / 1000
   }
 

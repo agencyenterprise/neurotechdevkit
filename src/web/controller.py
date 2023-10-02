@@ -101,9 +101,9 @@ def get_scenario_layout(config: RenderLayoutRequest) -> str:
         if config.is2d:
             assert config.scenarioSettings.ctSliceAxis is not None
             if config.scenarioSettings.ctSliceAxis == Axis.x:
-                spacing = (spacing[0], spacing[2])
-            elif config.scenarioSettings.ctSliceAxis == Axis.y:
                 spacing = (spacing[1], spacing[2])
+            elif config.scenarioSettings.ctSliceAxis == Axis.y:
+                spacing = (spacing[0], spacing[2])
             else:
                 spacing = spacing = (spacing[0], spacing[1])
         scenario.grid = Grid.make_shaped_grid(
