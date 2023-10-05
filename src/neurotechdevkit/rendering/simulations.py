@@ -1,8 +1,6 @@
 """Simulation rendering functions."""
 from __future__ import annotations
 
-from typing import Union
-
 import matplotlib as mpl
 import matplotlib.axes
 import matplotlib.figure
@@ -31,8 +29,6 @@ def create_steady_state_figure(
     extent: npt.NDArray[np.float_],
     origin: npt.NDArray[np.float_],
     amplitudes: npt.NDArray[np.float_],
-    vmin: Union[float, None] = None,
-    vmax: Union[float, None] = None,
 ) -> tuple[matplotlib.figure.Figure, matplotlib.axes.Axes]:
     """Create an unformatted figure containing the steady-state pressure amplitude.
 
@@ -62,7 +58,7 @@ def create_steady_state_figure(
         [origin[1], origin[1] + extent[1], origin[0] + extent[0], origin[0]]
     )
 
-    ax.imshow(amplitudes, cmap="viridis", extent=imshow_extent, vmin=vmin, vmax=vmax)
+    ax.imshow(amplitudes, cmap="viridis", extent=imshow_extent)
     return fig, ax
 
 

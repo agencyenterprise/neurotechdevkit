@@ -255,8 +255,6 @@ class SteadyStateResult2D(SteadyStateResult):
         show_sources: bool = True,
         show_target: bool = True,
         show_material_outlines: bool = True,
-        vmin: Union[float, None] = None,
-        vmax: Union[float, None] = None,
     ) -> None:
         """Create a matplotlib figure with the steady-state pressure wave amplitude.
 
@@ -274,8 +272,6 @@ class SteadyStateResult2D(SteadyStateResult):
             self.scenario.extent,
             np.array(self.scenario.origin, dtype=float),
             field,
-            vmin,
-            vmax,
         )
 
         # add layers
