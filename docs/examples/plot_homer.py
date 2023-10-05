@@ -43,7 +43,7 @@ brainstem_mat = ndk.materials.Material(
 
 # adjust cortical bone properties to handle the unusual head shape and skull thickness
 cortical_bone_mat = ndk.materials.Material(
-    vp=1800, rho=3350, alpha=2.37, render_color="#FAF0CA"  # matches NDK default
+    vp=1800, rho=3350, alpha=2.37, render_color="#FAF0CA" 
 )
 
 # Define the Scenario in 2 dimensions
