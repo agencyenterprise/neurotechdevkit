@@ -61,7 +61,6 @@ scenario.target = ndk.scenarios.Target(
 )
 # %%
 # Next, we add the source transducer.
-# The failed scenario shown on fixinghomer.com is commented here for reference.
 
 source_position = [0.02, 0.1]
 source_target = [0.037, 0.067]
@@ -73,6 +72,7 @@ source = ndk.sources.FocusedSource2D(
     num_points=1000,
 )
 
+# The failed scenario shown on fixinghomer.com is commented here for reference.
 # failed_source_position=[0.08, 0.106]
 # failed_source_target = [0.037, 0.067]
 # failed_source = ndk.sources.FocusedSource2D(
