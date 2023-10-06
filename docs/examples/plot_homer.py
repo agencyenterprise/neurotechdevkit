@@ -4,6 +4,9 @@ Customizing head shape with Homer Simpson
 ====================================
 
 For additional context, check out [FixingHomer.com](https://fixinghomer.com/).
+TLDR: We take [this](
+    https://fixinghomer.com/images/SCR-20230922-nzv-p-800.jpeg
+) fun image and show how flexible the NDK is for transcranial ultrasound simulation.
 """
 
 # %%
@@ -30,7 +33,8 @@ extent = (
     0.1355,
     0.1205,
 )  # (x, y) in meters.
-# This size matches the size of the image from fixinghomer.com at 272x242
+# This size matches the size of the image from fixinghomer.com at 272x242,
+# given our other chosen parameters (`ppw` and `center_frequency`)
 
 target_center = [0.036, 0.067]  # target positioned on his brain
 target_radius = 0.004
@@ -43,7 +47,7 @@ brainstem_mat = ndk.materials.Material(
 
 # adjust cortical bone properties to handle the unusual head shape and skull thickness
 cortical_bone_mat = ndk.materials.Material(
-    vp=1800, rho=3350, alpha=2.37, render_color="#FAF0CA" 
+    vp=1800, rho=3350, alpha=2.37, render_color="#FAF0CA"
 )
 
 # Define the Scenario in 2 dimensions
@@ -57,7 +61,10 @@ scenario = ndk.scenarios.Scenario2D(
 
 # specify the target marker
 scenario.target = ndk.scenarios.Target(
-    target_id="target_1", center=target_center, radius=target_radius, description=""
+    target_id="target_1",
+    center=target_center,
+    radius=target_radius,
+    description="cortex, posterior",
 )
 # %%
 # Next, we add the source transducer.
@@ -97,6 +104,11 @@ grid = ndk.grid.Grid.make_grid(
 )
 
 scenario.grid = grid
+
+# confirm that the grid size matches the image size of 272x242
+print("total voxels:")
+print(grid.space.shape[0], grid.space.shape[1])
+
 dx = grid.space.spacing[0]
 scenario.material_masks = masks
 # %%
@@ -120,7 +132,5 @@ result = scenario.simulate_steady_state()
 assert isinstance(result, ndk.results.SteadyStateResult2D)
 result.render_steady_state_amplitudes(show_material_outlines=True)
 # %%
-
+# We've successfully hit the target, and can proceed with treatment for Homer!
 # [FixingHomer.com](https://fixinghomer.com/)
-
-# %%
