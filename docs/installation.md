@@ -33,7 +33,7 @@ pip install neurotechdevkit
 You also have to install stride, it can be done running:
 
 ```bash
-pip install git+https://github.com/trustimaging/stride
+pip install git+https://github.com/trustimaging/stride@2520c59
 ```
 
 ## Setting up a compiler
