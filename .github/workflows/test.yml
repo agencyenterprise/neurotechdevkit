@@ -66,7 +66,7 @@ jobs:
         run: poetry install --no-interaction --no-root
 
       - name: Install stride
-        run: poetry run pip install git+https://github.com/trustimaging/stride
+        run: poetry run pip install git+https://github.com/trustimaging/stride@2520c59
 
       - name: Install neurotechdevkit
         run: poetry install --only-root
