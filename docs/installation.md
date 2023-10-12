@@ -33,12 +33,12 @@ pip install neurotechdevkit
 You also have to install stride, it can be done running:
 
 ```bash
-pip install git+https://github.com/trustimaging/stride
+pip install git+https://github.com/trustimaging/stride@2520c59
 ```
 
 ## Setting up a compiler
 
-NDK uses [devito](https://www.devitoproject.org/devito/) to perform the heavy computational operations. Devito generates, compiles and runs C code to achieve better performance.
+NDK uses [devito](https://www.devitoproject.org/) to perform the heavy computational operations. Devito generates, compiles and runs C code to achieve better performance.
 The compiler used by Devito has to be selected, and paths for the linker might also be added as environment variables.
 
 As a last step **before running NDK**, follow the instructions below depending on your OS.
