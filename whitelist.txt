@@ -25,6 +25,7 @@ coroutine
 dataset
 der
 devito
+dicom
 dimensionality
 directivity
 docstring

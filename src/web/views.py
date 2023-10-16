@@ -1,8 +1,14 @@
 """Views for the web app."""
-from flask import Blueprint, jsonify, render_template, request
+import shutil
+import tempfile
+from pathlib import Path
+
+from flask import Blueprint, current_app, jsonify, render_template, request
 from pydantic import ValidationError
+from web.computed_tomography import get_available_cts, validate_ct
 from web.controller import (
     get_built_in_scenarios,
+    get_default_material_properties,
     get_scenario_layout,
     get_simulation_image,
 )
@@ -10,23 +16,29 @@ from web.messages.material_properties import MaterialName
 from web.messages.requests import RenderLayoutRequest, SimulateRequest
 from web.messages.transducers import TransducerType
 from web.simulation_runner import SimulationRunner
+from werkzeug.utils import secure_filename
 
 bp = Blueprint("main", __name__, url_prefix="/")
+
+DEFAULT_CENTER_FREQUENCY = 5e5
 
 
 @bp.route("/")
 async def index():
     """Render the index page, listing all the built-in scenarios."""
-    title = "Neurotech Web App"
     return render_template(
         "index.html",
-        title=title,
+        title="Neurotech Web App",
         has_simulation=SimulationRunner().has_last_result,
         is_running_simulation=SimulationRunner().is_running,
         configuration=SimulationRunner().configuration,
         built_in_scenarios=get_built_in_scenarios(),
         all_materials=MaterialName.get_material_titles(),
+        all_material_properties=get_default_material_properties(
+            DEFAULT_CENTER_FREQUENCY
+        ).dict(),
         all_transducer_types=TransducerType.get_transducer_titles(),
+        available_cts=get_available_cts(current_app.config["CT_FOLDER"]),
     )
 
 
@@ -39,7 +51,10 @@ def simulate():
         # If the JSON data doesn't match the Pydantic model,
         # return a 400 Bad Request response
         return jsonify({"error": str(e)}), 400
-    result = SimulationRunner().run(get_simulation_image(config), config.dict())
+    result = SimulationRunner().run(
+        get_simulation_image(config=config, app_config=current_app.config),
+        config.dict(),
+    )
     if result.type == "simulation":
         data, image_format = result.data
         return f"<img src='data:image/{image_format};base64,{data}'/>"
@@ -78,3 +93,36 @@ async def render_layout():
     data = get_scenario_layout(config)
     image_format = "png"
     return f"<img src='data:image/{image_format};base64,{data}'/>"
+
+
+@bp.route("/ct_scan", methods=["POST"])
+def ct_scan():
+    """Upload a Computed Tomography scan and return the available scans."""
+    files = list(request.files.values())
+    temp_dir = Path(tempfile.mkdtemp())
+    saved_files = []
+    for file in files:
+        filename = secure_filename(file.filename)
+        file.save(temp_dir / filename)
+        saved_files.append(filename)
+
+    try:
+        ct_info = validate_ct(temp_dir, saved_files)
+        for filename in saved_files:
+            # moving files from the temporary directory to the CT_FOLDER
+            (temp_dir / filename).rename(current_app.config["CT_FOLDER"] / filename)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
+    finally:
+        shutil.rmtree(temp_dir)
+
+    return jsonify(
+        {
+            "available_cts": get_available_cts(current_app.config["CT_FOLDER"]),
+            "selected_ct": {
+                "filename": ct_info.filename,
+                "shape": ct_info.shape,
+                "spacing": ct_info.spacing,
+            },
+        }
+    )
