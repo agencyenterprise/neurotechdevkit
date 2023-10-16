@@ -13,4 +13,4 @@ services:
     working_dir: /ndk
     command: python src/web/app.py
     ports:
-      - 5000:5000
+      - 8080:8080

@@ -43,13 +43,13 @@ There are multiple ways of running the web server, you can choose between:
 1. Open a terminal and run the following command:
 
    ```
-   docker run -p 5000:5000 -w "/ndk" -it ghcr.io/agencyenterprise/neurotechdevkit:latest python src/web/app.py
+   docker run -p 8080:8080 -w "/ndk" -it ghcr.io/agencyenterprise/neurotechdevkit:latest python src/web/app.py
    ```
 
 
 ## Using
 
-After executing the last step of any of the options described above you will be able to open the address `http://127.0.0.1:5000/` in your browser.
+After executing the last step of any of the options described above you will be able to open the address `http://127.0.0.1:8080/` in your browser.
 
 You should be able to select one of the pre-defined scenarios and see its layout:
 
