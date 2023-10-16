@@ -139,6 +139,11 @@
   }
 
   window.onload = function () {
+    $('form').submit(function(e){
+      // prevents the "enter" key from submitting the form
+      e.preventDefault();
+    });
+
     const hasSimulation = {{has_simulation | tojson}}
     const isRunningSimulation = {{is_running_simulation | tojson}}
     const currentConfiguration = {{configuration | tojson}}
