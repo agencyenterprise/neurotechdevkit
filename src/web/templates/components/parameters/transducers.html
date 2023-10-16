@@ -143,109 +143,6 @@
     hideForm()
   }
 
-  function getFocusedSourceParams(formData) {
-    let position = [formData.positionX, formData.positionY]
-    if (!scenarioIs2d()){
-      position.push(formData.positionZ)
-    }
-
-    let direction = [formData.directionX, formData.directionY]
-    if (!scenarioIs2d()){
-      direction.push(formData.directionZ)
-    }
-
-    const aperture = formData.aperture
-    const focalLength = formData.focalLength
-    const numPoints = formData.numPoints
-    const delay = formData.delay
-    return {
-      position,
-      direction,
-      aperture,
-      focalLength,
-      numPoints,
-      delay,
-    }
-  }
-
-  function getPointSourceParams(formData) {
-    let position = [formData.positionX, formData.positionY]
-    if (!scenarioIs2d()){
-      position.push(formData.positionZ)
-    }
-    const delay = formData.delay
-    return {
-      position,
-      delay,
-    }
-  }
-
-  function getPlanarSourceParams(formData) {
-    let position = [formData.positionX, formData.positionY]
-    if (!scenarioIs2d()){
-      position.push(formData.positionZ)
-    }
-    let direction = [formData.directionX, formData.directionY]
-    if (!scenarioIs2d()){
-      direction.push(formData.directionZ)
-    }
-    const aperture = formData.aperture
-    const numPoints = formData.numPoints
-    const delay = formData.delay
-    return {
-      position,
-      direction,
-      aperture,
-      numPoints,
-      delay,
-    }
-  }
-
-  function getPhasedArraySourceParams(formData) {
-    let position = [formData.positionX, formData.positionY]
-    if (!scenarioIs2d()){
-      position.push(formData.positionZ)
-    }
-    let direction = [formData.directionX, formData.directionY]
-    if (!scenarioIs2d()){
-      direction.push(formData.directionZ)
-    }
-    const numPoints = formData.numPoints
-    const numElements = formData.numElements
-    const pitch = formData.pitch
-    const elementWidth = formData.elementWidth
-    const tiltAngle = formData.tiltAngle
-    const delay = formData.delay
-    const aperture = formData.aperture
-
-    let focalLength = null
-    if (formData.focalLengthCheck){
-      focalLength = formData.focalLength
-    }
-
-    let centerLine = null
-    let height = null
-    if (!scenarioIs2d()){
-      height = formData.height
-      centerLine = [formData.centerLineX, formData.centerLineY, formData.centerLineZ]
-    }
-
-    return {
-      position,
-      direction,
-      numPoints,
-      numElements,
-      pitch,
-      elementWidth,
-      tiltAngle,
-      focalLength,
-      delay,
-      aperture,
-      centerLine,
-      height,
-    }
-  }
-
   function cancelAddTransducer() {
     hideForm()
   }
@@ -283,68 +180,6 @@
       addedTransducers.push(addTransducer)
     }
     transducerAdded()
-  }
-
-  function editFocusedSource(transducer) {
-    const form = document.getElementById("createTransducerForm")
-    form.positionX.value = transducer.position[0]
-    form.positionY.value = transducer.position[1]
-    form.positionZ.value = transducer.position.length > 2 ? transducer.position[2] : ""
-    form.directionX.value = transducer.direction[0]
-    form.directionY.value = transducer.direction[1]
-    form.directionZ.value = transducer.direction.length > 2 ? transducer.direction[2] : ""
-    form.aperture.value = transducer.aperture
-    form.focalLength.value = transducer.focalLength
-    form.numPoints.value = transducer.numPoints
-    form.delay.value = transducer.delay
-  }
-
-  function editPlanarSource(transducer) {
-    const form = document.getElementById("createTransducerForm")
-    form.positionX.value = transducer.position[0]
-    form.positionY.value = transducer.position[1]
-    form.positionZ.value = transducer.position.length > 2 ? transducer.position[2] : ""
-    form.directionX.value = transducer.direction[0]
-    form.directionY.value = transducer.direction[1]
-    form.directionZ.value = transducer.direction.length > 2 ? transducer.direction[2] : ""
-    form.aperture.value = transducer.aperture
-    form.numPoints.value = transducer.numPoints
-    form.delay.value = transducer.delay
-  }
-
-  function editPointSource(transducer) {
-    const form = document.getElementById("createTransducerForm")
-    form.positionX.value = transducer.position[0]
-    form.positionY.value = transducer.position[1]
-    form.positionZ.value = transducer.position.length > 2 ? transducer.position[2] : ""
-    form.delay.value = transducer.delay
-  }
-
-  function editPhasedArraySource(transducer) {
-    const form = document.getElementById("createTransducerForm")
-    form.positionX.value = transducer.position[0]
-    form.positionY.value = transducer.position[1]
-    form.positionZ.value = transducer.position.length > 2 ? transducer.position[2] : ""
-    form.directionX.value = transducer.direction[0]
-    form.directionY.value = transducer.direction[1]
-    form.directionZ.value = transducer.direction.length > 2 ? transducer.direction[2] : ""
-    form.numPoints.value = transducer.numPoints
-    form.numElements.value = transducer.numElements
-    form.pitch.value = transducer.pitch
-    form.elementWidth.value = transducer.elementWidth
-    form.tiltAngle.value = transducer.tiltAngle
-    if (transducer.focalLength){
-      form.focalLengthCheck.checked = true
-      form.focalLength.value = transducer.focalLength
-      form.focalLength.removeAttribute("hidden")
-    }
-    form.delay.value = transducer.delay
-    if (transducer.centerLine){
-      form.centerLineX.value = transducer.centerLine[0]
-      form.centerLineY.value = transducer.centerLine[1]
-      form.centerLineZ.value = transducer.centerLine[2]
-    }
-    form.height.value = transducer.height
   }
 
   function editTransducer(transducerIndex) {
@@ -433,16 +268,14 @@
         data-transducer-id="-1"
         data-action="edit"
         aria-hidden="true"
-        onclick="editTransducer(this.dataset.transducerId)"
-      ></span>
+        onclick="editTransducer(this.dataset.transducerId)"></span>
       <span
         class="far fa-trash-alt cercle-icons delete-icon"
         data-delete-transducer="true"
         data-transducer-id="-1"
         data-action="delete"
         aria-hidden="true"
-        onclick="deleteTransducer(this.dataset.transducerId)"
-      ></span>
+        onclick="deleteTransducer(this.dataset.transducerId)"></span>
     </div>
   </li>
 </template>
@@ -467,9 +300,8 @@
         id="transducerType"
         name="transducerType"
         onchange="transducerSelected(this)"
-        aria-label="Select a transducer"
-      >
-        <option value="" selected>-- Select transducer --</option>
+        aria-label="Select a transducer">
+        <option value selected>-- Select transducer --</option>
         {% for transducerType, transducerTypeLabel in all_transducer_types %}
         <option value="{{transducerType}}">{{transducerTypeLabel}}</option>
         {% endfor %}
@@ -480,16 +312,14 @@
       <button
         type="button"
         class="btn btn-primary btn-block"
-        onclick="cancelAddTransducer(this)"
-      >
+        onclick="cancelAddTransducer(this)">
         Cancel
       </button>
       <button
         type="button"
         id="addTransducerButton"
         class="btn btn-primary btn-block"
-        onclick="addTransducer(this)"
-      >
+        onclick="addTransducer(this)">
         Add
       </button>
       <button
@@ -498,8 +328,7 @@
         id="saveTransducerButton"
         class="btn btn-primary btn-block"
         onclick="saveTransducer(this, this.dataset.transducerId)"
-        hidden
-      >
+        hidden>
         Save Transducer
       </button>
     </div>
