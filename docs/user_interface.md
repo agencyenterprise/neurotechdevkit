@@ -33,7 +33,7 @@ There are multiple ways of running the web server, you can choose between:
 1. Open a terminal in the project location and run the following command
 
     ```
-    make web-development
+    make web
     ```
 
 ### Docker

@@ -11,7 +11,7 @@ from neurotechdevkit.scenarios import Target as NDKTarget
 
 
 class Axis(str, Enum):
-    """Axis enum for the axis of CT scans."""
+    """Axis enum for the axis of Computed Tomography scans."""
 
     x = "x"
     y = "y"
@@ -82,6 +82,9 @@ class ScenarioSettings(BaseModel):
 
     isPreBuilt: bool
     scenarioId: Optional[str]
+    ctFile: Optional[str]
+    ctSliceAxis: Optional[Axis]
+    ctSlicePosition: Optional[float]
 
     @validator("scenarioId", always=True)
     def _validate(cls, value, values):
@@ -90,9 +93,8 @@ class ScenarioSettings(BaseModel):
         return value
 
     @property
-    def scenario_id(self) -> str:
+    def scenario_id(self) -> Optional[str]:
         """Get the scenario id."""
-        assert self.scenarioId
         return self.scenarioId
 
 

@@ -5,12 +5,18 @@ import tempfile
 from typing import Dict, Optional, Tuple, Union
 
 import matplotlib.pyplot as plt
+from flask import current_app
+from web.computed_tomography import get_ct_image
+from web.messages.material_properties import Material, MaterialName, MaterialProperties
 from web.messages.requests import (
     IndexBuiltInScenario,
     RenderLayoutRequest,
     SimulateRequest,
 )
+from web.messages.settings import Axis
 
+from neurotechdevkit.grid import Grid
+from neurotechdevkit.materials import DEFAULT_MATERIALS, get_material
 from neurotechdevkit.results import SteadyStateResult2D, SteadyStateResult3D
 from neurotechdevkit.scenarios import Scenario2D, Scenario3D
 from neurotechdevkit.scenarios.built_in import BUILT_IN_SCENARIOS
@@ -84,6 +90,26 @@ def get_scenario_layout(config: RenderLayoutRequest) -> str:
         config.scenarioSettings.scenario_id,
         config.simulationSettings.centerFrequency,
     )
+    if not config.scenarioSettings.isPreBuilt:
+        assert config.scenarioSettings.ctFile is not None
+        ct_image = get_ct_image(
+            ct_path=current_app.config["CT_FOLDER"] / config.scenarioSettings.ctFile,
+            slice_axis=config.scenarioSettings.ctSliceAxis,
+            slice_position=config.scenarioSettings.ctSlicePosition,
+        )
+        spacing = ct_image.spacing_in_meters
+        if config.is2d:
+            assert config.scenarioSettings.ctSliceAxis is not None
+            if config.scenarioSettings.ctSliceAxis == Axis.x:
+                spacing = (spacing[1], spacing[2])
+            elif config.scenarioSettings.ctSliceAxis == Axis.y:
+                spacing = (spacing[0], spacing[2])
+            else:
+                spacing = spacing = (spacing[0], spacing[1])
+        scenario.grid = Grid.make_shaped_grid(
+            shape=ct_image.data.shape, spacing=spacing
+        )
+        scenario.material_masks = ct_image.material_masks
     _configure_scenario(scenario, config)
     fig = scenario.render_layout(show_sources=len(scenario.sources) > 0)
     buf = io.BytesIO()
@@ -137,16 +163,25 @@ def _instantiate_scenario(
             grid=builtin_scenario.grid,
         )
     else:
-        raise NotImplementedError
+        scenario_class = Scenario2D if is_2d else Scenario3D
+        scenario = scenario_class(
+            sources=[],
+            origin=[0, 0] if is_2d else [0, 0, 0],
+            material_outline_upsample_factor=16,  # TODO: make this configurable
+        )
+
     return scenario
 
 
-async def get_simulation_image(config: SimulateRequest) -> Tuple[str, str]:
+async def get_simulation_image(
+    config: SimulateRequest, app_config: dict
+) -> Tuple[str, str]:
     """
     Simulate a scenario and return the result as a base64 GIF or PNG.
 
     Args:
         config (SimulateRequest): The configuration for the scenario.
+        app_config(dict): The configuration of the app.
 
     Returns:
         Tuple[str, str]: The base64 encoded image and the image format.
@@ -157,6 +192,17 @@ async def get_simulation_image(config: SimulateRequest) -> Tuple[str, str]:
         config.scenarioSettings.scenario_id,
         config.simulationSettings.centerFrequency,
     )
+    if not config.scenarioSettings.isPreBuilt:
+        assert config.scenarioSettings.ctFile is not None
+        ct_image = get_ct_image(
+            ct_path=app_config["CT_FOLDER"] / config.scenarioSettings.ctFile,
+            slice_axis=config.scenarioSettings.ctSliceAxis,
+            slice_position=config.scenarioSettings.ctSlicePosition,
+        )
+        scenario.grid = Grid.make_shaped_grid(
+            shape=ct_image.data.shape, spacing=ct_image.spacing[0] / 1000
+        )
+        scenario.material_masks = ct_image.material_masks
     _configure_scenario(scenario, config)
     scenario.compile_problem()
 
@@ -182,11 +228,36 @@ async def get_simulation_image(config: SimulateRequest) -> Tuple[str, str]:
             return data, "gif"
 
 
+def get_default_material_properties(center_frequency: float) -> MaterialProperties:
+    """Get the default material properties with center frequency.
+
+    Args:
+        center_frequency: The center frequency of the scenario.
+
+    Returns:
+        The default material properties.
+    """
+    material_properties = {}
+    for ndk_material_name in DEFAULT_MATERIALS:
+        ndk_material = get_material(ndk_material_name, center_frequency)
+        material = Material.from_ndk_material(ndk_material)
+        material_name = MaterialName.get_material_name(ndk_material_name)
+        material_properties[material_name] = material
+
+    return MaterialProperties(**material_properties)
+
+
 def _configure_scenario(
     scenario: Union[Scenario2D, Scenario3D],
     config: Union[RenderLayoutRequest, SimulateRequest],
 ):
-    """Configure a scenario based on the given configuration."""
+    """Configure a scenario based on the given configuration.
+
+    Args:
+        scenario: The scenario to configure.
+        config: The configuration.
+    """
+    scenario.center_frequency = config.simulationSettings.centerFrequency
     if config_target := config.target:
         scenario.target = config_target.to_ndk_target()
 

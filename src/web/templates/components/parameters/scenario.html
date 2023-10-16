@@ -1,28 +1,34 @@
 <script>
-  let scenarioInfos = {{built_in_scenarios | tojson}};
+  let scenarioInfos = {{ built_in_scenarios | tojson}};
+  let ctDimensionPerAxis = {};
+
   function togglePreBuiltDiv() {
     document.getElementById("preBuiltDiv").hidden = false
     document.getElementById("ctFileDiv").hidden = true
+    resetAll(document.getElementById("is2d").checked)
   }
 
   function toggleCTFileDiv() {
     document.getElementById("preBuiltDiv").hidden = true
     document.getElementById("ctFileDiv").hidden = false
+    resetAll(document.getElementById("is2d").checked)
   }
 
   function valueChanged() {
     let hasError = false
-    if (!validateTargetValues()){
+    if (!validateCTValues()) {
       hasError = true
-    } else if (!validateDisplayValues()){
+    } else if (!validateTargetValues()) {
       hasError = true
-    } else if(!validateSimulationSettingsValues()) {
+    } else if (!validateDisplayValues()) {
       hasError = true
-    } else if (!validateMaterialValues()){
+    } else if (!validateSimulationSettingsValues()) {
+      hasError = true
+    } else if (!validateMaterialValues()) {
       hasError = true
     }
 
-    if (hasError){
+    if (hasError) {
       disallowRunSimulation()
       clearPlotArea()
     } else {
@@ -30,15 +36,25 @@
     }
   }
 
-  function scenarioSelected(scenarioInput){
+  function validateCTValues() {
+    let form = document.getElementById("ctForm")
+    if (!form.checkValidity()) {
+      $("#scenario-accordion-item").collapse("show")
+      form.reportValidity()
+      return false
+    }
+    return true
+  }
+
+  function scenarioSelected(scenarioInput) {
     clearPlotArea()
 
     const selection = scenarioInput.value;
-    if (selection===""){
+    if (selection === "") {
       disallowRunSimulation()
       disallowRenderLayout()
       clearAllTransducers()
-      document.getElementById("parameters-form").reset()
+      document.getElementById("parametersForm").reset()
       return;
     }
     const selectedScenario = scenarioInfos[selection]
@@ -47,31 +63,57 @@
     allowViewScenarioParameters()
   }
 
-  function setScenarioValues(scenario){
-    setTargetValues(scenario.target)
-    setSimulationSettingsValues(scenario.simulationSettings)
-    setTransducersValues(scenario.transducers)
-    if (!scenario.is2d){
-      setDisplayValues(scenario.displaySettings)
+  function setScenarioValues(configuration) {
+    if (configuration.scenarioSettings.scenarioId){
+        // running a built-in scenario
+        const scenarioSelect = document.getElementById("scenario")
+        scenarioSelect.value = configuration.scenarioSettings.scenarioId
+    } else if (configuration.scenarioSettings.ctFile){
+        // running a ct scan
+        document.getElementById("isCtScan").checked = true
+        toggleCTFileDiv()
+        const loadedCTsElement = document.getElementById("loadedCTs")
+        loadedCTsElement.value = configuration.scenarioSettings.ctFile
+        if (configuration.is2d){
+          const ctSliceAxis = document.getElementById("ctSliceAxis")
+          ctSliceAxis.value = configuration.scenarioSettings.ctSliceAxis
+          const ctSlicePosition = document.getElementById("ctSlicePosition")
+          ctSlicePosition.value = configuration.scenarioSettings.ctSlicePosition
+        }
+    }
+    setTargetValues(configuration.target)
+    setSimulationSettingsValues(configuration.simulationSettings)
+    setTransducersValues(configuration.transducers)
+    if (!configuration.is2d) {
+      setDisplayValues(configuration.displaySettings)
     }
   }
 
   function getScenarioParams() {
     const isPreBuilt = document.getElementById("isPreBuilt").checked
+    const is2d = document.getElementById("is2d").checked
     let params = {
       isPreBuilt: isPreBuilt,
     }
     if (isPreBuilt) {
       params["scenarioId"] = document.getElementById("scenario").value
     } else {
-      params["ctFile"] = document.getElementById("ctFile").value
+      // ct file was loaded
+      params["ctFile"] = document.getElementById("loadedCTs").value
+      if (is2d){
+        // these attributes only exist for 2D
+        params["ctSliceAxis"] = document.getElementById("ctSliceAxis").value
+        params["ctSlicePosition"] = document.getElementById("ctSlicePosition").value
+      }
     }
     return params
   }
 
-  function setScenariosOptions(is2d){
+  function setScenariosOptions(is2d) {
     const scenarioSelect = document.getElementById("scenario")
     scenarioSelect.innerHTML = ""
+
+    document.getElementById("ctForm").reset()
 
     const option = document.createElement("option")
     option.value = ""
@@ -87,63 +129,214 @@
       }
     }
   }
+
+  function filesChosen(fileInput) {
+    clearPlotArea()
+    if (fileInput.files.length == 0){
+      document.getElementById("fileUploadButton").disabled = true
+      return
+    }
+    if (fileInput.files.length !== 2) {
+      document.getElementById("plotArea").innerHTML = "Please select two files"
+      document.getElementById("fileUploadButton").disabled = true
+      return
+    }
+    const firstFileName = fileInput.files[0].name
+    const secondFileName = fileInput.files[1].name
+    if (firstFileName.split('.')[0] !== secondFileName.split('.')[0]) {
+      document.getElementById("plotArea").innerHTML = 'Files must have the same name'
+      document.getElementById("fileUploadButton").disabled = true
+      return
+    }
+    document.getElementById("fileUploadButton").disabled = false
+  }
+
+  function fillDefaultValues() {
+    setSimulationSettingsValues({
+      "simulationPrecision": 6,
+      "centerFrequency": 5e5,
+      "isSteadySimulation": true,
+    })
+    const is3d = document.getElementById("is3d").checked
+
+    setTargetValues({
+      "centerX": ctDimensionPerAxis["x"] / 2,
+      "centerY": ctDimensionPerAxis["y"] / 2,
+      "centerZ": is3d ? ctDimensionPerAxis["z"] / 2 : '',
+      "radius": 0.01,
+    })
+  }
+
+  function fillCTDimensions(shape, spacing){
+    // Calculate the max value for each axis
+    ctDimensionPerAxis["x"] = (shape[0] * spacing[0]) / 1000
+    ctDimensionPerAxis["y"] = (shape[1] * spacing[1]) / 1000
+    ctDimensionPerAxis["z"] = (shape[2] * spacing[2]) / 1000
+  }
+
+  function ctSliceAxisChanged(input){
+    let ctSliceAxisValue = input.value
+    let ctSlicePositionInput = document.getElementById("ctSlicePosition")
+    ctSlicePositionInput.max = ctDimensionPerAxis[ctSliceAxisValue]
+    valueChanged()
+  }
+
+  function ctSelected(ctInput) {
+    const selectedCT = ctInput.value
+    if (selectedCT === '') {
+      return
+    }
+    document.getElementById("ctSlicePosition").value = ""
+    document.getElementById("ctSlicePosition").removeAttribute("max")
+    document.getElementById("ctSliceAxis").value = ""
+    const shape = JSON.parse(ctInput.selectedOptions[0].dataset.shape)
+    const spacing = JSON.parse(ctInput.selectedOptions[0].dataset.spacing)
+    fillCTDimensions(shape, spacing)
+    fillDefaultValues()
+    allowViewScenarioParameters()
+    valueChanged()
+  }
+
+  function fileUploadClicked(button) {
+    BtnLoading(button)
+    var input = document.getElementById("ctFiles")
+
+    var data = new FormData()
+    data.append('file_0', input.files[0], input.files[0].name);
+    data.append('file_1', input.files[1], input.files[1].name);
+
+    const url = "{{ url_for('main.ct_scan') }}"
+
+    fetch(url, {
+      method: 'POST',
+      body: data
+    }).then(response => {
+        if (!response.ok) {
+            return Promise.reject(response);
+        }
+        return response.json();
+    })
+      .then(message => {
+        const selectedCT = message.selected_ct
+        const availableCTs = message.available_cts
+        loadCTs(availableCTs, selectedCT.filename)
+        const shape = selectedCT.shape
+        const spacing = JSON.parse(selectedCT.spacing)
+
+        document.getElementById("ctFiles").value = ""
+        fillCTDimensions(shape, spacing)
+        fillDefaultValues()
+        allowViewScenarioParameters()
+        valueChanged()
+        BtnReset(button)
+        document.getElementById("fileUploadButton").disabled = true
+      })
+      .catch(response => {
+        response.json().then((error) => {
+          clearPlotArea()
+          document.getElementById("plotArea").innerHTML = error.error
+        })
+        BtnReset(button)
+        document.getElementById("fileUploadButton").disabled = true
+      });
+  }
+
+  function loadCTs(availableCTs, selectedCT) {
+    const loadedCTsElement = document.getElementById("loadedCTs")
+    loadedCTsElement.innerHTML = ""
+    for (const ct of availableCTs) {
+      if (ct.filename === selectedCT) {
+        loadedCTsElement.innerHTML += `<option value="${ct.filename}" data-shape="[${ct.shape}]" data-spacing="${ct.spacing}" selected>${ct.filename}</option>`
+      } else {
+        loadedCTsElement.innerHTML += `<option value="${ct.filename}" data-shape="[${ct.shape}]" data-spacing="${ct.spacing}">${ct.filename}</option>`
+      }
+    }
+    if (loadedCTs.length === 0) {
+      loadedCTsElement.innerHTML += `<option value="">No CTs loaded</option>`
+      loadedCTsElement.setAttribute("disabled", "disabled")
+      document.getElementById("ctSliceAxis").setAttribute("disabled", "disabled")
+      document.getElementById("ctSlicePosition").setAttribute("disabled", "disabled")
+    } else {
+      loadedCTsElement.removeAttribute("disabled")
+      document.getElementById("ctSliceAxis").removeAttribute("disabled")
+      document.getElementById("ctSlicePosition").removeAttribute("disabled")
+    }
+  }
+
 </script>
-<form>
-  <fieldset>
-    <div class="mb-3">
-      <div class="btn-group">
-        <input
-          type="radio"
-          class="btn-check"
-          name="options"
-          id="isPreBuilt"
-          autocomplete="off"
-          onchange="togglePreBuiltDiv()"
-          checked
-        />
-        <label
-          class="btn btn-primary"
-          for="isPreBuilt"
-          data-bs-toggle="tooltip"
-          data-bs-placement="right"
-          title="Use a prebuilt scenario with a target and transducers"
-          >Prebuilt</label
-        >
+<form></form>
+<fieldset>
+  <div class="mb-3">
+    <div class="btn-group">
+      <input type="radio" class="btn-check" name="options" id="isPreBuilt"
+        autocomplete="off"
+        onchange="togglePreBuiltDiv()" checked />
+      <label class="btn btn-primary" for="isPreBuilt" data-bs-toggle="tooltip"
+        data-bs-placement="right"
+        title="Use a prebuilt scenario with a target and transducers">Prebuilt</label>
 
-        <input
-          type="radio"
-          class="btn-check"
-          name="options"
-          id="isCtScan"
-          autocomplete="off"
-          onchange="toggleCTFileDiv()"
-          disabled
-        />
-        <label
-          class="btn btn-primary"
-          for="isCtScan"
-          data-bs-toggle="tooltip"
-          data-bs-placement="right"
-          title="Load a CT scan from a file"
-          >CT Scan</label
-        >
+      <input type="radio" class="btn-check" name="options" id="isCtScan"
+        autocomplete="off"
+        onchange="toggleCTFileDiv()" />
+      <label class="btn btn-primary" for="isCtScan" data-bs-toggle="tooltip"
+        data-bs-placement="right"
+        title="Load a CT scan from a file">CT Scan</label>
+    </div>
+  </div>
+
+  <div class="mb-3">
+    <div id="preBuiltDiv">
+      <label for="scenario" class="form-label">Scenarios:</label>
+      <select name="scenario" id="scenario" class="form-select"
+        onchange="scenarioSelected(this)"></select>
+    </div>
+    <div id="ctFileDiv" hidden>
+      <form id="ctForm">
+        <div class="mb-3">
+          <label class="form-label" for="loadedCTs">Available CTs</label>
+          <select class="form-select" size="3" name="loadedCTs" id="loadedCTs"
+            onchange="ctSelected(this)" required>
+          </select>
+        </div>
+        <div class="mb-3" data-2d-only="true">
+          <label for="ctSliceAxis" class="form-label" data-bs-toggle="tooltip"
+            data-bs-placement="right"
+            title="Axis along which to slice the 3D field to be recorded">Axis</label>
+          <select class="form-select" aria-label="Axis" id="ctSliceAxis"
+            data-2d-input-only="true"
+            name="ctSliceAxis" required onchange="ctSliceAxisChanged(this)">
+            <option value selected>Select an axis</option>
+            <option value="x">X</option>
+            <option value="y">Y</option>
+            <option value="z">Z</option>
+          </select>
+        </div>
+        <div class="mb-3" data-2d-only="true">
+          <label for="ctSlicePosition" class="form-label"
+            data-bs-toggle="tooltip" data-bs-placement="right"
+            title="The position (in meters) along the slice axis at which the slice of the 3D field should be made">Distance
+            from Origin (m)</label>
+          <input type="number" step="any" class="form-control"
+            id="ctSlicePosition" name="ctSlicePosition"
+            data-2d-input-only="true"
+            placeholder="0.0" required
+            onchange="valueChanged()" />
+        </div>
+      </form>
+      <div class="mb-3">
+        <label for="ctFiles" class="form-label"
+          title="Select the CT file and the file containing the mapping between layers and masks">CT
+          and mapping
+          Files</label>
+        <input class="form-control" type="file" id="ctFiles"
+          onchange="filesChosen(this)" multiple />
+      </div>
+      <div class="mb-3">
+        <button id="fileUploadButton" class="btn btn-primary" type="button"
+          onclick="fileUploadClicked(this)" disabled>
+          Upload new CT
+        </button>
       </div>
     </div>
-
-    <div class="mb-3">
-      <div id="preBuiltDiv">
-        <label for="scenario" class="form-label">Scenarios:</label>
-        <select
-          name="scenario"
-          id="scenario"
-          class="form-select"
-          onchange="scenarioSelected(this)"
-        ></select>
-      </div>
-      <div id="ctFileDiv" hidden>
-        <label for="ctFile" class="form-label" for="ctFile">CT File</label>
-        <input class="form-control" type="file" id="ctFile" />
-      </div>
-    </div>
-  </fieldset>
-</form>
+  </div>
+</fieldset>
