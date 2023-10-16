@@ -43,7 +43,6 @@ mkdocs-gallery = "0.7.6"
 xarray = ">=2022.3.0"
 flask = {extras = ["async"], version = "^2.3.3"}
 pydantic = "<2"
-gunicorn = "^21.2.0"
 pyrevolve = ">=2.2.3"
 pydicom = "^2.4.3"
 nibabel = "^5.1.0"

@@ -1,7 +1,7 @@
-.PHONY:help lint lint-check test test-coverage test-unit test-integration docs web web-development
+.PHONY:help lint lint-check test test-coverage test-unit test-integration docs web
 
 help:
-	@echo "Available commands are: \n*lint, lint-check, spellcheck, test, test-unit, test-integration docs web web-development"
+	@echo "Available commands are: \n*lint, lint-check, spellcheck, test, test-unit, test-integration docs web"
 
 lint:
 	poetry run isort src tests docs/examples
@@ -39,8 +39,5 @@ test-integration:
 docs:
 	poetry run mkdocs build
 
-web-development:
-	poetry run ndk-ui
-
 web:
-	poetry run gunicorn -b 0.0.0.0 -w 1 --timeout 99999999 'src.web.app:app'
+	poetry run ndk-ui
