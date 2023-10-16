@@ -1,14 +1,17 @@
 from __future__ import annotations
 
+from typing import List, Tuple
+
 import numpy as np
 import numpy.typing as npt
+import scipy.ndimage
 
 from . import _results as results
 
 
 def calculate_all_metrics(
     result: results.SteadyStateResult,
-) -> dict[str, dict[str, float | str]]:
+) -> dict[str, dict[str, float | int | str]]:
     """Calculate all metrics for the steady-state result and return as a dictionary.
 
     The keys for the dictionary are the names of the metrics. The value for each metric
@@ -25,6 +28,22 @@ def calculate_all_metrics(
         The dictionary structure containing metrics and their descriptions.
     """
     return {
+        "focal_pressure": {
+            "value": calculate_focal_pressure(result, layer="brain"),
+            "unit-of-measurement": "Pa",
+            "description": ("The peak pressure amplitude within the brain."),
+        },
+        "focal_volume": {
+            "value": calculate_focal_volume(result, layer="brain"),
+            "unit-of-measurement": "voxels",
+            "description": (
+                "The region of the brain where the pressure amplitude is above"
+                " 50%% of the maximum pressure amplitude. If more than one"
+                " region is above 50%% of the maximum pressure amplitude, the"
+                " volume of largest connected region is returned. Also called"
+                " the -6 dB focal volume."
+            ),
+        },
         "focal_gain": {
             "value": calculate_focal_gain(result),
             "unit-of-measurement": "dB",
@@ -34,6 +53,19 @@ def calculate_all_metrics(
                 " ambient pressure is calculated by the mean steady-state pressure"
                 " amplitude inside the brain but excluding the target."
             ),
+        },
+        **{
+            f"FWHM_{axis}": {
+                "value": calculate_focal_fwhm(result, axis=axis, layer="brain"),
+                "unit-of-measurement": "grid steps",
+                "description": (
+                    "The full-width at half-maximum-pressure (FWHM) along the"
+                    f" {axis}-axis. The FWHM is calculated by taking a 1-D"
+                    " profile through the focal point. Also called the -6 dB"
+                    " focal width."
+                ),
+            }
+            for axis in ("x", "y", "z")[: result.get_steady_state().ndim]
         },
         "I_ta_target": {
             "value": Conversions.convert(
@@ -118,6 +150,50 @@ def calculate_all_metrics(
     }
 
 
+def calculate_focal_pressure(
+    result: results.SteadyStateResult, layer: str | None = None
+) -> float:
+    """Calculate the focal pressure of the simulation result for a particular layer.
+
+    Focal pressure is also known as peak pressure.
+
+    Args:
+        result: the Result object containing the simulation results.
+        layer: the layer within which to calculate the focal pressure. If None, the
+            default, the focal pressure is calculated over the entire simulation
+            space.
+
+    Returns:
+        The focal pressure (in Pa)
+    """
+    ss_amp_masked = _get_steady_state_in_layer(result, layer=layer)
+    focal_pressure = np.max(ss_amp_masked)
+    return focal_pressure
+
+
+def calculate_focal_position(
+    result: results.SteadyStateResult, layer: str | None = None
+) -> Tuple[np.int_, ...]:
+    """Calculate the focal position of the simulation result for a particular layer.
+
+    The focal position is the position of peak pressure.
+
+    Args:
+        result: the Result object containing the simulation results.
+        layer: the layer within which to calculate the focal position. If None, the
+            default, the focal position is calculated over the entire simulation
+            space.
+
+    Returns:
+        The focal position (as grid index tuple)
+    """
+    ss_amp_masked = _get_steady_state_in_layer(result, layer=layer)
+    focal_position = np.unravel_index(
+        np.argmax(ss_amp_masked, axis=None), ss_amp_masked.shape
+    )
+    return focal_position
+
+
 def calculate_mechanical_index(
     result: results.SteadyStateResult, layer: str | None = None
 ) -> float:
@@ -135,14 +211,8 @@ def calculate_mechanical_index(
     Returns:
         The mechanical index (in Pa √s̅)
     """
-    if layer is None:
-        mask = np.ones_like(result.get_steady_state(), dtype=bool)
-    else:
-        mask = result.scenario.material_masks[layer]
-    ss_amp_in_brain: npt.NDArray[np.float_] = np.ma.masked_array(
-        result.get_steady_state(), mask=~mask
-    )
-    peak_neg_pressure = np.max(ss_amp_in_brain)
+    ss_amp_masked = _get_steady_state_in_layer(result, layer=layer)
+    peak_neg_pressure = np.max(ss_amp_masked)
     return peak_neg_pressure / np.sqrt(result.center_frequency)
 
 
@@ -289,6 +359,87 @@ def calculate_i_pa_off_target(result: results.SteadyStateResult) -> float:
     return calculate_i_ta_off_target(result)
 
 
+def calculate_focal_volume(
+    result: results.SteadyStateResult,
+    layer: str | None = "brain",
+) -> float:
+    """Calculate the focal volume of the simulation result.
+
+    From https://doi.org/10.1121/10.0013426:
+    > The focal volume is calculated by thresholding the pressure field inside
+    > the brain to 50% of the maximum value and then counting the voxels in the
+    > largest connected component.
+
+    Args:
+        result: the Result object containing the simulation results.
+        layer: the layer within which to calculate the focal volume.
+            If None, the focal volume is calculated over the entire grid.
+
+    Returns:
+        The focal volume (in voxels).
+    """
+    ss_amp_brain_masked = _get_steady_state_in_layer(result, layer=layer)
+    above_threshold = ss_amp_brain_masked >= (0.5 * ss_amp_brain_masked.max())
+    # `scipy.ndimage.label` expects a normal numpy array, so let's fill the masked array
+    if isinstance(above_threshold, np.ma.MaskedArray):
+        above_threshold = above_threshold.filled(False)
+    # Get contiguous regions
+    labeled_mask, _ = scipy.ndimage.label(above_threshold)
+    # Count the occurrences of each label in the labeled array
+    unique_labels, label_counts = np.unique(labeled_mask, return_counts=True)
+    # Exclude background, which `scipy.ndimage.label` labels as 0
+    label_counts = label_counts[unique_labels != 0]
+    assert label_counts.sum(), "Expected >=1 connected regions above 50% threshold"
+    # Get size of largest connected component
+    return label_counts.max()
+
+
+def calculate_focal_fwhm(
+    result: results.SteadyStateResult,
+    *,
+    axis: str | int,
+    layer: str | None = "brain",
+) -> float:
+    """Calculate the full-width at half-maximum-pressure (FWHM) along an axis.
+
+    Uses the 1-D profile through the focal position.
+
+    Args:
+        result: the Result object containing the simulation results.
+        axis: the axis along which to calculate the FWHM. Can be specified as a string
+            ("x", "y", or "z") or as an integer (0, 1, or 2).
+        layer: the layer within which to calculate the FWHM
+            If None, the FWHM is calculated over the entire grid.
+
+    Returns:
+        The full-width at half-maximum (in integer grid steps).
+    """
+    if isinstance(axis, str):
+        # Convert axis to index
+        axis = ["x", "y", "z"].index(axis.lower())
+
+    # Extract 1-D slice going through the focal position along `axis`
+    focal_position_idx = calculate_focal_position(result, layer=layer)
+    ss_amp_masked = _get_steady_state_in_layer(result, layer=layer)
+    slicer: List[np.int_ | slice] = list(focal_position_idx)
+    slicer[axis] = slice(None)
+    focal_slice = ss_amp_masked[tuple(slicer)]
+
+    # Find which indices are above the half-maximum-pressure
+    focal_position_axis_idx = focal_position_idx[axis]
+    above_half_max = focal_slice >= (0.5 * focal_slice[focal_position_axis_idx])
+
+    # `scipy.ndimage.label` expects a normal numpy array, so let's fill the masked array
+    if isinstance(above_half_max, np.ma.MaskedArray):
+        above_half_max = above_half_max.filled(False)
+    labeled_mask, _ = scipy.ndimage.label(above_half_max)
+    # We only care about the connected region containing the focal position
+    fwhm_group_label = labeled_mask[focal_position_axis_idx]
+    fwhm = np.sum(labeled_mask == fwhm_group_label)
+
+    return fwhm
+
+
 class Conversions:
     """A set of unit-of-measurement conversion tools."""
 
@@ -327,3 +478,26 @@ class Conversions:
             return value * 1e-4
 
         raise ValueError(f"Unsupported conversion: from '{from_uom}' to '{to_uom}'")
+
+
+def _get_steady_state_in_layer(
+    result: results.SteadyStateResult,
+    layer: str | None = None,
+) -> npt.NDArray | np.ma.MaskedArray:
+    """Get the steady-state pressure amplitude within a particular layer.
+
+    Args:
+        result: the Result object containing the simulation results.
+        layer: the layer to extract
+
+    Returns:
+        The steady-state pressure amplitude, with non-layer values masked.
+    """
+    steady_state = result.get_steady_state()
+    if layer is None:
+        return steady_state
+    else:
+        return np.ma.masked_array(
+            steady_state,
+            mask=~result.scenario.material_masks[layer],
+        )
