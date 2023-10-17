@@ -43,6 +43,21 @@ class SimulationResponse(Response):
         self.data = data
 
 
+class SimulationError(Response):
+    """Response indicating that an error occurred during the simulation."""
+
+    type = "simulation_error"
+    error: Exception
+
+    def __init__(self, error: Exception):
+        """Initialize the response.
+
+        Args:
+            error: The error that occurred during the simulation.
+        """
+        self.error = error
+
+
 class NoSimulationResponse(Response):
     """Response indicating that the simulation has not been run."""
 
@@ -99,7 +114,11 @@ class SimulationRunner(object):
         self._running = False
         result: Response
         if len(communication_pipe) > 0:
-            result = SimulationResponse(communication_pipe.pop())
+            response = communication_pipe.pop()
+            if isinstance(response, Exception):
+                result = SimulationError(response)
+            else:
+                result = SimulationResponse(response)
         else:
             result = NoSimulationResponse()
         self._last_result = result

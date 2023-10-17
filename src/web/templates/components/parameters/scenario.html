@@ -64,22 +64,22 @@
   }
 
   function setScenarioValues(configuration) {
-    if (configuration.scenarioSettings.scenarioId){
-        // running a built-in scenario
-        const scenarioSelect = document.getElementById("scenario")
-        scenarioSelect.value = configuration.scenarioSettings.scenarioId
-    } else if (configuration.scenarioSettings.ctFile){
-        // running a ct scan
-        document.getElementById("isCtScan").checked = true
-        toggleCTFileDiv()
-        const loadedCTsElement = document.getElementById("loadedCTs")
-        loadedCTsElement.value = configuration.scenarioSettings.ctFile
-        if (configuration.is2d){
-          const ctSliceAxis = document.getElementById("ctSliceAxis")
-          ctSliceAxis.value = configuration.scenarioSettings.ctSliceAxis
-          const ctSlicePosition = document.getElementById("ctSlicePosition")
-          ctSlicePosition.value = configuration.scenarioSettings.ctSlicePosition
-        }
+    if (configuration.scenarioSettings.scenarioId) {
+      // running a built-in scenario
+      const scenarioSelect = document.getElementById("scenario")
+      scenarioSelect.value = configuration.scenarioSettings.scenarioId
+    } else if (configuration.scenarioSettings.ctFile) {
+      // running a ct scan
+      document.getElementById("isCtScan").checked = true
+      toggleCTFileDiv()
+      const loadedCTsElement = document.getElementById("loadedCTs")
+      loadedCTsElement.value = configuration.scenarioSettings.ctFile
+      if (configuration.is2d) {
+        const ctSliceAxis = document.getElementById("ctSliceAxis")
+        ctSliceAxis.value = configuration.scenarioSettings.ctSliceAxis
+        const ctSlicePosition = document.getElementById("ctSlicePosition")
+        ctSlicePosition.value = configuration.scenarioSettings.ctSlicePosition
+      }
     }
     setTargetValues(configuration.target)
     setSimulationSettingsValues(configuration.simulationSettings)
@@ -100,7 +100,7 @@
     } else {
       // ct file was loaded
       params["ctFile"] = document.getElementById("loadedCTs").value
-      if (is2d){
+      if (is2d) {
         // these attributes only exist for 2D
         params["ctSliceAxis"] = document.getElementById("ctSliceAxis").value
         params["ctSlicePosition"] = document.getElementById("ctSlicePosition").value
@@ -132,7 +132,7 @@
 
   function filesChosen(fileInput) {
     clearPlotArea()
-    if (fileInput.files.length == 0){
+    if (fileInput.files.length == 0) {
       document.getElementById("fileUploadButton").disabled = true
       return
     }
@@ -167,14 +167,14 @@
     })
   }
 
-  function fillCTDimensions(shape, spacing){
+  function fillCTDimensions(shape, spacing) {
     // Calculate the max value for each axis
     ctDimensionPerAxis["x"] = (shape[0] * spacing[0]) / 1000
     ctDimensionPerAxis["y"] = (shape[1] * spacing[1]) / 1000
     ctDimensionPerAxis["z"] = (shape[2] * spacing[2]) / 1000
   }
 
-  function ctSliceAxisChanged(input){
+  function ctSliceAxisChanged(input) {
     let ctSliceAxisValue = input.value
     let ctSlicePositionInput = document.getElementById("ctSlicePosition")
     ctSlicePositionInput.max = ctDimensionPerAxis[ctSliceAxisValue]
@@ -211,10 +211,10 @@
       method: 'POST',
       body: data
     }).then(response => {
-        if (!response.ok) {
-            return Promise.reject(response);
-        }
-        return response.json();
+      if (!response.ok) {
+        return Promise.reject(response);
+      }
+      return response.json();
     })
       .then(message => {
         const selectedCT = message.selected_ct
@@ -268,18 +268,14 @@
 <fieldset>
   <div class="mb-3">
     <div class="btn-group">
-      <input type="radio" class="btn-check" name="options" id="isPreBuilt"
-        autocomplete="off"
+      <input type="radio" class="btn-check" name="options" id="isPreBuilt" autocomplete="off"
         onchange="togglePreBuiltDiv()" checked />
-      <label class="btn btn-primary" for="isPreBuilt" data-bs-toggle="tooltip"
-        data-bs-placement="right"
+      <label class="btn btn-primary" for="isPreBuilt" data-bs-toggle="tooltip" data-bs-placement="right"
         title="Use a prebuilt scenario with a target and transducers">Prebuilt</label>
 
-      <input type="radio" class="btn-check" name="options" id="isCtScan"
-        autocomplete="off"
+      <input type="radio" class="btn-check" name="options" id="isCtScan" autocomplete="off"
         onchange="toggleCTFileDiv()" />
-      <label class="btn btn-primary" for="isCtScan" data-bs-toggle="tooltip"
-        data-bs-placement="right"
+      <label class="btn btn-primary" for="isCtScan" data-bs-toggle="tooltip" data-bs-placement="right"
         title="Load a CT scan from a file">CT Scan</label>
     </div>
   </div>
@@ -287,24 +283,20 @@
   <div class="mb-3">
     <div id="preBuiltDiv">
       <label for="scenario" class="form-label">Scenarios:</label>
-      <select name="scenario" id="scenario" class="form-select"
-        onchange="scenarioSelected(this)"></select>
+      <select name="scenario" id="scenario" class="form-select" onchange="scenarioSelected(this)"></select>
     </div>
     <div id="ctFileDiv" hidden>
       <form id="ctForm">
         <div class="mb-3">
           <label class="form-label" for="loadedCTs">Available CTs</label>
-          <select class="form-select" size="3" name="loadedCTs" id="loadedCTs"
-            onchange="ctSelected(this)" required>
+          <select class="form-select" size="3" name="loadedCTs" id="loadedCTs" onchange="ctSelected(this)" required>
           </select>
         </div>
         <div class="mb-3" data-2d-only="true">
-          <label for="ctSliceAxis" class="form-label" data-bs-toggle="tooltip"
-            data-bs-placement="right"
+          <label for="ctSliceAxis" class="form-label" data-bs-toggle="tooltip" data-bs-placement="right"
             title="Axis along which to slice the 3D field to be recorded">Axis</label>
-          <select class="form-select" aria-label="Axis" id="ctSliceAxis"
-            data-2d-input-only="true"
-            name="ctSliceAxis" required onchange="ctSliceAxisChanged(this)">
+          <select class="form-select" aria-label="Axis" id="ctSliceAxis" data-2d-input-only="true" name="ctSliceAxis"
+            required onchange="ctSliceAxisChanged(this)">
             <option value selected>Select an axis</option>
             <option value="x">X</option>
             <option value="y">Y</option>
@@ -312,15 +304,11 @@
           </select>
         </div>
         <div class="mb-3" data-2d-only="true">
-          <label for="ctSlicePosition" class="form-label"
-            data-bs-toggle="tooltip" data-bs-placement="right"
+          <label for="ctSlicePosition" class="form-label" data-bs-toggle="tooltip" data-bs-placement="right"
             title="The position (in meters) along the slice axis at which the slice of the 3D field should be made">Distance
             from Origin (m)</label>
-          <input type="number" step="any" class="form-control"
-            id="ctSlicePosition" name="ctSlicePosition"
-            data-2d-input-only="true"
-            placeholder="0.0" required
-            onchange="valueChanged()" />
+          <input type="number" step="any" class="form-control" id="ctSlicePosition" name="ctSlicePosition"
+            data-2d-input-only="true" placeholder="0.0" required onchange="valueChanged()" />
         </div>
       </form>
       <div class="mb-3">
@@ -328,12 +316,10 @@
           title="Select the CT file and the file containing the mapping between layers and masks">CT
           and mapping
           Files</label>
-        <input class="form-control" type="file" id="ctFiles"
-          onchange="filesChosen(this)" multiple />
+        <input class="form-control" type="file" id="ctFiles" onchange="filesChosen(this)" multiple />
       </div>
       <div class="mb-3">
-        <button id="fileUploadButton" class="btn btn-primary" type="button"
-          onclick="fileUploadClicked(this)" disabled>
+        <button id="fileUploadButton" class="btn btn-primary" type="button" onclick="fileUploadClicked(this)" disabled>
           Upload new CT
         </button>
       </div>
