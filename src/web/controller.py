@@ -4,6 +4,7 @@ import io
 import tempfile
 from typing import Dict, Optional, Tuple, Union
 
+import codepy
 import matplotlib.pyplot as plt
 from flask import current_app
 from web.computed_tomography import get_ct_image
@@ -20,6 +21,22 @@ from neurotechdevkit.materials import DEFAULT_MATERIALS, get_material
 from neurotechdevkit.results import SteadyStateResult2D, SteadyStateResult3D
 from neurotechdevkit.scenarios import Scenario2D, Scenario3D
 from neurotechdevkit.scenarios.built_in import BUILT_IN_SCENARIOS
+
+
+class Error(Exception):
+    """Base class for exceptions in this module."""
+
+    def __str__(self):
+        """Return the exception message."""
+        return self.message
+
+
+class CompilationError(Error):
+    """Exception raised for errors in the compilation of a scenario."""
+
+    def __init__(self):
+        """Initialize the exception."""
+        self.message = "Compilation error"
 
 
 class BuiltInScenariosShelf(object):
@@ -175,7 +192,7 @@ def _instantiate_scenario(
 
 async def get_simulation_image(
     config: SimulateRequest, app_config: dict
-) -> Tuple[str, str]:
+) -> Union[Error, Tuple[str, str]]:
     """
     Simulate a scenario and return the result as a base64 GIF or PNG.
 
@@ -205,9 +222,12 @@ async def get_simulation_image(
         scenario.material_masks = ct_image.material_masks
     _configure_scenario(scenario, config)
     scenario.compile_problem()
-
     if config.simulationSettings.isSteadySimulation:
-        result = scenario.simulate_steady_state()
+        try:
+            result = scenario.simulate_steady_state()
+        except codepy.CompileError:
+            return CompilationError()
+
         assert isinstance(result, (SteadyStateResult2D, SteadyStateResult3D))
         fig = result.render_steady_state_amplitudes(show_material_outlines=False)
         buf = io.BytesIO()
@@ -216,7 +236,11 @@ async def get_simulation_image(
         plt.close(fig)
         return data, "png"
     else:
-        pulse_result = scenario.simulate_pulse()
+        try:
+            pulse_result = scenario.simulate_pulse()
+        except codepy.CompileError:
+            return CompilationError()
+
         animation = pulse_result.render_pulsed_simulation_animation()
         assert hasattr(animation, "_fig")
         with tempfile.NamedTemporaryFile(suffix=".gif") as tmpfile:

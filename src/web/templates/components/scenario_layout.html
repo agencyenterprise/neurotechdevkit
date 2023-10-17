@@ -95,9 +95,11 @@
       },
       body: JSON.stringify(data),
     })
-      .then((response) => {
-        if (response.ok) return response.text()
-        return ""
+      .then(response => {
+        if (!response.ok) {
+          return Promise.reject(response);
+        }
+        return response.text();
       })
       .then((text) => {
         if (text) {
@@ -107,6 +109,13 @@
           showRunSimulation()
         }
       })
+      .catch(response => {
+        response.json().then((error) => {
+          hideLoading()
+          document.getElementById("plotArea").innerHTML = error.error
+          showRunSimulation()
+        })
+      });
   }
 
   function getSimulation() {
@@ -118,10 +127,12 @@
     fetch(url, {
       method: "GET",
     })
-      .then((response) => {
+      .then(response => {
         hideLoading()
-        if (response.ok) return response.text()
-        return ""
+        if (!response.ok) {
+          return Promise.reject(response);
+        }
+        return response.text();
       })
       .then((text) => {
         if (text) {
@@ -131,6 +142,13 @@
           showRunSimulation()
         }
       })
+      .catch(response => {
+        response.json().then((error) => {
+          hideLoading()
+          document.getElementById("plotArea").innerHTML = error.error
+          showRunSimulation()
+        })
+      });
   }
 
   function cancelSimulation(button) {
@@ -154,43 +172,20 @@
 <div class="container-fluid">
   <h1 class="d-flex justify-content-between align-items-center mb-3">
     <span>Plots</span>
-    <button
-      id="runSimulation"
-      type="button"
-      class="btn btn-primary"
-      onclick="runSimulation(this)"
-      disabled
-    >
+    <button id="runSimulation" type="button" class="btn btn-primary" onclick="runSimulation(this)" disabled>
       Run Simulation
     </button>
-    <button
-      id="cancelSimulation"
-      type="button"
-      class="btn btn-warning"
-      onclick="cancelSimulation(this)"
-      hidden
-    >
+    <button id="cancelSimulation" type="button" class="btn btn-warning" onclick="cancelSimulation(this)" hidden>
       Cancel Simulation
     </button>
-    <button
-      id="cleanSimulation"
-      type="button"
-      class="btn btn-warning"
-      onclick="cleanSimulation(this)"
-      hidden
-    >
+    <button id="cleanSimulation" type="button" class="btn btn-warning" onclick="cleanSimulation(this)" hidden>
       Clean Simulation
     </button>
   </h1>
   <div class="row d-flex" id="loader" hidden>
     <div class="d-flex flex-column align-items-center justify-content-center">
       <div class="row">
-        <div
-          class="spinner-border"
-          role="status"
-          style="width: 10rem; height: 10rem"
-          hidden
-        >
+        <div class="spinner-border" role="status" style="width: 10rem; height: 10rem" hidden>
           <span class="sr-only">Loading...</span>
         </div>
       </div>

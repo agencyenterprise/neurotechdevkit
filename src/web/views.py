@@ -58,6 +58,8 @@ def simulate():
     if result.type == "simulation":
         data, image_format = result.data
         return f"<img src='data:image/{image_format};base64,{data}'/>"
+    elif result.type == "simulation_error":
+        return jsonify({"error": str(result.error)}), 400
     elif result.type == "no_simulation":
         return jsonify({"error": "No result"}), 400
 
@@ -69,6 +71,8 @@ def get_simulation():
     if result.type == "simulation":
         data, image_format = result.data
         return f"<img src='data:image/{image_format};base64,{data}'/>"
+    elif result.type == "simulation_error":
+        return jsonify({"error": str(result.error)}), 400
     elif result.type == "no_simulation":
         return jsonify({"error": "No result"}), 400
 
