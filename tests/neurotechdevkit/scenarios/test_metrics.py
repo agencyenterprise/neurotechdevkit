@@ -12,6 +12,7 @@ from neurotechdevkit.results._metrics import (
     calculate_focal_fwhm,
     calculate_focal_gain,
     calculate_focal_pressure,
+    calculate_focal_position,
     calculate_focal_volume,
     calculate_i_pa_off_target,
     calculate_i_pa_target,
@@ -41,6 +42,9 @@ def patched_metric_fns(monkeypatch):
     )
     monkeypatch.setattr(
         metrics, "calculate_focal_pressure", lambda result, layer: 8.2e5
+    )
+    monkeypatch.setattr(
+        metrics, "calculate_focal_position", lambda result, layer: (15, 24)
     )
     monkeypatch.setattr(metrics, "calculate_focal_volume", lambda result, layer: 123)
     monkeypatch.setattr(metrics, "calculate_focal_gain", lambda result: 2.4)
@@ -129,13 +133,14 @@ def test_calculate_all_metrics_has_correct_structure(fake_result, patched_metric
     metrics = calculate_all_metrics(fake_result)
     for _, data in metrics.items():
         assert set(data.keys()) == {"value", "unit-of-measurement", "description"}
-        assert isinstance(data["value"], (float, int))
+        assert isinstance(data["value"], (float, int, tuple))
 
 
 def test_calculate_all_metrics_has_expected_metrics(fake_result, patched_metric_fns):
     """Verify that the metrics data contains the expected set of metrics"""
     expected_metrics = [
         "focal_pressure",
+        "focal_position",
         "focal_volume",
         "focal_gain",
         "FWHM_x",
@@ -158,6 +163,7 @@ def test_calculate_all_metrics_conversions(fake_result, patched_metric_fns):
     """
     metrics = calculate_all_metrics(fake_result)
     np.testing.assert_allclose(metrics["focal_pressure"]["value"], 8.2e5)
+    assert metrics["focal_position"]["value"] == (15, 24)
     assert metrics["focal_volume"]["value"] == 123
     np.testing.assert_allclose(metrics["focal_gain"]["value"], 2.4)
     assert metrics["FWHM_x"]["value"] == 6
