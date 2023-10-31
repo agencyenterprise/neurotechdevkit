@@ -33,6 +33,13 @@ def calculate_all_metrics(
             "unit-of-measurement": "Pa",
             "description": ("The peak pressure amplitude within the brain."),
         },
+        "focal_position": {
+            "value": calculate_focal_position(result, layer="brain"),
+            "unit-of-measurement": "voxel-index",
+            "description": (
+                "The position of the peak pressure amplitude within the brain."
+            ),
+        },
         "focal_volume": {
             "value": calculate_focal_volume(result, layer="brain"),
             "unit-of-measurement": "voxels",
