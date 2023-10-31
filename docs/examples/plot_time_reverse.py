@@ -177,7 +177,7 @@ steady_state_result.render_steady_state_amplitudes()
 # target.
 max_pressure_idx = steady_state_result.metrics["focal_position"]["value"]
 assert isinstance(max_pressure_idx, tuple)
-assert all(isinstance(idx, int) for idx in max_pressure_idx)
+assert all(np.issubdtype(type(idx), np.integer) for idx in max_pressure_idx)
 grid = steady_state_result.traces.grid.space.grid
 focal_point = np.array(
     [
