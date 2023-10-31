@@ -111,7 +111,7 @@ pressure_at_elements = result.wavefield[element_indices[:, 0], element_indices[:
 element_reverse_delays = np.argmax(pressure_at_elements, axis=1) * result.effective_dt
 plt.plot(element_reverse_delays, marker="o")
 plt.xlabel("element index")
-plt.ylabel("delay [s]")
+_ = plt.ylabel("delay [s]")
 
 
 # %%
