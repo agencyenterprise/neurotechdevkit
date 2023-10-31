@@ -176,6 +176,8 @@ steady_state_result.render_steady_state_amplitudes()
 # We can also calculate how far the "time reverse" estimate is from the true
 # target.
 max_pressure_idx = steady_state_result.metrics["focal_position"]["value"]
+assert isinstance(max_pressure_idx, tuple)
+assert all(isinstance(idx, int) for idx in max_pressure_idx)
 grid = steady_state_result.traces.grid.space.grid
 focal_point = np.array(
     [
