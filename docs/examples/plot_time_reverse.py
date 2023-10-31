@@ -73,7 +73,7 @@ reversed_scenario = ndk.scenarios.built_in.Scenario2_2D()
 point_source = ndk.sources.PointSource2D(
     position=true_scenario.target.center,
 )
-reversed_scenario.sources.append(point_source)
+reversed_scenario.sources = [point_source]
 
 reversed_scenario.make_grid()
 reversed_scenario.compile_problem()
