@@ -16,6 +16,88 @@
     return true
   }
 
+  function clickToPositionHandler(){
+    showLoading("Rendering Layout...")
+    disallowRunSimulation()
+    clearPlotArea()
+
+    const is2d = scenarioIs2d()
+    const scenarioParams = getScenarioParams()
+    const transducersParams = getTransducersParams()
+    const targetParams = getTargetParams()
+    const simulationSettingsParams = getSimulationSettingsParams()
+    const displaySettingsParams = is2d ? null : getDisplaySettingsParams()
+
+    const data = {
+      is2d,
+      scenarioSettings: scenarioParams,
+      transducers: transducersParams,
+      target: targetParams,
+      simulationSettings: simulationSettingsParams,
+      displaySettings: displaySettingsParams,
+    }
+    const url = "{{ url_for('main.render_canvas') }}"
+    fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+      
+
+        // Create a new canvas and get the context
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+
+        // Add the canvas to the plot area
+        hideLoading()
+        document.getElementById('plotArea').appendChild(canvas);
+        const img = new Image();
+        img.onload = function() {
+            // Set the canvas dimensions
+            canvas.width = img.width;
+            canvas.height = img.height;
+
+            // Draw the image on the canvas
+            ctx.drawImage(img, 0, 0);
+
+            // Save the data ranges
+            canvas.dataset.xlim = JSON.stringify(data.xlim);
+            canvas.dataset.ylim = JSON.stringify(data.ylim);
+        };
+
+        // Set the image source
+        img.src = 'data:image/png;base64,' + data.image;
+
+        // Handle click events on the canvas
+        canvas.addEventListener('click', function(event) {
+            // Get the size of the canvas
+            const rect = canvas.getBoundingClientRect();
+
+            // Calculate the position of the click in pixels
+            const xPixel = event.clientX - rect.left;
+            const yPixel = event.clientY - rect.top;
+
+            // Get the data ranges
+            const xlim = JSON.parse(canvas.dataset.xlim);
+            const ylim = JSON.parse(canvas.dataset.ylim);
+
+            // Convert from pixels to data units
+            const xData = xlim[0] + (xlim[1] - xlim[0]) * xPixel / canvas.width;
+            const yData = ylim[1] - (ylim[1] - ylim[0]) * yPixel / canvas.height;
+
+            // Log the data coordinates
+
+            document.getElementById("centerX").value = yData
+            document.getElementById("centerY").value = xData
+            valueChanged()
+        });
+      })
+  }
+
   function getTargetParams() {
     let params = {}
     params["centerX"] = document.getElementById("centerX").value
@@ -27,6 +109,11 @@
 </script>
 <form id="targetForm">
   <fieldset>
+    <div class="row">
+      <div class="col">
+        <p><a class="link" onclick="clickToPositionHandler()">Click to position</a></p>
+      </div>
+    </div>
     <div class="mb-3 row">
       <div class="col">
         <label

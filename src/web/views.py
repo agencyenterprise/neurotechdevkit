@@ -1,9 +1,13 @@
 """Views for the web app."""
+import base64
+import io
 import shutil
 import tempfile
 from pathlib import Path
 
+import matplotlib.pyplot as plt
 from flask import Blueprint, current_app, jsonify, render_template, request
+from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 from pydantic import ValidationError
 from web.computed_tomography import get_available_cts, validate_ct
 from web.controller import (
@@ -94,9 +98,56 @@ async def render_layout():
         # return a 400 Bad Request response
         return jsonify({"error": str(e)}), 400
 
-    data = get_scenario_layout(config)
+    fig = get_scenario_layout(config)
+    buf = io.BytesIO()
+    fig.savefig(buf, format="png")
+    data = base64.b64encode(buf.getbuffer()).decode("ascii")
+    plt.close(fig)
     image_format = "png"
     return f"<img src='data:image/{image_format};base64,{data}'/>"
+
+
+@bp.route("/render_canvas", methods=["POST"])
+async def render_canvas():
+    """Render the layout of a scenario and return the result as a base64 PNG."""
+    try:
+        config = RenderLayoutRequest.parse_obj(request.json)
+    except ValidationError as e:
+        # If the JSON data doesn't match the Pydantic model,
+        # return a 400 Bad Request response
+        return jsonify({"error": str(e)}), 400
+
+    fig = get_scenario_layout(config)
+
+    ax = fig.get_axes()[0]
+
+    # Remove the title
+    fig.suptitle("")
+
+    # Remove the labels of each drawn component
+    for line in ax.lines:
+        line.set_label("")
+
+    # Turn off the axes to remove labels, title, legend, etc.
+    ax.legend_ = None
+    ax.axis("off")
+
+    xlim = ax.get_xlim()
+    ylim = ax.get_ylim()
+
+    # Save it to a BytesIO object
+    buf = io.BytesIO()
+    plt.savefig(buf, format='png')
+    buf.seek(0)
+
+    # Encode the image in base64 and send it in json along with the data ranges
+    return jsonify(
+        {
+            "image": base64.b64encode(buf.read()).decode("utf-8"),
+            "xlim": xlim,
+            "ylim": ylim,
+        }
+    )
 
 
 @bp.route("/ct_scan", methods=["POST"])
