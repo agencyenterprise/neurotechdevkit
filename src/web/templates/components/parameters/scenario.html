@@ -37,6 +37,11 @@
   }
 
   function validateCTValues() {
+    isCTScan = document.getElementById("isCtScan").checked
+    if (!isCTScan) {
+      return true
+    }
+
     let form = document.getElementById("ctForm")
     if (!form.checkValidity()) {
       $("#scenario-accordion-item").collapse("show")
