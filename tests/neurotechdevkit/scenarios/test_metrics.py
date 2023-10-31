@@ -12,7 +12,6 @@ from neurotechdevkit.results._metrics import (
     calculate_focal_fwhm,
     calculate_focal_gain,
     calculate_focal_pressure,
-    calculate_focal_position,
     calculate_focal_volume,
     calculate_i_pa_off_target,
     calculate_i_pa_target,
