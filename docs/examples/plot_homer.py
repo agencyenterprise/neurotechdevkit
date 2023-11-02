@@ -4,6 +4,9 @@ Fixing Homer Simpson
 ====================================
 
 For additional context, check out [FixingHomer.com](https://fixinghomer.com/).
+TLDR: We take [this](
+    https://neurotechdevkit.s3.us-west-2.amazonaws.com/homer.webp
+) fun image and show how flexible the NDK is for transcranial ultrasound simulation.
 """
 
 # %%
