@@ -121,7 +121,7 @@ async def render_canvas():
 
     # Clean up the figure, leaving only the canvas
     fig.subplots_adjust(left=0, right=1, top=1, bottom=0)
-    
+
     ax = fig.get_axes()[0]
 
     # Remove the title
@@ -143,10 +143,10 @@ async def render_canvas():
 
     return jsonify(
         {
-            'image': base64.b64encode(png_output.getvalue()).decode('utf-8'),
+            "image": base64.b64encode(png_output.getvalue()).decode("utf-8"),
             "xlim": xlim,
             "ylim": ylim,
-            'size_inches': [*fig_size],
+            "size_inches": [*fig_size],
         }
     )
 

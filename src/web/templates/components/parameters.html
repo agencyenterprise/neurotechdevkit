@@ -34,28 +34,13 @@
     disallowRunSimulation()
     clearPlotArea()
 
-    const is2d = scenarioIs2d()
-    const scenarioParams = getScenarioParams()
-    const transducersParams = getTransducersParams()
-    const targetParams = getTargetParams()
-    const simulationSettingsParams = getSimulationSettingsParams()
-    const displaySettingsParams = is2d ? null : getDisplaySettingsParams()
-
-    const data = {
-      is2d,
-      scenarioSettings: scenarioParams,
-      transducers: transducersParams,
-      target: targetParams,
-      simulationSettings: simulationSettingsParams,
-      displaySettings: displaySettingsParams,
-    }
     const url = "{{ url_for('main.render_layout') }}"
     fetch(url, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(data),
+      body: getFullRequestBody(),
     })
       .then((response) => response.text())
       .then((text) => {

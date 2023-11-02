@@ -15,34 +15,19 @@
     }
     return true
   }
-
+  
   function clickToPositionHandler(){
     showLoading("Rendering Layout...")
     disallowRunSimulation()
     clearPlotArea()
 
-    const is2d = scenarioIs2d()
-    const scenarioParams = getScenarioParams()
-    const transducersParams = getTransducersParams()
-    const targetParams = getTargetParams()
-    const simulationSettingsParams = getSimulationSettingsParams()
-    const displaySettingsParams = is2d ? null : getDisplaySettingsParams()
-
-    const data = {
-      is2d,
-      scenarioSettings: scenarioParams,
-      transducers: transducersParams,
-      target: targetParams,
-      simulationSettings: simulationSettingsParams,
-      displaySettings: displaySettingsParams,
-    }
     const url = "{{ url_for('main.render_canvas') }}"
     fetch(url, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(data),
+      body: getFullRequestBody(),
     })
       .then((response) => response.json())
       .then((data) => {
@@ -52,6 +37,13 @@
 
         // Add the canvas to the plot area
         hideLoading()
+        
+        const label = document.createElement('p');
+        label.textContent = 'Click on the image to place the target';
+        label.style.textAlign = 'center';
+
+        plotArea.insertBefore(label, plotArea.firstChild);
+
         document.getElementById('plotArea').appendChild(canvas);
         const img = new Image();
         img.onload = function() {
@@ -75,21 +67,41 @@
             // Get the size of the canvas
             const rect = canvas.getBoundingClientRect();
 
-            // // Get the data ranges
-            const xlim = JSON.parse(canvas.dataset.xlim);
-            const ylim = JSON.parse(canvas.dataset.ylim);
-
             // Calculate the position of the click in pixels
             const xPixel = event.clientX - rect.left;
             const yPixel = event.clientY - rect.top;
 
-            // Log the data coordinates
+            // Get the data ranges
+            const xlim = JSON.parse(canvas.dataset.xlim);
+            const ylim = JSON.parse(canvas.dataset.ylim);
+
             // Convert from pixels to data units
             const xData = xlim[0] + (xlim[1] - xlim[0]) * xPixel / canvas.width;
             const yData = ylim[1] - (ylim[1] - ylim[0]) * yPixel / canvas.height;
 
-            document.getElementById("centerX").value = yData
-            document.getElementById("centerY").value = xData
+            // Update the form
+            if (scenarioIs2d()) {
+              document.getElementById("centerX").value = yData
+              document.getElementById("centerY").value = xData
+            } else{
+              const sliceAxis = document.getElementById("sliceAxis").value
+              switch (sliceAxis)
+              {
+                case "x":
+                  document.getElementById("centerY").value = yData
+                  document.getElementById("centerZ").value = xData
+                  break;
+                case "y":
+                  document.getElementById("centerX").value = yData
+                  document.getElementById("centerZ").value = xData
+                  break;
+                case "z":
+                  document.getElementById("centerX").value = yData
+                  document.getElementById("centerY").value = xData
+                  break;
+              }
+              
+            }
             valueChanged()
         });
       })
@@ -108,7 +120,7 @@
   <fieldset>
     <div class="row">
       <div class="col">
-        <p><a class="link" onclick="clickToPositionHandler()">Click to position</a></p>
+        <button type="button" onclick="clickToPositionHandler()" class="btn btn-link">Click to position</button>
       </div>
     </div>
     <div class="mb-3 row">

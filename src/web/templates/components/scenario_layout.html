@@ -39,8 +39,6 @@
     document.getElementById("runSimulation").setAttribute("hidden", true)
   }
   function allowRunSimulation() {
-    const is2d = document.getElementById("is2d").checked
-
     if (hasTransducers()) {
       document.getElementById("runSimulation").removeAttribute("disabled")
     } else {
@@ -64,14 +62,8 @@
     document.getElementById("cleanSimulation").setAttribute("hidden", true)
   }
 
-  function runSimulation(button) {
-    showLoading("Running Simulation...")
-    showCancelSimulation()
-    disableParametersPanel()
-    hideRunSimulation()
-    clearPlotArea()
-
-    const is2d = document.getElementById("is2d").checked
+  function getFullRequestBody(){
+    const is2d = scenarioIs2d()
     const scenarioParams = getScenarioParams()
     const transducersParams = getTransducersParams()
     const targetParams = getTargetParams()
@@ -86,6 +78,15 @@
       simulationSettings: simulationSettingsParams,
       displaySettings: displaySettingsParams,
     }
+    return JSON.stringify(data)
+  }
+
+  function runSimulation(button) {
+    showLoading("Running Simulation...")
+    showCancelSimulation()
+    disableParametersPanel()
+    hideRunSimulation()
+    clearPlotArea()
 
     const url = "{{ url_for('main.simulate') }}"
     fetch(url, {
@@ -93,7 +94,7 @@
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(data),
+      body: getFullRequestBody(),
     })
       .then(response => {
         if (!response.ok) {

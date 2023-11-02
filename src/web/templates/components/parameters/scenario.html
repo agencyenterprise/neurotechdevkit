@@ -96,7 +96,7 @@
 
   function getScenarioParams() {
     const isPreBuilt = document.getElementById("isPreBuilt").checked
-    const is2d = document.getElementById("is2d").checked
+    const is2d = scenarioIs2d()
     let params = {
       isPreBuilt: isPreBuilt,
     }
@@ -162,7 +162,7 @@
       "centerFrequency": 5e5,
       "isSteadySimulation": true,
     })
-    const is3d = document.getElementById("is3d").checked
+    const is3d = !scenarioIs2d()
 
     setTargetValues({
       "centerX": ctDimensionPerAxis["x"] / 2,
