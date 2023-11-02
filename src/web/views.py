@@ -109,7 +109,7 @@ async def render_layout():
 
 @bp.route("/render_canvas", methods=["POST"])
 async def render_canvas():
-    """Render the layout of a scenario and return the result as a base64 PNG."""
+    """Render the canvas of a scenario and return the result as a base64 PNG."""
     try:
         config = RenderLayoutRequest.parse_obj(request.json)
     except ValidationError as e:
@@ -119,14 +119,13 @@ async def render_canvas():
 
     fig = get_scenario_layout(config)
 
+    # Clean up the figure, leaving only the canvas
+    fig.subplots_adjust(left=0, right=1, top=1, bottom=0)
+    
     ax = fig.get_axes()[0]
 
     # Remove the title
     fig.suptitle("")
-
-    # Remove the labels of each drawn component
-    for line in ax.lines:
-        line.set_label("")
 
     # Turn off the axes to remove labels, title, legend, etc.
     ax.legend_ = None
@@ -134,18 +133,20 @@ async def render_canvas():
 
     xlim = ax.get_xlim()
     ylim = ax.get_ylim()
+    data_ratio = abs((xlim[1] - xlim[0]) / (ylim[1] - ylim[0]))
+    fig_size = (4 * data_ratio, 4)
+    fig.set_size_inches(*fig_size)
 
-    # Save it to a BytesIO object
-    buf = io.BytesIO()
-    plt.savefig(buf, format='png')
-    buf.seek(0)
+    canvas = FigureCanvas(fig)
+    png_output = io.BytesIO()
+    canvas.print_png(png_output)
 
-    # Encode the image in base64 and send it in json along with the data ranges
     return jsonify(
         {
-            "image": base64.b64encode(buf.read()).decode("utf-8"),
+            'image': base64.b64encode(png_output.getvalue()).decode('utf-8'),
             "xlim": xlim,
             "ylim": ylim,
+            'size_inches': [*fig_size],
         }
     )
 

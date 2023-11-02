@@ -46,8 +46,6 @@
     })
       .then((response) => response.json())
       .then((data) => {
-      
-
         // Create a new canvas and get the context
         const canvas = document.createElement('canvas');
         const ctx = canvas.getContext('2d');
@@ -64,7 +62,7 @@
             // Draw the image on the canvas
             ctx.drawImage(img, 0, 0);
 
-            // Save the data ranges
+            // // Save the data ranges
             canvas.dataset.xlim = JSON.stringify(data.xlim);
             canvas.dataset.ylim = JSON.stringify(data.ylim);
         };
@@ -77,19 +75,18 @@
             // Get the size of the canvas
             const rect = canvas.getBoundingClientRect();
 
+            // // Get the data ranges
+            const xlim = JSON.parse(canvas.dataset.xlim);
+            const ylim = JSON.parse(canvas.dataset.ylim);
+
             // Calculate the position of the click in pixels
             const xPixel = event.clientX - rect.left;
             const yPixel = event.clientY - rect.top;
 
-            // Get the data ranges
-            const xlim = JSON.parse(canvas.dataset.xlim);
-            const ylim = JSON.parse(canvas.dataset.ylim);
-
+            // Log the data coordinates
             // Convert from pixels to data units
             const xData = xlim[0] + (xlim[1] - xlim[0]) * xPixel / canvas.width;
             const yData = ylim[1] - (ylim[1] - ylim[0]) * yPixel / canvas.height;
-
-            // Log the data coordinates
 
             document.getElementById("centerX").value = yData
             document.getElementById("centerY").value = xData
