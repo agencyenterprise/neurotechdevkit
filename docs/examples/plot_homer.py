@@ -106,8 +106,8 @@ grid = ndk.grid.Grid.make_grid(
 scenario.grid = grid
 
 # confirm that the grid size matches the image size of 272x242
-print("total voxels:")
-print(grid.space.shape[0], grid.space.shape[1])
+# print("total voxels:")
+# print(grid.space.shape[0], grid.space.shape[1])
 
 dx = grid.space.spacing[0]
 scenario.material_masks = masks
