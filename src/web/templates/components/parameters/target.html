@@ -31,11 +31,6 @@
     })
       .then((response) => response.json())
       .then((data) => {
-        // Create a new canvas and get the context
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-
-        // Add the canvas to the plot area
         hideLoading()
         
         const label = document.createElement('p');
@@ -44,66 +39,43 @@
 
         plotArea.insertBefore(label, plotArea.firstChild);
 
-        document.getElementById('plotArea').appendChild(canvas);
-        const img = new Image();
-        img.onload = function() {
-            // Set the canvas dimensions
-            canvas.width = img.width;
-            canvas.height = img.height;
-
-            // Draw the image on the canvas
-            ctx.drawImage(img, 0, 0);
-
-            // // Save the data ranges
-            canvas.dataset.xlim = JSON.stringify(data.xlim);
-            canvas.dataset.ylim = JSON.stringify(data.ylim);
-        };
-
-        // Set the image source
-        img.src = 'data:image/png;base64,' + data.image;
-
-        // Handle click events on the canvas
-        canvas.addEventListener('click', function(event) {
-            // Get the size of the canvas
-            const rect = canvas.getBoundingClientRect();
-
-            // Calculate the position of the click in pixels
-            const xPixel = event.clientX - rect.left;
-            const yPixel = event.clientY - rect.top;
-
-            // Get the data ranges
-            const xlim = JSON.parse(canvas.dataset.xlim);
-            const ylim = JSON.parse(canvas.dataset.ylim);
-
-            // Convert from pixels to data units
-            const xData = xlim[0] + (xlim[1] - xlim[0]) * xPixel / canvas.width;
-            const yData = ylim[1] - (ylim[1] - ylim[0]) * yPixel / canvas.height;
-
-            // Update the form
-            if (scenarioIs2d()) {
-              document.getElementById("centerX").value = yData
-              document.getElementById("centerY").value = xData
-            } else{
-              const sliceAxis = document.getElementById("sliceAxis").value
-              switch (sliceAxis)
-              {
-                case "x":
-                  document.getElementById("centerY").value = yData
-                  document.getElementById("centerZ").value = xData
-                  break;
-                case "y":
-                  document.getElementById("centerX").value = yData
-                  document.getElementById("centerZ").value = xData
-                  break;
-                case "z":
-                  document.getElementById("centerX").value = yData
-                  document.getElementById("centerY").value = xData
-                  break;
-              }
-              
+        const clickCallback = (xData, yData) => {
+          // Update the form
+          if (scenarioIs2d()) {
+            document.getElementById("centerX").value = yData
+            document.getElementById("centerY").value = xData
+          } else{
+            const sliceAxis = document.getElementById("sliceAxis").value
+            switch (sliceAxis)
+            {
+              case "x":
+                document.getElementById("centerY").value = yData
+                document.getElementById("centerZ").value = xData
+                break;
+              case "y":
+                document.getElementById("centerX").value = yData
+                document.getElementById("centerZ").value = xData
+                break;
+              case "z":
+                document.getElementById("centerX").value = yData
+                document.getElementById("centerY").value = xData
+                break;
             }
-            valueChanged()
-        });
+          }
+          valueChanged()
+        }
+
+        const canvas = plotToCanvas({
+          xlim: data.xlim,
+          ylim: data.ylim,
+          xlabel: data.xlabel,
+          ylabel: data.ylabel,
+          xticks: data.xticks,
+          yticks: data.yticks,
+          image: data.image,
+          clickCallback,
+        })
+        document.getElementById('plotArea').appendChild(canvas);
       })
   }
 

@@ -8,6 +8,7 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 from flask import Blueprint, current_app, jsonify, render_template, request
 from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
+from matplotlib.ticker import FuncFormatter
 from pydantic import ValidationError
 from web.computed_tomography import get_available_cts, validate_ct
 from web.controller import (
@@ -118,37 +119,59 @@ async def render_canvas():
         return jsonify({"error": str(e)}), 400
 
     fig = get_scenario_layout(config)
+    plot_params = cleanup_plot(fig)
+    return jsonify(plot_params)
 
-    # Clean up the figure, leaving only the canvas
+
+def cleanup_plot(fig) -> dict:
+    """Clean up the plot and return the parameters to render it in the frontend."""
     fig.subplots_adjust(left=0, right=1, top=1, bottom=0)
 
     ax = fig.get_axes()[0]
+    xlabel = ax.get_xlabel()
+    ylabel = ax.get_ylabel()
+    ax.spines["top"].set_visible(False)
+    ax.spines["right"].set_visible(False)
+    ax.spines["bottom"].set_visible(False)
+    ax.spines["left"].set_visible(False)
+
+    # Lists to store tick locations
+    xticks = []
+    yticks = []
+
+    # Define function to capture x and y ticks when they are being formatted
+    def capture_xticks(value, pos):
+        xticks.append(value)
+        return f"{value:.0f}"
+
+    def capture_yticks(value, pos):
+        yticks.append(value)
+        return f"{value:.0f}"
+
+    # Set FuncFormatters that use the above functions
+    ax.xaxis.set_major_formatter(FuncFormatter(capture_xticks))
+    ax.yaxis.set_major_formatter(FuncFormatter(capture_yticks))
 
     # Remove the title
     fig.suptitle("")
 
-    # Turn off the axes to remove labels, title, legend, etc.
-    ax.legend_ = None
-    ax.axis("off")
-
     xlim = ax.get_xlim()
     ylim = ax.get_ylim()
     data_ratio = abs((xlim[1] - xlim[0]) / (ylim[1] - ylim[0]))
-    fig_size = (4 * data_ratio, 4)
-    fig.set_size_inches(*fig_size)
+    fig.set_size_inches(4 * data_ratio, 4)  # 4 inches is 400 pixels
 
     canvas = FigureCanvas(fig)
     png_output = io.BytesIO()
     canvas.print_png(png_output)
-
-    return jsonify(
-        {
-            "image": base64.b64encode(png_output.getvalue()).decode("utf-8"),
-            "xlim": xlim,
-            "ylim": ylim,
-            "size_inches": [*fig_size],
-        }
-    )
+    return {
+        "image": base64.b64encode(png_output.getvalue()).decode("utf-8"),
+        "xlim": xlim,
+        "ylim": ylim,
+        "xticks": xticks,
+        "yticks": yticks,
+        "xlabel": xlabel,
+        "ylabel": ylabel,
+    }
 
 
 @bp.route("/ct_scan", methods=["POST"])
