@@ -16,7 +16,7 @@
     return true
   }
   
-  function clickToPositionHandler(){
+  function clickToPositionTargetHandler(){
     showLoading("Rendering Layout...")
     disallowRunSimulation()
     clearPlotArea()
@@ -92,7 +92,7 @@
   <fieldset>
     <div class="row">
       <div class="col">
-        <button type="button" onclick="clickToPositionHandler()" class="btn btn-link">Click to position</button>
+        <button type="button" onclick="clickToPositionTargetHandler()" class="btn btn-link">Click to position</button>
       </div>
     </div>
     <div class="mb-3 row">
