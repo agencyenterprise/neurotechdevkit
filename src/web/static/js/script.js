@@ -132,7 +132,7 @@ function plotToCanvas({ xlim, ylim, xlabel, ylabel, xticks, yticks, image, click
     ctx.fillStyle = "white";
     ctx.fillRect(rectX, rectY, rectWidth, rectHeight);
 
-    const mouseCoordinates = getMouseCoordinates(canvas, event)
+    const mouseCoordinates = getMouseCoordinates(event.clientX, event.clientY)
     if (mouseCoordinates == null) return
     const [dataX, dataY] = mouseCoordinates
     text = `${xlabel}: ${dataX.toFixed(3)}, ${ylabel}: ${dataY.toFixed(3)}`;
@@ -148,13 +148,13 @@ function plotToCanvas({ xlim, ylim, xlabel, ylabel, xticks, yticks, image, click
     ctx.fillText(text, textX, textY);
   }
 
-  function getMouseCoordinates(canvas, event) {
+  function getMouseCoordinates(clientX, clientY) {
     // Get the size of the canvas
     const rect = canvas.getBoundingClientRect();
 
     // Calculate the position of the click in pixels
-    let xPixel = (event.clientX - rect.left);
-    let yPixel = (event.clientY - rect.top)
+    let xPixel = (clientX - rect.left);
+    let yPixel = (clientY - rect.top)
     if (xPixel < leftMargin || yPixel < topMargin) return null
     if (xPixel > img.width + leftMargin || yPixel > img.height + topMargin) return null
     xPixel -= leftMargin;
@@ -192,7 +192,14 @@ function plotToCanvas({ xlim, ylim, xlabel, ylabel, xticks, yticks, image, click
         ctx.lineTo(end.x, end.y);
         ctx.stroke();
 
-        clickCallback(start.x, start.y, end.x, end.y)
+        const endCoordinates = getMouseCoordinates(e.clientX, e.clientY)
+        if (endCoordinates == null) return
+        const [endX, endY] = endCoordinates
+
+        const startCoordinates = getMouseCoordinates(start.x + rect.left, start.y + rect.top)
+        if (startCoordinates == null) return
+        const [startX, startY] = startCoordinates
+        clickCallback(startX, startY, endX, endY)
 
         // Reset the start and end positions
         start = null;
@@ -204,7 +211,7 @@ function plotToCanvas({ xlim, ylim, xlabel, ylabel, xticks, yticks, image, click
     // Handler for when we don't want to draw a line
     if (!clickCallback) return
     if (!drawLine){ 
-      const mouseCoordinates = getMouseCoordinates(canvas, event)
+      const mouseCoordinates = getMouseCoordinates(event.clientX, event.clientY)
       if (mouseCoordinates == null) return
       const [xData, yData] = mouseCoordinates
       clickCallback(xData, yData)

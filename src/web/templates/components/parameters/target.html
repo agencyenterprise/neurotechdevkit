@@ -40,6 +40,9 @@
         plotArea.insertBefore(label, plotArea.firstChild);
 
         const clickCallback = (xData, yData) => {
+          xData = xData.toFixed(6)
+          yData = yData.toFixed(6)
+          
           // Update the form
           if (scenarioIs2d()) {
             document.getElementById("centerX").value = yData

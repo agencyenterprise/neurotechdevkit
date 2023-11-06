@@ -72,9 +72,7 @@ function editPhasedArraySource(transducer) {
   }
 </script>
 <fieldset>
-  {% include 'components/parameters/transducers/fill_default_values_button.html'
-  %}
-  {% include 'components/parameters/transducers/click_to_position.html'
+  {% include 'components/parameters/transducers/click_to_direction.html'
   %}
   <div class="row">
     <div class="col mb-3">
@@ -123,8 +121,6 @@ function editPhasedArraySource(transducer) {
         data-3d-input-only="true" />
     </div>
   </div>
-  {% include 'components/parameters/transducers/click_to_direction.html'
-  %}
   <div class="row">
     <div class="col mb-3">
       <label
@@ -169,6 +165,8 @@ function editPhasedArraySource(transducer) {
         data-3d-input-only="true" />
     </div>
   </div>
+  {% include 'components/parameters/transducers/fill_default_values_button.html'
+  %}
   <div class="row" data-3d-only="true" hidden>
     <div class="col mb-3">
       <label

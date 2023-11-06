@@ -25,30 +25,7 @@
         plotArea.insertBefore(label, plotArea.firstChild);
 
         const clickCallback = (xData, yData) => {
-          xData = xData.toFixed(6)
-          yData = yData.toFixed(6)
-          // Update the form
-          if (scenarioIs2d()) {
-            fieldset.querySelector("input[name='positionX']").value = yData
-            fieldset.querySelector("input[name='positionY']").value = xData
-          } else{
-            const sliceAxis = document.getElementById("sliceAxis").value
-            switch (sliceAxis)
-            {
-              case "x":
-                fieldset.querySelector("input[name='positionY']").value = yData
-                fieldset.querySelector("input[name='positionZ']").value = xData
-                break;
-              case "y":
-                fieldset.querySelector("input[name='positionX']").value = yData
-                fieldset.querySelector("input[name='positionZ']").value = xData
-                break;
-              case "z":
-                fieldset.querySelector("input[name='positionX']").value = yData
-                fieldset.querySelector("input[name='positionY']").value = xData
-                break;
-            }
-          }
+          setPositionValues(fieldset, xData, yData)
         }
 
         const canvas = plotToCanvas({
@@ -66,8 +43,7 @@
       })
   }
 </script>
-<div class="row">
-    <div class="col">
-        <button type="button" onclick="clickToPositionTransducerHandler(this)" class="btn btn-link">Click to position</button>
-    </div>
+<div style="display:flex; justify-content:flex-end; width:100%; padding:0;">
+  <button type="button" class="btn btn-link float-right" style="float: right;"
+  onclick="clickToPositionTransducerHandler(this)">Position transducer</button>
 </div>

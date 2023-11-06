@@ -13,6 +13,35 @@
 <script>
   let addedTransducers = []
 
+
+  function setPositionValues(fieldset, xData, yData){
+    // Called by the canvas clicks
+    xData = xData.toFixed(6)
+    yData = yData.toFixed(6)
+    // Update the form
+    if (scenarioIs2d()) {
+      fieldset.querySelector("input[name='positionX']").value = yData
+      fieldset.querySelector("input[name='positionY']").value = xData
+    } else{
+      const sliceAxis = document.getElementById("sliceAxis").value
+      switch (sliceAxis)
+      {
+        case "x":
+          fieldset.querySelector("input[name='positionY']").value = yData
+          fieldset.querySelector("input[name='positionZ']").value = xData
+          break;
+        case "y":
+          fieldset.querySelector("input[name='positionX']").value = yData
+          fieldset.querySelector("input[name='positionZ']").value = xData
+          break;
+        case "z":
+          fieldset.querySelector("input[name='positionX']").value = yData
+          fieldset.querySelector("input[name='positionY']").value = xData
+          break;
+      }
+    }
+  }
+
   function getTransducerTitle(transducer){
     const transducerTypes = {{all_transducer_types | tojson | safe}}
     for (let transducerTuple of transducerTypes){

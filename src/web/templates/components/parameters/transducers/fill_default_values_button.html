@@ -4,10 +4,15 @@
         const fieldset = button.closest("fieldset")
         const inputs = fieldset.querySelectorAll("input")
         inputs.forEach(input => {
-        const placeholder = input.getAttribute("placeholder")
-        if (placeholder !== null){
-            input.value = placeholder
-        }
+            // ignore position and direction inputs
+            if (input.name.startsWith("position") || input.name.startsWith("direction")){
+                return
+            }
+
+            const placeholder = input.getAttribute("placeholder")
+            if (placeholder !== null){
+                input.value = placeholder
+            }
         })
     }    
 </script>

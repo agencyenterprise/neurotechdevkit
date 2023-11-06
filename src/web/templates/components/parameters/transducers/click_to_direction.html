@@ -19,35 +19,44 @@
         hideLoading()
         
         const label = document.createElement('p');
-        label.textContent = 'Click on the image to define the transducer direction';
+        label.textContent = 'Click on the image to position the transducer';
         label.style.textAlign = 'center';
 
         plotArea.insertBefore(label, plotArea.firstChild);
 
         const clickCallback = (startX, startY, endX, endY) => {
-          const xData = endX - startX
-          const yData = endY - startY
+          setPositionValues(fieldset, startX, startY)
+
+          const xDirection = (endX - startX).toFixed(6)
+          const yDirection = (endY - startY).toFixed(6)
+
           // Update the form
           if (scenarioIs2d()) {
-            fieldset.querySelector("input[name='directionX']").value = yData
-            fieldset.querySelector("input[name='directionY']").value = xData
+            fieldset.querySelector("input[name='directionX']").value = yDirection
+            fieldset.querySelector("input[name='directionY']").value = xDirection
           } else{
             const sliceAxis = document.getElementById("sliceAxis").value
             switch (sliceAxis)
             {
               case "x":
-                fieldset.querySelector("input[name='directionY']").value = yData
-                fieldset.querySelector("input[name='directionZ']").value = xData
+                fieldset.querySelector("input[name='directionY']").value = yDirection
+                fieldset.querySelector("input[name='directionZ']").value = xDirection
                 break;
               case "y":
-                fieldset.querySelector("input[name='directionX']").value = yData
-                fieldset.querySelector("input[name='directionZ']").value = xData
+                fieldset.querySelector("input[name='directionX']").value = yDirection
+                fieldset.querySelector("input[name='directionZ']").value = xDirection
                 break;
               case "z":
-                fieldset.querySelector("input[name='directionX']").value = yData
-                fieldset.querySelector("input[name='directionY']").value = xData
+                fieldset.querySelector("input[name='directionX']").value = yDirection
+                fieldset.querySelector("input[name='directionY']").value = xDirection
                 break;
             }
+          }
+          if (fieldset.form.checkValidity()){
+            storeTransducer(transducerIndex)
+            renderLayout()
+          } else {
+            fieldset.form.reportValidity()
           }
         }
 
@@ -66,8 +75,7 @@
       })
   }
 </script>
-<div class="row">
-    <div class="col">
-        <button type="button" onclick="clickToDirectionTransducerHandler(this)" class="btn btn-link">Draw direction</button>
-    </div>
+<div style="display:flex; justify-content:flex-end; width:100%; padding:0;">
+  <button type="button" class="btn btn-link float-right" style="float: right;"
+  onclick="clickToDirectionTransducerHandler(this)">Place transducer</button>
 </div>

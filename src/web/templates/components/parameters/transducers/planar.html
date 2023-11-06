@@ -34,9 +34,7 @@
   }
 </script>
 <fieldset>
-  {% include 'components/parameters/transducers/fill_default_values_button.html'
-  %}
-  {% include 'components/parameters/transducers/click_to_position.html'
+  {% include 'components/parameters/transducers/click_to_direction.html'
   %}
   <div class="row">
     <div class="col mb-3">
@@ -85,8 +83,6 @@
         data-3d-input-only="true" />
     </div>
   </div>
-  {% include 'components/parameters/transducers/click_to_direction.html'
-  %}
   <div class="row">
     <div class="col mb-3">
       <label
@@ -131,6 +127,8 @@
         data-3d-input-only="true" />
     </div>
   </div>
+  {% include 'components/parameters/transducers/fill_default_values_button.html'
+  %}
   <div class="mb-3">
     <label
       for="aperture"
