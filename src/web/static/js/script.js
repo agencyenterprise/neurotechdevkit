@@ -19,10 +19,10 @@ function plotToCanvas({xlim, ylim, xlabel, ylabel, xticks, yticks, image, clickC
     const tickSize = 10;
     const leftMargin = 75;
     const bottomMargin = 65;
-    const topMargin = 10;
+    const topMargin = 30;
     const rightMargin = 30;
     const xLabelMargin = 30
-    const yLabelMargin = 30
+    const yLabelMargin = topMargin - 20
 
     // Create a new canvas and get the context
     const canvas = document.createElement('canvas');
@@ -101,16 +101,16 @@ function plotToCanvas({xlim, ylim, xlabel, ylabel, xticks, yticks, image, clickC
     // Set the image source
     img.src = 'data:image/png;base64,' + image;
 
-    // Handle click events on the canvas
-    canvas.addEventListener('click', function(event) {
+
+    function getMouseCoordinates(canvas, event) {
         // Get the size of the canvas
         const rect = canvas.getBoundingClientRect();
 
         // Calculate the position of the click in pixels
         let xPixel = (event.clientX - rect.left);
         let yPixel = (event.clientY - rect.top)
-        if (xPixel < leftMargin || yPixel < topMargin) return
-        if (xPixel > img.width + leftMargin || yPixel > img.height + topMargin) return
+        if (xPixel < leftMargin || yPixel < topMargin) return null
+        if (xPixel > img.width + leftMargin || yPixel > img.height + topMargin) return null
         xPixel -= leftMargin;
         yPixel -= topMargin;
 
@@ -121,8 +121,50 @@ function plotToCanvas({xlim, ylim, xlabel, ylabel, xticks, yticks, image, clickC
         // Convert from pixels to data units
         const xData = xlim[0] + (xlim[1] - xlim[0]) * xPixel / img.width;
         const yData = ylim[1] - (ylim[1] - ylim[0]) * yPixel / img.height;
+        return [xData, yData]
+    }
 
-        clickCallback(xData, yData)
+    // Handle click events on the canvas
+    canvas.addEventListener('click', function(event) {
+      const mouseCoordinates = getMouseCoordinates(canvas, event)
+      if (mouseCoordinates == null) return
+      const [xData, yData] = mouseCoordinates
+      clickCallback(xData, yData)
     });
+
+    canvas.addEventListener('mousemove', function(event) {
+      // Create the longest possible text
+      let text = `${xlabel}: -99.999, ${ylabel}: -99.999`;
+      const textMeasure = ctx.measureText(text);
+    
+      // Calculate text width to position the rectangle and text
+      const rectWidth = textMeasure.width + 30; // add some padding
+      const rectHeight = 30; // roughly two lines of text
+      const rectX = (leftMargin + (img.width/2)) - (rectWidth/2);
+      const rectY = 0; // top of the canvas
+
+      // Clear a rectangle in the top right corner for the cursor position
+      ctx.clearRect(rectX, rectY, rectWidth, rectHeight);
+
+      // Draw rectangle
+      ctx.fillStyle = "white";
+      ctx.fillRect(rectX, rectY, rectWidth, rectHeight);
+
+      const mouseCoordinates = getMouseCoordinates(canvas, event)
+      if (mouseCoordinates == null) return
+      const [dataX, dataY] = mouseCoordinates
+      text = `${xlabel}: ${dataX.toFixed(3)}, ${ylabel}: ${dataY.toFixed(3)}`;
+
+      // Canvas text styles
+      ctx.fillStyle = 'black';
+      ctx.font = '16px Arial';
+
+      // Display the text within the rectangle
+      const textX = rectX + rectWidth/2 - textMeasure.width/2;
+      const textY = 20;  // roughly one line down from the top edge
+
+      ctx.fillText(text, textX, textY);
+
+  });
     return canvas
 }
