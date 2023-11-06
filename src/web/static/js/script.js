@@ -86,15 +86,19 @@ function plotToCanvas({xlim, ylim, xlabel, ylabel, xticks, yticks, image, clickC
             ctx.restore();
         }
         for (const tick of yticks) {
-            const y = img.height - ((tick - ylim[0]) / (ylim[1] - ylim[0])) * img.height;
+            const y = topMargin + img.height - ((tick - ylim[0]) / (ylim[1] - ylim[0])) * img.height;
+            if (y > img.height ) {
+              continue;
+            }
+
             // Draw the tick
             ctx.beginPath();
-            ctx.moveTo(leftMargin - tickSize, y + topMargin);
-            ctx.lineTo(leftMargin, y + topMargin);
+            ctx.moveTo(leftMargin - tickSize, y);
+            ctx.lineTo(leftMargin, y);
             ctx.stroke();
 
             const textCenterMargin = 5; // to make the text centered
-            ctx.fillText(tick.toFixed(3), xLabelMargin, y + topMargin + textCenterMargin);
+            ctx.fillText(tick.toFixed(3), xLabelMargin, y + textCenterMargin);
         }
     };
 
