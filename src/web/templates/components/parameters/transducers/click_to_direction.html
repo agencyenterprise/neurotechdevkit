@@ -1,0 +1,73 @@
+<script>
+  function clickToDirectionTransducerHandler(button){
+    const fieldset = button.closest("fieldset")
+
+    showLoading("Rendering Layout...")
+    disallowRunSimulation()
+    clearPlotArea()
+
+    const url = "{{ url_for('main.render_canvas') }}"
+    fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: getFullRequestBody(),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        hideLoading()
+        
+        const label = document.createElement('p');
+        label.textContent = 'Click on the image to define the transducer direction';
+        label.style.textAlign = 'center';
+
+        plotArea.insertBefore(label, plotArea.firstChild);
+
+        const clickCallback = (startX, startY, endX, endY) => {
+          const xData = endX - startX
+          const yData = endY - startY
+          // Update the form
+          if (scenarioIs2d()) {
+            fieldset.querySelector("input[name='directionX']").value = yData
+            fieldset.querySelector("input[name='directionY']").value = xData
+          } else{
+            const sliceAxis = document.getElementById("sliceAxis").value
+            switch (sliceAxis)
+            {
+              case "x":
+                fieldset.querySelector("input[name='directionY']").value = yData
+                fieldset.querySelector("input[name='directionZ']").value = xData
+                break;
+              case "y":
+                fieldset.querySelector("input[name='directionX']").value = yData
+                fieldset.querySelector("input[name='directionZ']").value = xData
+                break;
+              case "z":
+                fieldset.querySelector("input[name='directionX']").value = yData
+                fieldset.querySelector("input[name='directionY']").value = xData
+                break;
+            }
+          }
+        }
+
+        const canvas = plotToCanvas({
+          xlim: data.xlim,
+          ylim: data.ylim,
+          xlabel: data.xlabel,
+          ylabel: data.ylabel,
+          xticks: data.xticks,
+          yticks: data.yticks,
+          image: data.image,
+          clickCallback,
+          drawLine: true
+        })
+        document.getElementById('plotArea').appendChild(canvas);
+      })
+  }
+</script>
+<div class="row">
+    <div class="col">
+        <button type="button" onclick="clickToDirectionTransducerHandler(this)" class="btn btn-link">Draw direction</button>
+    </div>
+</div>
