@@ -222,6 +222,7 @@ function plotToCanvas({ xlim, ylim, xlabel, ylabel, xticks, yticks, image, click
         const x = e.clientX - rect.left;
         const y = e.clientY - rect.top;
 
+        // Draw the image again to get rid of the previous line preview
         if (x < leftMargin || y < topMargin) return
         if (x > img.width + leftMargin || y > img.height + topMargin) return
 
@@ -229,7 +230,30 @@ function plotToCanvas({ xlim, ylim, xlabel, ylabel, xticks, yticks, image, click
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         drawPlot()
 
-        // Draw the live preview of the line
+        // Calculate the angle between the x-axis and the line from start to cursor position
+        const angle = Math.atan2(y - start.y, x - start.x);
+
+        // Define the lengths of the additional lines
+        const length = 50;
+
+        // Draw lines at 90 degrees and 45 degrees from the main line
+        const offsetAngles = [Math.PI / 2, Math.PI / 4];  // 90 and 45 degrees
+        for (let offset of offsetAngles) {
+            for (let direction of [-1, 1]) {  // Clockwise and counter-clockwise
+                const lineX = start.x + length * Math.cos(angle + direction * offset);
+                const lineY = start.y + length * Math.sin(angle + direction * offset);
+
+                // Draw the line
+                ctx.beginPath();
+                ctx.moveTo(start.x, start.y);
+                ctx.lineTo(lineX, lineY);
+                ctx.strokeStyle = 'red';  // Set color to red for the additional lines
+                ctx.stroke();
+            }
+        }
+        ctx.strokeStyle = 'black';  // Set color back to black for the main line
+
+        // Draw the live preview of the main line
         ctx.beginPath();
         ctx.moveTo(start.x, start.y);
         ctx.lineTo(x, y);
