@@ -3,22 +3,20 @@ name: lint
 on:
   push:
     branches:
-      - 'main'
+      - "main"
   pull_request:
     branches:
-      - '*'
+      - "*"
 
 jobs:
   lint:
-
     strategy:
       matrix:
-        os: [ "ubuntu-latest" ]
-        python-version: [ "3.9" ]
+        os: ["ubuntu-latest"]
+        python-version: ["3.9"]
     runs-on: ${{ matrix.os }}
 
     steps:
-
       - name: Check out repository
         uses: actions/checkout@v3.5.2
 

@@ -9,7 +9,7 @@ function BtnReset(elem) {
   $(elem).html($(elem).attr("data-original-text"));
 }
 
-$(document).ready(function () {
+$(document).ready(() => {
   $('[data-bs-toggle="tooltip"]').tooltip();
 });
 
@@ -55,7 +55,7 @@ function plotToCanvas({
   };
 
   // Set the image source
-  img.src = "data:image/png;base64," + image;
+  img.src = `data:image/png;base64,${image}`;
 
   function drawPlot() {
     // Draw everything to the canvas
@@ -241,7 +241,7 @@ function plotToCanvas({
     }
   });
 
-  canvas.addEventListener("click", function (event) {
+  canvas.addEventListener("click", (event) => {
     // Handler for when we don't want to draw a line, only get the coordinates of the click
     if (!drawLine) {
       if (!clickCallback) {
@@ -286,8 +286,8 @@ function plotToCanvas({
 
         // Draw lines at 90 degrees and 45 degrees from the main line
         const offsetAngles = [Math.PI / 2, Math.PI / 4]; // 90 and 45 degrees
-        for (let offset of offsetAngles) {
-          for (let direction of [-1, 1]) {
+        for (const offset of offsetAngles) {
+          for (const direction of [-1, 1]) {
             // Clockwise and counter-clockwise
             const lineX =
               start.x + length * Math.cos(angle + direction * offset);
