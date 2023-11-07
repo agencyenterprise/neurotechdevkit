@@ -11,6 +11,7 @@ from neurotechdevkit.imaging.beamform import (
     _optimize_f_number,
     beamform_delay_and_sum,
     delay_and_sum_matrix,
+    InterpolationMethod,
 )
 
 
@@ -89,6 +90,22 @@ def test_delay_and_sum_matrix_outside_aperture(simple_inputs):
 
 
 def test_delay_and_sum(simple_inputs):
+    num_time_samples = simple_inputs["num_time_samples"]
+    num_channels = simple_inputs["num_channels"]
+
+    iq_signals = np.random.rand(num_time_samples, num_channels) + 1j * np.random.rand(
+        num_time_samples, num_channels
+    )
+    del simple_inputs["num_time_samples"]
+    del simple_inputs["num_channels"]
+
+    beamformed_iq_signals = beamform_delay_and_sum(iq_signals, **simple_inputs)
+    assert beamformed_iq_signals.shape == simple_inputs["x"].shape
+
+
+def test_delay_and_sum_nearest_neighbors_interpolation(simple_inputs):
+    simple_inputs["method"] = InterpolationMethod.NEAREST
+
     num_time_samples = simple_inputs["num_time_samples"]
     num_channels = simple_inputs["num_channels"]
 
