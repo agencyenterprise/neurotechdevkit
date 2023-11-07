@@ -477,7 +477,7 @@ def _interpolate_onto_pixel_grid(
             time_idx_float <= (max_time_samples - 1)
         )
         time_idx_round = time_idx_float.round()
-        # Add dimension to match other interpolation methdos
+        # Add dimension to match other interpolation methods
         time_idx_round = time_idx_round.expand_dims("interp")
     elif method == InterpolationMethod.LINEAR:
         # E.g., a time index of 2.3 gets 0.7*pixel_2 + 0.3*pixel_3

@@ -6,12 +6,12 @@ import xarray as xr
 from scipy.sparse import csr_array
 
 from neurotechdevkit.imaging.beamform import (
+    InterpolationMethod,
     _calculate_time_of_flight,
     _directivity,
     _optimize_f_number,
     beamform_delay_and_sum,
     delay_and_sum_matrix,
-    InterpolationMethod,
 )
 
 
