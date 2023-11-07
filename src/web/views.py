@@ -124,7 +124,7 @@ async def render_canvas():
 
 
 def cleanup_plot(fig) -> dict:
-    """Clean up the plot and return the parameters to render it in the frontend."""
+    """Clean up the plot and return the parameters to render it in the front end."""
     fig.subplots_adjust(left=0, right=1, top=1, bottom=0)
 
     ax = fig.get_axes()[0]
