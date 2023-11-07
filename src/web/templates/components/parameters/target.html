@@ -34,7 +34,8 @@
         hideLoading();
 
         const label = document.createElement("p");
-        label.textContent = "Click on the image to place the target";
+        label.textContent = "Click on the image to place the target.";
+        label.style.fontFamily = "manrope";
         label.style.textAlign = "center";
         const plotArea = document.getElementById("plotArea");
         plotArea.insertBefore(label, plotArea.firstChild);

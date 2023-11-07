@@ -27,12 +27,12 @@ function plotToCanvas({
   // Renders a matplotlib plot to a canvas element
 
   const tickSize = 10;
-  const leftMargin = 75;
+  const leftMargin = 80;
   const bottomMargin = 65;
   const topMargin = 30;
   const rightMargin = 30;
-  const xLabelMargin = 30;
-  const yLabelMargin = topMargin - 20;
+  const xLabelMargin = leftMargin - 50;
+  const yLabelMargin = topMargin - 25;
 
   // Variables for drawing a line
   // Variables to track line start and end position
@@ -65,7 +65,8 @@ function plotToCanvas({
     canvas.dataset.xlim = JSON.stringify(xlim);
     canvas.dataset.ylim = JSON.stringify(ylim);
 
-    ctx.font = "24px DejaVu Sans";
+    ctx.font = "20px manropebold";
+    ctx.fillStyle = "#4F4F4F";
 
     // Draw the x-axis label
     ctx.fillText(xlabel, canvas.width / 2, canvas.height - 5);
@@ -73,12 +74,12 @@ function plotToCanvas({
     // Draw the y-axis label
     // Rotation is needed to draw vertical text
     ctx.save();
-    ctx.translate(15, canvas.height / 2);
+    ctx.translate(20, canvas.height / 2);
     ctx.rotate((-90 * Math.PI) / 180);
     ctx.fillText(ylabel, 0, 0);
     ctx.restore();
 
-    ctx.font = "14px DejaVu Sans";
+    ctx.font = "13px manropebold";
 
     // Draw the x-axis ticks and labels
     for (const tick of xticks) {
@@ -157,8 +158,8 @@ function plotToCanvas({
     text = `${xlabel}: ${dataX.toFixed(3)}, ${ylabel}: ${dataY.toFixed(3)}`;
 
     // Canvas text styles
-    ctx.fillStyle = "black";
-    ctx.font = "16px Arial";
+    ctx.fillStyle = "#4F4F4F";
+    ctx.font = "16px manropebold";
 
     // Display the text within the rectangle
     const textX = rectX + rectWidth / 2 - textMeasure.width / 2;
