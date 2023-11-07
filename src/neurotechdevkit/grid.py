@@ -34,20 +34,45 @@ class Grid(stride.Grid):
 
     @staticmethod
     def make_shaped_grid(
-        shape: Tuple[int, int],
-        spacing: float,
+        shape: Tuple[int, ...],
+        spacing: Union[float, Tuple[float, ...]],
+        extra: Union[int, Iterable[int]] = 50,
+        absorbing: Union[int, Iterable[int]] = 40,
     ) -> "Grid":
-        """Create an NDK Grid with the given shape.
+        """Create an NDK Grid with a given shape.
+
+        Note that the time component of the grid is not defined here. That is
+        created at simulation time because it depends on simulation parameters.
 
         Args:
-            shape: a tuple of two integers representing the shape of the grid.
+            shape: a tuple of integers representing the shape of the grid.
             spacing: a float representing the axis-wise spacing of the grid, in
                 meters.
+            extra: an integer or an iterable of integers representing the number
+                of gridpoints to add as boundary layers on each side of the grid.
+                Extras are added both before and after the grid on each axis.
+                Default is 50.
+            absorbing: an integer or an iterable of integers representing the
+                number of gridpoints within the boundary layers that are
+                absorbing. Default is 40.
 
         Returns:
             Grid: the Grid object.
         """
-        space = stride.Space(shape=shape, spacing=spacing)
+        n_dims = len(shape)
+
+        if isinstance(extra, int):
+            extra = (extra,) * n_dims
+        else:
+            extra = tuple(extra)
+        if isinstance(absorbing, int):
+            absorbing = (absorbing,) * n_dims
+        else:
+            absorbing = tuple(absorbing)
+
+        space = stride.Space(
+            shape=shape, extra=extra, absorbing=absorbing, spacing=spacing
+        )
         return Grid(space=space, time=None)
 
     @staticmethod
@@ -84,18 +109,7 @@ class Grid(stride.Grid):
             Grid: the Grid object.
         """
         _extent = np.array(extent, dtype=float)
-        n_dims = len(_extent)
         dx = speed_water / center_frequency / ppw  # m
         shape = _compute_grid_shape(_extent, dx)
 
-        if isinstance(extra, int):
-            extra = (extra,) * n_dims
-        else:
-            extra = tuple(extra)
-        if isinstance(absorbing, int):
-            absorbing = (absorbing,) * n_dims
-        else:
-            absorbing = tuple(absorbing)
-
-        space = stride.Space(shape=shape, extra=extra, absorbing=absorbing, spacing=dx)
-        return Grid(space=space, time=None)
+        return Grid.make_shaped_grid(shape, dx, extra, absorbing)

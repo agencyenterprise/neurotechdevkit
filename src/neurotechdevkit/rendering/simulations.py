@@ -54,9 +54,7 @@ def create_steady_state_figure(
     fig = plt.figure()
     ax = fig.gca()
     # the extent for imshow is "(left, right, bottom, top)"
-    imshow_extent = np.array(
-        [origin[1], origin[1] + extent[1], origin[0] + extent[0], origin[0]]
-    )
+    imshow_extent = (origin[1], origin[1] + extent[1], origin[0] + extent[0], origin[0])
 
     ax.imshow(amplitudes, cmap="viridis", extent=imshow_extent)
     return fig, ax
@@ -101,9 +99,7 @@ def create_pulsed_figure(
     max_pressure = wavefield.max()
 
     cmap = _create_centered_bidirectional_cmap(vmin=min_pressure, vmax=max_pressure)
-    imshow_extent = np.array(
-        [origin[1], origin[1] + extent[1], origin[0] + extent[0], origin[0]]
-    )
+    imshow_extent = (origin[1], origin[1] + extent[1], origin[0] + extent[0], origin[0])
     # reference image, it would be replaced when creating the animation.
     mid_point = wavefield.shape[-1] // 2
     ax.imshow(wavefield[:, :, mid_point], cmap=cmap, norm=norm, extent=imshow_extent)
@@ -177,7 +173,7 @@ def _configure_colorbar(
     cb.set_label("Pressure (Pa)", fontproperties=AXIS_LABEL_FONT_PROPS, color="#4F4F4F")
 
     for label in cb.ax.get_yticklabels():
-        label.set_font_properties(AXIS_TICK_FONT_PROPS)
+        label.set_fontproperties(AXIS_TICK_FONT_PROPS)
 
 
 def _configure_legend(

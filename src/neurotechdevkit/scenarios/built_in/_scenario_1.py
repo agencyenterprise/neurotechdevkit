@@ -167,7 +167,6 @@ class Scenario1_3D(Scenario1, Scenario3D):
 
 
 def _create_scenario_1_mask(material, grid):
-
     # layers are defined by X position
     dx = grid.space.spacing[0]
 

@@ -60,7 +60,7 @@ def configure_axis_ticks(ax: matplotlib.axes.Axes) -> None:
     """
     ax.tick_params(axis="x", rotation=45)
     for label in chain(ax.get_xticklabels(), ax.get_yticklabels()):
-        label.set_font_properties(AXIS_TICK_FONT_PROPS)
+        label.set_fontproperties(AXIS_TICK_FONT_PROPS)
 
 
 def configure_grid(ax: matplotlib.axes.Axes) -> None:

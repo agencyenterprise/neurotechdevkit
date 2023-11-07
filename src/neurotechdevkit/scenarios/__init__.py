@@ -1,8 +1,7 @@
 """Scenarios module."""
 from .. import materials
 from . import built_in
-from ._base import Scenario, Scenario2D, Scenario3D
-from ._utils import Target
+from ._base import Scenario, Scenario2D, Scenario3D, SliceAxis, Target
 
 __all__ = [
     "materials",
@@ -10,5 +9,6 @@ __all__ = [
     "Scenario",
     "Scenario2D",
     "Scenario3D",
+    "SliceAxis",
     "Target",
 ]

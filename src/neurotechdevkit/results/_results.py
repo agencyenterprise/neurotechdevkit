@@ -16,6 +16,7 @@ import numpy as np
 import numpy.typing as npt
 import stride
 from matplotlib.animation import FuncAnimation
+from matplotlib.figure import Figure
 
 import neurotechdevkit
 
@@ -255,7 +256,7 @@ class SteadyStateResult2D(SteadyStateResult):
         show_sources: bool = True,
         show_target: bool = True,
         show_material_outlines: bool = True,
-    ) -> None:
+    ) -> Figure:
         """Create a matplotlib figure with the steady-state pressure wave amplitude.
 
         The grid can be turned on via: `plt.grid(True)`
@@ -304,6 +305,7 @@ class SteadyStateResult2D(SteadyStateResult):
             horizontal_label="Y",
             title="Steady-State Wave Amplitude",
         )
+        return fig
 
 
 class SteadyStateResult3D(SteadyStateResult):
@@ -332,7 +334,7 @@ class SteadyStateResult3D(SteadyStateResult):
         show_sources: bool = True,
         show_target: bool = True,
         show_material_outlines: bool = True,
-    ) -> None:
+    ) -> Figure:
         """Create a matplotlib figure with the steady-state pressure wave amplitude.
 
         In order to visualize the 3D scenario in a 2D plot, a slice through the scenario
@@ -401,6 +403,7 @@ class SteadyStateResult3D(SteadyStateResult):
                 f"\nSlice: {slice_name} = {slice_position} m"
             ),
         )
+        return fig
 
     def render_steady_state_amplitudes_3d(
         self,

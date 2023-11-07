@@ -21,8 +21,11 @@ colormaps
 compressional
 config
 coords
+coroutine
+dataset
 der
 devito
+dicom
 dimensionality
 directivity
 docstring
@@ -31,7 +34,8 @@ downsampling
 dt
 dx
 eg
-Enum
+enum
+eq
 et
 ffmpeg
 fft
@@ -51,6 +55,7 @@ img
 imshow
 intercomparison
 ipython
+iterable
 javascript
 jshtml
 jupyter
@@ -79,6 +84,7 @@ ppp
 ppw
 pre
 precomputed
+pydantic
 reproducibility
 resampling
 ricker
