@@ -224,7 +224,7 @@ function plotToCanvas({
 
       const startCoordinates = getMouseCoordinates(
         start.x + rect.left,
-        start.y + rect.top
+        start.y + rect.top,
       );
       if (startCoordinates == null) return;
       const [startX, startY] = startCoordinates;
@@ -250,7 +250,7 @@ function plotToCanvas({
       }
       const mouseCoordinates = getMouseCoordinates(
         event.clientX,
-        event.clientY
+        event.clientY,
       );
       if (mouseCoordinates == null) return;
       const [xData, yData] = mouseCoordinates;

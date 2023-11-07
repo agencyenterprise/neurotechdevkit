@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
   <head>
     {% block head %}
@@ -28,7 +28,7 @@
       crossorigin="anonymous"
     ></script>
 
-    <script <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
     <title>{% block title %}{{title}}{% endblock %}</title>
     {% endblock %}
