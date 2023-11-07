@@ -1,5 +1,12 @@
 <script>
-  function setDirectionValues(fieldset, xDirection, yDirection) {
+  function setDirectionValues(fieldset, dx, dy) {
+    // Calculate the magnitude of the vector
+    const magnitude = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
+
+    // Calculate the unit vector
+    const xDirection = (dx / magnitude).toFixed(6);
+    const yDirection = (dy / magnitude).toFixed(6);
+
     // Update the form
     if (scenarioIs2d()) {
       fieldset.querySelector("input[name='directionX']").value = yDirection;
@@ -56,8 +63,8 @@
           setPositionValues(fieldset, startX, startY);
 
           // the line between the first and second click is the direction
-          const xDirection = (endX - startX).toFixed(6);
-          const yDirection = (endY - startY).toFixed(6);
+          const xDirection = endX - startX;
+          const yDirection = endY - startY;
           setDirectionValues(fieldset, xDirection, yDirection);
         };
 
