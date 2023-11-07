@@ -162,7 +162,14 @@
       "centerFrequency": 5e5,
       "isSteadySimulation": true,
     })
-    const is3d = !scenarioIs2d()
+    const is3d = document.getElementById("is3d").checked
+
+    setTargetValues({
+      "centerX": ctDimensionPerAxis["x"] / 2,
+      "centerY": ctDimensionPerAxis["y"] / 2,
+      "centerZ": is3d ? ctDimensionPerAxis["z"] / 2 : '',
+      "radius": 0.01,
+    })
   }
 
   function fillCTDimensions(shape, spacing) {

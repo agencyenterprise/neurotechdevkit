@@ -23,12 +23,6 @@
     }
     if (!fieldset.form.checkValidity()) {
       fieldset.form.reportValidity();
-    } else {
-      const plotArea = document.getElementById("plotArea");
-      // update label text
-      const label = plotArea.querySelector("p");
-      buttonName = fieldset.querySelector("button").textContent;
-      label.textContent = `Press ${buttonName} to add the transducer to the simulation`;
     }
   }
 

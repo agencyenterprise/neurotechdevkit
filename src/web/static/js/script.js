@@ -196,6 +196,9 @@ function plotToCanvas({
     // Handler for when we want to draw a line
     if (!drawLine) return;
 
+    // Check if the click is outside the image
+    if (getMouseCoordinates(e.clientX, e.clientY) == null) return;
+
     // Get the current mouse position
     const rect = this.getBoundingClientRect();
     const x = e.clientX - rect.left;
