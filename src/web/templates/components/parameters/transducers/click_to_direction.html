@@ -1,12 +1,45 @@
 <script>
-  function clickToDirectionTransducerHandler(button){
-    const fieldset = button.closest("fieldset")
+  function setDirectionValues(fieldset, xDirection, yDirection) {
+    // Update the form
+    if (scenarioIs2d()) {
+      fieldset.querySelector("input[name='directionX']").value = yDirection;
+      fieldset.querySelector("input[name='directionY']").value = xDirection;
+    } else {
+      const sliceAxis = document.getElementById("sliceAxis").value;
+      switch (sliceAxis) {
+        case "x":
+          fieldset.querySelector("input[name='directionY']").value = yDirection;
+          fieldset.querySelector("input[name='directionZ']").value = xDirection;
+          break;
+        case "y":
+          fieldset.querySelector("input[name='directionX']").value = yDirection;
+          fieldset.querySelector("input[name='directionZ']").value = xDirection;
+          break;
+        case "z":
+          fieldset.querySelector("input[name='directionX']").value = yDirection;
+          fieldset.querySelector("input[name='directionY']").value = xDirection;
+          break;
+      }
+    }
+    if (!fieldset.form.checkValidity()) {
+      fieldset.form.reportValidity();
+    } else {
+      const plotArea = document.getElementById("plotArea");
+      // update label text
+      const label = plotArea.querySelector("p");
+      buttonName = fieldset.querySelector("button").textContent;
+      label.textContent = `Press ${buttonName} to add the transducer to the simulation`;
+    }
+  }
 
-    showLoading("Rendering Layout...")
-    disallowRunSimulation()
-    clearPlotArea()
+  function clickToDirectionTransducerHandler(button) {
+    const fieldset = button.closest("fieldset");
 
-    const url = "{{ url_for('main.render_canvas') }}"
+    showLoading("Rendering Layout...");
+    disallowRunSimulation();
+    clearPlotArea();
+
+    const url = "{{ url_for('main.render_canvas') }}";
     fetch(url, {
       method: "POST",
       headers: {
@@ -16,49 +49,23 @@
     })
       .then((response) => response.json())
       .then((data) => {
-        hideLoading()
-        
-        const label = document.createElement('p');
-        label.textContent = 'Click on the image to position the transducer';
-        label.style.textAlign = 'center';
+        hideLoading();
 
+        const label = document.createElement("p");
+        label.textContent = "Click on the image to position the transducer";
+        label.style.textAlign = "center";
+        const plotArea = document.getElementById("plotArea");
         plotArea.insertBefore(label, plotArea.firstChild);
 
         const clickCallback = (startX, startY, endX, endY) => {
-          setPositionValues(fieldset, startX, startY)
+          // the first click position is the transducer position
+          setPositionValues(fieldset, startX, startY);
 
-          const xDirection = (endX - startX).toFixed(6)
-          const yDirection = (endY - startY).toFixed(6)
-
-          // Update the form
-          if (scenarioIs2d()) {
-            fieldset.querySelector("input[name='directionX']").value = yDirection
-            fieldset.querySelector("input[name='directionY']").value = xDirection
-          } else{
-            const sliceAxis = document.getElementById("sliceAxis").value
-            switch (sliceAxis)
-            {
-              case "x":
-                fieldset.querySelector("input[name='directionY']").value = yDirection
-                fieldset.querySelector("input[name='directionZ']").value = xDirection
-                break;
-              case "y":
-                fieldset.querySelector("input[name='directionX']").value = yDirection
-                fieldset.querySelector("input[name='directionZ']").value = xDirection
-                break;
-              case "z":
-                fieldset.querySelector("input[name='directionX']").value = yDirection
-                fieldset.querySelector("input[name='directionY']").value = xDirection
-                break;
-            }
-          }
-          if (fieldset.form.checkValidity()){
-            storeTransducer(transducerIndex)
-            renderLayout()
-          } else {
-            fieldset.form.reportValidity()
-          }
-        }
+          // the line between the first and second click is the direction
+          const xDirection = (endX - startX).toFixed(6);
+          const yDirection = (endY - startY).toFixed(6);
+          setDirectionValues(fieldset, xDirection, yDirection);
+        };
 
         const canvas = plotToCanvas({
           xlim: data.xlim,
@@ -69,13 +76,19 @@
           yticks: data.yticks,
           image: data.image,
           clickCallback,
-          drawLine: true
-        })
-        document.getElementById('plotArea').appendChild(canvas);
-      })
+          drawLine: true,
+        });
+        plotArea.appendChild(canvas);
+      });
   }
 </script>
-<div style="display:flex; justify-content:flex-end; width:100%; padding:0;">
-  <button type="button" class="btn btn-link float-right" style="float: right;"
-  onclick="clickToDirectionTransducerHandler(this)">Place transducer</button>
+<div style="display: flex; justify-content: flex-end; width: 100%; padding: 0">
+  <button
+    type="button"
+    class="btn btn-link float-right"
+    style="float: right"
+    onclick="clickToDirectionTransducerHandler(this)"
+  >
+    Place transducer
+  </button>
 </div>

@@ -1,33 +1,35 @@
 <script>
   function editFocusedSource(transducer) {
-    const form = document.getElementById("createTransducerForm")
-    form.positionX.value = transducer.position[0]
-    form.positionY.value = transducer.position[1]
-    form.positionZ.value = transducer.position.length > 2 ? transducer.position[2] : ""
-    form.directionX.value = transducer.direction[0]
-    form.directionY.value = transducer.direction[1]
-    form.directionZ.value = transducer.direction.length > 2 ? transducer.direction[2] : ""
-    form.aperture.value = transducer.aperture
-    form.focalLength.value = transducer.focalLength
-    form.numPoints.value = transducer.numPoints
-    form.delay.value = transducer.delay
+    const form = document.getElementById("createTransducerForm");
+    form.positionX.value = transducer.position[0];
+    form.positionY.value = transducer.position[1];
+    form.positionZ.value =
+      transducer.position.length > 2 ? transducer.position[2] : "";
+    form.directionX.value = transducer.direction[0];
+    form.directionY.value = transducer.direction[1];
+    form.directionZ.value =
+      transducer.direction.length > 2 ? transducer.direction[2] : "";
+    form.aperture.value = transducer.aperture;
+    form.focalLength.value = transducer.focalLength;
+    form.numPoints.value = transducer.numPoints;
+    form.delay.value = transducer.delay;
   }
 
   function getFocusedSourceParams(formData) {
-    let position = [formData.positionX, formData.positionY]
-    if (!scenarioIs2d()){
-      position.push(formData.positionZ)
+    let position = [formData.positionX, formData.positionY];
+    if (!scenarioIs2d()) {
+      position.push(formData.positionZ);
     }
 
-    let direction = [formData.directionX, formData.directionY]
-    if (!scenarioIs2d()){
-      direction.push(formData.directionZ)
+    let direction = [formData.directionX, formData.directionY];
+    if (!scenarioIs2d()) {
+      direction.push(formData.directionZ);
     }
 
-    const aperture = formData.aperture
-    const focalLength = formData.focalLength
-    const numPoints = formData.numPoints
-    const delay = formData.delay
+    const aperture = formData.aperture;
+    const focalLength = formData.focalLength;
+    const numPoints = formData.numPoints;
+    const delay = formData.delay;
     return {
       position,
       direction,
@@ -35,57 +37,62 @@
       focalLength,
       numPoints,
       delay,
-    }
+    };
   }
 </script>
 <fieldset>
-  {% include 'components/parameters/transducers/click_to_direction.html'
-  %}
+  {% include 'components/parameters/transducers/click_to_direction.html' %}
   <div class="row">
     <div class="col mb-3">
       <label
         for="positionX"
         data-bs-toggle="tooltip"
         data-bs-placement="right"
-        title="The coordinate (in meters) of the point at the center of the transducer">Position
-        X</label>
+        title="The coordinate (in meters) of the point at the center of the transducer"
+        >Position X</label
+      >
       <input
         type="number"
         step="any"
         class="form-control"
         name="positionX"
         placeholder="0.0"
-        required />
+        required
+      />
     </div>
     <div class="col mb-3">
       <label
         for="positionY"
         data-bs-toggle="tooltip"
         data-bs-placement="right"
-        title="The coordinate (in meters) of the point at the center of the transducer">Position
-        Y</label>
+        title="The coordinate (in meters) of the point at the center of the transducer"
+        >Position Y</label
+      >
       <input
         type="number"
         step="any"
         class="form-control"
         name="positionY"
         placeholder="0.0"
-        required />
+        required
+      />
     </div>
     <div class="col mb-3" data-3d-only="true" hidden>
       <label
         for="positionZ"
         data-bs-toggle="tooltip"
         data-bs-placement="right"
-        title="The coordinate (in meters) of the point at the center of the transducer">Position
-        Z</label>
+        title="The coordinate (in meters) of the point at the center of the transducer"
+        >Position Z</label
+      >
       <input
         type="number"
         step="any"
         class="form-control"
         name="positionZ"
         placeholder="0.0"
-        data-3d-input-only="true" />
+        data-3d-input-only="true"
+      />
     </div>
   </div>
   <div class="row">
@@ -94,42 +101,51 @@
         for="directionX"
         data-bs-toggle="tooltip"
         data-bs-placement="right"
-        title="Indicate the direction the source is pointing">Direction X</label>
+        title="Indicate the direction the source is pointing"
+        >Direction X</label
+      >
       <input
         type="number"
         step="any"
         class="form-control"
         name="directionX"
         placeholder="0.0"
-        required />
+        required
+      />
     </div>
     <div class="col mb-3">
       <label
         for="directionY"
         data-bs-toggle="tooltip"
         data-bs-placement="right"
-        title="Indicate the direction the source is pointing">Direction Y</label>
+        title="Indicate the direction the source is pointing"
+        >Direction Y</label
+      >
       <input
         type="number"
         step="any"
         class="form-control"
         name="directionY"
         placeholder="1.0"
-        required />
+        required
+      />
     </div>
     <div class="col mb-3" data-3d-only="true" hidden>
       <label
         for="directionZ"
         data-bs-toggle="tooltip"
         data-bs-placement="right"
-        title="Indicate the direction the source is pointing">Direction Z</label>
+        title="Indicate the direction the source is pointing"
+        >Direction Z</label
+      >
       <input
         type="number"
         step="any"
         class="form-control"
         name="directionZ"
         placeholder="0.0"
-        data-3d-input-only="true" />
+        data-3d-input-only="true"
+      />
     </div>
   </div>
   {% include 'components/parameters/transducers/fill_default_values_button.html'
@@ -139,54 +155,66 @@
       for="aperture"
       data-bs-toggle="tooltip"
       data-bs-placement="right"
-      title="The aperture (in meters) of the transducer">Aperture</label>
+      title="The aperture (in meters) of the transducer"
+      >Aperture</label
+    >
     <input
       type="number"
       step="any"
       class="form-control"
       name="aperture"
       placeholder="0.064"
-      required />
+      required
+    />
   </div>
   <div class="mb-3">
     <label
       for="focalLength"
       data-bs-toggle="tooltip"
       data-bs-placement="right"
-      title="The focal length (in meters) of the transducer">Focal Length</label>
+      title="The focal length (in meters) of the transducer"
+      >Focal Length</label
+    >
     <input
       type="number"
       step="any"
       class="form-control"
       name="focalLength"
       placeholder="0.064"
-      required />
+      required
+    />
   </div>
   <div class="mb-3">
     <label
       for="numPoints"
       data-bs-toggle="tooltip"
       data-bs-placement="right"
-      title="The number of point sources to use when simulating the transducer">Points</label>
+      title="The number of point sources to use when simulating the transducer"
+      >Points</label
+    >
     <input
       type="number"
       class="form-control"
       name="numPoints"
       placeholder="20000"
-      required />
+      required
+    />
   </div>
   <div class="mb-3">
     <label
       for="delay"
       data-bs-toggle="tooltip"
       data-bs-placement="right"
-      title="The delay (in seconds) that the source will wait before emitting">Delay</label>
+      title="The delay (in seconds) that the source will wait before emitting"
+      >Delay</label
+    >
     <input
       type="number"
       step="any"
       class="form-control"
       name="delay"
       placeholder="0.0"
-      required />
+      required
+    />
   </div>
 </fieldset>

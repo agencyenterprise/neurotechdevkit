@@ -1,22 +1,30 @@
 <script>
-    function fillDefaultValuesClicked(button){
-        // fill fieldset's inputs with placeholder values
-        const fieldset = button.closest("fieldset")
-        const inputs = fieldset.querySelectorAll("input")
-        inputs.forEach(input => {
-            // ignore position and direction inputs
-            if (input.name.startsWith("position") || input.name.startsWith("direction")){
-                return
-            }
-
-            const placeholder = input.getAttribute("placeholder")
-            if (placeholder !== null){
-                input.value = placeholder
-            }
-        })
-    }    
+  function fillDefaultValuesClicked(button) {
+    // fill fieldset's inputs with placeholder values
+    const fieldset = button.closest("fieldset");
+    const inputs = fieldset.querySelectorAll("input");
+    inputs.forEach((input) => {
+      // ignore position and direction inputs
+      if (
+        input.name.startsWith("position") ||
+        input.name.startsWith("direction")
+      ) {
+        return;
+      }
+      const placeholder = input.getAttribute("placeholder");
+      if (placeholder !== null) {
+        input.value = placeholder;
+      }
+    });
+  }
 </script>
-<div style="display:flex; justify-content:flex-end; width:100%; padding:0;">
-    <button type="button" class="btn btn-link float-right" style="float: right;"
-        onclick="fillDefaultValuesClicked(this)">Fill default values</button>
+<div style="display: flex; justify-content: flex-end; width: 100%; padding: 0">
+  <button
+    type="button"
+    class="btn btn-link float-right"
+    style="float: right"
+    onclick="fillDefaultValuesClicked(this)"
+  >
+    Fill default values
+  </button>
 </div>

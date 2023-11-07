@@ -1,12 +1,12 @@
 <script>
-  function clickToPositionTransducerHandler(button){
-    const fieldset = button.closest("fieldset")
+  function clickToPositionTransducerHandler(button) {
+    const fieldset = button.closest("fieldset");
 
-    showLoading("Rendering Layout...")
-    disallowRunSimulation()
-    clearPlotArea()
+    showLoading("Rendering Layout...");
+    disallowRunSimulation();
+    clearPlotArea();
 
-    const url = "{{ url_for('main.render_canvas') }}"
+    const url = "{{ url_for('main.render_canvas') }}";
     fetch(url, {
       method: "POST",
       headers: {
@@ -16,17 +16,17 @@
     })
       .then((response) => response.json())
       .then((data) => {
-        hideLoading()
-        
-        const label = document.createElement('p');
-        label.textContent = 'Click on the image to place the transducer';
-        label.style.textAlign = 'center';
+        hideLoading();
 
+        const label = document.createElement("p");
+        label.textContent = "Click on the image to place the transducer";
+        label.style.textAlign = "center";
+        const plotArea = document.getElementById("plotArea");
         plotArea.insertBefore(label, plotArea.firstChild);
 
         const clickCallback = (xData, yData) => {
-          setPositionValues(fieldset, xData, yData)
-        }
+          setPositionValues(fieldset, xData, yData);
+        };
 
         const canvas = plotToCanvas({
           xlim: data.xlim,
@@ -37,13 +37,19 @@
           yticks: data.yticks,
           image: data.image,
           clickCallback,
-          drawLine: false
-        })
-        document.getElementById('plotArea').appendChild(canvas);
-      })
+          drawLine: false,
+        });
+        plotAreat.appendChild(canvas);
+      });
   }
 </script>
-<div style="display:flex; justify-content:flex-end; width:100%; padding:0;">
-  <button type="button" class="btn btn-link float-right" style="float: right;"
-  onclick="clickToPositionTransducerHandler(this)">Position transducer</button>
+<div style="display: flex; justify-content: flex-end; width: 100%; padding: 0">
+  <button
+    type="button"
+    class="btn btn-link float-right"
+    style="float: right"
+    onclick="clickToPositionTransducerHandler(this)"
+  >
+    Position transducer
+  </button>
 </div>

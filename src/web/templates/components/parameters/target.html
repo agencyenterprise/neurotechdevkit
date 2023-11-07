@@ -1,27 +1,27 @@
 <script>
   function setTargetValues(target) {
-    document.getElementById("centerX").value = target.centerX
-    document.getElementById("centerY").value = target.centerY
-    document.getElementById("centerZ").value = target.centerZ
-    document.getElementById("radius").value = target.radius
+    document.getElementById("centerX").value = target.centerX;
+    document.getElementById("centerY").value = target.centerY;
+    document.getElementById("centerZ").value = target.centerZ;
+    document.getElementById("radius").value = target.radius;
   }
 
   function validateTargetValues() {
-    let form = document.getElementById("targetForm")
+    let form = document.getElementById("targetForm");
     if (!form.checkValidity()) {
-      $("#target-accordion-item").collapse("show")
-      form.reportValidity()
-      return false
+      $("#target-accordion-item").collapse("show");
+      form.reportValidity();
+      return false;
     }
-    return true
+    return true;
   }
-  
-  function clickToPositionTargetHandler(){
-    showLoading("Rendering Layout...")
-    disallowRunSimulation()
-    clearPlotArea()
 
-    const url = "{{ url_for('main.render_canvas') }}"
+  function clickToPositionTargetHandler() {
+    showLoading("Rendering Layout...");
+    disallowRunSimulation();
+    clearPlotArea();
+
+    const url = "{{ url_for('main.render_canvas') }}";
     fetch(url, {
       method: "POST",
       headers: {
@@ -31,42 +31,41 @@
     })
       .then((response) => response.json())
       .then((data) => {
-        hideLoading()
-        
-        const label = document.createElement('p');
-        label.textContent = 'Click on the image to place the target';
-        label.style.textAlign = 'center';
+        hideLoading();
 
+        const label = document.createElement("p");
+        label.textContent = "Click on the image to place the target";
+        label.style.textAlign = "center";
+        const plotArea = document.getElementById("plotArea");
         plotArea.insertBefore(label, plotArea.firstChild);
 
         const clickCallback = (xData, yData) => {
-          xData = xData.toFixed(6)
-          yData = yData.toFixed(6)
-          
+          xData = xData.toFixed(6);
+          yData = yData.toFixed(6);
+
           // Update the form
           if (scenarioIs2d()) {
-            document.getElementById("centerX").value = yData
-            document.getElementById("centerY").value = xData
-          } else{
-            const sliceAxis = document.getElementById("sliceAxis").value
-            switch (sliceAxis)
-            {
+            document.getElementById("centerX").value = yData;
+            document.getElementById("centerY").value = xData;
+          } else {
+            const sliceAxis = document.getElementById("sliceAxis").value;
+            switch (sliceAxis) {
               case "x":
-                document.getElementById("centerY").value = yData
-                document.getElementById("centerZ").value = xData
+                document.getElementById("centerY").value = yData;
+                document.getElementById("centerZ").value = xData;
                 break;
               case "y":
-                document.getElementById("centerX").value = yData
-                document.getElementById("centerZ").value = xData
+                document.getElementById("centerX").value = yData;
+                document.getElementById("centerZ").value = xData;
                 break;
               case "z":
-                document.getElementById("centerX").value = yData
-                document.getElementById("centerY").value = xData
+                document.getElementById("centerX").value = yData;
+                document.getElementById("centerY").value = xData;
                 break;
             }
           }
-          valueChanged()
-        }
+          valueChanged();
+        };
 
         const canvas = plotToCanvas({
           xlim: data.xlim,
@@ -77,26 +76,32 @@
           yticks: data.yticks,
           image: data.image,
           clickCallback,
-          drawLine: false
-        })
-        document.getElementById('plotArea').appendChild(canvas);
-      })
+          drawLine: false,
+        });
+        plotArea.appendChild(canvas);
+      });
   }
 
   function getTargetParams() {
-    let params = {}
-    params["centerX"] = document.getElementById("centerX").value
-    params["centerY"] = document.getElementById("centerY").value
-    params["centerZ"] = document.getElementById("centerZ").value || null
-    params["radius"] = document.getElementById("radius").value
-    return params
+    let params = {};
+    params["centerX"] = document.getElementById("centerX").value;
+    params["centerY"] = document.getElementById("centerY").value;
+    params["centerZ"] = document.getElementById("centerZ").value || null;
+    params["radius"] = document.getElementById("radius").value;
+    return params;
   }
 </script>
 <form id="targetForm">
   <fieldset>
     <div class="row">
       <div class="col">
-        <button type="button" onclick="clickToPositionTargetHandler()" class="btn btn-link">Click to position</button>
+        <button
+          type="button"
+          onclick="clickToPositionTargetHandler()"
+          class="btn btn-link"
+        >
+          Click to position
+        </button>
       </div>
     </div>
     <div class="mb-3 row">

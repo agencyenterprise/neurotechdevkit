@@ -297,14 +297,16 @@
         data-transducer-id="-1"
         data-action="edit"
         aria-hidden="true"
-        onclick="editTransducer(this.dataset.transducerId)"></span>
+        onclick="editTransducer(this.dataset.transducerId)"
+      ></span>
       <span
         class="far fa-trash-alt cercle-icons delete-icon"
         data-delete-transducer="true"
         data-transducer-id="-1"
         data-action="delete"
         aria-hidden="true"
-        onclick="deleteTransducer(this.dataset.transducerId)"></span>
+        onclick="deleteTransducer(this.dataset.transducerId)"
+      ></span>
     </div>
   </li>
 </template>
@@ -329,7 +331,8 @@
         id="transducerType"
         name="transducerType"
         onchange="transducerSelected(this)"
-        aria-label="Select a transducer">
+        aria-label="Select a transducer"
+      >
         <option value selected>-- Select transducer --</option>
         {% for transducerType, transducerTypeLabel in all_transducer_types %}
         <option value="{{transducerType}}">{{transducerTypeLabel}}</option>
@@ -341,14 +344,16 @@
       <button
         type="button"
         class="btn btn-primary btn-block"
-        onclick="cancelAddTransducer(this)">
+        onclick="cancelAddTransducer(this)"
+      >
         Cancel
       </button>
       <button
         type="button"
         id="addTransducerButton"
         class="btn btn-primary btn-block"
-        onclick="addTransducer(this)">
+        onclick="addTransducer(this)"
+      >
         Add
       </button>
       <button
@@ -357,7 +362,8 @@
         id="saveTransducerButton"
         class="btn btn-primary btn-block"
         onclick="saveTransducer(this, this.dataset.transducerId)"
-        hidden>
+        hidden
+      >
         Save Transducer
       </button>
     </div>

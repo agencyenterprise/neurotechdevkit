@@ -1,74 +1,74 @@
 <script>
   function clearPlotArea() {
-    document.getElementById("plotArea").innerHTML = ""
+    document.getElementById("plotArea").innerHTML = "";
   }
 
   function showLoading(message) {
-    const loader = document.getElementById("loader")
-    loader.removeAttribute("hidden")
-    loader.querySelector(".spinner-border").removeAttribute("hidden")
-    document.getElementById("loadingMessage").innerHTML = message
+    const loader = document.getElementById("loader");
+    loader.removeAttribute("hidden");
+    loader.querySelector(".spinner-border").removeAttribute("hidden");
+    document.getElementById("loadingMessage").innerHTML = message;
   }
 
   function hideLoading() {
-    const loader = document.getElementById("loader")
-    loader.setAttribute("hidden", true)
-    loader.querySelector(".spinner-border").setAttribute("hidden", true)
-    document.getElementById("loadingMessage").innerHTML = ""
+    const loader = document.getElementById("loader");
+    loader.setAttribute("hidden", true);
+    loader.querySelector(".spinner-border").setAttribute("hidden", true);
+    document.getElementById("loadingMessage").innerHTML = "";
   }
 
   function showCancelSimulation() {
-    document.getElementById("cancelSimulation").removeAttribute("hidden")
-    allowViewScenarioParameters()
+    document.getElementById("cancelSimulation").removeAttribute("hidden");
+    allowViewScenarioParameters();
   }
 
   function showRunSimulation() {
-    document.getElementById("runSimulation").removeAttribute("hidden")
-    hideCleanSimulation()
-    hideCancelSimulation()
-    allowRunSimulation()
-    allowViewScenarioParameters()
-    enableParametersPanel()
+    document.getElementById("runSimulation").removeAttribute("hidden");
+    hideCleanSimulation();
+    hideCancelSimulation();
+    allowRunSimulation();
+    allowViewScenarioParameters();
+    enableParametersPanel();
   }
 
   function hideCancelSimulation() {
-    document.getElementById("cancelSimulation").setAttribute("hidden", true)
+    document.getElementById("cancelSimulation").setAttribute("hidden", true);
   }
 
   function hideRunSimulation() {
-    document.getElementById("runSimulation").setAttribute("hidden", true)
+    document.getElementById("runSimulation").setAttribute("hidden", true);
   }
   function allowRunSimulation() {
     if (hasTransducers()) {
-      document.getElementById("runSimulation").removeAttribute("disabled")
+      document.getElementById("runSimulation").removeAttribute("disabled");
     } else {
-      disallowRunSimulation()
+      disallowRunSimulation();
     }
   }
 
   function disallowRunSimulation() {
-    document.getElementById("runSimulation").setAttribute("disabled", true)
+    document.getElementById("runSimulation").setAttribute("disabled", true);
   }
 
   function showCleanSimulation() {
-    document.getElementById("cleanSimulation").removeAttribute("hidden")
-    hideRunSimulation()
-    hideCancelSimulation()
-    hideLoading()
-    allowViewScenarioParameters()
+    document.getElementById("cleanSimulation").removeAttribute("hidden");
+    hideRunSimulation();
+    hideCancelSimulation();
+    hideLoading();
+    allowViewScenarioParameters();
   }
 
   function hideCleanSimulation() {
-    document.getElementById("cleanSimulation").setAttribute("hidden", true)
+    document.getElementById("cleanSimulation").setAttribute("hidden", true);
   }
 
-  function getFullRequestBody(){
-    const is2d = scenarioIs2d()
-    const scenarioParams = getScenarioParams()
-    const transducersParams = getTransducersParams()
-    const targetParams = getTargetParams()
-    const simulationSettingsParams = getSimulationSettingsParams()
-    const displaySettingsParams = is2d ? null : getDisplaySettingsParams()
+  function getFullRequestBody() {
+    const is2d = scenarioIs2d();
+    const scenarioParams = getScenarioParams();
+    const transducersParams = getTransducersParams();
+    const targetParams = getTargetParams();
+    const simulationSettingsParams = getSimulationSettingsParams();
+    const displaySettingsParams = is2d ? null : getDisplaySettingsParams();
 
     const data = {
       is2d,
@@ -77,18 +77,18 @@
       target: targetParams,
       simulationSettings: simulationSettingsParams,
       displaySettings: displaySettingsParams,
-    }
-    return JSON.stringify(data)
+    };
+    return JSON.stringify(data);
   }
 
   function runSimulation(button) {
-    showLoading("Running Simulation...")
-    showCancelSimulation()
-    disableParametersPanel()
-    hideRunSimulation()
-    clearPlotArea()
+    showLoading("Running Simulation...");
+    showCancelSimulation();
+    disableParametersPanel();
+    hideRunSimulation();
+    clearPlotArea();
 
-    const url = "{{ url_for('main.simulate') }}"
+    const url = "{{ url_for('main.simulate') }}";
     fetch(url, {
       method: "POST",
       headers: {
@@ -96,7 +96,7 @@
       },
       body: getFullRequestBody(),
     })
-      .then(response => {
+      .then((response) => {
         if (!response.ok) {
           return Promise.reject(response);
         }
@@ -104,32 +104,32 @@
       })
       .then((text) => {
         if (text) {
-          document.getElementById("plotArea").innerHTML = text
-          showCleanSimulation()
+          document.getElementById("plotArea").innerHTML = text;
+          showCleanSimulation();
         } else {
-          showRunSimulation()
+          showRunSimulation();
         }
       })
-      .catch(response => {
+      .catch((response) => {
         response.json().then((error) => {
-          hideLoading()
-          document.getElementById("plotArea").innerHTML = error.error
-          showRunSimulation()
-        })
+          hideLoading();
+          document.getElementById("plotArea").innerHTML = error.error;
+          showRunSimulation();
+        });
       });
   }
 
   function getSimulation() {
-    disableParametersPanel()
-    showCancelSimulation()
-    const button = document.getElementById("runSimulation")
-    showLoading("Running Simulation...")
-    const url = "{{ url_for('main.get_simulation') }}"
+    disableParametersPanel();
+    showCancelSimulation();
+    const button = document.getElementById("runSimulation");
+    showLoading("Running Simulation...");
+    const url = "{{ url_for('main.get_simulation') }}";
     fetch(url, {
       method: "GET",
     })
-      .then(response => {
-        hideLoading()
+      .then((response) => {
+        hideLoading();
         if (!response.ok) {
           return Promise.reject(response);
         }
@@ -137,56 +137,79 @@
       })
       .then((text) => {
         if (text) {
-          document.getElementById("plotArea").innerHTML = text
-          showCleanSimulation()
+          document.getElementById("plotArea").innerHTML = text;
+          showCleanSimulation();
         } else {
-          showRunSimulation()
+          showRunSimulation();
         }
       })
-      .catch(response => {
+      .catch((response) => {
         response.json().then((error) => {
-          hideLoading()
-          document.getElementById("plotArea").innerHTML = error.error
-          showRunSimulation()
-        })
+          hideLoading();
+          document.getElementById("plotArea").innerHTML = error.error;
+          showRunSimulation();
+        });
       });
   }
 
   function cancelSimulation(button) {
-    hideLoading()
-    cleanSimulation(button)
+    hideLoading();
+    cleanSimulation(button);
   }
 
   function cleanSimulation(button) {
-    BtnLoading(button)
-    clearPlotArea()
-    const url = "{{ url_for('main.remove_simulation') }}"
+    BtnLoading(button);
+    clearPlotArea();
+    const url = "{{ url_for('main.remove_simulation') }}";
     fetch(url, {
       method: "DELETE",
     }).then(() => {
-      BtnReset(button)
-      showRunSimulation()
-      renderLayout()
-    })
+      BtnReset(button);
+      showRunSimulation();
+      renderLayout();
+    });
   }
 </script>
 <div class="container-fluid">
   <h1 class="d-flex justify-content-between align-items-center mb-3">
     <span>Plots</span>
-    <button id="runSimulation" type="button" class="btn btn-primary" onclick="runSimulation(this)" disabled>
+    <button
+      id="runSimulation"
+      type="button"
+      class="btn btn-primary"
+      onclick="runSimulation(this)"
+      disabled
+    >
       Run Simulation
     </button>
-    <button id="cancelSimulation" type="button" class="btn btn-warning" onclick="cancelSimulation(this)" hidden>
+    <button
+      id="cancelSimulation"
+      type="button"
+      class="btn btn-warning"
+      onclick="cancelSimulation(this)"
+      hidden
+    >
       Cancel Simulation
     </button>
-    <button id="cleanSimulation" type="button" class="btn btn-warning" onclick="cleanSimulation(this)" hidden>
+    <button
+      id="cleanSimulation"
+      type="button"
+      class="btn btn-warning"
+      onclick="cleanSimulation(this)"
+      hidden
+    >
       Clean Simulation
     </button>
   </h1>
   <div class="row d-flex" id="loader" hidden>
     <div class="d-flex flex-column align-items-center justify-content-center">
       <div class="row">
-        <div class="spinner-border" role="status" style="width: 10rem; height: 10rem" hidden>
+        <div
+          class="spinner-border"
+          role="status"
+          style="width: 10rem; height: 10rem"
+          hidden
+        >
           <span class="sr-only">Loading...</span>
         </div>
       </div>
