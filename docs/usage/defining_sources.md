@@ -5,7 +5,7 @@ Users can specify the parameters and placement of sources, and add them to their
 import neurotechdevkit as ndk
 import numpy as np
 
-scenario = ndk.scenarios.built_in.Scenario2_2D()
+scenario = ndk.scenarios.built_in.ScenarioRealisticSkull_2D()
 
 source = ndk.sources.FocusedSource2D(
     position=np.array([0.19, 0.07]),
@@ -50,7 +50,7 @@ The 2D sources are for 2D scenarios and the 3D sources for 3D scenarios. The par
 import neurotechdevkit as ndk
 import numpy as np
 
-scenario = ndk.scenarios.built_in.Scenario2_2D()
+scenario = ndk.scenarios.built_in.ScenarioRealisticSkull_2D()
 
 source_position = np.array([0.19, 0.07])
 source = ndk.sources.PlanarSource2D(

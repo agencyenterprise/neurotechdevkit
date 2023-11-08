@@ -1,29 +1,29 @@
-"""Test built-in scenario 2."""
+"""Test built-in scenarios."""
 
 import pytest
 
 from neurotechdevkit.scenarios.built_in import (
-    Scenario0,
-    Scenario1_2D,
-    Scenario1_3D,
-    Scenario2_2D,
-    Scenario2_2D_Benchmark7,
-    Scenario2_3D,
-    Scenario2_3D_Benchmark7,
-    Scenario3,
+    ScenarioFlatSkull_2D,
+    ScenarioFlatSkull_3D,
+    ScenarioRealisticSkull_2D,
+    ScenarioRealisticSkull_3D,
+    ScenarioRealisticSkullCropped_2D,
+    ScenarioRealisticSkullCropped_3D,
+    ScenarioSimple,
+    ScenarioUltrasoundPhantom,
 )
 
 
 @pytest.fixture(
     params=[
-        Scenario0,
-        Scenario1_2D,
-        Scenario1_3D,
-        Scenario2_2D,
-        Scenario2_3D,
-        Scenario2_2D_Benchmark7,
-        Scenario2_3D_Benchmark7,
-        Scenario3,
+        ScenarioSimple,
+        ScenarioFlatSkull_2D,
+        ScenarioFlatSkull_3D,
+        ScenarioRealisticSkull_2D,
+        ScenarioRealisticSkull_3D,
+        ScenarioRealisticSkullCropped_2D,
+        ScenarioRealisticSkullCropped_3D,
+        ScenarioUltrasoundPhantom,
     ]
 )
 def scenario_cls(request):
