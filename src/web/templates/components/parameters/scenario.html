@@ -86,7 +86,7 @@
         ctSlicePosition.value = configuration.scenarioSettings.ctSlicePosition
       }
     }
-    setTargetValues(configuration.target)
+    setTargetManualValues(configuration.target)
     setSimulationSettingsValues(configuration.simulationSettings)
     setTransducersValues(configuration.transducers)
     if (!configuration.is2d) {
@@ -164,7 +164,7 @@
     })
     const is3d = document.getElementById("is3d").checked
 
-    setTargetValues({
+    setTargetManualValues({
       "centerX": ctDimensionPerAxis["x"] / 2,
       "centerY": ctDimensionPerAxis["y"] / 2,
       "centerZ": is3d ? ctDimensionPerAxis["z"] / 2 : '',

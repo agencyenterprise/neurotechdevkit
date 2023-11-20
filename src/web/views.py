@@ -205,3 +205,25 @@ def ct_scan():
             },
         }
     )
+
+
+@bp.route("/target_upload", methods=["POST"])
+def target_upload():
+    print("Request Json:", request.json)
+    payload = request.json
+    target_file = payload["targetFile"]
+    x, y, z = target_file["markups"][0]["controlPoints"][0]["position"]
+    print(x, y, z)
+    y = (204 / 2 + y) / 1000
+    x = (288 / 2 + x) / 1000
+    print(x, y)
+    return jsonify(
+        {
+            "target": {
+                "centerX": x,
+                "centerY": y,
+                "centerZ": None,
+                "radius": 0.01,
+            }
+        }
+    )

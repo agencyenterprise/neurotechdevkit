@@ -1,9 +1,84 @@
 <script>
-  function setTargetValues(target) {
-    document.getElementById("centerX").value = target.centerX;
-    document.getElementById("centerY").value = target.centerY;
-    document.getElementById("centerZ").value = target.centerZ;
-    document.getElementById("radius").value = target.radius;
+  function toggleTargetFileDiv() {
+    document.getElementById("targetFileDiv").hidden = false;
+    document.getElementById("targetManualDiv").hidden = true;
+  }
+
+  function toggleTargetManualDiv() {
+    document.getElementById("targetFileFields").hidden = true;
+    document.getElementById("targetFileDiv").hidden = true;
+    document.getElementById("targetManualDiv").hidden = false;
+  }
+
+  function clearTarget() {
+    document.getElementById("isTargetManual").checked = true;
+    setTargetFileValues({
+      centerX: "",
+      centerY: "",
+      centerZ: "",
+      radius: "",
+    });
+    setTargetManualValues({
+      centerX: "",
+      centerY: "",
+      centerZ: "",
+      radius: "",
+    });
+    document.getElementById("targetFileFields").hidden = true;
+  }
+
+  function targetFileSelected(input) {
+    const file = input.files[0];
+    const reader = new FileReader();
+    reader.onload = function () {
+      let data = {};
+      data["targetFile"] = JSON.parse(reader.result);
+      data["scenario"] = getScenarioParams();
+      const is2d = scenarioIs2d();
+      if (is2d) {
+        data["displaySettings"] = getDisplaySettingsParams();
+      }
+
+      const url = "{{ url_for('main.target_upload') }}";
+      fetch(url, {
+        method: "POST",
+        body: JSON.stringify(data),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+        .then((response) => {
+          if (!response.ok) {
+            return Promise.reject(response);
+          }
+          return response.json();
+        })
+        .then((data) => {
+          setTargetFileValues(data.target);
+
+          valueChanged();
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+          alert("Error uploading target file.");
+        });
+    };
+    reader.readAsText(file);
+  }
+
+  function setTargetManualValues(target) {
+    document.getElementById("targetManualCenterX").value = target.centerX;
+    document.getElementById("targetManualCenterY").value = target.centerY;
+    document.getElementById("targetManualCenterZ").value = target.centerZ;
+    document.getElementById("targetManualRadius").value = target.radius;
+  }
+
+  function setTargetFileValues(target) {
+    document.getElementById("targetFileFields").hidden = false;
+    document.getElementById("targetFileCenterX").value = target.centerX;
+    document.getElementById("targetFileCenterY").value = target.centerY;
+    document.getElementById("targetFileCenterZ").value = target.centerZ;
+    document.getElementById("targetFileRadius").value = target.radius;
   }
 
   function validateTargetValues() {
@@ -46,22 +121,22 @@
 
           // Update the form
           if (scenarioIs2d()) {
-            document.getElementById("centerX").value = yData;
-            document.getElementById("centerY").value = xData;
+            document.getElementById("targetManualCenterX").value = yData;
+            document.getElementById("targetManualCenterY").value = xData;
           } else {
             const sliceAxis = document.getElementById("sliceAxis").value;
             switch (sliceAxis) {
               case "x":
-                document.getElementById("centerY").value = yData;
-                document.getElementById("centerZ").value = xData;
+                document.getElementById("targetManualCenterY").value = yData;
+                document.getElementById("targetManualCenterZ").value = xData;
                 break;
               case "y":
-                document.getElementById("centerX").value = yData;
-                document.getElementById("centerZ").value = xData;
+                document.getElementById("targetManualCenterX").value = yData;
+                document.getElementById("targetManualCenterZ").value = xData;
                 break;
               case "z":
-                document.getElementById("centerX").value = yData;
-                document.getElementById("centerY").value = xData;
+                document.getElementById("targetManualCenterX").value = yData;
+                document.getElementById("targetManualCenterY").value = xData;
                 break;
             }
           }
@@ -83,101 +158,263 @@
       });
   }
 
+  function getTargetFileParams() {
+    const centerX = document.getElementById("targetFileCenterX").value;
+    const centerY = document.getElementById("targetFileCenterY").value;
+    const centerZ = document.getElementById("targetFileCenterZ").value || null;
+    const radius = document.getElementById("targetFileRadius").value;
+    return {
+      centerX,
+      centerY,
+      centerZ,
+      radius,
+    };
+  }
+
+  function getTargetManualParams() {
+    const centerX = document.getElementById("targetManualCenterX").value;
+    const centerY = document.getElementById("targetManualCenterY").value;
+    const centerZ =
+      document.getElementById("targetManualCenterZ").value || null;
+    const radius = document.getElementById("targetManualRadius").value;
+    return {
+      centerX,
+      centerY,
+      centerZ,
+      radius,
+    };
+  }
+
   function getTargetParams() {
     let params = {};
-    params["centerX"] = document.getElementById("centerX").value;
-    params["centerY"] = document.getElementById("centerY").value;
-    params["centerZ"] = document.getElementById("centerZ").value || null;
-    params["radius"] = document.getElementById("radius").value;
+    if (document.getElementById("isTargetFile").checked) {
+      params = getTargetFileParams();
+    } else {
+      params = getTargetManualParams();
+    }
     return params;
   }
 </script>
 <form id="targetForm">
   <fieldset>
-    <div class="row">
-      <div class="col">
-        <button
-          type="button"
-          onclick="clickToPositionTargetHandler()"
-          class="btn btn-link"
-        >
-          Click to position
-        </button>
-      </div>
-    </div>
-    <div class="mb-3 row">
-      <div class="col">
-        <label
-          for="centerX"
-          data-bs-toggle="tooltip"
-          data-bs-placement="right"
-          title="The location of the center of the target (in meters)"
-          >Center X</label
-        >
-        <input
-          type="number"
-          step="any"
-          class="form-control"
-          name="centerX"
-          id="centerX"
-          onchange="valueChanged()"
-          required
-        />
-      </div>
-      <div class="col">
-        <label
-          for="centerY"
-          data-bs-toggle="tooltip"
-          data-bs-placement="right"
-          title="The location of the center of the target (in meters)"
-          >Center Y</label
-        >
-        <input
-          type="number"
-          step="any"
-          class="form-control"
-          id="centerY"
-          name="centerY"
-          onchange="valueChanged()"
-          required
-        />
-      </div>
-      <div class="col" data-3d-only="true" hidden>
-        <label
-          for="centerZ"
-          data-bs-toggle="tooltip"
-          data-bs-placement="right"
-          title="The location of the center of the target (in meters)"
-          >Center Z</label
-        >
-        <input
-          type="number"
-          step="any"
-          class="form-control"
-          id="centerZ"
-          name="centerZ"
-          onchange="valueChanged()"
-          data-3d-input-only="true"
-        />
-      </div>
-    </div>
     <div class="mb-3">
-      <label
-        for="radius"
-        data-bs-toggle="tooltip"
-        data-bs-placement="right"
-        title="The radius of the target (in meters)"
-        >Radius</label
-      >
-      <input
-        type="number"
-        step="any"
-        class="form-control"
-        name="radius"
-        id="radius"
-        onchange="valueChanged()"
-        required
-      />
+      <div class="btn-group">
+        <input
+          type="radio"
+          class="btn-check"
+          name="options"
+          id="isTargetManual"
+          autocomplete="off"
+          onchange="toggleTargetManualDiv()"
+          checked
+        />
+        <label
+          class="btn btn-primary"
+          for="isTargetManual"
+          data-bs-toggle="tooltip"
+          data-bs-placement="right"
+          title="Fill the target position manually"
+          >Manual input</label
+        >
+
+        <input
+          type="radio"
+          class="btn-check"
+          name="options"
+          id="isTargetFile"
+          autocomplete="off"
+          onchange="toggleTargetFileDiv()"
+        />
+        <label
+          class="btn btn-primary"
+          for="isTargetFile"
+          data-bs-toggle="tooltip"
+          data-bs-placement="right"
+          title="Load the target position from a file"
+          >Target file</label
+        >
+      </div>
+    </div>
+    <div class="mb-3" id="targetFileDiv" hidden>
+      <div class="mb-3">
+        <label
+          for="targetFile"
+          data-bs-toggle="tooltip"
+          data-bs-placement="right"
+          title="The file containing the target position"
+          >Target file</label
+        >
+        <input
+          type="file"
+          class="form-control"
+          id="targetFile"
+          name="targetFile"
+          onchange="targetFileSelected(this)"
+        />
+      </div>
+      <div id="targetFileFields" hidden>
+        <div class="mb-3 row">
+          <div class="col">
+            <label
+              for="targetFileCenterX"
+              data-bs-toggle="tooltip"
+              data-bs-placement="right"
+              title="The location of the center of the target (in meters)"
+              >Center X</label
+            >
+            <input
+              type="number"
+              step="any"
+              class="form-control"
+              name="targetFileCenterX"
+              id="targetFileCenterX"
+              disabled
+              required
+            />
+          </div>
+          <div class="col">
+            <label
+              for="targetFileCenterY"
+              data-bs-toggle="tooltip"
+              data-bs-placement="right"
+              title="The location of the center of the target (in meters)"
+              >Center Y</label
+            >
+            <input
+              type="number"
+              step="any"
+              class="form-control"
+              id="targetFileCenterY"
+              name="targetFileCenterY"
+              disabled
+              required
+            />
+          </div>
+          <div class="col" data-3d-only="true" hidden>
+            <label
+              for="targetFileCenterZ"
+              data-bs-toggle="tooltip"
+              data-bs-placement="right"
+              title="The location of the center of the target (in meters)"
+              >Center Z</label
+            >
+            <input
+              type="number"
+              step="any"
+              class="form-control"
+              id="targetFileCenterZ"
+              name="targetFileCenterZ"
+              disabled
+              data-3d-input-only="true"
+            />
+          </div>
+        </div>
+        <div class="mb-3">
+          <label
+            for="targetFileRadius"
+            data-bs-toggle="tooltip"
+            data-bs-placement="right"
+            title="The radius of the target (in meters)"
+            >Radius</label
+          >
+          <input
+            type="number"
+            step="any"
+            class="form-control"
+            name="targetFileRadius"
+            id="targetFileRadius"
+            disabled
+            required
+          />
+        </div>
+      </div>
+    </div>
+    <div class="mb-3" id="targetManualDiv">
+      <div class="row">
+        <div class="col">
+          <button
+            type="button"
+            onclick="clickToPositionTargetHandler()"
+            class="btn btn-link"
+          >
+            Click to position
+          </button>
+        </div>
+      </div>
+      <div class="mb-3 row">
+        <div class="col">
+          <label
+            for="targetManualCenterX"
+            data-bs-toggle="tooltip"
+            data-bs-placement="right"
+            title="The location of the center of the target (in meters)"
+            >Center X</label
+          >
+          <input
+            type="number"
+            step="any"
+            class="form-control"
+            name="targetManualCenterX"
+            id="targetManualCenterX"
+            onchange="valueChanged()"
+            required
+          />
+        </div>
+        <div class="col">
+          <label
+            for="targetManualCenterY"
+            data-bs-toggle="tooltip"
+            data-bs-placement="right"
+            title="The location of the center of the target (in meters)"
+            >Center Y</label
+          >
+          <input
+            type="number"
+            step="any"
+            class="form-control"
+            id="targetManualCenterY"
+            name="targetManualCenterY"
+            onchange="valueChanged()"
+            required
+          />
+        </div>
+        <div class="col" data-3d-only="true" hidden>
+          <label
+            for="targetManualCenterZ"
+            data-bs-toggle="tooltip"
+            data-bs-placement="right"
+            title="The location of the center of the target (in meters)"
+            >Center Z</label
+          >
+          <input
+            type="number"
+            step="any"
+            class="form-control"
+            id="targetManualCenterZ"
+            name="targetManualCenterZ"
+            onchange="valueChanged()"
+            data-3d-input-only="true"
+          />
+        </div>
+      </div>
+      <div class="mb-3">
+        <label
+          for="targetManualRadius"
+          data-bs-toggle="tooltip"
+          data-bs-placement="right"
+          title="The radius of the target (in meters)"
+          >Radius</label
+        >
+        <input
+          type="number"
+          step="any"
+          class="form-control"
+          name="targetManualRadius"
+          id="targetManualRadius"
+          onchange="valueChanged()"
+          required
+        />
+      </div>
     </div>
   </fieldset>
 </form>
