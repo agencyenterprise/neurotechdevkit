@@ -34,28 +34,13 @@
     disallowRunSimulation()
     clearPlotArea()
 
-    const is2d = scenarioIs2d()
-    const scenarioParams = getScenarioParams()
-    const transducersParams = getTransducersParams()
-    const targetParams = getTargetParams()
-    const simulationSettingsParams = getSimulationSettingsParams()
-    const displaySettingsParams = is2d ? null : getDisplaySettingsParams()
-
-    const data = {
-      is2d,
-      scenarioSettings: scenarioParams,
-      transducers: transducersParams,
-      target: targetParams,
-      simulationSettings: simulationSettingsParams,
-      displaySettings: displaySettingsParams,
-    }
     const url = "{{ url_for('main.render_layout') }}"
     fetch(url, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(data),
+      body: getFullRequestBody(),
     })
       .then((response) => response.text())
       .then((text) => {
@@ -112,6 +97,7 @@
   function resetAll(is2d){
     clearPlotArea()
     clearAllTransducers()
+    clearTarget()
     disallowRenderLayout()
     disallowRunSimulation()
     setScenariosOptions(is2d)
@@ -165,7 +151,7 @@
       } else {
         document.getElementById("is3d").checked = true
       }
-      
+
       setScenarioValues(currentConfiguration)
     }
 
@@ -197,7 +183,8 @@
         id="is2d"
         autocomplete="off"
         onchange="changeSimulationType(is2d=true)"
-        checked />
+        checked
+      />
       <label class="btn btn-primary" for="is2d">2D</label>
 
       <input
@@ -206,7 +193,8 @@
         name="options"
         id="is3d"
         autocomplete="off"
-        onchange="changeSimulationType(is2d=false)" />
+        onchange="changeSimulationType(is2d=false)"
+      />
       <label class="btn btn-primary" for="is3d">3D</label>
     </div>
   </fieldset>
@@ -220,14 +208,16 @@
             data-bs-toggle="collapse"
             data-bs-target="#scenario-accordion-item"
             aria-expanded="false"
-            aria-controls="scenario-accordion-item">
+            aria-controls="scenario-accordion-item"
+          >
             Scenario
           </button>
         </h2>
         <div
           id="scenario-accordion-item"
           class="accordion-collapse collapse show"
-          data-bs-parent="#parameters-accordion">
+          data-bs-parent="#parameters-accordion"
+        >
           <div class="accordion-body">
             {% include 'components/parameters/scenario.html' %}
           </div>
@@ -242,14 +232,16 @@
             data-bs-target="#display-accordion-item"
             aria-expanded="false"
             aria-controls="display-accordion-item"
-            disabled>
+            disabled
+          >
             Display
           </button>
         </h2>
         <div
           id="display-accordion-item"
           class="accordion-collapse collapse"
-          data-bs-parent="#parameters-accordion">
+          data-bs-parent="#parameters-accordion"
+        >
           <div class="accordion-body">
             {% include 'components/parameters/display.html' %}
           </div>
@@ -265,14 +257,16 @@
             data-bs-target="#transducers-accordion-item"
             aria-expanded="false"
             aria-controls="transducers-accordion-item"
-            disabled>
+            disabled
+          >
             Transducers
           </button>
         </h2>
         <div
           id="transducers-accordion-item"
           class="accordion-collapse collapse"
-          data-bs-parent="#parameters-accordion">
+          data-bs-parent="#parameters-accordion"
+        >
           <div class="accordion-body">
             {% include 'components/parameters/transducers.html' %}
           </div>
@@ -287,14 +281,16 @@
             data-bs-target="#target-accordion-item"
             aria-expanded="false"
             aria-controls="target-accordion-item"
-            disabled>
+            disabled
+          >
             Target
           </button>
         </h2>
         <div
           id="target-accordion-item"
           class="accordion-collapse collapse"
-          data-bs-parent="#parameters-accordion">
+          data-bs-parent="#parameters-accordion"
+        >
           <div class="accordion-body">
             {% include 'components/parameters/target.html' %}
           </div>
@@ -309,14 +305,16 @@
             data-bs-target="#simulation-settings-accordion-item"
             aria-expanded="false"
             aria-controls="simulation-settings-accordion-item"
-            disabled>
+            disabled
+          >
             Simulation Settings
           </button>
         </h2>
         <div
           id="simulation-settings-accordion-item"
           class="accordion-collapse collapse"
-          data-bs-parent="#parameters-accordion">
+          data-bs-parent="#parameters-accordion"
+        >
           <div class="accordion-body">
             {% include 'components/parameters/simulation_settings.html' %}
           </div>

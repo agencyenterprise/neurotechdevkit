@@ -1,9 +1,14 @@
 """Views for the web app."""
+import base64
+import io
 import shutil
 import tempfile
 from pathlib import Path
 
+import matplotlib.pyplot as plt
 from flask import Blueprint, current_app, jsonify, render_template, request
+from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
+from matplotlib.ticker import FuncFormatter
 from pydantic import ValidationError
 from web.computed_tomography import get_available_cts, validate_ct
 from web.controller import (
@@ -94,9 +99,79 @@ async def render_layout():
         # return a 400 Bad Request response
         return jsonify({"error": str(e)}), 400
 
-    data = get_scenario_layout(config)
+    fig = get_scenario_layout(config)
+    buf = io.BytesIO()
+    fig.savefig(buf, format="png")
+    data = base64.b64encode(buf.getbuffer()).decode("ascii")
+    plt.close(fig)
     image_format = "png"
     return f"<img src='data:image/{image_format};base64,{data}'/>"
+
+
+@bp.route("/render_canvas", methods=["POST"])
+async def render_canvas():
+    """Render the canvas of a scenario and return the result as a base64 PNG."""
+    try:
+        config = RenderLayoutRequest.parse_obj(request.json)
+    except ValidationError as e:
+        # If the JSON data doesn't match the Pydantic model,
+        # return a 400 Bad Request response
+        return jsonify({"error": str(e)}), 400
+
+    fig = get_scenario_layout(config)
+    plot_params = cleanup_plot(fig)
+    return jsonify(plot_params)
+
+
+def cleanup_plot(fig) -> dict:
+    """Clean up the plot and return the parameters to render it in the front end."""
+    fig.subplots_adjust(left=0, right=1, top=1, bottom=0)
+
+    ax = fig.get_axes()[0]
+    xlabel = ax.get_xlabel()
+    ylabel = ax.get_ylabel()
+    ax.spines["top"].set_visible(False)
+    ax.spines["right"].set_visible(False)
+    ax.spines["bottom"].set_visible(False)
+    ax.spines["left"].set_visible(False)
+
+    # Lists to store tick locations
+    xticks = []
+    yticks = []
+
+    # Define function to capture x and y ticks when they are being formatted
+    def capture_xticks(value, pos):
+        xticks.append(value)
+        return f"{value:.0f}"
+
+    def capture_yticks(value, pos):
+        yticks.append(value)
+        return f"{value:.0f}"
+
+    # Set FuncFormatters that use the above functions
+    ax.xaxis.set_major_formatter(FuncFormatter(capture_xticks))
+    ax.yaxis.set_major_formatter(FuncFormatter(capture_yticks))
+
+    # Remove the title
+    fig.suptitle("")
+
+    xlim = ax.get_xlim()
+    ylim = ax.get_ylim()
+    data_ratio = abs((xlim[1] - xlim[0]) / (ylim[1] - ylim[0]))
+    fig.set_size_inches(4 * data_ratio, 4)  # 4 inches is 400 pixels
+
+    canvas = FigureCanvas(fig)
+    png_output = io.BytesIO()
+    canvas.print_png(png_output)
+    return {
+        "image": base64.b64encode(png_output.getvalue()).decode("utf-8"),
+        "xlim": xlim,
+        "ylim": ylim,
+        "xticks": xticks,
+        "yticks": yticks,
+        "xlabel": xlabel,
+        "ylabel": ylabel,
+    }
 
 
 @bp.route("/ct_scan", methods=["POST"])
@@ -128,5 +203,27 @@ def ct_scan():
                 "shape": ct_info.shape,
                 "spacing": ct_info.spacing,
             },
+        }
+    )
+
+
+@bp.route("/target_upload", methods=["POST"])
+def target_upload():
+    print("Request Json:", request.json)
+    payload = request.json
+    target_file = payload["targetFile"]
+    x, y, z = target_file["markups"][0]["controlPoints"][0]["position"]
+    print(x, y, z)
+    y = (204 / 2 + y) / 1000
+    x = (288 / 2 + x) / 1000
+    print(x, y)
+    return jsonify(
+        {
+            "target": {
+                "centerX": x,
+                "centerY": y,
+                "centerZ": None,
+                "radius": 0.01,
+            }
         }
     )

@@ -7,6 +7,7 @@ from typing import Dict, Optional, Tuple, Union
 import codepy
 import matplotlib.pyplot as plt
 from flask import current_app
+from matplotlib.figure import Figure
 from web.computed_tomography import get_ct_image
 from web.messages.material_properties import Material, MaterialName, MaterialProperties
 from web.messages.requests import (
@@ -91,7 +92,7 @@ def get_built_in_scenarios() -> Dict[str, Dict]:
     return scenarios
 
 
-def get_scenario_layout(config: RenderLayoutRequest) -> str:
+def get_scenario_layout(config: RenderLayoutRequest) -> Figure:
     """
     Render the layout of a scenario and return the result as a base64 png.
 
@@ -99,7 +100,7 @@ def get_scenario_layout(config: RenderLayoutRequest) -> str:
         config (RenderLayoutRequest): The configuration for the scenario.
 
     Returns:
-        The base64 encoded png image.
+        The figure of the scenario layout.
     """
     scenario = _instantiate_scenario(
         config.scenarioSettings.isPreBuilt,
@@ -129,11 +130,7 @@ def get_scenario_layout(config: RenderLayoutRequest) -> str:
         scenario.material_masks = ct_image.material_masks
     _configure_scenario(scenario, config)
     fig = scenario.render_layout(show_sources=len(scenario.sources) > 0)
-    buf = io.BytesIO()
-    fig.savefig(buf, format="png")
-    data = base64.b64encode(buf.getbuffer()).decode("ascii")
-    plt.close(fig)
-    return data
+    return fig
 
 
 def _instantiate_scenario(

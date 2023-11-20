@@ -1,24 +1,24 @@
 <script>
   function setSimulationSettingsValues(scenarioSettings) {
     document.getElementById("simulationPrecision").value =
-      scenarioSettings.simulationPrecision
+      scenarioSettings.simulationPrecision;
     document.getElementById("centerFrequency").value =
-      scenarioSettings.centerFrequency
+      scenarioSettings.centerFrequency;
     document.getElementById("simulationTypePulsed").checked =
-      !scenarioSettings.isSteadySimulation
+      !scenarioSettings.isSteadySimulation;
     document.getElementById("simulationTypeSteady").checked =
-      scenarioSettings.isSteadySimulation
-    setMaterialProperties(scenarioSettings.materialProperties)
+      scenarioSettings.isSteadySimulation;
+    setMaterialProperties(scenarioSettings.materialProperties);
   }
 
   function validateSimulationSettingsValues() {
-    let form = document.getElementById("simulationSettingsForm")
+    let form = document.getElementById("simulationSettingsForm");
     if (!form.checkValidity()) {
-      $("#simulation-settings-accordion-item").collapse("show")
-      form.reportValidity()
-      return false
+      $("#simulation-settings-accordion-item").collapse("show");
+      form.reportValidity();
+      return false;
     }
-    return true
+    return true;
   }
 
   function getSimulationSettingsParams() {
@@ -28,8 +28,8 @@
       centerFrequency: document.getElementById("centerFrequency").value,
       isSteadySimulation: document.getElementById("simulationTypeSteady")
         .checked,
-    }
-    return params
+    };
+    return params;
   }
 </script>
 <form id="simulationSettingsForm">

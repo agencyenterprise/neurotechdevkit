@@ -7,6 +7,7 @@ from dataclasses import dataclass
 from typing import Dict, List, Optional, Tuple, Union
 
 import nibabel as nib
+import nibabel.orientations as ornt
 import numpy as np
 import pydicom
 from nibabel.nifti1 import Nifti1Image
@@ -67,7 +68,13 @@ def _load_nii(filepath: pathlib.Path) -> Tuple[np.ndarray, Tuple[float, float, f
         A tuple containing the image data and the voxel spacing.
     """
     image: Union[Nifti1Image, Nifti2Image] = nib.load(filepath)  # type: ignore
-    return image.get_fdata(), image.header.get_zooms()
+
+    data = image.get_fdata()
+    data = np.swapaxes(data, 0, 2)
+
+    # data = np.fliplr(data)
+    # data = np.flipud(data)
+    return data, image.header.get_zooms()
 
 
 def _load_compacted_dicom(
@@ -97,6 +104,8 @@ def _load_compacted_dicom(
             float(dicom_data[0].PixelSpacing[1]),
             float(dicom_data[0].SliceThickness),
         )
+        image = np.fliplr(image)
+        image = np.flipud(image)
         return image, spacing
 
 
