@@ -183,7 +183,7 @@ class SteadyStateResult(Result):
         return self.steady_state
 
     @property
-    def metrics(self) -> dict[str, dict[str, str | float]]:
+    def metrics(self) -> dict[str, dict[str, str | float | int | tuple]]:
         """A dictionary containing metrics and their descriptions.
 
         The keys for the dictionary are the names of the metrics. The value for each
