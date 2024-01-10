@@ -1,15 +1,15 @@
 <template>
-  <form id="simulationSettingsForm">
+  <form @submit.prevent>
     <fieldset>
       <div class="mb-3">
         <label for="simulationPrecision" data-bs-toggle="tooltip" data-bs-placement="right"
           title="The number of points per wavelength">Simulation Precision</label>
-        <input type="number" class="form-control" name="simulationPrecision" id="simulationPrecision" required disabled />
+        <input type="number" class="form-control" id="simulationPrecision" required disabled />
       </div>
       <div class="mb-3">
         <label for="centerFrequency" data-bs-toggle="tooltip" data-bs-placement="right"
           title="The center frequency of the transducers (in Hz)">Center Frequency</label>
-        <input type="number" class="form-control" name="centerFrequency" id="centerFrequency" onchange="valueChanged()"
+        <input type="number" class="form-control" id="centerFrequency" onchange="valueChanged()"
           required />
       </div>
     </fieldset>

@@ -4,7 +4,7 @@
   </h1>
   <div>
     <div class="mb-3 btn-group">
-      <input class="btn-check" type="radio" id="is2d" value="2D" v-model="simulationType" name="simulation" checked>
+      <input class="btn-check" type="radio" id="is2d" value="2D" v-model="simulationType" name="simulation">
       <label class="btn btn-primary btn-wide" for="is2d">2D</label>
       <input class="btn-check" type="radio" id="is3d" value="3D" v-model="simulationType" name="simulation">
       <label class="btn btn-primary btn-wide" for="is3d">3D</label>
@@ -55,6 +55,7 @@ import TargetSettings from './TargetSettings.vue'
 import SimulationSettings from './SimulationSettings.vue'
 
 export default {
+  emits: ['new-image-generated'],
   components: {
     ScenarioSettings,
     DisplaySettings,
@@ -62,37 +63,23 @@ export default {
     TargetSettings,
     SimulationSettings
   },
-  watch: {
-    simulationType(newVal) {
-      this.is2d = newVal === '2D';
-    }
-  },
-  data() {
-    return {
-      simulationType: '2D',
-      is2d: true,
-      opened: null,
-      has_simulation: false,
-      is_running_simulation: false,
-      configuration: {},
-      built_in_scenarios: [],
-      materials: [],
-      material_properties: [],
-      transducer_types: [],
-      available_cts: [],
+  data: () => ({
+    opened: null
+  }),
+  computed: {
+    simulationType: {
+      get() {
+        return this.$store.getters.is2d ? '2D' : '3D'
+      },
+      set(newVal) {
+        this.$store.dispatch('set2d', newVal === '2D')
+      }
     }
   },
   mounted() {
     this.getInitialData()
   },
   methods: {
-    /**
-     * Called when the simulation type is changed. (2D or 3D)
-     */
-    changeSimulationType() {
-      this.is2d = this.simulationType === '2D';
-    },
-
     /**
      * Toggles the accordion item.
      * @param {number} index The index of the accordion item.
@@ -109,15 +96,7 @@ export default {
       })
         .then(response => response.json())
         .then(data => {
-          console.log("Initial data", data)
-          this.has_simulation = data.has_simulation
-          this.is_running_simulation = data.is_running_simulation
-          this.configuration = data.configuration
-          this.built_in_scenarios = data.built_in_scenarios
-          this.materials = data.materials
-          this.material_properties = data.material_properties
-          this.transducer_types = data.transducer_types
-          this.available_cts = data.available_cts
+          this.$store.dispatch('setInitialValues', data)
         })
         .catch(error => {
           console.error('Error:', error);
