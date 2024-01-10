@@ -13,7 +13,6 @@
 import ParametersPanel from './components/ParametersPanel.vue'
 import MainGrid from './components/MainGrid.vue'
 
-
 export default {
   name: 'App',
   components: {

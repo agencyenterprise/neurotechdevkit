@@ -1,48 +1,48 @@
 <template>
-  <fieldset>
+  <div>
     <div class="mb-3">
       <div class="btn-group">
-        <input type="radio" class="btn-check" name="options" id="isPreBuilt" autocomplete="off"
-          onchange="togglePreBuiltDiv()" checked />
-        <label class="btn btn-primary" for="isPreBuilt" data-bs-toggle="tooltip" data-bs-placement="right"
+        <input class="btn-check" type="radio" value="preBuilt" id="isPreBuilt" v-model="scenarioType" />
+        <label class="btn btn-primary btn-wide" for="isPreBuilt"
           title="Use a prebuilt scenario with a target and transducers">Prebuilt</label>
-
-        <input type="radio" class="btn-check" name="options" id="isCtScan" autocomplete="off"
-          onchange="toggleCTFileDiv()" />
-        <label class="btn btn-primary" for="isCtScan" data-bs-toggle="tooltip" data-bs-placement="right"
-          title="Load a CT scan from a file">CT Scan</label>
+        <input class="btn-check" type="radio" value="ctScan" id="isCtScan" v-model="scenarioType" />
+        <label class="btn btn-primary btn-wide" for="isCtScan" title="Load a CT scan from a file">CT Scan</label>
       </div>
     </div>
-
     <div class="mb-3">
-      <div id="preBuiltDiv">
+      <div v-if="isPreBuilt">
         <label for="scenario" class="form-label">Scenarios:</label>
-        <select name="scenario" id="scenario" class="form-select" onchange="scenarioSelected(this)"></select>
+        <select id="scenario" class="form-select" v-model="selectedScenario">
+          <option value selected>Select a scenario</option>
+          <option v-for="(value, key) in filteredBuiltInScenarios" :key="key" :value="key">
+            {{ value.title }}
+          </option>
+        </select>
       </div>
-      <div id="ctFileDiv" hidden>
-        <form id="ctForm">
+      <div v-else>
+        <form @submit.prevent>
           <div class="mb-3">
             <label class="form-label" for="loadedCTs">Available CTs</label>
-            <select class="form-select" size="3" name="loadedCTs" id="loadedCTs" onchange="ctSelected(this)" required>
+            <select class="form-select" size="3" id="loadedCTs" v-model="selectedCTScan">
+              <option v-for="ct in $store.getters.ctScans" :key="ct" :value="ct.filename">{{ ct.filename }}</option>
             </select>
           </div>
-          <div class="mb-3" data-2d-only="true">
+          <div class="mb-3" v-if="is2d">
             <label for="ctSliceAxis" class="form-label" data-bs-toggle="tooltip" data-bs-placement="right"
               title="Axis along which to slice the 3D field to be recorded">Axis</label>
-            <select class="form-select" aria-label="Axis" id="ctSliceAxis" data-2d-input-only="true" name="ctSliceAxis"
-              required onchange="ctSliceAxisChanged(this)">
+            <select class="form-select" aria-label="Axis" id="ctSliceAxis" v-if="is2d" v-model="ctSliceAxis">
               <option value selected>Select an axis</option>
               <option value="x">X</option>
               <option value="y">Y</option>
               <option value="z">Z</option>
             </select>
           </div>
-          <div class="mb-3" data-2d-only="true">
+          <div class="mb-3" v-if="is2d">
             <label for="ctSlicePosition" class="form-label" data-bs-toggle="tooltip" data-bs-placement="right"
               title="The position (in meters) along the slice axis at which the slice of the 3D field should be made">Distance
               from Origin (m)</label>
-            <input type="number" step="any" class="form-control" id="ctSlicePosition" name="ctSlicePosition"
-              data-2d-input-only="true" placeholder="0.0" required onchange="valueChanged()" />
+            <input type="number" step="any" class="form-control" id="ctSlicePosition" placeholder="0.0"
+              v-model="ctSlicePosition" />
           </div>
         </form>
         <div class="mb-3">
@@ -59,15 +59,49 @@
         </div>
       </div>
     </div>
-  </fieldset>
+  </div>
 </template>
 
 <script>
 export default {
-  name: 'HelloWorld',
-  props: {
-    msg: String
-  }
+  data() {
+    return {
+      selectedCTScan: '',
+      selectedScenario: '',
+      ctSliceAxis: '',
+      ctSlicePosition: 0.0,
+    }
+  },
+  watch: {
+    selectedScenario(newVal) {
+      this.$store.dispatch('setScenario', newVal)
+    },
+    selectedCTScan(newVal) {
+      this.$store.dispatch('setCTScan', newVal)
+    },
+  },
+  computed: {
+    filteredBuiltInScenarios() {
+      if (this.is2d) {
+        return this.$store.getters.builtInScenarios2d
+      }
+      return this.$store.getters.builtInScenarios3d
+    },
+    scenarioType: {
+      get() {
+        return this.$store.getters.isPreBuilt ? 'preBuilt' : 'ctScan'
+      },
+      set(newVal) {
+        this.$store.dispatch('setIsPreBuilt', newVal === 'preBuilt')
+      }
+    },
+    isPreBuilt() {
+      return this.$store.getters.isPreBuilt
+    },
+    is2d() {
+      return this.$store.getters.is2d
+    },
+  },
 }
 </script>
 
