@@ -1,7 +1,7 @@
 <template>
   <div class="container-fluid">
     <aside class="parameters">
-      <Parameters />
+      <ParametersPanel />
     </aside>
     <div class="main-grid">
       <MainGrid />
@@ -10,14 +10,14 @@
 </template>
 
 <script>
-import Parameters from './components/Parameters.vue'
+import ParametersPanel from './components/ParametersPanel.vue'
 import MainGrid from './components/MainGrid.vue'
 
 
 export default {
   name: 'App',
   components: {
-    Parameters,
+    ParametersPanel,
     MainGrid
   }
 }
