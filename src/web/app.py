@@ -4,6 +4,7 @@ import pathlib
 
 import matplotlib
 from flask import Flask
+from flask_cors import CORS
 from matplotlib import rc
 from web.simulation_runner import SimulationRunner
 
@@ -17,6 +18,7 @@ def create_app():
     rc("animation", html="html5")
 
     app = Flask(__name__, static_folder="static", template_folder="templates")
+    CORS(app)
 
     # Register blueprints here
     from web.views import bp

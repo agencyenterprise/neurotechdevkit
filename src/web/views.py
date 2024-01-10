@@ -42,6 +42,23 @@ async def index():
     )
 
 
+@bp.route("/info")
+async def info():
+    """Render the initial page, listing all the built-in scenarios."""
+    return jsonify(
+        has_simulation=SimulationRunner().has_last_result,
+        is_running_simulation=SimulationRunner().is_running,
+        configuration=SimulationRunner().configuration,
+        built_in_scenarios=get_built_in_scenarios(),
+        materials=MaterialName.get_material_titles(),
+        material_properties=get_default_material_properties(
+            DEFAULT_CENTER_FREQUENCY
+        ).dict(),
+        transducer_types=TransducerType.get_transducer_titles(),
+        available_cts=get_available_cts(current_app.config["CT_FOLDER"]),
+    )
+
+
 @bp.route("/simulate", methods=["POST"])
 def simulate():
     """Simulate a scenario and return the result as a base64 GIF or PNG."""

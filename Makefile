@@ -6,10 +6,10 @@ help:
 lint:
 	poetry run isort src tests docs/examples
 	poetry run black src tests docs/examples
-	poetry run flake8 src tests docs/examples
-	poetry run mypy src docs/examples
-	poetry run codespell src docs/examples
-	poetry run pydocstyle src
+	poetry run flake8 --exclude=src/web/app/ src tests docs/examples
+	poetry run mypy --exclude=src/web/app/ src docs/examples
+	poetry run codespell --skip="src/web/app" src docs/examples
+	poetry run pydocstyle --match-dir="^(src/web/app)" src
 	poetry run pyright
 
 spellcheck:
@@ -25,10 +25,10 @@ spellcheck:
 lint-check:
 	poetry run isort --check src tests docs/examples
 	poetry run black --check src tests docs/examples
-	poetry run flake8  src tests docs/examples
-	poetry run mypy src docs/examples
-	poetry run codespell src docs/examples
-	poetry run pydocstyle src
+	poetry run flake8 --exclude=src/web/app/  src tests docs/examples
+	poetry run mypy --exclude=src/web/app/ src docs/examples
+	poetry run codespell --skip="src/web/app" src docs/examples
+	poetry run pydocstyle --match-dir="^(src/web/app)" src
 	poetry run pyright --warnings
 
 test:

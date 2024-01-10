@@ -46,6 +46,7 @@ pydantic = "<2"
 pyrevolve = ">=2.2.3"
 pydicom = "^2.4.3"
 nibabel = "^5.1.0"
+flask-cors = "^4.0.0"
 
 [tool.poetry.group.dev.dependencies]
 black = {extras = ["jupyter"], version = "^23.9.1"}
@@ -100,5 +101,6 @@ markers = [
 [tool.pyright]
 include = ["src"]
 reportGeneralTypeIssues = "none"
+exclude = ["src/web/app"]
 # [tool.flake8]
 # flake8 does not support config in pyproject.toml, see .flake8
