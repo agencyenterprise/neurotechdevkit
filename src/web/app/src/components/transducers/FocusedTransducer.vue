@@ -13,12 +13,11 @@
           Y</label>
         <input type="number" step="any" class="form-control" name="positionY" placeholder="0.0" required />
       </div>
-      <div class="col mb-3" data-3d-only="true" hidden>
+      <div class="col mb-3" v-if="!is2d">
         <label for="positionZ" data-bs-toggle="tooltip" data-bs-placement="right"
           title="The coordinate (in meters) of the point at the center of the transducer">Position
           Z</label>
-        <input type="number" step="any" class="form-control" name="positionZ" placeholder="0.0"
-          data-3d-input-only="true" />
+        <input type="number" step="any" class="form-control" name="positionZ" placeholder="0.0" v-if="!is2d" />
       </div>
     </div>
     <div class="row">
@@ -32,11 +31,10 @@
           title="Indicate the direction the source is pointing">Direction Y</label>
         <input type="number" step="any" class="form-control" name="directionY" placeholder="1.0" required />
       </div>
-      <div class="col mb-3" data-3d-only="true" hidden>
+      <div class="col mb-3" v-if="!is2d">
         <label for="directionZ" data-bs-toggle="tooltip" data-bs-placement="right"
           title="Indicate the direction the source is pointing">Direction Z</label>
-        <input type="number" step="any" class="form-control" name="directionZ" placeholder="0.0"
-          data-3d-input-only="true" />
+        <input type="number" step="any" class="form-control" name="directionZ" placeholder="0.0" v-if="!is2d" />
       </div>
     </div>
     <div class="mb-3">
@@ -64,7 +62,11 @@
 
 <script>
 export default {
-
+  computed: {
+    is2d() {
+      return this.$store.getters.is2d
+    },
+  },
 }
 </script>
 

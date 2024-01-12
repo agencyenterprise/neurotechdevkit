@@ -14,11 +14,11 @@
           <input type="number" step="any" class="form-control" id="centerY" name="centerY" onchange="valueChanged()"
             required />
         </div>
-        <div class="col" data-3d-only="true" hidden>
+        <div class="col" v-if="!is2d">
           <label for="centerZ" data-bs-toggle="tooltip" data-bs-placement="right"
             title="The location of the center of the target (in meters)">Center Z</label>
           <input type="number" step="any" class="form-control" id="centerZ" name="centerZ" onchange="valueChanged()"
-            data-3d-input-only="true" />
+            v-if="!is2d" />
         </div>
       </div>
       <div class="mb-3">
@@ -33,10 +33,11 @@
 
 <script>
 export default {
-  name: 'HelloWorld',
-  props: {
-    msg: String
-  }
+  computed: {
+    is2d() {
+      return this.$store.getters.is2d
+    },
+  },
 }
 </script>
 

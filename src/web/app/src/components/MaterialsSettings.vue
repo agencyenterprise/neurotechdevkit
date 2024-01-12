@@ -1,6 +1,6 @@
 <template>
   <div class="accordion accordion-flush" id="materialsAccordion">
-    <div class="accordion-item" id="{{material}}" hidden>
+    <div class="accordion-item" id="{{material}}">
       <h2 class="accordion-header" id="flush-{{loop.index}}">
         <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
           data-bs-target="#flush-collapse{{loop.index}}" aria-expanded="false"
