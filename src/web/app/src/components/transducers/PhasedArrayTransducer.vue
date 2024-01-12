@@ -13,12 +13,11 @@
           Y</label>
         <input type="number" step="any" class="form-control" name="positionY" placeholder="0.0" required />
       </div>
-      <div class="col mb-3" data-3d-only="true" hidden>
+      <div class="col mb-3" v-if="!is2d">
         <label for="positionZ" data-bs-toggle="tooltip" data-bs-placement="right"
           title="The coordinate (in meters) of the point at the center of the transducer">Position
           Z</label>
-        <input type="number" step="any" class="form-control" name="positionZ" placeholder="0.0"
-          data-3d-input-only="true" />
+        <input type="number" step="any" class="form-control" name="positionZ" placeholder="0.0" v-if="!is2d" />
       </div>
     </div>
     <div class="row">
@@ -32,34 +31,30 @@
           title="Indicate the direction the source is pointing">Direction Y</label>
         <input type="number" step="any" class="form-control" name="directionY" placeholder="0.0" required />
       </div>
-      <div class="col mb-3" data-3d-only="true" hidden>
+      <div class="col mb-3" v-if="!is2d">
         <label for="directionZ" data-bs-toggle="tooltip" data-bs-placement="right"
           title="Indicate the direction the source is pointing">Direction Z</label>
-        <input type="number" step="any" class="form-control" name="directionZ" placeholder="0.0"
-          data-3d-input-only="true" />
+        <input type="number" step="any" class="form-control" name="directionZ" placeholder="0.0" v-if="!is2d" />
       </div>
     </div>
-    <div class="row" data-3d-only="true" hidden>
+    <div class="row" v-if="!is2d">
       <div class="col mb-3">
         <label for="centerLineX" data-bs-toggle="tooltip" data-bs-placement="right"
           title="The input value for the direction the center of elements should have">Center
           Line X</label>
-        <input type="number" step="any" class="form-control" name="centerLineX" placeholder="0.0"
-          data-3d-input-only="true" />
+        <input type="number" step="any" class="form-control" name="centerLineX" placeholder="0.0" v-if="!is2d" />
       </div>
       <div class="col mb-3">
         <label for="centerLineY" data-bs-toggle="tooltip" data-bs-placement="right"
           title="The input value for the direction the center of elements should have">Center
           Line Y</label>
-        <input type="number" step="any" class="form-control" name="centerLineY" placeholder="0.0"
-          data-3d-input-only="true" />
+        <input type="number" step="any" class="form-control" name="centerLineY" placeholder="0.0" v-if="!is2d" />
       </div>
       <div class="col mb-3">
         <label for="centerLineZ" data-bs-toggle="tooltip" data-bs-placement="right"
           title="The input value for the direction the center of elements should have">Center
           Line Z</label>
-        <input type="number" step="any" class="form-control" name="centerLineZ" placeholder="1.0"
-          data-3d-input-only="true" />
+        <input type="number" step="any" class="form-control" name="centerLineZ" placeholder="1.0" v-if="!is2d" />
       </div>
     </div>
     <div class="mb-3">
@@ -94,16 +89,16 @@
         <input class="form-check-input" type="checkbox" id="focalLengthCheck" name="focalLengthCheck"
           onchange="focalLengthCheckClick(this)" />
       </div>
-      <div class="mb-3 ms-3" data-focal-length="true" hidden>
+      <div class="mb-3 ms-3" data-focal-length="true">
         <label for="focalLength" data-bs-toggle="tooltip" data-bs-placement="right"
           title="The focal length (in meters) of the transducer">Focal length</label>
         <input type="number" step="any" class="form-control" name="focalLength" id="focalLength" placeholder="0" />
       </div>
     </div>
-    <div class="mb-3" data-3d-only="true" hidden>
+    <div class="mb-3" v-if="!is2d">
       <label for="height" data-bs-toggle="tooltip" data-bs-placement="right"
         title="The height (in meters) of the elements of the array">Height</label>
-      <input type="number" step="any" class="form-control" name="height" placeholder="0.005" data-3d-input-only="true" />
+      <input type="number" step="any" class="form-control" name="height" placeholder="0.005" v-if="!is2d" />
     </div>
     <div class="mb-3">
       <label for="delay" data-bs-toggle="tooltip" data-bs-placement="right"
@@ -115,7 +110,11 @@
 
 <script>
 export default {
-
+  computed: {
+    is2d() {
+      return this.$store.getters.is2d
+    },
+  },
 }
 </script>
 
