@@ -1,6 +1,6 @@
 # Contributing
 
-You can contribute to NDK by creating GitHub issues or by submitting pull requests.
+You can contribute to NDK by creating [GitHub issues](https://github.com/agencyenterprise/neurotechdevkit/issues) or by submitting [pull requests](https://github.com/agencyenterprise/neurotechdevkit/pulls).
 
 ## Reporting issues
 
