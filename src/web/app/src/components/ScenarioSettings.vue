@@ -10,59 +10,58 @@
       </div>
     </div>
     <div class="mb-3">
-      <div v-if="isPreBuilt">
+      <div class="mb-3" v-if="isPreBuilt">
         <label for="scenario" class="form-label">Scenarios:</label>
         <select id="scenario" class="form-select" v-model="selectedScenario">
-          <option value selected>Select a scenario</option>
-          <option v-for="(value, key) in filteredBuiltInScenarios" :key="key" :value="key">
-            {{ value.title }}
+          <option disabled value="">Select a scenario</option>
+          <option v-for="(scenario, key) in currentBuiltInScenarios" :key="key" :value="key">
+            {{ scenario.title }}
           </option>
         </select>
       </div>
       <div v-else>
-        <form @submit.prevent>
+        <form @submit.prevent="uploadCTScan">
           <div class="mb-3">
             <label class="form-label" for="loadedCTs">Available CTs</label>
             <select class="form-select" size="3" id="loadedCTs" v-model="selectedCTScan">
-              <option v-for="ct in $store.getters.ctScans" :key="ct" :value="ct.filename">{{ ct.filename }}</option>
+              <option v-for="ct in ctScans" :key="ct.filename" :value="ct.filename">{{ ct.filename }}</option>
             </select>
           </div>
           <div class="mb-3" v-if="is2d">
-            <label for="ctSliceAxis" class="form-label" data-bs-toggle="tooltip" data-bs-placement="right"
+            <label for="ctSliceAxis" class="form-label"
               title="Axis along which to slice the 3D field to be recorded">Axis</label>
-            <select class="form-select" aria-label="Axis" id="ctSliceAxis" v-if="is2d" v-model="ctSliceAxis">
-              <option value selected>Select an axis</option>
+            <select class="form-select" aria-label="Axis" id="ctSliceAxis" v-model="ctSliceAxis">
+              <option disabled value="">Select an axis</option>
               <option value="x">X</option>
               <option value="y">Y</option>
               <option value="z">Z</option>
             </select>
           </div>
           <div class="mb-3" v-if="is2d">
-            <label for="ctSlicePosition" class="form-label" data-bs-toggle="tooltip" data-bs-placement="right"
-              title="The position (in meters) along the slice axis at which the slice of the 3D field should be made">Distance
-              from Origin (m)</label>
+            <label for="ctSlicePosition" class="form-label"
+              title="The position along the slice axis at which the slice of the 3D field should be made">Distance from
+              Origin (m)</label>
             <input type="number" step="any" class="form-control" id="ctSlicePosition" placeholder="0.0"
-              v-model="ctSlicePosition" />
+              v-model.number="ctSlicePosition" />
           </div>
         </form>
         <div class="mb-3">
           <label for="ctFiles" class="form-label"
-            title="Select the CT file and the file containing the mapping between layers and masks">CT
-            and mapping
+            title="Select the CT file and the file containing the mapping between layers and masks">CT and mapping
             Files</label>
-          <input class="form-control" type="file" id="ctFiles" onchange="filesChosen(this)" multiple />
+          <input class="form-control" type="file" id="ctFiles" @change="filesChosen" multiple />
         </div>
         <div class="mb-3">
-          <button id="fileUploadButton" class="btn btn-primary" type="button" onclick="fileUploadClicked(this)" disabled>
-            Upload new CT
-          </button>
+          <button id="fileUploadButton" class="btn btn-primary" type="button" @click="fileUploadClicked"
+            :disabled="!filesReady">Upload new CT</button>
         </div>
       </div>
     </div>
   </div>
 </template>
-
 <script>
+import { mapGetters, mapActions } from 'vuex';
+
 export default {
   data() {
     return {
@@ -70,39 +69,59 @@ export default {
       selectedScenario: '',
       ctSliceAxis: '',
       ctSlicePosition: 0.0,
+      filesReady: false,
+    };
+  },
+  computed: {
+    ...mapGetters({
+      ctScans: 'ctScans',
+      isPreBuilt: 'isPreBuilt',
+      is2d: 'is2d',
+      builtInScenarios2d: 'builtInScenarios2d',
+      builtInScenarios3d: 'builtInScenarios3d'
+    }),
+    currentBuiltInScenarios() {
+      return this.is2d ? this.builtInScenarios2d : this.builtInScenarios3d;
+    },
+    scenarioType: {
+      get() {
+        return this.isPreBuilt ? 'preBuilt' : 'ctScan';
+      },
+      set(value) {
+        this.setIsPreBuilt(value === 'preBuilt');
+      }
+    }
+  },
+  methods: {
+    ...mapActions({
+      setScenario: 'setScenario',
+      setCTScan: 'setCTScan',
+      setIsPreBuilt: 'setIsPreBuilt'
+    }),
+    filesChosen(event) {
+      // Handle file chosen logic
+      // Update `filesReady` based on the selection
+      this.filesReady = !!event.target.files.length;
+    },
+    fileUploadClicked() {
+      // Handle file upload logic
+    },
+    uploadCTScan() {
+      // Handle CT scan upload logic
     }
   },
   watch: {
     selectedScenario(newVal) {
-      this.$store.dispatch('setScenario', newVal)
+      if (newVal) {
+        this.setScenario(newVal);
+      }
     },
     selectedCTScan(newVal) {
-      this.$store.dispatch('setCTScan', newVal)
-    },
-  },
-  computed: {
-    filteredBuiltInScenarios() {
-      if (this.is2d) {
-        return this.$store.getters.builtInScenarios2d
+      if (newVal) {
+        this.setCTScan(newVal);
       }
-      return this.$store.getters.builtInScenarios3d
-    },
-    scenarioType: {
-      get() {
-        return this.$store.getters.isPreBuilt ? 'preBuilt' : 'ctScan'
-      },
-      set(newVal) {
-        this.$store.dispatch('setIsPreBuilt', newVal === 'preBuilt')
-      }
-    },
-    isPreBuilt() {
-      return this.$store.getters.isPreBuilt
-    },
-    is2d() {
-      return this.$store.getters.is2d
-    },
-  },
-}
+    }
+  }
+};
 </script>
-
 <style scoped></style>

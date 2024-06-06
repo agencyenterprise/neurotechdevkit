@@ -40,7 +40,6 @@ export default {
 }
 
 .main-grid {
-  /* background-color: #fafafa; */
   margin-left: 450px;
   height: 100%;
   overflow: hidden;
