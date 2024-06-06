@@ -1,7 +1,5 @@
 <template>
-  <h1>
-    <span>Parameters</span>
-  </h1>
+  <h1><span>Parameters</span></h1>
   <div>
     <div class="mb-3 btn-group">
       <input class="btn-check" type="radio" id="is2d" value="2D" v-model="simulationType" name="simulation">
@@ -9,107 +7,85 @@
       <input class="btn-check" type="radio" id="is3d" value="3D" v-model="simulationType" name="simulation">
       <label class="btn btn-primary btn-wide" for="is3d">3D</label>
     </div>
-    <div class="accordion-item">
-      <h2 @click="accordionToggle(0)" class="accordion-header">
-        Scenario
-        <font-awesome-icon :icon="getIcon(0)" />
-      </h2>
-      <ScenarioSettings v-if="opened === 0" ref="scenarioComponent" />
-    </div>
-    <div class="accordion-item">
-      <h2 @click="accordionToggle(1)" class="accordion-header">
-        Display
-        <font-awesome-icon :icon="getIcon(1)" />
-      </h2>
-      <DisplaySettings v-if="opened === 1" ref="displayComponent" />
-    </div>
-    <div class="accordion-item">
-      <h2 @click="accordionToggle(2)" class="accordion-header">
-        Transducers
-        <font-awesome-icon :icon="getIcon(2)" />
-      </h2>
-      <TransducersSettings v-if="opened === 2" ref="transducersComponent" />
-    </div>
-    <div class="accordion-item">
-      <h2 @click="accordionToggle(3)" class="accordion-header">
-        Target
-        <font-awesome-icon :icon="getIcon(3)" />
-      </h2>
-      <TargetSettings v-if="opened === 3" ref="targetComponent" />
-    </div>
-    <div class="accordion-item">
-      <h2 @click="accordionToggle(4)" class="accordion-header">
-        Simulation Settings
-        <font-awesome-icon :icon="getIcon(4)" />
-      </h2>
-      <SimulationSettings v-if="opened === 4" ref="simulationSettingsComponent" />
-    </div>
+    <AccordionItem v-for="(item, index) in accordionItems" :key="index" :title="item.title" :index="index"
+      :is-open="opened === index" @toggle="accordionToggle">
+      <component :is="item.component" :key="item.title" />
+    </AccordionItem>
   </div>
 </template>
 
 <script>
-import ScenarioSettings from './ScenarioSettings.vue'
-import DisplaySettings from './DisplaySettings.vue'
-import TransducersSettings from './TransducersSettings.vue'
-import TargetSettings from './TargetSettings.vue'
-import SimulationSettings from './SimulationSettings.vue'
+import { mapGetters, mapActions } from 'vuex';
+import ScenarioSettings from './ScenarioSettings.vue';
+import DisplaySettings from './DisplaySettings.vue';
+import TransducersSettings from './TransducersSettings.vue';
+import TargetSettings from './TargetSettings.vue';
+import SimulationSettings from './SimulationSettings.vue';
+import AccordionItem from './AccordionItem.vue';
 
 export default {
-  emits: ['new-image-generated'],
   components: {
     ScenarioSettings,
     DisplaySettings,
     TransducersSettings,
     TargetSettings,
-    SimulationSettings
+    SimulationSettings,
+    AccordionItem
   },
-  data: () => ({
-    opened: null
-  }),
+  data() {
+    return {
+      opened: null,
+      accordionItems: [
+        { title: 'Scenario', component: 'ScenarioSettings', },
+        { title: 'Display', component: 'DisplaySettings', },
+        { title: 'Transducers', component: 'TransducersSettings', },
+        { title: 'Target', component: 'TargetSettings', },
+        { title: 'Simulation Settings', component: 'SimulationSettings', }
+      ]
+    };
+  },
   computed: {
+    ...mapGetters({
+      is2d: 'is2d'
+    }),
     simulationType: {
       get() {
-        return this.$store.getters.is2d ? '2D' : '3D'
+        return this.is2d ? '2D' : '3D';
       },
-      set(newVal) {
-        this.$store.dispatch('set2d', newVal === '2D')
+      set(value) {
+        this.set2d(value === '2D');
       }
+    },
+    backendUrl() {
+      return process.env.VUE_APP_BACKEND_URL; // Or `import.meta.env.VUE_APP_BACKEND_URL` for Vue.js 3
     }
   },
-  mounted() {
-    this.getInitialData()
-  },
   methods: {
-    /**
-     * Toggles the accordion item.
-     * @param {number} index The index of the accordion item.
-     */
+    ...mapActions({
+      set2d: 'set2d',
+      setInitialValues: 'setInitialValues'
+    }),
     accordionToggle(index) {
       this.opened = this.opened === index ? null : index;
     },
-
-    /**
-     * Fetches the initial data from the server.
-     */
-    getInitialData: function () {
-      fetch(`http://${process.env.VUE_APP_BACKEND_URL}/info`, {
-      })
-        .then(response => response.json())
+    getInitialData() {
+      fetch(`http://${this.backendUrl}/info`)
+        .then(response => {
+          if (response.ok) {
+            return response.json();
+          }
+          throw new Error('Network response was not ok.');
+        })
         .then(data => {
-          this.$store.dispatch('setInitialValues', data)
+          this.setInitialValues(data);
         })
         .catch(error => {
           console.error('Error:', error);
         });
     },
-
-    /**
-     * Returns the correct icon for the accordion item.
-     * @param {number} index The index of the accordion item.
-     */
-    getIcon(index) {
-      return this.opened === index ? 'chevron-up' : 'chevron-down';
-    },
+  },
+  mounted() {
+    this.getInitialData();
   }
 }
 </script>
