@@ -1,73 +1,108 @@
 <template>
-  <fieldset>
-    <div class="row">
-      <div class="col mb-3">
-        <label for="positionX" data-bs-toggle="tooltip" data-bs-placement="right"
-          title="The coordinate (in meters) of the point at the center of the transducer">Position
-          X</label>
-        <input type="number" step="any" class="form-control" name="positionX" placeholder="0.0" required />
-      </div>
-      <div class="col mb-3">
-        <label for="positionY" data-bs-toggle="tooltip" data-bs-placement="right"
-          title="The coordinate (in meters) of the point at the center of the transducer">Position
-          Y</label>
-        <input type="number" step="any" class="form-control" name="positionY" placeholder="0.0" required />
-      </div>
-      <div class="col mb-3" v-if="!is2d">
-        <label for="positionZ" data-bs-toggle="tooltip" data-bs-placement="right"
-          title="The coordinate (in meters) of the point at the center of the transducer">Position
-          Z</label>
-        <input type="number" step="any" class="form-control" name="positionZ" placeholder="0.0" v-if="!is2d" />
-      </div>
+  <div class="row">
+    <div class="col mb-3">
+      <label title="The coordinate (in meters) of the point at the center of the transducer">Position
+        X</label>
+      <input type="number" step="any" class="form-control" placeholder="0.0" v-model.number="positionX" />
     </div>
-    <div class="row">
-      <div class="col mb-3">
-        <label for="directionX" data-bs-toggle="tooltip" data-bs-placement="right"
-          title="Indicate the direction the source is pointing">Direction X</label>
-        <input type="number" step="any" class="form-control" name="directionX" placeholder="0.0" required />
-      </div>
-      <div class="col mb-3">
-        <label for="directionY" data-bs-toggle="tooltip" data-bs-placement="right"
-          title="Indicate the direction the source is pointing">Direction Y</label>
-        <input type="number" step="any" class="form-control" name="directionY" placeholder="1.0" required />
-      </div>
-      <div class="col mb-3" v-if="!is2d">
-        <label for="directionZ" data-bs-toggle="tooltip" data-bs-placement="right"
-          title="Indicate the direction the source is pointing">Direction Z</label>
-        <input type="number" step="any" class="form-control" name="directionZ" placeholder="0.0" v-if="!is2d" />
-      </div>
+    <div class="col mb-3">
+      <label title="The coordinate (in meters) of the point at the center of the transducer">Position
+        Y</label>
+      <input type="number" step="any" class="form-control" placeholder="0.0" v-model.number="positionY" />
     </div>
-    <div class="mb-3">
-      <label for="aperture" data-bs-toggle="tooltip" data-bs-placement="right"
-        title="The aperture (in meters) of the transducer">Aperture</label>
-      <input type="number" step="any" class="form-control" name="aperture" placeholder="0.064" required />
+    <div class="col mb-3" v-if="!is2d">
+      <label title="The coordinate (in meters) of the point at the center of the transducer">Position
+        Z</label>
+      <input type="number" step="any" class="form-control" placeholder="0.0" v-if="!is2d" v-model.number="positionZ" />
     </div>
-    <div class="mb-3">
-      <label for="focalLength" data-bs-toggle="tooltip" data-bs-placement="right"
-        title="The focal length (in meters) of the transducer">Focal Length</label>
-      <input type="number" step="any" class="form-control" name="focalLength" placeholder="0.064" required />
+  </div>
+  <div class="row">
+    <div class="col mb-3">
+      <label title="Indicate the direction the source is pointing">Direction X</label>
+      <input type="number" step="any" class="form-control" placeholder="0.0" v-model.number="directionX" />
     </div>
-    <div class="mb-3">
-      <label for="numPoints" data-bs-toggle="tooltip" data-bs-placement="right"
-        title="The number of point sources to use when simulating the transducer">Points</label>
-      <input type="number" class="form-control" name="numPoints" placeholder="20000" required />
+    <div class="col mb-3">
+      <label title="Indicate the direction the source is pointing">Direction Y</label>
+      <input type="number" step="any" class="form-control" placeholder="1.0" v-model.number="directionY" />
     </div>
-    <div class="mb-3">
-      <label for="delay" data-bs-toggle="tooltip" data-bs-placement="right"
-        title="The delay (in seconds) that the source will wait before emitting">Delay</label>
-      <input type="number" step="any" class="form-control" name="delay" placeholder="0.0" required />
+    <div class="col mb-3" v-if="!is2d">
+      <label title="Indicate the direction the source is pointing">Direction Z</label>
+      <input type="number" step="any" class="form-control" placeholder="0.0" v-if="!is2d" v-model.number="directionZ" />
     </div>
-  </fieldset>
+  </div>
+  <div class="mb-3">
+    <label title="The aperture (in meters) of the transducer">Aperture</label>
+    <input type="number" step="any" class="form-control" placeholder="0.064" v-model.number="aperture" />
+  </div>
+  <div class="mb-3">
+    <label title="The focal length (in meters) of the transducer">Focal Length</label>
+    <input type="number" step="any" class="form-control" placeholder="0.064" v-model.number="focalLength" />
+  </div>
+  <div class="mb-3">
+    <label title="The number of point sources to use when simulating the transducer">Points</label>
+    <input type="number" class="form-control" placeholder="20000" v-model.number="numPoints" />
+  </div>
+  <div class="mb-3">
+    <label title="The delay (in seconds) that the source will wait before emitting">Delay</label>
+    <input type="number" step="any" class="form-control" placeholder="0.0" v-model.number="delay" />
+  </div>
 </template>
 
 <script>
 export default {
+  data() {
+    return {
+      positionX: 0.0,
+      positionY: 0.0,
+      positionZ: 0.0,
+      directionX: 0.0,
+      directionY: 1.0,
+      directionZ: 0.0,
+      aperture: 0.064,
+      focalLength: 0.064,
+      numPoints: 20000,
+      delay: 0.0,
+    };
+  },
   computed: {
     is2d() {
       return this.$store.getters.is2d
     },
   },
+  methods: {
+    getTransducerSettings() {
+      let position = [this.positionY, this.positionX]
+      if (!this.is2d) {
+        position.push(this.positionZ)
+      }
+      let direction = [this.directionY, this.directionX]
+      if (!this.is2d) {
+        direction.push(this.directionZ)
+      }
+      return {
+        position,
+        direction,
+        aperture: this.aperture,
+        focalLength: this.focalLength,
+        numPoints: this.numPoints,
+        delay: this.delay,
+        transducerType: 'focusedSource',
+      };
+    },
+
+    setTransducerSettings(settings) {
+      this.positionX = settings.position[1];
+      this.positionY = settings.position[0];
+      this.positionZ = settings.position[2] || 0.0;
+      this.directionX = settings.direction[1];
+      this.directionY = settings.direction[0];
+      this.directionZ = settings.direction[2] || 0.0;
+      this.aperture = settings.aperture;
+      this.focalLength = settings.focalLength;
+      this.numPoints = settings.numPoints;
+      this.delay = settings.delay;
+    }
+  },
 }
 </script>
-
 <style scoped></style>

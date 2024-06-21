@@ -1,4 +1,5 @@
 """Views for the web app."""
+
 import shutil
 import tempfile
 from pathlib import Path
@@ -59,7 +60,7 @@ async def info():
     )
 
 
-@bp.route("/simulate", methods=["POST"])
+@bp.route("/simulation", methods=["POST"])
 def simulate():
     """Simulate a scenario and return the result as a base64 GIF or PNG."""
     try:
@@ -73,15 +74,19 @@ def simulate():
         config.dict(),
     )
     if result.type == "simulation":
-        data, image_format = result.data
-        return f"<img src='data:image/{image_format};base64,{data}'/>"
+        data, _ = result.data
+        return jsonify(
+            {
+                "data": data,
+            }
+        )
     elif result.type == "simulation_error":
         return jsonify({"error": str(result.error)}), 400
     elif result.type == "no_simulation":
         return jsonify({"error": "No result"}), 400
 
 
-@bp.route("/simulate", methods=["GET"])
+@bp.route("/simulation", methods=["GET"])
 def get_simulation():
     """Get the result of a finished or running simulation as a base64 GIF or PNG."""
     result = SimulationRunner().get()
@@ -94,7 +99,7 @@ def get_simulation():
         return jsonify({"error": "No result"}), 400
 
 
-@bp.route("/simulate", methods=["DELETE"])
+@bp.route("/simulation", methods=["DELETE"])
 def remove_simulation():
     """Remove the result of a finished or running simulation."""
     SimulationRunner().reset()
@@ -112,8 +117,7 @@ async def render_layout():
         return jsonify({"error": str(e)}), 400
 
     data = get_scenario_layout(config)
-    image_format = "png"
-    return f"<img src='data:image/{image_format};base64,{data}'/>"
+    return jsonify({"data": data})
 
 
 @bp.route("/ct_scan", methods=["POST"])

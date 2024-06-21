@@ -34,20 +34,24 @@ export default {
   },
   data() {
     return {
-      opened: null,
-      accordionItems: [
-        { title: 'Scenario', component: 'ScenarioSettings', },
-        { title: 'Display', component: 'DisplaySettings', },
-        { title: 'Transducers', component: 'TransducersSettings', },
-        { title: 'Target', component: 'TargetSettings', },
-        { title: 'Simulation Settings', component: 'SimulationSettings', }
-      ]
+      opened: null
     };
   },
   computed: {
     ...mapGetters({
       is2d: 'is2d'
     }),
+    accordionItems() {
+      const items = [
+        { title: 'Scenario', component: 'ScenarioSettings' },
+        // Include DisplaySettings only when !is2d (3D mode)
+        ...(!this.is2d ? [{ title: 'Display', component: 'DisplaySettings' }] : []),
+        { title: 'Transducers', component: 'TransducersSettings' },
+        { title: 'Target', component: 'TargetSettings' },
+        { title: 'Simulation Settings', component: 'SimulationSettings' }
+      ];
+      return items;
+    },
     simulationType: {
       get() {
         return this.is2d ? '2D' : '3D';

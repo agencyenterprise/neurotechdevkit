@@ -43,6 +43,5 @@ export default {
   margin-left: 450px;
   height: 100%;
   overflow: hidden;
-  padding: 10px;
 }
 </style>
