@@ -1,35 +1,38 @@
 <template>
-  <div class="mb-3">
-    <label class="form-label">Source transducer</label>
-    <select class="form-select" v-model="selectedTransducer">
-      <option value selected>-- Select transducer --</option>
-      <option v-for="transducer in supportedTransducers" :key="transducer.value" :value="transducer.value">
-        {{ transducer.text }}
-      </option>
-    </select>
-  </div>
-  <div v-if="selectedTransducer === 'pointSource'">
-    <PointTransducer ref="transducerComponent" />
-  </div>
-  <div v-else-if="selectedTransducer === 'phasedArraySource'">
-    <PhasedArrayTransducer ref="transducerComponent" />
-  </div>
-  <div v-else-if="selectedTransducer === 'focusedSource'">
-    <FocusedTransducer ref="transducerComponent" />
-  </div>
-  <div v-else-if="selectedTransducer === 'planarSource'">
-    <PlanarTransducer ref="transducerComponent" />
-  </div>
-  <div class="transducer-controls">
-    <button class="btn btn-primary" @click="addTransducerClick" v-if="selectedTransducer && !isEditMode">
-      Add Transducer
-    </button>
-    <button class="btn btn-secondary" @click="cancelTransducerClick" v-if="selectedTransducer">
-      Cancel
-    </button>
-    <button class="btn btn-success" @click="saveTransducerClick" v-if="isEditMode">
-      Save Transducer
-    </button>
+  <div v-if="!hasSimulation" class="transducers-settings">
+    <div class="mb-3">
+      <label class="form-label">Source transducer</label>
+      <select class="form-select" v-model="selectedTransducer">
+        <option value selected>-- Select transducer --</option>
+        <option v-for="transducer in supportedTransducers" :key="transducer.value" :value="transducer.value">
+          {{ transducer.text }}
+        </option>
+      </select>
+    </div>
+    <div v-if="selectedTransducer === 'pointSource'">
+      <PointTransducer ref="transducerComponent" :readOnly="hasSimulation" />
+    </div>
+    <div v-else-if="selectedTransducer === 'phasedArraySource'">
+      <PhasedArrayTransducer ref="transducerComponent" :readOnly="hasSimulation" />
+    </div>
+    <div v-else-if="selectedTransducer === 'focusedSource'">
+      <FocusedTransducer ref="transducerComponent" :readOnly="hasSimulation" />
+    </div>
+    <div v-else-if="selectedTransducer === 'planarSource'">
+      <PlanarTransducer ref="transducerComponent" :readOnly="hasSimulation" />
+    </div>
+
+    <div class="transducer-controls">
+      <button class="btn btn-primary" @click="addTransducerClick" v-if="selectedTransducer && !isEditMode">
+        Add Transducer
+      </button>
+      <button class="btn btn-secondary" @click="cancelTransducerClick" v-if="selectedTransducer">
+        {{ hasSimulation ? 'Close' : 'Cancel' }}
+      </button>
+      <button class="btn btn-success" @click="saveTransducerClick" v-if="isEditMode && !hasSimulation">
+        Save Transducer
+      </button>
+    </div>
   </div>
 
   <div v-if="transducers.length" class="card transducers-list">
@@ -37,11 +40,12 @@
     <ul class="list-group list-group-flush">
       <li class="list-group-item d-flex align-items-center" v-for="(transducer, index) in transducers" :key="index">
         <span class="transducer-type">{{ transducer.transducerType }}</span> <!-- Display transducer name or type -->
+        <!-- Conditionally render the Edit/View and Delete buttons -->
         <div class="ms-auto button-group">
           <button class="btn btn-sm btn-outline-warning" @click="editTransducerClick(index)">
-            <i class="fas fa-edit"></i> Edit
+            <i class="fas fa-edit"></i> {{ hasSimulation ? 'View' : 'Edit' }}
           </button>
-          <button class="btn btn-sm btn-outline-danger" @click="deleteTransducerClick(index)">
+          <button v-if="!hasSimulation" class="btn btn-sm btn-outline-danger" @click="deleteTransducerClick(index)">
             <i class="fas fa-trash-alt"></i> Delete
           </button>
         </div>
@@ -51,7 +55,7 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex';
+import { mapState, mapGetters, mapActions } from 'vuex';
 
 import PointTransducer from './transducers/PointTransducer.vue'
 import PhasedArrayTransducer from './transducers/PhasedArrayTransducer.vue'
@@ -80,6 +84,7 @@ export default {
   },
   computed: {
     ...mapState('transducersSettings', ['transducers']),
+    ...mapGetters(['hasSimulation']),
   },
   methods: {
     ...mapActions('transducersSettings', ['addTransducer']),
@@ -134,8 +139,11 @@ export default {
 
 
 <style scoped>
+.transducers-settings{
+  margin-bottom: 2rem;
+}
+
 .transducers-list {
-  margin-top: 1rem;
   background-color: #f9f9f9;
   /* Light background to differentiate the list */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);

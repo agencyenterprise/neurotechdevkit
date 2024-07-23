@@ -91,8 +91,12 @@ def get_simulation():
     """Get the result of a finished or running simulation as a base64 GIF or PNG."""
     result = SimulationRunner().get()
     if result.type == "simulation":
-        data, image_format = result.data
-        return f"<img src='data:image/{image_format};base64,{data}'/>"
+        data, _ = result.data
+        return jsonify(
+            {
+                "data": data,
+            }
+        )
     elif result.type == "simulation_error":
         return jsonify({"error": str(result.error)}), 400
     elif result.type == "no_simulation":

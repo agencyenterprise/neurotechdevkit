@@ -1,6 +1,6 @@
 <template>
   <div class="accordion-item">
-    <h2 class="accordion-header" @click="$emit('toggle', index)">
+    <h2 :class="{ 'accordion-header': true, 'disabled': disabled }" @click="$emit('toggle', index)">
       {{ title }}
       <font-awesome-icon :icon="icon" />
     </h2>
@@ -19,6 +19,10 @@ export default {
     FontAwesomeIcon
   },
   props: {
+    disabled: {
+      type: Boolean,
+      default: false
+    },
     title: {
       type: String,
       required: true
@@ -42,18 +46,22 @@ export default {
 
 <style scoped>
 .accordion-item {
-  margin-bottom: 10px;
+  margin-bottom: .5rem;
 }
 
 .accordion-header {
-  background-color: #f5f5f5;
   padding: 10px 15px;
   cursor: pointer;
-  border-bottom: 1px solid #ddd;
   display: flex;
   justify-content: space-between;
   align-items: center;
   user-select: none;
+}
+
+.accordion-header.disabled {
+  color: #a1a1a1;
+  cursor: not-allowed;
+  pointer-events: none;
 }
 
 .accordion-content {

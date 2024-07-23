@@ -13,20 +13,20 @@
         <div class="accordion-body">
           <div class="mb-3">
             <label title="The speed of sound (in m/s)">VP</label>
-            <input type="number" class="form-control" v-model.number="properties.vp" />
+            <input :disabled="hasSimulation" type="number" class="form-control" v-model.number="properties.vp" />
           </div>
           <div class="mb-3">
             <label title="The mass density (in kg/m³)">RHO</label>
-            <input type="number" class="form-control" v-model.number="properties.rho" />
+            <input :disabled="hasSimulation" type="number" class="form-control" v-model.number="properties.rho" />
           </div>
           <div class="mb-3">
             <label title="The absorption (in dB/cm)">Alpha</label>
-            <input type="number" step="any" class="form-control" v-model.number="properties.alpha" />
+            <input :disabled="hasSimulation" type="number" step="any" class="form-control" v-model.number="properties.alpha" />
           </div>
           <div class="mb-3">
             <label class="form-label"
               title="The color used when rendering this material in the scenario layout plot">Color</label>
-            <input type="color" class="form-control form-control-color" v-model="properties.renderColor"
+            <input :disabled="hasSimulation" type="color" class="form-control form-control-color" v-model="properties.renderColor"
               title="Choose your color" />
           </div>
         </div>
@@ -36,11 +36,12 @@
 </template>
 
 <script>
-import { mapState, mapMutations } from 'vuex';
+import { mapGetters, mapState, mapMutations } from 'vuex';
 
 export default {
   computed: {
     ...mapState('simulationSettings', ['materialProperties']),
+    ...mapGetters(['hasSimulation']),
   },
   methods: {
     ...mapMutations('simulationSettings', ['updateMaterialProperty']),

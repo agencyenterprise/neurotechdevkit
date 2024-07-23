@@ -13,9 +13,15 @@
   <div class="mb-3">
     <div class="mb-3" v-if="isPreBuilt">
       <label class="form-label">Scenarios:</label>
-      <select :disabled="hasSimulation" class="form-select" v-model="selectedScenario">
-        <option disabled value="">Select a scenario</option>
-        <option v-for="(scenario, key) in currentBuiltInScenarios" :key="key" :value="key">
+      <select v-if="is2d" :disabled="hasSimulation" class="form-select" v-model="selected2dScenario">
+        <option disabled value="null">Select a scenario</option>
+        <option v-for="(scenario, key) in builtInScenarios2d" :key="key" :value="key">
+          {{ scenario.title }}
+        </option>
+      </select>
+      <select v-else :disabled="hasSimulation" class="form-select" v-model="selected3dScenario">
+        <option disabled value="null">Select a scenario</option>
+        <option v-for="(scenario, key) in builtInScenarios3d" :key="key" :value="key">
           {{ scenario.title }}
         </option>
       </select>
@@ -64,14 +70,13 @@ export default {
   data() {
     return {
       selectedCTScan: '',
-      selectedScenario: '',
       ctSliceAxis: '',
       ctSlicePosition: 0.0,
       filesReady: false,
     };
   },
   computed: {
-    ...mapGetters('scenarioSettings', ['ctScans', 'isPreBuilt', 'builtInScenarios2d', 'builtInScenarios3d']),
+    ...mapGetters('scenarioSettings', ['ctScans', 'isPreBuilt', 'builtInScenarios2d', 'builtInScenarios3d', 'scenarioId']),
     ...mapGetters(['is2d', 'hasSimulation']),
     currentBuiltInScenarios() {
       return this.is2d ? this.builtInScenarios2d : this.builtInScenarios3d;
@@ -83,7 +88,33 @@ export default {
       set(value) {
         this.setIsPreBuilt(value === 'preBuilt');
       }
-    }
+    },
+    selected2dScenario: {
+      get() {
+        // if scenarioId in builtInScenarios2d, return scenarioId
+        // else return null
+        if (this.scenarioId in this.builtInScenarios2d) {
+          return this.scenarioId;
+        }
+        return null
+      },
+      set(value) {
+        this.setScenario(value);
+      }
+    },
+    selected3dScenario: {
+      get() {
+        // if scenarioId in builtInScenarios3d, return scenarioId
+        // else return null
+        if (this.scenarioId in this.builtInScenarios3d) {
+          return this.scenarioId;
+        }
+        return null
+      },
+      set(value) {
+        this.setScenario(value);
+      }
+    },
   },
   methods: {
     ...mapActions('scenarioSettings', ['setScenario', 'setCTScan', 'setIsPreBuilt']),
@@ -100,11 +131,6 @@ export default {
     }
   },
   watch: {
-    selectedScenario(newVal) {
-      if (newVal) {
-        this.setScenario(newVal);
-      }
-    },
     selectedCTScan(newVal) {
       if (newVal) {
         this.setCTScan(newVal);
