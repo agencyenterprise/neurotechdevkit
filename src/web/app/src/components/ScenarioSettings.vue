@@ -40,7 +40,7 @@
         <div class="mb-3" v-if="is2d">
           <label class="form-label"
             title="The position along the slice axis at which the slice of the 3D field should be made">Distance from
-            Origin (m)</label>
+            origin (m)</label>
           <input type="number" step="any" class="form-control" placeholder="0.0" v-model.number="ctSlicePosition" />
         </div>
       </form>

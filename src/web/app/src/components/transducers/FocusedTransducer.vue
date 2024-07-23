@@ -35,7 +35,7 @@
     <input type="number" step="any" class="form-control" placeholder="0.064" v-model.number="aperture" />
   </div>
   <div class="mb-3">
-    <label title="The focal length (in meters) of the transducer">Focal Length</label>
+    <label title="The focal length (in meters) of the transducer">Focal length</label>
     <input type="number" step="any" class="form-control" placeholder="0.064" v-model.number="focalLength" />
   </div>
   <div class="mb-3">

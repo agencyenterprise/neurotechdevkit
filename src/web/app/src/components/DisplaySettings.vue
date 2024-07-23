@@ -11,7 +11,7 @@
   <div class="mb-3">
     <label class="form-label"
       title="The position (in meters) along the slice axis at which the slice of the 3D field should be made">Distance
-      from Origin (m)</label>
+      from origin (m)</label>
     <input :disabled="hasSimulation" type="number" step="any" class="form-control" v-model.number="slicePosition"
       placeholder="0.0" />
   </div>
