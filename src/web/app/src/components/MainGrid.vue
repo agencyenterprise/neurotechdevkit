@@ -4,17 +4,17 @@
 
     <!-- Run Simulation Button -->
     <button v-show="showRunButton" @click="runSimulation" :disabled="!canRunSimulation" class="simulation-button">
-      Run Simulation
+      Run simulation
     </button>
 
     <!-- Cancel Simulation Button -->
     <button v-show="showCancelButton" @click="cancelSimulation" class="simulation-button">
-      Cancel Simulation
+      Cancel simulation
     </button>
 
     <!-- Clean Simulation Button -->
     <button v-show="showCleanButton" @click="cleanSimulation" class="simulation-button">
-      Clean Simulation
+      Clean simulation
     </button>
 
     <div v-if="isRunningSimulation" class="simulation-message">
@@ -70,6 +70,42 @@ export default {
   top: 10px;
   right: 10px;
   z-index: 10;
+  padding: 0.5rem 1rem;
+  /* Standard padding for buttons */
+  font-size: 1rem;
+  /* Standard font size for buttons */
+  color: #fff;
+  /* Text color for buttons */
+  background-color: #007bff;
+  /* Primary button color */
+  border: none;
+  /* Remove default borders */
+  border-radius: 0.25rem;
+  /* Standard border radius for buttons */
+  cursor: pointer;
+  /* Indicate that the element is clickable */
+  transition: background-color 0.2s, box-shadow 0.2s;
+  /* Smooth transitions for interactions */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  /* Subtle shadow for depth */
+}
+
+.simulation-button:hover {
+  background-color: #0056b3;
+  /* Darken button color on hover */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  /* Increase shadow for a "lifted" effect */
+}
+
+.simulation-button:disabled {
+  background-color: #e0e0e0;
+  /* Disabled button color */
+  color: #a1a1a1;
+  /* Disabled text color */
+  cursor: not-allowed;
+  /* Indicate that the button is not clickable */
+  box-shadow: none;
+  /* No shadow for disabled buttons */
 }
 
 .simulation-message {

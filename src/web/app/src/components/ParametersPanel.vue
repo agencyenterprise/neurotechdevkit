@@ -48,7 +48,7 @@ export default {
         ...(!this.is2d ? [{ title: 'Display', component: 'DisplaySettings' }] : []),
         { title: 'Transducers', component: 'TransducersSettings' },
         { title: 'Target', component: 'TargetSettings' },
-        { title: 'Simulation Settings', component: 'SimulationSettings' }
+        { title: 'Simulation settings', component: 'SimulationSettings' }
       ];
       return items;
     },

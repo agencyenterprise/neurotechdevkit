@@ -1,6 +1,6 @@
 <template>
   <div class="mb-3">
-    <label class="form-label">Source Transducer</label>
+    <label class="form-label">Source transducer</label>
     <select class="form-select" v-model="selectedTransducer">
       <option value selected>-- Select transducer --</option>
       <option v-for="transducer in supportedTransducers" :key="transducer.value" :value="transducer.value">
@@ -33,7 +33,7 @@
   </div>
 
   <div v-if="transducers.length" class="card transducers-list">
-    <div class="transducers-list-header">Added Transducers</div>
+    <div class="transducers-list-header">Added transducers</div>
     <ul class="list-group list-group-flush">
       <li class="list-group-item d-flex align-items-center" v-for="(transducer, index) in transducers" :key="index">
         <span class="transducer-type">{{ transducer.transducerType }}</span> <!-- Display transducer name or type -->

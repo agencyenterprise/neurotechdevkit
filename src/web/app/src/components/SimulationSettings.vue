@@ -1,10 +1,10 @@
 <template>
   <div class="mb-3">
-    <label title="The number of points per wavelength">Simulation Precision</label>
+    <label title="The number of points per wavelength">Simulation precision</label>
     <input :disabled="hasSimulation" type="number" v-model.number="simulationPrecision" class="form-control" />
   </div>
   <div class="mb-3">
-    <label title="The center frequency of the transducers (in Hz)">Center Frequency</label>
+    <label title="The center frequency of the transducers (in Hz)">Center frequency</label>
     <input :disabled="hasSimulation" type="number" v-model.number="centerFrequency" class="form-control" />
   </div>
 
@@ -13,7 +13,7 @@
     <MaterialsSettings />
   </div>
   <div class="mb-3">
-    <label>Simulation Type</label>
+    <label>Simulation type</label>
     <div class="form-control">
       <div class="form-check">
         <input :disabled="hasSimulation" class="form-check-input" type="radio" id="pulsed" value="false"
@@ -28,7 +28,7 @@
           v-model="isSteadySimulation" />
         <label class="form-check-label" for="steadyState"
           title="The transducers will emit pressure waves with a continuous waveform until steady-state has been reached">
-          Steady State
+          Steady state
         </label>
       </div>
     </div>

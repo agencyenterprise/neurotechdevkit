@@ -61,12 +61,11 @@
     <input type="number" step="any" class="form-control" placeholder="0.0015" v-model.number="pitch" />
   </div>
   <div class="mb-3">
-    <label title="The width (in meters) of each individual element of the array">Element
-      Width</label>
+    <label title="The width (in meters) of each individual element of the array">Element width</label>
     <input type="number" step="any" class="form-control" placeholder="0.0012" v-model.number="elementWidth" />
   </div>
   <div class="mb-3">
-    <label title="The desired tilt angle (in degrees) of the wavefront">Tilt Angle</label>
+    <label title="The desired tilt angle (in degrees) of the wavefront">Tilt angle</label>
     <input type="number" step="any" class="form-control" placeholder="30" v-model.number="tiltAngle" />
   </div>
   <div class="mb-3">
