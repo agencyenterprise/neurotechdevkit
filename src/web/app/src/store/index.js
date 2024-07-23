@@ -21,7 +21,6 @@ const store = createStore({
       hasSimulation: false,
       isRunningSimulation: false,
 
-      configuration: {},
       materials: [],
       materialProperties: [],
       transducerTypes: [],
@@ -32,9 +31,9 @@ const store = createStore({
       state.is2d = payload;
     },
     setInitialValues(state, payload) {
+      console.log("Setting initial values, payload: ", payload);
       state.hasSimulation = payload.has_simulation;
       state.isRunningSimulation = payload.is_running_simulation;
-      state.configuration = payload.configuration;
       state.materials = payload.materials;
       state.materialProperties = payload.material_properties;
       state.transducerTypes = payload.transducer_types;
@@ -47,6 +46,45 @@ const store = createStore({
         payload.built_in_scenarios,
         { root: true }
       );
+      if (payload.configuration !== null) {
+        state.is2d = payload.configuration.is2d;
+        this.dispatch(
+          "scenarioSettings/setScenario",
+          payload.configuration.scenarioSettings.scenarioId,
+          { root: true }
+        );
+        this.dispatch(
+          "displaySettings/setDisplaySettings",
+          payload.configuration.displaySettings,
+          {
+            root: true,
+          }
+        );
+        this.dispatch(
+          "transducersSettings/setTransducers",
+          payload.configuration.transducers,
+          {
+            root: true,
+          }
+        );
+        this.dispatch(
+          "simulationSettings/setSimulationSettings",
+          payload.configuration.simulationSettings,
+          {
+            root: true,
+          }
+        );
+        this.dispatch(
+          "targetSettings/setTarget",
+          payload.configuration.target,
+          {
+            root: true,
+          }
+        );
+      }
+      if (state.hasSimulation || state.isRunningSimulation) {
+        this.dispatch("getSimulation");
+      }
     },
     setHasSimulation(state, payload) {
       state.hasSimulation = payload;
@@ -62,8 +100,20 @@ const store = createStore({
     set2d(context, payload) {
       context.commit("set2d", payload);
     },
-    setInitialValues(context, payload) {
-      context.commit("setInitialValues", payload);
+    async getInitialData({ commit }) {
+      await fetch(`http://${process.env.VUE_APP_BACKEND_URL}/info`)
+        .then((response) => {
+          if (response.ok) {
+            return response.json();
+          }
+          throw new Error("Network response was not ok.");
+        })
+        .then((data) => {
+          commit("setInitialValues", data);
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
     },
     async runSimulation({ commit, dispatch }) {
       commit("setRenderedOutput", null);
@@ -161,11 +211,34 @@ const store = createStore({
         console.error("There was a problem with the fetch operation:", error);
       }
     },
+    async getSimulation({ commit }) {
+      try {
+        const response = await fetch(
+          `http://${process.env.VUE_APP_BACKEND_URL}/simulation`,
+          {
+            method: "GET",
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        commit("setRenderedOutput", data.data);
+        commit("setHasSimulation", true);
+        commit("setIsRunningSimulation", false);
+      } catch (error) {
+        console.error("There was a problem with the fetch operation:", error);
+      }
+    },
   },
   getters: {
     canRunSimulation(state, _getters, _rootState, rootGetters) {
       const scenario = rootGetters["scenarioSettings/scenario"];
-      return scenario && !state.isRunningSimulation;
+      const transducers =
+        rootGetters["transducersSettings/transducers"].length > 0;
+      return scenario && transducers && !state.isRunningSimulation;
     },
     renderedOutput(state) {
       return state.renderedOutput;
@@ -186,22 +259,25 @@ const debouncedRenderLayout = debounce(() => {
   store.dispatch("renderLayout");
 }, 500);
 
-store.subscribe((mutation) => {
-  const namespaces = [
-    "displaySettings/",
-    "targetSettings/",
-    "transducersSettings/",
-    "simulationSettings/",
-  ];
-  const relevantMutations = ["scenarioSettings/setScenario"];
+store.subscribe((mutation, state) => {
+  // Only proceed if hasSimulation is false
+  if (!state.hasSimulation) {
+    const namespaces = [
+      "displaySettings/",
+      "targetSettings/",
+      "transducersSettings/",
+      "simulationSettings/",
+    ];
+    const relevantMutations = ["scenarioSettings/setScenario"];
 
-  const isNamespaceMutation = namespaces.some((namespace) =>
-    mutation.type.startsWith(namespace)
-  );
+    const isNamespaceMutation = namespaces.some((namespace) =>
+      mutation.type.startsWith(namespace)
+    );
 
-  const isSpecificMutation = relevantMutations.includes(mutation.type);
-  if (isNamespaceMutation || isSpecificMutation) {
-    debouncedRenderLayout();
+    const isSpecificMutation = relevantMutations.includes(mutation.type);
+    if (isNamespaceMutation || isSpecificMutation) {
+      debouncedRenderLayout();
+    }
   }
 });
 

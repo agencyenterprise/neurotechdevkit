@@ -1,14 +1,16 @@
 <template>
   <h1><span>Parameters</span></h1>
-  <div>
+  <div :class="{ 'disabled-panel': isRunningSimulation }"> <!-- Add a class to indicate the panel is disabled -->
     <div class="mb-3 btn-group">
-      <input class="btn-check" type="radio" id="is2d" value="2D" v-model="simulationType" name="simulation">
-      <label class="btn btn-primary btn-wide" for="is2d">2D</label>
-      <input class="btn-check" type="radio" id="is3d" value="3D" v-model="simulationType" name="simulation">
-      <label class="btn btn-primary btn-wide" for="is3d">3D</label>
+      <input :disabled="is2dDisabled" class="btn-check" type="radio" id="is2d" value="2D" v-model="simulationType"
+        name="simulation">
+      <label :class="{ 'disabled': is2dDisabled }" class="btn btn-primary btn-wide" for="is2d">2D</label>
+      <input :disabled="is3dDisabled" class="btn-check" type="radio" id="is3d" value="3D" v-model="simulationType"
+        name="simulation">
+      <label :class="{ 'disabled': is3dDisabled }" class="btn btn-primary btn-wide" for="is3d">3D</label>
     </div>
     <AccordionItem v-for="(item, index) in accordionItems" :key="index" :title="item.title" :index="index"
-      :is-open="opened === index" @toggle="accordionToggle">
+      :is-open="opened === index" @toggle="accordionToggle" :disabled="item.disabled || isRunningSimulation">
       <component :is="item.component" :key="item.title" />
     </AccordionItem>
   </div>
@@ -38,17 +40,16 @@ export default {
     };
   },
   computed: {
-    ...mapGetters({
-      is2d: 'is2d'
-    }),
+    ...mapGetters(['is2d', 'hasSimulation', 'isRunningSimulation']),
+    ...mapGetters('scenarioSettings', ['scenario']),
     accordionItems() {
+      const scenarioIsNotNull = this.scenario !== null; // Check if scenario is not null
       const items = [
-        { title: 'Scenario', component: 'ScenarioSettings' },
-        // Include DisplaySettings only when !is2d (3D mode)
-        ...(!this.is2d ? [{ title: 'Display', component: 'DisplaySettings' }] : []),
-        { title: 'Transducers', component: 'TransducersSettings' },
-        { title: 'Target', component: 'TargetSettings' },
-        { title: 'Simulation settings', component: 'SimulationSettings' }
+        { title: 'Scenario', component: 'ScenarioSettings', disabled: false }, // Scenario is always enabled
+        ...(!this.is2d ? [{ title: 'Display', component: 'DisplaySettings', disabled: !scenarioIsNotNull }] : []),
+        { title: 'Transducers', component: 'TransducersSettings', disabled: !scenarioIsNotNull },
+        { title: 'Target', component: 'TargetSettings', disabled: !scenarioIsNotNull },
+        { title: 'Simulation settings', component: 'SimulationSettings', disabled: !scenarioIsNotNull }
       ];
       return items;
     },
@@ -60,32 +61,22 @@ export default {
         this.set2d(value === '2D');
       }
     },
+    is3dDisabled() {
+      return this.isRunningSimulation || (this.hasSimulation && this.is2d);
+    },
+    is2dDisabled() {
+      return this.isRunningSimulation || (this.hasSimulation && !this.is2d);
+    },
     backendUrl() {
       return process.env.VUE_APP_BACKEND_URL; // Or `import.meta.env.VUE_APP_BACKEND_URL` for Vue.js 3
     }
   },
   methods: {
-    ...mapActions({
-      set2d: 'set2d',
-      setInitialValues: 'setInitialValues'
-    }),
+    ...mapActions(['set2d', 'getInitialData']),
     accordionToggle(index) {
-      this.opened = this.opened === index ? null : index;
-    },
-    getInitialData() {
-      fetch(`http://${this.backendUrl}/info`)
-        .then(response => {
-          if (response.ok) {
-            return response.json();
-          }
-          throw new Error('Network response was not ok.');
-        })
-        .then(data => {
-          this.setInitialValues(data);
-        })
-        .catch(error => {
-          console.error('Error:', error);
-        });
+      if (!this.accordionItems[index].disabled) {
+        this.opened = this.opened === index ? null : index;
+      }
     },
   },
   mounted() {
@@ -95,6 +86,21 @@ export default {
 </script>
 
 <style scoped>
+.disabled-panel {
+  pointer-events: none;
+  /* Prevent all interactions */
+  opacity: 0.5;
+  /* Visual feedback that the panel is disabled */
+}
+
+.btn-primary.disabled,
+.btn-primary:disabled {
+  background-color: #ccc;
+  border-color: #ccc;
+  pointer-events: none;
+  /* Prevent all interactions */
+}
+
 /* General styles */
 h1 {
   font-size: 1.75rem;
@@ -147,66 +153,5 @@ h1 span {
   /* Space out buttons */
   flex-grow: 1;
   /* Make buttons take up equal width */
-}
-
-/* Accordion styles */
-.accordion-item {
-  margin-bottom: 1rem;
-  border: 1px solid #e0e0e0;
-  border-radius: 0.25rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.accordion-header {
-  background-color: #f5f5f5;
-  padding: 0.75rem 1rem;
-  cursor: pointer;
-  border-bottom: 1px solid #ddd;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  transition: background-color 0.3s ease-in-out;
-}
-
-.accordion-header:hover {
-  background-color: #e2e6ea;
-}
-
-.accordion-content {
-  padding: 1rem;
-  background-color: #fff;
-  border-top: none;
-}
-
-/* Ensure that the accordion content area does not have a top border */
-.accordion-content:first-child {
-  border-top: none;
-}
-
-/* Optional: Add a 'plus' and 'minus' icon for accordion headers */
-.accordion-header::after {
-  content: '\002B';
-  /* Unicode plus sign */
-  font-size: 1.25rem;
-  color: #007bff;
-}
-
-.accordion-header[aria-expanded="true"]::after {
-  content: '\2212';
-  /* Unicode minus sign */
-}
-
-/* Optional: Add transition for the accordion content */
-.accordion-content {
-  transition: max-height 0.3s ease-in-out, padding 0.3s ease-in-out, visibility 0.3s ease-in-out;
-  overflow: hidden;
-  max-height: 0;
-  visibility: hidden;
-}
-
-.accordion-content[aria-expanded="true"] {
-  max-height: 1000px;
-  /* Arbitrary large height for smooth animation */
-  visibility: visible;
 }
 </style>
