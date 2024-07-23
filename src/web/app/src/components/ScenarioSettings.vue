@@ -13,15 +13,9 @@
   <div class="mb-3">
     <div class="mb-3" v-if="isPreBuilt">
       <label class="form-label">Scenarios:</label>
-      <select v-if="is2d" :disabled="hasSimulation" class="form-select" v-model="selected2dScenario">
+      <select :disabled="hasSimulation" class="form-select" v-model="selectedScenario">
         <option disabled value="null">Select a scenario</option>
-        <option v-for="(scenario, key) in builtInScenarios2d" :key="key" :value="key">
-          {{ scenario.title }}
-        </option>
-      </select>
-      <select v-else :disabled="hasSimulation" class="form-select" v-model="selected3dScenario">
-        <option disabled value="null">Select a scenario</option>
-        <option v-for="(scenario, key) in builtInScenarios3d" :key="key" :value="key">
+        <option v-for="(scenario, key) in currentBuiltInScenarios" :key="key" :value="key">
           {{ scenario.title }}
         </option>
       </select>
@@ -89,29 +83,17 @@ export default {
         this.setIsPreBuilt(value === 'preBuilt');
       }
     },
-    selected2dScenario: {
+    selectedScenario: {
       get() {
-        // if scenarioId in builtInScenarios2d, return scenarioId
-        // else return null
-        if (this.scenarioId in this.builtInScenarios2d) {
+        // Check if the current scenarioId is in the appropriate list based on is2d
+        const scenarios = this.is2d ? this.builtInScenarios2d : this.builtInScenarios3d;
+        if (this.scenarioId in scenarios) {
           return this.scenarioId;
         }
-        return null
+        return null;
       },
       set(value) {
-        this.setScenario(value);
-      }
-    },
-    selected3dScenario: {
-      get() {
-        // if scenarioId in builtInScenarios3d, return scenarioId
-        // else return null
-        if (this.scenarioId in this.builtInScenarios3d) {
-          return this.scenarioId;
-        }
-        return null
-      },
-      set(value) {
+        // Set the selected scenario
         this.setScenario(value);
       }
     },
