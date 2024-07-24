@@ -71,7 +71,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['set2d', 'getInitialData']),
+    ...mapActions(['set2d', 'getInitialData', 'reset']),
     accordionToggle(index) {
       if (!this.accordionItems[index].disabled) {
         this.opened = this.opened === index ? null : index;

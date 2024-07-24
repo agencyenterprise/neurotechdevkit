@@ -1,39 +1,41 @@
+const initialState = () => ({
+  simulationPrecision: "6",
+  centerFrequency: "500000",
+  isSteadySimulation: true,
+  materialProperties: {
+    water: {
+      vp: "1500",
+      rho: "1000",
+      alpha: "0",
+      renderColor: "#2e86ab",
+    },
+    brain: {
+      vp: "1560",
+      rho: "1040",
+      alpha: "0.3",
+      renderColor: "#db504a",
+    },
+    corticalBone: {
+      vp: "2800",
+      rho: "1850",
+      alpha: "4",
+      renderColor: "#faf0ca",
+    },
+    tumor: {
+      vp: "1650",
+      rho: "1150",
+      alpha: "0.8",
+      renderColor: "#94332f",
+    },
+  },
+});
 export default {
   namespaced: true,
-  state() {
-    return {
-      simulationPrecision: "6",
-      centerFrequency: "500000",
-      isSteadySimulation: true,
-      materialProperties: {
-        water: {
-          vp: "1500",
-          rho: "1000",
-          alpha: "0",
-          renderColor: "#2e86ab",
-        },
-        brain: {
-          vp: "1560",
-          rho: "1040",
-          alpha: "0.3",
-          renderColor: "#db504a",
-        },
-        corticalBone: {
-          vp: "2800",
-          rho: "1850",
-          alpha: "4",
-          renderColor: "#faf0ca",
-        },
-        tumor: {
-          vp: "1650",
-          rho: "1150",
-          alpha: "0.8",
-          renderColor: "#94332f",
-        },
-      },
-    };
-  },
+  state: initialState,
   mutations: {
+    reset(state) {
+      Object.assign(state, initialState());
+    },
     updateMaterialProperty(state, { material, prop, value }) {
       if (state.materialProperties[material]) {
         state.materialProperties[material][prop] = value;

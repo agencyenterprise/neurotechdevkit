@@ -7,6 +7,16 @@ import targetSettings from "./modules/targetSettings";
 import transducersSettings from "./modules/transducersSettings";
 import debounce from "lodash/debounce";
 
+const initialState = () => ({
+  is2d: true,
+  hasSimulation: false,
+  isRunningSimulation: false,
+
+  materials: [],
+  materialProperties: [],
+  transducerTypes: [],
+});
+
 const store = createStore({
   modules: {
     scenarioSettings,
@@ -15,18 +25,13 @@ const store = createStore({
     targetSettings,
     transducersSettings,
   },
-  state() {
-    return {
-      is2d: true,
-      hasSimulation: false,
-      isRunningSimulation: false,
-
-      materials: [],
-      materialProperties: [],
-      transducerTypes: [],
-    };
-  },
+  state: initialState,
   mutations: {
+    reset(state) {
+      const is2d = state.is2d;
+      Object.assign(state, initialState());
+      state.is2d = is2d;
+    },
     set2d(state, payload) {
       state.is2d = payload;
     },
@@ -97,8 +102,22 @@ const store = createStore({
     },
   },
   actions: {
-    set2d(context, payload) {
-      context.commit("set2d", payload);
+    reset({ commit }) {
+      // Reset root state
+      commit("setRenderedOutput", null);
+
+      commit("reset");
+
+      // Reset each submodule
+      commit("displaySettings/reset", null, { root: true });
+      commit("scenarioSettings/reset", null, { root: true });
+      commit("simulationSettings/reset", null, { root: true });
+      commit("targetSettings/reset", null, { root: true });
+      commit("transducersSettings/reset", null, { root: true });
+    },
+    set2d({ commit, dispatch }, payload) {
+      commit("set2d", payload);
+      dispatch("reset");
     },
     async getInitialData({ commit }) {
       await fetch(`http://${process.env.VUE_APP_BACKEND_URL}/info`)
@@ -175,7 +194,8 @@ const store = createStore({
     getPayload({ state, rootGetters }) {
       const body = {
         is2d: state.is2d,
-        scenarioSettings: rootGetters["scenarioSettings/scenarioSettingsPayload"],
+        scenarioSettings:
+          rootGetters["scenarioSettings/scenarioSettingsPayload"],
         transducers: rootGetters["transducersSettings/transducers"],
         target: rootGetters["targetSettings/targetPayload"],
         simulationSettings:
@@ -184,7 +204,10 @@ const store = createStore({
       };
       return body;
     },
-    async renderLayout({ commit, dispatch }) {
+    async renderLayout({ commit, dispatch, getters }) {
+      // Check if we have enough data to render the layout
+      if (!getters.canRenderLayout || getters.hasSimulation) return;
+
       const payload = await dispatch("getPayload");
       try {
         const response = await fetch(
@@ -232,19 +255,7 @@ const store = createStore({
   },
   getters: {
     canRenderLayout(state, getters) {
-      const is2d = state.is2d;
-
-      const scenarioId = getters["scenarioSettings/scenarioId"];
-      const ctFile = getters["scenarioSettings/ctFile"];
-      const ctSliceAxis = getters["scenarioSettings/ctSliceAxis"];
-      const ctSlicePosition = getters["scenarioSettings/ctSlicePosition"];
-
-      const hasScenarioId = scenarioId !== null;
-      const hasCTScanData =
-        ctFile !== null &&
-        (!is2d || (ctSliceAxis !== "" && ctSlicePosition !== null));
-
-      return hasScenarioId || hasCTScanData;
+      return getters["scenarioSettings/isScenarioValid"];
     },
     canRunSimulation(state, _getters, _rootState, rootGetters) {
       const scenario = rootGetters["scenarioSettings/scenario"];
@@ -271,7 +282,7 @@ const debouncedRenderLayout = debounce(() => {
   store.dispatch("renderLayout");
 }, 500);
 
-store.subscribe((mutation, state) => {
+store.subscribe((mutation) => {
   const namespaces = [
     "displaySettings/",
     "targetSettings/",
@@ -284,10 +295,7 @@ store.subscribe((mutation, state) => {
     mutation.type.startsWith(namespace)
   );
 
-  // Check if we have enough data to render the layout
-  const canRender = store.getters.canRenderLayout;
-
-  if (isNamespaceMutation && canRender && !state.hasSimulation) {
+  if (isNamespaceMutation) {
     debouncedRenderLayout();
   }
 });

@@ -1,12 +1,14 @@
+const initialState = () => ({
+  sliceAxis: "x",
+  slicePosition: .1,
+});
 export default {
   namespaced: true,
-  state() {
-    return {
-      sliceAxis: "",
-      slicePosition: null,
-    };
-  },
+  state: initialState,
   mutations: {
+    reset(state) {
+      Object.assign(state, initialState());
+    },
     setSliceAxis(state, payload) {
       state.sliceAxis = payload;
     },

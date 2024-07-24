@@ -1,14 +1,16 @@
+const initialState = () => ({
+  centerX: "0.14399999141693112",
+  centerY: "0.14399999141693112",
+  centerZ: "0.14399999136",
+  radius: "0.01",
+});
 export default {
   namespaced: true,
-  state() {
-    return {
-      centerX: "0.14399999141693112",
-      centerY: "0.14399999141693112",
-      centerZ: "0.14399999136",
-      radius: "0.01",
-    };
-  },
+  state: initialState,
   mutations: {
+    reset(state) {
+      Object.assign(state, initialState());
+    },
     updateTargetProperty(state, payload) {
       state[payload.key] = payload.value;
     },
@@ -41,7 +43,6 @@ export default {
       return state.radius;
     },
     targetPayload(state, getters, rootState, { is2d }) {
-      console.log("is2d", is2d);
       return {
         centerX: state.centerX,
         centerY: state.centerY,
