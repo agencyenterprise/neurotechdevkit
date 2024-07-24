@@ -2,23 +2,23 @@
   <div class="mb-3 row">
     <div class="col">
       <label for="centerX" v-tooltip="'The location of the center of the target (in meters)'">Center X</label>
-      <input :disabled="hasSimulation" type="number" step="any" class="form-control" id="centerX"
+      <input :disabled="hasSimulation || isRunningSimulation" type="number" step="any" class="form-control" id="centerX"
         v-model.number="centerX" />
     </div>
     <div class="col">
       <label for="centerY" v-tooltip="'The location of the center of the target (in meters)'">Center Y</label>
-      <input :disabled="hasSimulation" type="number" step="any" class="form-control" id="centerY"
+      <input :disabled="hasSimulation || isRunningSimulation" type="number" step="any" class="form-control" id="centerY"
         v-model.number="centerY" />
     </div>
     <div class="col" v-if="!is2d">
       <label for="centerZ" v-tooltip="'The location of the center of the target (in meters)'">Center Z</label>
-      <input :disabled="hasSimulation" type="number" step="any" class="form-control" id="centerZ"
+      <input :disabled="hasSimulation || isRunningSimulation" type="number" step="any" class="form-control" id="centerZ"
         v-model.number="centerZ" />
     </div>
   </div>
   <div class="mb-3">
     <label for="radius" v-tooltip="'The radius of the target (in meters)'">Radius</label>
-    <input :disabled="hasSimulation" type="number" step="any" class="form-control" id="radius"
+    <input :disabled="hasSimulation || isRunningSimulation" type="number" step="any" class="form-control" id="radius"
       v-model.number="radius" />
   </div>
 </template>
@@ -28,7 +28,7 @@ import { mapGetters } from 'vuex';
 
 export default {
   computed: {
-    ...mapGetters(['is2d', 'hasSimulation']),
+    ...mapGetters(['is2d', 'hasSimulation', 'isRunningSimulation']),
     centerX: {
       get() {
         return this.$store.getters['targetSettings/centerX'];
