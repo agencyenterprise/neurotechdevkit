@@ -12,22 +12,23 @@
         :aria-labelledby="'flush-heading' + material" data-bs-parent="#materialsAccordion">
         <div class="accordion-body">
           <div class="mb-3">
-            <label title="The speed of sound (in m/s)">VP</label>
+            <label v-tooltip="'The speed of sound (in m/s)'">VP</label>
             <input :disabled="hasSimulation" type="number" class="form-control" v-model.number="properties.vp" />
           </div>
           <div class="mb-3">
-            <label title="The mass density (in kg/m³)">RHO</label>
+            <label v-tooltip="'The mass density (in kg/m³)'">RHO</label>
             <input :disabled="hasSimulation" type="number" class="form-control" v-model.number="properties.rho" />
           </div>
           <div class="mb-3">
-            <label title="The absorption (in dB/cm)">Alpha</label>
-            <input :disabled="hasSimulation" type="number" step="any" class="form-control" v-model.number="properties.alpha" />
+            <label v-tooltip="'The absorption (in dB/cm)'">Alpha</label>
+            <input :disabled="hasSimulation" type="number" step="any" class="form-control"
+              v-model.number="properties.alpha" />
           </div>
           <div class="mb-3">
             <label class="form-label"
-              title="The color used when rendering this material in the scenario layout plot">Color</label>
-            <input :disabled="hasSimulation" type="color" class="form-control form-control-color" v-model="properties.renderColor"
-              title="Choose your color" />
+              v-tooltip="'The color used when rendering this material in the scenario layout plot'">Color</label>
+            <input :disabled="hasSimulation" type="color" class="form-control form-control-color"
+              v-model="properties.renderColor" v-tooltip="'Choose your color'" />
           </div>
         </div>
       </div>
