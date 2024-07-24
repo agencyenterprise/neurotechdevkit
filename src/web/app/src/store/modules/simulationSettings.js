@@ -2,9 +2,9 @@ export default {
   namespaced: true,
   state() {
     return {
-      simulationPrecision: null,
-      centerFrequency: null,
-      isSteadySimulation: null,
+      simulationPrecision: "6",
+      centerFrequency: "500000",
+      isSteadySimulation: true,
       materialProperties: {
         water: {
           vp: "1500",

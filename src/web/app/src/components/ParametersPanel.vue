@@ -41,15 +41,14 @@ export default {
   },
   computed: {
     ...mapGetters(['is2d', 'hasSimulation', 'isRunningSimulation']),
-    ...mapGetters('scenarioSettings', ['scenario']),
+    ...mapGetters('scenarioSettings', ['scenario', 'isScenarioValid']),
     accordionItems() {
-      const scenarioIsNotNull = this.scenario !== null; // Check if scenario is not null
       const items = [
         { title: 'Scenario', component: 'ScenarioSettings', disabled: false }, // Scenario is always enabled
-        ...(!this.is2d ? [{ title: 'Display', component: 'DisplaySettings', disabled: !scenarioIsNotNull }] : []),
-        { title: 'Transducers', component: 'TransducersSettings', disabled: !scenarioIsNotNull },
-        { title: 'Target', component: 'TargetSettings', disabled: !scenarioIsNotNull },
-        { title: 'Simulation settings', component: 'SimulationSettings', disabled: !scenarioIsNotNull }
+        ...(!this.is2d ? [{ title: 'Display', component: 'DisplaySettings', disabled: !this.isScenarioValid }] : []),
+        { title: 'Transducers', component: 'TransducersSettings', disabled: !this.isScenarioValid },
+        { title: 'Target', component: 'TargetSettings', disabled: !this.isScenarioValid },
+        { title: 'Simulation settings', component: 'SimulationSettings', disabled: !this.isScenarioValid }
       ];
       return items;
     },

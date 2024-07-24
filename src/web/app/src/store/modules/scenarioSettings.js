@@ -3,11 +3,13 @@ export default {
   state() {
     return {
       scenarioId: null,
-      ctScan: null,
+      ctFile: null,
       scenario: null,
       isPreBuilt: true,
       availableCTs: [],
       builtInScenarios: [],
+      ctSliceAxis: "",
+      ctSlicePosition: null,
     };
   },
   mutations: {
@@ -26,8 +28,14 @@ export default {
     setScenarioId(state, payload) {
       state.scenarioId = payload;
     },
-    setCTScan(state, payload) {
-      state.ctScan = payload;
+    setCTFile(state, payload) {
+      state.ctFile = payload;
+    },
+    setCtSliceAxis(state, payload) {
+      state.ctSliceAxis = payload;
+    },
+    setCtSlicePosition(state, payload) {
+      state.ctSlicePosition = payload;
     },
   },
   actions: {
@@ -36,6 +44,15 @@ export default {
     },
     setAvailableCTs({ commit }, payload) {
       commit("setAvailableCTs", payload);
+    },
+    setCtSliceAxis({ commit }, payload) {
+      commit("setCtSliceAxis", payload);
+    },
+    setCtSlicePosition({ commit }, payload) {
+      commit("setCtSlicePosition", payload);
+    },
+    setCTFile({ commit }, payload) {
+      commit("setCTFile", payload);
     },
     setScenario({ dispatch, commit, getters }, payload) {
       // payload will have the scenario name, we need to iterate over the
@@ -64,15 +81,39 @@ export default {
     setIsPreBuilt({ commit }, payload) {
       commit("setIsPreBuilt", payload);
     },
-    setCTScan({ commit, getters }, payload) {
-      // payload will be the ct scan filename, we need to iterate over the
-      // availableCTs to find the ct scan and then set the ct scan in the state
-      const ctScans = getters.ctScans;
-      const ctScan = ctScans.filter((ct) => ct.filename === payload)[0];
-      commit("setCTScan", ctScan);
-    },
   },
   getters: {
+    isScenarioValid(state) {
+      if (state.isPreBuilt) {
+        return state.scenarioId !== null;
+      }
+      return (
+        state.ctFile !== null &&
+        state.ctSliceAxis !== "" &&
+        state.ctSlicePosition !== null
+      );
+    },
+    scenarioSettingsPayload(state, getters, rootState, { is2d }) {
+      const payload = {
+        isPreBuilt: state.isPreBuilt,
+      };
+
+      // If the scenario is pre-built, add the scenarioId and return the payload
+      if (state.isPreBuilt) {
+        payload.scenarioId = state.scenarioId;
+        return payload;
+      }
+
+      payload.ctFile = state.ctFile;
+
+      // If the scenario is 2D, also include the ctSliceAxis and ctSlicePosition
+      if (is2d) {
+        payload.ctSliceAxis = state.ctSliceAxis;
+        payload.ctSlicePosition = state.ctSlicePosition;
+      }
+
+      return payload;
+    },
     scenario(state) {
       return state.scenario;
     },
@@ -82,8 +123,17 @@ export default {
     isPreBuilt(state) {
       return state.isPreBuilt;
     },
-    ctScans(state) {
+    availableCTs(state) {
       return state.availableCTs;
+    },
+    ctFile(state) {
+      return state.ctFile;
+    },
+    ctSliceAxis(state) {
+      return state.ctSliceAxis;
+    },
+    ctSlicePosition(state) {
+      return state.ctSlicePosition;
     },
     builtInScenarios(state) {
       return state.builtInScenarios;

@@ -175,12 +175,9 @@ const store = createStore({
     getPayload({ state, rootGetters }) {
       const body = {
         is2d: state.is2d,
-        scenarioSettings: {
-          isPreBuilt: rootGetters["scenarioSettings/isPreBuilt"],
-          scenarioId: rootGetters["scenarioSettings/scenarioId"],
-        },
+        scenarioSettings: rootGetters["scenarioSettings/scenarioSettingsPayload"],
         transducers: rootGetters["transducersSettings/transducers"],
-        target: rootGetters["targetSettings/target"],
+        target: rootGetters["targetSettings/targetPayload"],
         simulationSettings:
           rootGetters["simulationSettings/simulationSettings"],
         displaySettings: rootGetters["displaySettings/displaySettings"],
@@ -234,6 +231,21 @@ const store = createStore({
     },
   },
   getters: {
+    canRenderLayout(state, getters) {
+      const is2d = state.is2d;
+
+      const scenarioId = getters["scenarioSettings/scenarioId"];
+      const ctFile = getters["scenarioSettings/ctFile"];
+      const ctSliceAxis = getters["scenarioSettings/ctSliceAxis"];
+      const ctSlicePosition = getters["scenarioSettings/ctSlicePosition"];
+
+      const hasScenarioId = scenarioId !== null;
+      const hasCTScanData =
+        ctFile !== null &&
+        (!is2d || (ctSliceAxis !== "" && ctSlicePosition !== null));
+
+      return hasScenarioId || hasCTScanData;
+    },
     canRunSimulation(state, _getters, _rootState, rootGetters) {
       const scenario = rootGetters["scenarioSettings/scenario"];
       const transducers =
@@ -260,24 +272,23 @@ const debouncedRenderLayout = debounce(() => {
 }, 500);
 
 store.subscribe((mutation, state) => {
-  // Only proceed if hasSimulation is false
-  if (!state.hasSimulation) {
-    const namespaces = [
-      "displaySettings/",
-      "targetSettings/",
-      "transducersSettings/",
-      "simulationSettings/",
-    ];
-    const relevantMutations = ["scenarioSettings/setScenario"];
+  const namespaces = [
+    "displaySettings/",
+    "targetSettings/",
+    "transducersSettings/",
+    "simulationSettings/",
+    "scenarioSettings/",
+  ];
 
-    const isNamespaceMutation = namespaces.some((namespace) =>
-      mutation.type.startsWith(namespace)
-    );
+  const isNamespaceMutation = namespaces.some((namespace) =>
+    mutation.type.startsWith(namespace)
+  );
 
-    const isSpecificMutation = relevantMutations.includes(mutation.type);
-    if (isNamespaceMutation || isSpecificMutation) {
-      debouncedRenderLayout();
-    }
+  // Check if we have enough data to render the layout
+  const canRender = store.getters.canRenderLayout;
+
+  if (isNamespaceMutation && canRender && !state.hasSimulation) {
+    debouncedRenderLayout();
   }
 });
 

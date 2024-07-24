@@ -1,13 +1,35 @@
 <template>
+  <div v-if="transducers.length" class="card transducers-list">
+    <div class="transducers-list-header">Added transducers</div>
+    <ul class="list-group list-group-flush">
+      <li class="list-group-item d-flex align-items-center" v-for="(transducer, index) in transducers" :key="index">
+        <span class="transducer-type">{{ transducer.transducerType }}</span> <!-- Display transducer name or type -->
+        <!-- Conditionally render the Edit/View and Delete buttons -->
+        <div class="ms-auto button-group">
+          <button class="btn btn-sm btn-warning" @click="editTransducerClick(index)">
+            <i class="fas fa-edit"></i> {{ hasSimulation ? 'View' : 'Edit' }}
+          </button>
+          <button v-if="!hasSimulation" class="btn btn-sm btn-danger" @click="deleteTransducerClick(index)">
+            <i class="fas fa-trash-alt"></i> Delete
+          </button>
+        </div>
+      </li>
+    </ul>
+  </div>
   <div v-if="!hasSimulation" class="transducers-settings">
-    <div class="mb-3">
-      <label class="form-label">Source transducer</label>
-      <select class="form-select" v-model="selectedTransducer">
-        <option value selected>-- Select transducer --</option>
-        <option v-for="transducer in supportedTransducers" :key="transducer.value" :value="transducer.value">
-          {{ transducer.text }}
-        </option>
-      </select>
+    <div v-if="!isEditMode">
+      <button v-if="!showTransducerSelect" class="btn btn-primary" @click="showTransducerSelect = true">
+        Add Transducer
+      </button>
+      <div v-if="showTransducerSelect" class="mb-3">
+        <label class="form-label">Source transducer</label>
+        <select class="form-select" v-model="selectedTransducer">
+          <option value="" selected>-- Select transducer --</option>
+          <option v-for="transducer in supportedTransducers" :key="transducer.value" :value="transducer.value">
+            {{ transducer.text }}
+          </option>
+        </select>
+      </div>
     </div>
     <div v-if="selectedTransducer === 'pointSource'">
       <PointTransducer ref="transducerComponent" :readOnly="hasSimulation" />
@@ -34,24 +56,6 @@
       </button>
     </div>
   </div>
-
-  <div v-if="transducers.length" class="card transducers-list">
-    <div class="transducers-list-header">Added transducers</div>
-    <ul class="list-group list-group-flush">
-      <li class="list-group-item d-flex align-items-center" v-for="(transducer, index) in transducers" :key="index">
-        <span class="transducer-type">{{ transducer.transducerType }}</span> <!-- Display transducer name or type -->
-        <!-- Conditionally render the Edit/View and Delete buttons -->
-        <div class="ms-auto button-group">
-          <button class="btn btn-sm btn-outline-warning" @click="editTransducerClick(index)">
-            <i class="fas fa-edit"></i> {{ hasSimulation ? 'View' : 'Edit' }}
-          </button>
-          <button v-if="!hasSimulation" class="btn btn-sm btn-outline-danger" @click="deleteTransducerClick(index)">
-            <i class="fas fa-trash-alt"></i> Delete
-          </button>
-        </div>
-      </li>
-    </ul>
-  </div>
 </template>
 
 <script>
@@ -74,6 +78,7 @@ export default {
       selectedTransducer: '',
       isEditMode: false,
       editIndex: -1,
+      showTransducerSelect: false,
       supportedTransducers: [
         { text: 'Point Source', value: 'pointSource' },
         { text: 'Phased Array Source', value: 'phasedArraySource' },
@@ -92,6 +97,7 @@ export default {
       if (this.selectedTransducer && this.$refs.transducerComponent) {
         const settings = this.$refs.transducerComponent.getTransducerSettings();
         this.addTransducer(settings);
+        this.resetEditMode();
       }
     },
     editTransducerClick(index) {
@@ -130,6 +136,7 @@ export default {
 
     resetEditMode() {
       this.isEditMode = false;
+      this.showTransducerSelect = false;
       this.editIndex = -1;
       this.selectedTransducer = ''; // Reset selection
     },
@@ -139,10 +146,6 @@ export default {
 
 
 <style scoped>
-.transducers-settings{
-  margin-bottom: 2rem;
-}
-
 .transducers-list {
   background-color: #f9f9f9;
   /* Light background to differentiate the list */
@@ -150,6 +153,7 @@ export default {
   /* Add shadow for depth */
   border: none;
   /* Remove border for a cleaner look */
+  margin-bottom: 2rem;
 }
 
 .transducers-list-header {
@@ -188,11 +192,6 @@ export default {
 .button-group i {
   margin-right: 0.25rem;
   /* Adds spacing between icon and text */
-}
-
-.button-group button:hover {
-  background-color: #f8f9fa;
-  /* Light background on hover */
 }
 
 /* Style for the 'Add Transducer' button to make it stand out */

@@ -2,10 +2,10 @@ export default {
   namespaced: true,
   state() {
     return {
-      centerX: null,
-      centerY: null,
-      centerZ: null,
-      radius: null,
+      centerX: "0.14399999141693112",
+      centerY: "0.14399999141693112",
+      centerZ: "0.14399999136",
+      radius: "0.01",
     };
   },
   mutations: {
@@ -40,11 +40,12 @@ export default {
     radius(state) {
       return state.radius;
     },
-    target(state) {
+    targetPayload(state, getters, rootState, { is2d }) {
+      console.log("is2d", is2d);
       return {
         centerX: state.centerX,
         centerY: state.centerY,
-        centerZ: state.centerZ,
+        centerZ: is2d ? null : state.centerZ,
         radius: state.radius,
       };
     },
