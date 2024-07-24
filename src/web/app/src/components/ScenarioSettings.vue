@@ -1,19 +1,19 @@
 <template>
   <div class="mb-3">
     <div class="btn-group">
-      <input :disabled="hasSimulation" class="btn-check" type="radio" value="preBuilt" id="preBuilt"
-        v-model="scenarioType" name="scenarioType" />
+      <input :disabled="hasSimulation || isRunningSimulation" class="btn-check" type="radio" value="preBuilt"
+        id="preBuilt" v-model="scenarioType" name="scenarioType" />
       <label class="btn btn-primary btn-wide" for="preBuilt"
         v-tooltip="'Use a prebuilt scenario with a target and transducers'">Prebuilt</label>
-      <input :disabled="hasSimulation" class="btn-check" type="radio" id="ctFile" value="ctFile" v-model="scenarioType"
-        name="scenarioType" />
+      <input :disabled="hasSimulation || isRunningSimulation" class="btn-check" type="radio" id="ctFile" value="ctFile"
+        v-model="scenarioType" name="scenarioType" />
       <label class="btn btn-primary btn-wide" for="ctFile" v-tooltip="'Load a CT scan from a file'">CT Scan</label>
     </div>
   </div>
   <div class="mb-3">
     <div class="mb-3" v-if="isPreBuilt">
       <label class="form-label">Scenarios:</label>
-      <select :disabled="hasSimulation" class="form-select" v-model="selectedScenario">
+      <select :disabled="hasSimulation || isRunningSimulation" class="form-select" v-model="selectedScenario">
         <option disabled value="null">Select a scenario</option>
         <option v-for="(scenario, key) in currentBuiltInScenarios" :key="key" :value="key">
           {{ scenario.title }}
@@ -75,7 +75,7 @@ export default {
       'builtInScenarios3d',
       'scenarioId',
     ]),
-    ...mapGetters(['is2d', 'hasSimulation']),
+    ...mapGetters(['is2d', 'hasSimulation', 'isRunningSimulation']),
     currentBuiltInScenarios() {
       return this.is2d ? this.builtInScenarios2d : this.builtInScenarios3d;
     },

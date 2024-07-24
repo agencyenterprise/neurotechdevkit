@@ -1,6 +1,6 @@
 <template>
   <h1><span>Parameters</span></h1>
-  <div :class="{ 'disabled-panel': isRunningSimulation }"> <!-- Add a class to indicate the panel is disabled -->
+  <div>
     <div class="mb-3 btn-group">
       <input :disabled="is2dDisabled" class="btn-check" type="radio" id="is2d" value="2D" v-model="simulationType"
         name="simulation">
@@ -10,7 +10,7 @@
       <label :class="{ 'disabled': is3dDisabled }" class="btn btn-primary btn-wide" for="is3d">3D</label>
     </div>
     <AccordionItem v-for="(item, index) in accordionItems" :key="index" :title="item.title" :index="index"
-      :is-open="opened === index" @toggle="accordionToggle" :disabled="item.disabled || isRunningSimulation">
+      :is-open="opened === index" @toggle="accordionToggle" :disabled="item.disabled">
       <component :is="item.component" :key="item.title" />
     </AccordionItem>
   </div>
@@ -85,13 +85,6 @@ export default {
 </script>
 
 <style scoped>
-.disabled-panel {
-  pointer-events: none;
-  /* Prevent all interactions */
-  opacity: 0.5;
-  /* Visual feedback that the panel is disabled */
-}
-
 .btn-primary.disabled,
 .btn-primary:disabled {
   background-color: #ccc;

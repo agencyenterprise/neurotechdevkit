@@ -7,9 +7,10 @@
         <!-- Conditionally render the Edit/View and Delete buttons -->
         <div class="ms-auto button-group">
           <button class="btn btn-sm btn-warning" @click="editTransducerClick(index)">
-            <i class="fas fa-edit"></i> {{ hasSimulation ? 'View' : 'Edit' }}
+            <i class="fas fa-edit"></i> {{ hasSimulation || isRunningSimulation ? 'View' : 'Edit' }}
           </button>
-          <button v-if="!hasSimulation" class="btn btn-sm btn-danger" @click="deleteTransducerClick(index)">
+          <button v-if="!hasSimulation && !isRunningSimulation" class="btn btn-sm btn-danger"
+            @click="deleteTransducerClick(index)">
             <i class="fas fa-trash-alt"></i> Delete
           </button>
         </div>
@@ -17,7 +18,7 @@
     </ul>
   </div>
   <div class="transducers-settings">
-    <div v-if="!isEditMode && !hasSimulation">
+    <div v-if="!isEditMode && !hasSimulation && !isRunningSimulation">
       <button v-if="!showTransducerSelect" class="btn btn-primary" @click="showTransducerSelect = true">
         Add Transducer
       </button>
@@ -32,26 +33,26 @@
       </div>
     </div>
     <div v-if="selectedTransducer === 'pointSource'">
-      <PointTransducer ref="transducerComponent" :readOnly="hasSimulation" />
+      <PointTransducer ref="transducerComponent" :readOnly="hasSimulation || isRunningSimulation" />
     </div>
     <div v-else-if="selectedTransducer === 'phasedArraySource'">
-      <PhasedArrayTransducer ref="transducerComponent" :readOnly="hasSimulation" />
+      <PhasedArrayTransducer ref="transducerComponent" :readOnly="hasSimulation || isRunningSimulation" />
     </div>
     <div v-else-if="selectedTransducer === 'focusedSource'">
-      <FocusedTransducer ref="transducerComponent" :readOnly="hasSimulation" />
+      <FocusedTransducer ref="transducerComponent" :readOnly="hasSimulation || isRunningSimulation" />
     </div>
     <div v-else-if="selectedTransducer === 'planarSource'">
-      <PlanarTransducer ref="transducerComponent" :readOnly="hasSimulation" />
+      <PlanarTransducer ref="transducerComponent" :readOnly="hasSimulation || isRunningSimulation" />
     </div>
 
-    <div v-if="!hasSimulation" class="transducer-controls">
+    <div v-if="!hasSimulation || !isRunningSimulation" class="transducer-controls">
       <button class="btn btn-primary" @click="addTransducerClick" v-if="selectedTransducer && !isEditMode">
         Add Transducer
       </button>
       <button class="btn btn-secondary" @click="cancelTransducerClick" v-if="selectedTransducer">
-        {{ hasSimulation ? 'Close' : 'Cancel' }}
+        {{ hasSimulation || isRunningSimulation ? 'Close' : 'Cancel' }}
       </button>
-      <button class="btn btn-success" @click="saveTransducerClick" v-if="isEditMode && !hasSimulation">
+      <button class="btn btn-success" @click="saveTransducerClick" v-if="isEditMode && !hasSimulation && !isRunningSimulation">
         Save Transducer
       </button>
     </div>
@@ -89,7 +90,7 @@ export default {
   },
   computed: {
     ...mapState('transducersSettings', ['transducers']),
-    ...mapGetters(['hasSimulation']),
+    ...mapGetters(['hasSimulation', 'isRunningSimulation']),
   },
   methods: {
     ...mapActions('transducersSettings', ['addTransducer']),

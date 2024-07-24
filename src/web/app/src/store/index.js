@@ -11,6 +11,7 @@ const initialState = () => ({
   is2d: true,
   hasSimulation: false,
   isRunningSimulation: false,
+  isProcessing: false,
 
   materials: [],
   materialProperties: [],
@@ -100,6 +101,9 @@ const store = createStore({
     setIsRunningSimulation(state, payload) {
       state.isRunningSimulation = payload;
     },
+    setIsProcessing(state, payload) {
+      state.isProcessing = payload;
+    },
   },
   actions: {
     reset({ commit }) {
@@ -137,6 +141,7 @@ const store = createStore({
     async runSimulation({ commit, dispatch }) {
       commit("setRenderedOutput", null);
       commit("setIsRunningSimulation", true);
+      commit("setIsProcessing", true);
       const payload = await dispatch("getPayload");
 
       await fetch(`http://${process.env.VUE_APP_BACKEND_URL}/simulation`, {
@@ -157,9 +162,11 @@ const store = createStore({
             commit("setHasSimulation", true);
             commit("setRenderedOutput", data.data);
             commit("setIsRunningSimulation", false);
+            commit("setIsProcessing", false);
           }
         })
         .catch((response) => {
+          commit("setIsProcessing", false);
           response.json().then((error) => {
             console.error(
               "There was a problem with the fetch operation:",
@@ -207,8 +214,13 @@ const store = createStore({
     },
     async renderLayout({ commit, dispatch, getters }) {
       // Check if we have enough data to render the layout
-      if (!getters.canRenderLayout || getters.hasSimulation) return;
-
+      if (
+        !getters.canRenderLayout ||
+        getters.hasSimulation ||
+        getters.isRunningSimulation
+      )
+        return;
+      commit("setIsProcessing", true);
       const payload = await dispatch("getPayload");
       try {
         const response = await fetch(
@@ -228,7 +240,9 @@ const store = createStore({
 
         const data = await response.json();
         commit("setRenderedOutput", data.data);
+        commit("setIsProcessing", false);
       } catch (error) {
+        commit("setIsProcessing", false);
         console.error("There was a problem with the fetch operation:", error);
       }
     },

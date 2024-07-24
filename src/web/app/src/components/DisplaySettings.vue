@@ -1,7 +1,7 @@
 <template>
   <div class="mb-3">
     <label class="form-label" v-tooltip="'Axis along which to slice the 3D field to be recorded'">Axis</label>
-    <select :disabled="hasSimulation" class="form-select" aria-label="Axis" v-model="sliceAxis">
+    <select :disabled="hasSimulation || isRunningSimulation" class="form-select" aria-label="Axis" v-model="sliceAxis">
       <option disabled value="">Select an axis</option>
       <option value="x">X</option>
       <option value="y">Y</option>
@@ -12,8 +12,8 @@
     <label class="form-label"
       v-tooltip="'The position (in meters) along the slice axis at which the slice of the 3D field should be made'">Distance
       from origin (m)</label>
-    <input :disabled="hasSimulation" type="number" step="any" class="form-control" v-model.number="slicePosition"
-      placeholder="0.0" />
+    <input :disabled="hasSimulation || isRunningSimulation" type="number" step="any" class="form-control"
+      v-model.number="slicePosition" placeholder="0.0" />
   </div>
 </template>
 
@@ -22,7 +22,7 @@ import { mapGetters } from 'vuex';
 
 export default {
   computed: {
-    ...mapGetters(['is2d', 'hasSimulation']),
+    ...mapGetters(['is2d', 'hasSimulation', 'isRunningSimulation']),
     sliceAxis: {
       get() {
         return this.$store.getters['displaySettings/sliceAxis'];

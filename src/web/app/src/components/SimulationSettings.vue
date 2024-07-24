@@ -1,11 +1,13 @@
 <template>
   <div class="mb-3">
     <label v-tooltip="'The number of points per wavelength'">Simulation precision</label>
-    <input :disabled="hasSimulation" type="number" v-model.number="simulationPrecision" class="form-control" />
+    <input :disabled="hasSimulation || isRunningSimulation" type="number" v-model.number="simulationPrecision"
+      class="form-control" />
   </div>
   <div class="mb-3">
     <label v-tooltip="'The center frequency of the transducers (in Hz)'">Center frequency</label>
-    <input :disabled="hasSimulation" type="number" v-model.number="centerFrequency" class="form-control" />
+    <input :disabled="hasSimulation || isRunningSimulation" type="number" v-model.number="centerFrequency"
+      class="form-control" />
   </div>
 
   <div class="mb-3">
@@ -16,16 +18,16 @@
     <label>Simulation type</label>
     <div class="form-control">
       <div class="form-check">
-        <input :disabled="hasSimulation" class="form-check-input" type="radio" id="pulsed" value="false"
-          v-model="isSteadySimulation" />
+        <input :disabled="hasSimulation || isRunningSimulation" class="form-check-input" type="radio" id="pulsed"
+          value="false" v-model="isSteadySimulation" />
         <label class="form-check-label" for="pulsed"
           v-tooltip="'The transducers will emit a pulse containing a few cycles of oscillation and then let the pulse propagate out to all edges of the scenario'">
           Pulsed
         </label>
       </div>
       <div class="form-check">
-        <input :disabled="hasSimulation" class="form-check-input" type="radio" id="steadyState" value="true"
-          v-model="isSteadySimulation" />
+        <input :disabled="hasSimulation || isRunningSimulation" class="form-check-input" type="radio" id="steadyState"
+          value="true" v-model="isSteadySimulation" />
         <label class="form-check-label" for="steadyState"
           v-tooltip="'The transducers will emit pressure waves with a continuous waveform until steady-state has been reached'">
           Steady state
@@ -44,7 +46,7 @@ export default {
     MaterialsSettings
   },
   computed: {
-    ...mapGetters(['hasSimulation']),
+    ...mapGetters(['hasSimulation', 'isRunningSimulation']),
     centerFrequency: {
       get() {
         return this.$store.getters['simulationSettings/centerFrequency'];
