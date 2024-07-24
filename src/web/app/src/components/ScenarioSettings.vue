@@ -4,10 +4,10 @@
       <input :disabled="hasSimulation" class="btn-check" type="radio" value="preBuilt" id="preBuilt"
         v-model="scenarioType" name="scenarioType" />
       <label class="btn btn-primary btn-wide" for="preBuilt"
-        title="Use a prebuilt scenario with a target and transducers">Prebuilt</label>
+        v-tooltip="'Use a prebuilt scenario with a target and transducers'">Prebuilt</label>
       <input :disabled="hasSimulation" class="btn-check" type="radio" id="ctFile" value="ctFile" v-model="scenarioType"
         name="scenarioType" />
-      <label class="btn btn-primary btn-wide" for="ctFile" title="Load a CT scan from a file">CT Scan</label>
+      <label class="btn btn-primary btn-wide" for="ctFile" v-tooltip="'Load a CT scan from a file'">CT Scan</label>
     </div>
   </div>
   <div class="mb-3">
@@ -29,7 +29,7 @@
           </select>
         </div>
         <div class="mb-3" v-if="is2d">
-          <label class="form-label" title="Axis along which to slice the 3D field to be recorded">Axis</label>
+          <label class="form-label" v-tooltip="'Axis along which to slice the 3D field to be recorded'">Axis</label>
           <select class="form-select" aria-label="Axis" v-model="ctSliceAxis">
             <option disabled value="">Select an axis</option>
             <option value="x">X</option>
@@ -39,14 +39,15 @@
         </div>
         <div class="mb-3" v-if="is2d">
           <label class="form-label"
-            title="The position along the slice axis at which the slice of the 3D field should be made">Distance from
+            v-tooltip="'The position along the slice axis at which the slice of the 3D field should be made'">Distance
+            from
             origin (m)</label>
           <input type="number" step="any" class="form-control" placeholder="0.0" v-model.number="ctSlicePosition" />
         </div>
       </form>
       <div class="mb-3">
         <label class="form-label"
-          title="Select the CT file and the file containing the mapping between layers and masks">CT and mapping
+          v-tooltip="'Select the CT file and the file containing the mapping between layers and masks'">CT and mapping
           Files</label>
         <input class="form-control" type="file" @change="filesChosen" multiple />
       </div>

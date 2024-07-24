@@ -1,22 +1,25 @@
 <template>
   <div class="mb-3 row">
     <div class="col">
-      <label for="centerX" title="The location of the center of the target (in meters)">Center X</label>
-      <input :disabled="hasSimulation" type="number" step="any" class="form-control" id="centerX" v-model.number="centerX" />
+      <label for="centerX" v-tooltip="'The location of the center of the target (in meters)'">Center X</label>
+      <input :disabled="hasSimulation" type="number" step="any" class="form-control" id="centerX"
+        v-model.number="centerX" />
     </div>
     <div class="col">
-      <label for="centerY" title="The location of the center of the target (in meters)">Center Y</label>
-      <input :disabled="hasSimulation" type="number" step="any" class="form-control" id="centerY" v-model.number="centerY" />
+      <label for="centerY" v-tooltip="'The location of the center of the target (in meters)'">Center Y</label>
+      <input :disabled="hasSimulation" type="number" step="any" class="form-control" id="centerY"
+        v-model.number="centerY" />
     </div>
     <div class="col" v-if="!is2d">
-      <label for="centerZ" title="The location of the center of the target (in meters)">Center Z</label>
+      <label for="centerZ" v-tooltip="'The location of the center of the target (in meters)'">Center Z</label>
       <input :disabled="hasSimulation" type="number" step="any" class="form-control" id="centerZ"
         v-model.number="centerZ" />
     </div>
   </div>
   <div class="mb-3">
-    <label for="radius" title="The radius of the target (in meters)">Radius</label>
-    <input :disabled="hasSimulation" type="number" step="any" class="form-control" id="radius" v-model.number="radius" />
+    <label for="radius" v-tooltip="'The radius of the target (in meters)'">Radius</label>
+    <input :disabled="hasSimulation" type="number" step="any" class="form-control" id="radius"
+      v-model.number="radius" />
   </div>
 </template>
 
