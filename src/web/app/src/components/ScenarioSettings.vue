@@ -2,12 +2,12 @@
   <div class="mb-3">
     <div class="btn-group">
       <input :disabled="hasSimulation" class="btn-check" type="radio" value="preBuilt" id="preBuilt"
-        v-model="scenarioType" />
+        v-model="scenarioType" name="scenarioType" />
       <label class="btn btn-primary btn-wide" for="preBuilt"
         title="Use a prebuilt scenario with a target and transducers">Prebuilt</label>
-      <input :disabled="hasSimulation" class="btn-check" type="radio" id="ctScan" value="ctScan"
-        v-model="scenarioType" />
-      <label class="btn btn-primary btn-wide" for="ctScan" title="Load a CT scan from a file">CT Scan</label>
+      <input :disabled="hasSimulation" class="btn-check" type="radio" id="ctFile" value="ctFile"
+        v-model="scenarioType" name="scenarioType"/>
+      <label class="btn btn-primary btn-wide" for="ctFile" title="Load a CT scan from a file">CT Scan</label>
     </div>
   </div>
   <div class="mb-3">
@@ -24,8 +24,8 @@
       <form @submit.prevent="uploadCTScan">
         <div class="mb-3">
           <label class="form-label">Available CTs</label>
-          <select class="form-select" size="3" v-model="selectedCTScan">
-            <option v-for="ct in ctScans" :key="ct.filename" :value="ct.filename">{{ ct.filename }}</option>
+          <select class="form-select" size="3" v-model="ctFile">
+            <option v-for="ct in availableCTs" :key="ct.filename" :value="ct.filename">{{ ct.filename }}</option>
           </select>
         </div>
         <div class="mb-3" v-if="is2d">
@@ -63,14 +63,17 @@ import { mapGetters, mapActions } from 'vuex';
 export default {
   data() {
     return {
-      selectedCTScan: '',
-      ctSliceAxis: '',
-      ctSlicePosition: 0.0,
       filesReady: false,
     };
   },
   computed: {
-    ...mapGetters('scenarioSettings', ['ctScans', 'isPreBuilt', 'builtInScenarios2d', 'builtInScenarios3d', 'scenarioId']),
+    ...mapGetters('scenarioSettings', [
+      'availableCTs',
+      'isPreBuilt',
+      'builtInScenarios2d',
+      'builtInScenarios3d',
+      'scenarioId',
+    ]),
     ...mapGetters(['is2d', 'hasSimulation']),
     currentBuiltInScenarios() {
       return this.is2d ? this.builtInScenarios2d : this.builtInScenarios3d;
@@ -85,24 +88,48 @@ export default {
     },
     selectedScenario: {
       get() {
-        // Check if the current scenarioId is in the appropriate list based on is2d
         const scenarios = this.is2d ? this.builtInScenarios2d : this.builtInScenarios3d;
-        if (this.scenarioId in scenarios) {
-          return this.scenarioId;
-        }
-        return null;
+        return this.scenarioId in scenarios ? this.scenarioId : null;
       },
       set(value) {
-        // Set the selected scenario
         this.setScenario(value);
       }
     },
+
+    ctFile: {
+      get() {
+        return this.$store.getters['scenarioSettings/ctFile'];
+      },
+      set(value) {
+        this.setCTFile(value);
+      }
+    },
+    ctSliceAxis: {
+      get() {
+        return this.$store.getters['scenarioSettings/ctSliceAxis'];
+      },
+      set(value) {
+        this.setCtSliceAxis(value);
+      }
+    },
+    ctSlicePosition: {
+      get() {
+        return this.$store.getters['scenarioSettings/ctSlicePosition'];
+      },
+      set(value) {
+        this.setCtSlicePosition(value);
+      }
+    }
   },
   methods: {
-    ...mapActions('scenarioSettings', ['setScenario', 'setCTScan', 'setIsPreBuilt']),
+    ...mapActions('scenarioSettings', [
+      'setScenario',
+      'setCTFile',
+      'setIsPreBuilt',
+      'setCtSliceAxis',
+      'setCtSlicePosition'
+    ]),
     filesChosen(event) {
-      // Handle file chosen logic
-      // Update `filesReady` based on the selection
       this.filesReady = !!event.target.files.length;
     },
     fileUploadClicked() {
@@ -110,13 +137,6 @@ export default {
     },
     uploadCTScan() {
       // Handle CT scan upload logic
-    }
-  },
-  watch: {
-    selectedCTScan(newVal) {
-      if (newVal) {
-        this.setCTScan(newVal);
-      }
     }
   }
 };
