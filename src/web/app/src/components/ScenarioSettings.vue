@@ -5,8 +5,8 @@
         v-model="scenarioType" name="scenarioType" />
       <label class="btn btn-primary btn-wide" for="preBuilt"
         title="Use a prebuilt scenario with a target and transducers">Prebuilt</label>
-      <input :disabled="hasSimulation" class="btn-check" type="radio" id="ctFile" value="ctFile"
-        v-model="scenarioType" name="scenarioType"/>
+      <input :disabled="hasSimulation" class="btn-check" type="radio" id="ctFile" value="ctFile" v-model="scenarioType"
+        name="scenarioType" />
       <label class="btn btn-primary btn-wide" for="ctFile" title="Load a CT scan from a file">CT Scan</label>
     </div>
   </div>
@@ -122,6 +122,7 @@ export default {
     }
   },
   methods: {
+    ...mapActions(['reset']),
     ...mapActions('scenarioSettings', [
       'setScenario',
       'setCTFile',

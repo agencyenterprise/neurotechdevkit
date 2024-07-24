@@ -13,6 +13,13 @@ export default {
     };
   },
   mutations: {
+    reset(state) {
+      state.scenarioId = null;
+      state.ctFile = null;
+      state.scenario = null;
+      state.ctSliceAxis = "";
+      state.ctSlicePosition = null;
+    },
     setAvailableCTs(state, payload) {
       state.availableCTs = payload;
     },
@@ -78,20 +85,24 @@ export default {
         root: true,
       });
     },
-    setIsPreBuilt({ commit }, payload) {
+    setIsPreBuilt({ commit, dispatch }, payload) {
       commit("setIsPreBuilt", payload);
+      dispatch("reset", null, { root: true });
     },
   },
   getters: {
-    isScenarioValid(state) {
+    isScenarioValid(state, getters, rootState, { is2d }) {
       if (state.isPreBuilt) {
         return state.scenarioId !== null;
       }
-      return (
-        state.ctFile !== null &&
-        state.ctSliceAxis !== "" &&
-        state.ctSlicePosition !== null
-      );
+      if (is2d) {
+        return (
+          state.ctFile !== null &&
+          state.ctSliceAxis !== "" &&
+          state.ctSlicePosition !== null
+        );
+      }
+      return state.ctFile !== null;
     },
     scenarioSettingsPayload(state, getters, rootState, { is2d }) {
       const payload = {
