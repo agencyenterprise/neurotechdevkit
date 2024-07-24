@@ -1,13 +1,12 @@
-const initialState = () => ({
-  transducers: [],
-});
 export default {
   namespaced: true,
-  state: initialState,
+  state() {
+    return {
+      transducers: [],
+    };
+  },
   mutations: {
-    reset(state) {
-      Object.assign(state, initialState());
-    },
+    reset() {},
     setTransducers(state, payload) {
       state.transducers = payload;
     },

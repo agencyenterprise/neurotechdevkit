@@ -21,39 +21,39 @@
       </select>
     </div>
     <div v-else>
-      <form @submit.prevent="uploadCTScan">
-        <div class="mb-3">
-          <label class="form-label">Available CTs</label>
-          <select class="form-select" size="3" v-model="ctFile">
-            <option v-for="ct in availableCTs" :key="ct.filename" :value="ct.filename">{{ ct.filename }}</option>
-          </select>
-        </div>
-        <div class="mb-3" v-if="is2d">
-          <label class="form-label" v-tooltip="'Axis along which to slice the 3D field to be recorded'">Axis</label>
-          <select class="form-select" aria-label="Axis" v-model="ctSliceAxis">
-            <option disabled value="">Select an axis</option>
-            <option value="x">X</option>
-            <option value="y">Y</option>
-            <option value="z">Z</option>
-          </select>
-        </div>
-        <div class="mb-3" v-if="is2d">
-          <label class="form-label"
-            v-tooltip="'The position along the slice axis at which the slice of the 3D field should be made'">Distance
-            from
-            origin (m)</label>
-          <input type="number" step="any" class="form-control" placeholder="0.0" v-model.number="ctSlicePosition" />
-        </div>
-      </form>
+
+      <div class="mb-3">
+        <label class="form-label">Available CTs</label>
+        <select class="form-select" size="3" v-model="ctFile">
+          <option v-for="ct in availableCTs" :key="ct.filename" :value="ct.filename">{{ ct.filename }}</option>
+        </select>
+      </div>
+      <div class="mb-3" v-if="is2d">
+        <label class="form-label" v-tooltip="'Axis along which to slice the 3D field to be recorded'">Axis</label>
+        <select class="form-select" aria-label="Axis" v-model="ctSliceAxis">
+          <option disabled value="">Select an axis</option>
+          <option value="x">X</option>
+          <option value="y">Y</option>
+          <option value="z">Z</option>
+        </select>
+      </div>
+      <div class="mb-3" v-if="is2d">
+        <label class="form-label"
+          v-tooltip="'The position along the slice axis at which the slice of the 3D field should be made'">Distance
+          from
+          origin (m)</label>
+        <input type="number" step="any" class="form-control" placeholder="0.0" v-model.number="ctSlicePosition" />
+      </div>
       <div class="mb-3">
         <label class="form-label"
           v-tooltip="'Select the CT file and the file containing the mapping between layers and masks'">CT and mapping
-          Files</label>
-        <input class="form-control" type="file" @change="filesChosen" multiple />
+          files</label>
+        <input class="form-control" type="file" ref="ctFilesInput" @change="filesChosen" multiple />
       </div>
       <div class="mb-3">
-        <button class="btn btn-primary" type="button" @click="fileUploadClicked" :disabled="!filesReady">Upload new
-          CT</button>
+        <button class="btn btn-primary" type="button" @click="fileUploadClicked" :disabled="!filesReady">
+          Upload new CT
+        </button>
       </div>
     </div>
   </div>
@@ -93,7 +93,7 @@ export default {
         return this.scenarioId in scenarios ? this.scenarioId : null;
       },
       set(value) {
-        this.setScenario(value);
+        this.setBuiltinScenario(value);
       }
     },
 
@@ -125,21 +125,47 @@ export default {
   methods: {
     ...mapActions(['reset']),
     ...mapActions('scenarioSettings', [
-      'setScenario',
+      'setBuiltinScenario',
       'setCTFile',
+      'setAvailableCTs',
       'setIsPreBuilt',
       'setCtSliceAxis',
       'setCtSlicePosition'
     ]),
     filesChosen(event) {
-      this.filesReady = !!event.target.files.length;
+      this.filesReady = event.target.files.length >= 2; // Ensure there are at least two files selected
     },
     fileUploadClicked() {
-      // Handle file upload logic
+      const input = this.$refs.ctFilesInput; // Access the file input via ref
+
+      if (input.files.length >= 2) {
+        const data = new FormData();
+        data.append('file_0', input.files[0], input.files[0].name);
+        data.append('file_1', input.files[1], input.files[1].name);
+
+
+        fetch(`http://${process.env.VUE_APP_BACKEND_URL}/ct_scan`, {
+          method: 'POST',
+          body: data
+        })
+          .then(response => {
+            if (!response.ok) {
+              throw new Error('Network response was not ok');
+            }
+            return response.json();
+          })
+          .then(message => {
+            console.log('Success:', message);
+            this.setAvailableCTs(message.available_cts)
+            this.setCTFile(message.selected_ct.filename);
+            this.filesReady = false; // Reset files readiness
+          })
+          .catch(error => {
+            console.error('Error:', error);
+            this.filesReady = false; // Reset files readiness
+          });
+      }
     },
-    uploadCTScan() {
-      // Handle CT scan upload logic
-    }
   }
 };
 </script>

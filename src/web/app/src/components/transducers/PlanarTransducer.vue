@@ -80,7 +80,7 @@ export default {
   },
   methods: {
     getTransducerSettings() {
-      let position = [this.positionY, this.positionX]
+      let position = [this.positionX, this.positionY]
       if (!this.is2d) {
         position.push(this.positionZ)
       }
@@ -99,8 +99,8 @@ export default {
     },
 
     setTransducerSettings(settings) {
-      this.positionX = settings.position[1];
-      this.positionY = settings.position[0];
+      this.positionX = settings.position[0];
+      this.positionY = settings.position[1];
       this.positionZ = settings.position[2] || 0.0;
       this.directionX = settings.direction[1];
       this.directionY = settings.direction[0];

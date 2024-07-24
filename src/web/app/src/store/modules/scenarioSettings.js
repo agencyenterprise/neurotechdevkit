@@ -26,7 +26,7 @@ export default {
     setBuiltInScenarios(state, payload) {
       state.builtInScenarios = payload;
     },
-    setScenario(state, payload) {
+    setBuiltinScenario(state, payload) {
       state.scenario = payload;
     },
     setIsPreBuilt(state, payload) {
@@ -61,13 +61,28 @@ export default {
     setCTFile({ commit }, payload) {
       commit("setCTFile", payload);
     },
-    setScenario({ dispatch, commit, getters }, payload) {
+    setScenario({ dispatch, commit }, payload) {
+      commit("setIsPreBuilt", payload.isPreBuilt);
+      if (payload.isPreBuilt) {
+        dispatch("setBuiltinScenario", payload.scenarioId);
+      } else {
+        dispatch("setCtScenario", payload);
+      }
+    },
+    setCtScenario({ commit }, payload) {
+      commit("setCTFile", payload.ctFile);
+      if (payload.ctSliceAxis) {
+        commit("setCtSliceAxis", payload.ctSliceAxis);
+        commit("setCtSlicePosition", payload.ctSlicePosition);
+      }
+    },
+    setBuiltinScenario({ dispatch, commit, getters }, payload) {
       // payload will have the scenario name, we need to iterate over the
       // builtInScenarios to find the scenario and then set the scenario in the state
       const scenarios = getters.builtInScenarios;
       const scenario = scenarios[payload];
       commit("setScenarioId", scenario.scenarioSettings.scenarioId);
-      commit("setScenario", scenario);
+      commit("setBuiltinScenario", scenario);
       dispatch("displaySettings/setDisplaySettings", scenario.displaySettings, {
         root: true,
       });

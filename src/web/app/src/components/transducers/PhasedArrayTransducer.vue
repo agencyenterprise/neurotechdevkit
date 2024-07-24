@@ -139,7 +139,7 @@ export default {
   },
   methods: {
     getTransducerSettings() {
-      let position = [this.positionY, this.positionX]
+      let position = [this.positionX, this.positionY]
       if (!this.is2d) {
         position.push(this.positionZ)
       }
@@ -147,7 +147,7 @@ export default {
       if (!this.is2d) {
         direction.push(this.directionZ)
       }
-      let center = [this.centerY, this.centerX]
+      let center = [this.centerX, this.centerY]
       if (!this.is2d) {
         center.push(this.centerZ)
       }
@@ -168,14 +168,14 @@ export default {
     },
 
     setTransducerSettings(settings) {
-      this.positionX = settings.position[1];
-      this.positionY = settings.position[0];
+      this.positionX = settings.position[0];
+      this.positionY = settings.position[1];
       this.positionZ = settings.position[2] || 0.0;
       this.directionX = settings.direction[1];
       this.directionY = settings.direction[0];
       this.directionZ = settings.direction[2] || 0.0;
-      this.centerX = settings.center[1];
-      this.centerY = settings.center[0];
+      this.centerX = settings.center[0];
+      this.centerY = settings.center[1];
       this.centerZ = settings.center[2] || 0.0;
       this.numPoints = settings.numPoints;
       this.elements = settings.elements;
