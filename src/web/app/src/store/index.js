@@ -55,7 +55,7 @@ const store = createStore({
         state.is2d = payload.configuration.is2d;
         this.dispatch(
           "scenarioSettings/setScenario",
-          payload.configuration.scenarioSettings.scenarioId,
+          payload.configuration.scenarioSettings,
           { root: true }
         );
         this.dispatch(
@@ -171,7 +171,7 @@ const store = createStore({
     async cleanSimulation() {
       await this.dispatch("cancelSimulation");
     },
-    async cancelSimulation({ commit }) {
+    async cancelSimulation({ commit, dispatch }) {
       // call the backend to cancel the simulation
       try {
         const response = await fetch(
@@ -190,6 +190,7 @@ const store = createStore({
       commit("setRenderedOutput", null);
       commit("setHasSimulation", false);
       commit("setIsRunningSimulation", false);
+      dispatch("reset");
     },
     getPayload({ state, rootGetters }) {
       const body = {
@@ -257,11 +258,11 @@ const store = createStore({
     canRenderLayout(state, getters) {
       return getters["scenarioSettings/isScenarioValid"];
     },
-    canRunSimulation(state, _getters, _rootState, rootGetters) {
-      const scenario = rootGetters["scenarioSettings/scenario"];
+    canRunSimulation(state, getters, _rootState, rootGetters) {
+      const isScenarioValid = getters["scenarioSettings/isScenarioValid"];
       const transducers =
         rootGetters["transducersSettings/transducers"].length > 0;
-      return scenario && transducers && !state.isRunningSimulation;
+      return isScenarioValid && transducers && !state.isRunningSimulation;
     },
     renderedOutput(state) {
       return state.renderedOutput;

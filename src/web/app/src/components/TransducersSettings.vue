@@ -16,8 +16,8 @@
       </li>
     </ul>
   </div>
-  <div v-if="!hasSimulation" class="transducers-settings">
-    <div v-if="!isEditMode">
+  <div class="transducers-settings">
+    <div v-if="!isEditMode && !hasSimulation">
       <button v-if="!showTransducerSelect" class="btn btn-primary" @click="showTransducerSelect = true">
         Add Transducer
       </button>
@@ -44,7 +44,7 @@
       <PlanarTransducer ref="transducerComponent" :readOnly="hasSimulation" />
     </div>
 
-    <div class="transducer-controls">
+    <div v-if="!hasSimulation" class="transducer-controls">
       <button class="btn btn-primary" @click="addTransducerClick" v-if="selectedTransducer && !isEditMode">
         Add Transducer
       </button>
