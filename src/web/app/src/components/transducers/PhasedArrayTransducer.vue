@@ -1,5 +1,12 @@
 <template>
   <div class="row">
+    <div class="col text-end">
+      <button type="button" class="btn btn-link" @click="fillDefaultValues">
+        Fill default values
+      </button>
+    </div>
+  </div>
+  <div class="row">
     <div class="col mb-3">
       <label v-tooltip="'The coordinate (in meters) of the point at the center of the transducer'">Position
         X</label>
@@ -114,25 +121,43 @@ export default {
   },
   data() {
     return {
-      positionX: 0.0,
-      positionY: 0.0,
-      positionZ: 0.0,
-      directionX: 1.0,
-      directionY: 0.0,
-      directionZ: 0.0,
-      centerX: 0.0,
-      centerY: 0.0,
-      centerZ: 1.0,
-      numPoints: 20000,
-      numElements: 16,
-      pitch: 0.0015,
-      elementWidth: 0.0012,
-      tiltAngle: 30,
-      focalLength: 0,
-      height: 0.005,
-      delay: 0.0,
-
+      defaultValues: {
+        positionX: 0.0,
+        positionY: 0.0,
+        positionZ: 0.0,
+        directionX: 1.0,
+        directionY: 0.0,
+        directionZ: 0.0,
+        centerX: 0.0,
+        centerY: 0.0,
+        centerZ: 1.0,
+        numPoints: 20000,
+        numElements: 16,
+        pitch: 0.0015,
+        elementWidth: 0.0012,
+        tiltAngle: 30,
+        focalLength: 0,
+        height: 0.005,
+        delay: 0.0,
+      },
       focalLengthEnabled: false,
+      positionX: null,
+      positionY: null,
+      positionZ: null,
+      directionX: null,
+      directionY: null,
+      directionZ: null,
+      centerX: null,
+      centerY: null,
+      centerZ: null,
+      numPoints: null,
+      numElements: null,
+      pitch: null,
+      elementWidth: null,
+      tiltAngle: null,
+      focalLength: null,
+      height: null,
+      delay: null,
     };
   },
   computed: {
@@ -169,7 +194,6 @@ export default {
       }
       return payload;
     },
-
     setTransducerSettings(settings) {
       this.positionX = settings.position[0];
       this.positionY = settings.position[1];
@@ -191,7 +215,13 @@ export default {
       this.focalLength = settings.focalLength;
       this.height = settings.height;
       this.delay = settings.delay;
-    }
+    },
+    fillDefaultValues() {
+      // Automatically set each field to its default value
+      for (const key in this.defaultValues) {
+        this[key] = this.defaultValues[key];
+      }
+    },
   },
 }
 </script>

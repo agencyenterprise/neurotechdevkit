@@ -1,7 +1,7 @@
 <template>
   <div class="mb-3">
     <label v-tooltip="'The number of points per wavelength'">Simulation precision</label>
-    <input :disabled="hasSimulation || isRunningSimulation" type="number" v-model.number="simulationPrecision"
+    <input disabled type="number" v-model.number="simulationPrecision"
       class="form-control" />
   </div>
   <div class="mb-3">

@@ -1,5 +1,12 @@
 <template>
   <div class="row">
+    <div class="col text-end">
+      <button type="button" class="btn btn-link" @click="fillDefaultValues">
+        Fill default values
+      </button>
+    </div>
+  </div>
+  <div class="row">
     <div class="col mb-3">
       <label v-tooltip="'The coordinate (in meters) of the point at the center of the transducer'">Position
         X</label>
@@ -67,16 +74,28 @@ export default {
   },
   data() {
     return {
-      positionX: 0.0,
-      positionY: 0.0,
-      positionZ: 0.0,
-      directionX: 0.0,
-      directionY: 1.0,
-      directionZ: 0.0,
-      aperture: 0.064,
-      focalLength: 0.064,
-      numPoints: 20000,
-      delay: 0.0,
+      defaultValues: {
+        positionX: 0.0,
+        positionY: 0.0,
+        positionZ: 0.0,
+        directionX: 0.0,
+        directionY: 1.0,
+        directionZ: 0.0,
+        aperture: 0.064,
+        focalLength: 0.064,
+        numPoints: 20000,
+        delay: 0.0,
+      },
+      positionX: null,
+      positionY: null,
+      positionZ: null,
+      directionX: null,
+      directionY: null,
+      directionZ: null,
+      aperture: null,
+      focalLength: null,
+      numPoints: null,
+      delay: null,
     };
   },
   computed: {
@@ -104,7 +123,6 @@ export default {
         transducerType: 'focusedSource',
       };
     },
-
     setTransducerSettings(settings) {
       this.positionX = settings.position[0];
       this.positionY = settings.position[1];
@@ -116,6 +134,12 @@ export default {
       this.focalLength = settings.focalLength;
       this.numPoints = settings.numPoints;
       this.delay = settings.delay;
+    },
+    fillDefaultValues() {
+      // Automatically set each field to its default value
+      for (const key in this.defaultValues) {
+        this[key] = this.defaultValues[key];
+      }
     }
   },
 }
