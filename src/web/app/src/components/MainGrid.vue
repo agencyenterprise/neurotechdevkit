@@ -8,7 +8,7 @@
     </button>
 
     <!-- Cancel Simulation Button -->
-    <button v-show="showCancelButton" @click="cancelSimulation" class="simulation-button">
+    <button v-show="showCancelButton" @click="cleanSimulation" class="simulation-button">
       Cancel simulation
     </button>
 
@@ -47,7 +47,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['runSimulation', 'cancelSimulation', 'cleanSimulation']),
+    ...mapActions(['runSimulation', 'cleanSimulation']),
   }
 }
 </script>

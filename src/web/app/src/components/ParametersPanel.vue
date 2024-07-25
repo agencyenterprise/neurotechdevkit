@@ -18,6 +18,7 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex';
+import { EventBus } from '../event-bus';
 import ScenarioSettings from './ScenarioSettings.vue';
 import DisplaySettings from './DisplaySettings.vue';
 import TransducersSettings from './TransducersSettings.vue';
@@ -77,10 +78,17 @@ export default {
         this.opened = this.opened === index ? null : index;
       }
     },
+    resetAccordion() {
+      this.opened = null; 
+    },
+  },
+  beforeUnmount() {
+    EventBus.off('reset-parameters-panel', this.resetAccordion);
   },
   mounted() {
     this.getInitialData();
-  }
+    EventBus.on('reset-parameters-panel', this.resetAccordion);
+  },
 }
 </script>
 
