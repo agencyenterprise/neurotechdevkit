@@ -21,29 +21,31 @@
       </select>
     </div>
     <div v-else>
-
-      <div class="mb-3">
-        <label class="form-label">Available CTs</label>
-        <select class="form-select" size="3" v-model="ctFile">
-          <option v-for="ct in availableCTs" :key="ct.filename" :value="ct.filename">{{ ct.filename }}</option>
-        </select>
-      </div>
-      <div class="mb-3" v-if="is2d">
-        <label class="form-label" v-tooltip="'Axis along which to slice the 3D field to be recorded'">Axis</label>
-        <select class="form-select" aria-label="Axis" v-model="ctSliceAxis">
-          <option disabled value="">Select an axis</option>
-          <option value="x">X</option>
-          <option value="y">Y</option>
-          <option value="z">Z</option>
-        </select>
-      </div>
-      <div class="mb-3" v-if="is2d">
-        <label class="form-label"
-          v-tooltip="'The position along the slice axis at which the slice of the 3D field should be made'">Distance
-          from
-          origin (m)</label>
-        <input type="number" step="any" class="form-control" placeholder="0.0" v-model.number="ctSlicePosition" />
-      </div>
+      <form ref="form" @input="onInputChanged">
+        <div class="mb-3">
+          <label class="form-label">Available CTs</label>
+          <select class="form-select" size="3" v-model="ctFile" required>
+            <option v-for="ct in availableCTs" :key="ct.filename" :value="ct.filename">{{ ct.filename }}</option>
+          </select>
+        </div>
+        <div class="mb-3" v-if="is2d">
+          <label class="form-label" v-tooltip="'Axis along which to slice the 3D field to be recorded'">Axis</label>
+          <select class="form-select" aria-label="Axis" v-model="ctSliceAxis" required>
+            <option disabled value="">Select an axis</option>
+            <option value="x">X</option>
+            <option value="y">Y</option>
+            <option value="z">Z</option>
+          </select>
+        </div>
+        <div class="mb-3" v-if="is2d">
+          <label class="form-label"
+            v-tooltip="'The position along the slice axis at which the slice of the 3D field should be made'">Distance
+            from
+            origin (m)</label>
+          <input type="number" step="any" class="form-control" placeholder="0.0" v-model.number="ctSlicePosition"
+            required />
+        </div>
+      </form>
       <div class="mb-3">
         <label class="form-label"
           v-tooltip="'Select the CT file and the file containing the mapping between layers and masks'">CT and mapping
@@ -59,9 +61,16 @@
   </div>
 </template>
 <script>
+import { EventBus } from '../event-bus';
 import { mapGetters, mapActions } from 'vuex';
 
 export default {
+  beforeUnmount() {
+    EventBus.off('validate', this.validate);
+  },
+  mounted() {
+    EventBus.on('validate', this.validate);
+  },
   data() {
     return {
       filesReady: false,
@@ -123,7 +132,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['setIsProcessing', 'setProcessingMessage']),
+    ...mapActions(['setIsProcessing', 'setProcessingMessage', 'updateValidityState']),
     ...mapActions('scenarioSettings', [
       'setBuiltinScenario',
       'setCTFile',
@@ -132,6 +141,20 @@ export default {
       'setCtSliceAxis',
       'setCtSlicePosition'
     ]),
+    validate() {
+      if (this.isPreBuilt) {
+        this.updateValidityState({ component: 'scenario', isValid: true });
+        return true;
+      }
+      const isValid = this.$refs.form.checkValidity();
+      this.updateValidityState({ component: 'scenario', isValid });
+      return isValid;
+    },
+    onInputChanged() {
+      if (!this.validate()) {
+        this.$refs.form.reportValidity();
+      }
+    },
     filesChosen(event) {
       this.filesReady = event.target.files.length >= 2; // Ensure there are at least two files selected
     },
@@ -156,11 +179,11 @@ export default {
             return response.json();
           })
           .then(message => {
-            console.log('Success:', message);
             this.setAvailableCTs(message.available_cts)
             this.setCTFile(message.selected_ct.filename);
             this.filesReady = false; // Reset files readiness
             this.setIsProcessing(false);
+            this.onInputChanged();
           })
           .catch(error => {
             console.error('Error:', error);
