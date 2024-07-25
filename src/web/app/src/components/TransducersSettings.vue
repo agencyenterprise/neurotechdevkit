@@ -20,7 +20,7 @@
   <div class="transducers-settings">
     <div v-if="!isEditMode && !hasSimulation && !isRunningSimulation">
       <button v-if="!showTransducerSelect" class="btn btn-primary" @click="showTransducerSelect = true">
-        Add Transducer
+        Add transducer
       </button>
       <div v-if="showTransducerSelect" class="mb-3">
         <label class="form-label">Source transducer</label>
@@ -47,12 +47,13 @@
 
     <div v-if="!hasSimulation || !isRunningSimulation" class="transducer-controls">
       <button class="btn btn-primary" @click="addTransducerClick" v-if="selectedTransducer && !isEditMode">
-        Add Transducer
+        Add transducer
       </button>
       <button class="btn btn-secondary" @click="cancelTransducerClick" v-if="selectedTransducer">
         {{ hasSimulation || isRunningSimulation ? 'Close' : 'Cancel' }}
       </button>
-      <button class="btn btn-success" @click="saveTransducerClick" v-if="isEditMode && !hasSimulation && !isRunningSimulation">
+      <button class="btn btn-success" @click="saveTransducerClick"
+        v-if="isEditMode && !hasSimulation && !isRunningSimulation">
         Save Transducer
       </button>
     </div>
@@ -96,9 +97,11 @@ export default {
     ...mapActions('transducersSettings', ['addTransducer']),
     addTransducerClick() {
       if (this.selectedTransducer && this.$refs.transducerComponent) {
-        const settings = this.$refs.transducerComponent.getTransducerSettings();
-        this.addTransducer(settings);
-        this.resetEditMode();
+        if (this.$refs.transducerComponent.validateForm()) {
+          const settings = this.$refs.transducerComponent.getTransducerSettings();
+          this.addTransducer(settings);
+          this.resetEditMode();
+        }
       }
     },
     editTransducerClick(index) {
@@ -122,12 +125,14 @@ export default {
 
     saveTransducerClick() {
       if (this.selectedTransducer && this.$refs.transducerComponent && this.isEditMode) {
-        const updatedSettings = this.$refs.transducerComponent.getTransducerSettings();
-        this.$store.commit('transducersSettings/updateTransducer', {
-          index: this.editIndex,
-          settings: updatedSettings
-        });
-        this.resetEditMode();
+        if (this.$refs.transducerComponent.validateForm()) {
+          const updatedSettings = this.$refs.transducerComponent.getTransducerSettings();
+          this.$store.commit('transducersSettings/updateTransducer', {
+            index: this.editIndex,
+            settings: updatedSettings
+          });
+          this.resetEditMode();
+        }
       }
     },
 

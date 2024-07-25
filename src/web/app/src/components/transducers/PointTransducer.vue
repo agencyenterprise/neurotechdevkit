@@ -6,34 +6,36 @@
       </button>
     </div>
   </div>
-  <div class="row">
-    <div class="col mb-3">
-      <label for="positionX"
-        v-tooltip="'The coordinate (in meters) of the point at the center of the transducer'">Position
-        X</label>
-      <input :disabled="readOnly" type="number" step="any" class="form-control" id="positionX" placeholder="0.0"
-        v-model.number="positionX" />
+  <form ref="form" @input="validateForm">
+    <div class="row">
+      <div class="col mb-3">
+        <label for="positionX"
+          v-tooltip="'The coordinate (in meters) of the point at the center of the transducer'">Position
+          X</label>
+        <input :disabled="readOnly" type="number" step="any" class="form-control" id="positionX" placeholder="0.0"
+          v-model.number="positionX" required />
+      </div>
+      <div class="col mb-3">
+        <label for="positionY"
+          v-tooltip="'The coordinate (in meters) of the point at the center of the transducer'">Position
+          Y</label>
+        <input :disabled="readOnly" type="number" step="any" class="form-control" id="positionY" placeholder="0.0"
+          v-model.number="positionY" required />
+      </div>
+      <div class="col mb-3" v-if="!is2d">
+        <label for="positionZ"
+          v-tooltip="'The coordinate (in meters) of the point at the center of the transducer'">Position
+          Z</label>
+        <input :disabled="readOnly" type="number" step="any" class="form-control" id="positionZ" placeholder="0.0"
+          v-model.number="positionZ" required />
+      </div>
     </div>
-    <div class="col mb-3">
-      <label for="positionY"
-        v-tooltip="'The coordinate (in meters) of the point at the center of the transducer'">Position
-        Y</label>
-      <input :disabled="readOnly" type="number" step="any" class="form-control" id="positionY" placeholder="0.0"
-        v-model.number="positionY" />
+    <div class="mb-3">
+      <label for="delay" v-tooltip="'The delay (in seconds) that the source will wait before emitting'">Delay</label>
+      <input :disabled="readOnly" type="number" step="any" class="form-control" id="delay" placeholder="0.0"
+        v-model.number="delay" required />
     </div>
-    <div class="col mb-3" v-if="!is2d">
-      <label for="positionZ"
-        v-tooltip="'The coordinate (in meters) of the point at the center of the transducer'">Position
-        Z</label>
-      <input :disabled="readOnly" type="number" step="any" class="form-control" id="positionZ" placeholder="0.0"
-        v-model.number="positionZ" />
-    </div>
-  </div>
-  <div class="mb-3">
-    <label for="delay" v-tooltip="'The delay (in seconds) that the source will wait before emitting'">Delay</label>
-    <input :disabled="readOnly" type="number" step="any" class="form-control" id="delay" placeholder="0.0"
-      v-model.number="delay" />
-  </div>
+  </form>
 </template>
 <script>
 export default {
@@ -63,6 +65,13 @@ export default {
     },
   },
   methods: {
+    validateForm() {
+      if (!this.$refs.form.checkValidity()) {
+        this.$refs.form.reportValidity();
+        return false;
+      }
+      return true;
+    },
     getTransducerSettings() {
       let position = [this.positionX, this.positionY];
       if (!this.is2d) {

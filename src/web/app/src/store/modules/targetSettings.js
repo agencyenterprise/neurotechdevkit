@@ -1,8 +1,8 @@
 const initialState = () => ({
-  centerX: "0.14399999141693112",
-  centerY: "0.14399999141693112",
-  centerZ: "0.14399999136",
-  radius: "0.01",
+  centerX: null,
+  centerY: null,
+  centerZ: null,
+  radius: null,
 });
 export default {
   namespaced: true,

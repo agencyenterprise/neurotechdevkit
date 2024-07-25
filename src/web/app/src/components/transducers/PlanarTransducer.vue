@@ -6,57 +6,60 @@
       </button>
     </div>
   </div>
-  <div class="row">
-    <div class="col mb-3">
-      <label v-tooltip="'The coordinate (in meters) of the point at the center of the transducer'">Position
-        X</label>
-      <input :disabled="readOnly" type="number" step="any" class="form-control" placeholder="0.00"
-        v-model.number="positionX" />
+  <form ref="form" @input="validateForm">
+    <div class="row">
+      <div class="col mb-3">
+        <label v-tooltip="'The coordinate (in meters) of the point at the center of the transducer'">Position
+          X</label>
+        <input :disabled="readOnly" type="number" step="any" class="form-control" placeholder="0.00"
+          v-model.number="positionX" required />
+      </div>
+      <div class="col mb-3">
+        <label v-tooltip="'The coordinate (in meters) of the point at the center of the transducer'">Position
+          Y</label>
+        <input :disabled="readOnly" type="number" step="any" class="form-control" placeholder="0.00"
+          v-model.number="positionY" required />
+      </div>
+      <div class="col mb-3" v-if="!is2d">
+        <label v-tooltip="'The coordinate (in meters) of the point at the center of the transducer'">Position
+          Z</label>
+        <input :disabled="readOnly" type="number" step="any" class="form-control" placeholder="0.00" v-if="!is2d"
+          v-model.number="positionZ" required />
+      </div>
     </div>
-    <div class="col mb-3">
-      <label v-tooltip="'The coordinate (in meters) of the point at the center of the transducer'">Position
-        Y</label>
-      <input :disabled="readOnly" type="number" step="any" class="form-control" placeholder="0.00"
-        v-model.number="positionY" />
+    <div class="row">
+      <div class="col mb-3">
+        <label v-tooltip="'Indicate the direction the source is pointing'">Direction X</label>
+        <input :disabled="readOnly" type="number" step="any" class="form-control" placeholder="-0.143"
+          v-model.number="directionX" required />
+      </div>
+      <div class="col mb-3">
+        <label v-tooltip="'Indicate the direction the source is pointing'">Direction Y</label>
+        <input :disabled="readOnly" type="number" step="any" class="form-control" placeholder="-0.068"
+          v-model.number="directionY" required />
+      </div>
+      <div class="col mb-3" v-if="!is2d">
+        <label v-tooltip="'Indicate the direction the source is pointing'">Direction Z</label>
+        <input :disabled="readOnly" type="number" step="any" class="form-control" placeholder="0.0" v-if="!is2d"
+          v-model.number="directionZ" required />
+      </div>
     </div>
-    <div class="col mb-3" v-if="!is2d">
-      <label v-tooltip="'The coordinate (in meters) of the point at the center of the transducer'">Position
-        Z</label>
-      <input :disabled="readOnly" type="number" step="any" class="form-control" placeholder="0.00" v-if="!is2d"
-        v-model.number="positionZ" />
+    <div class="mb-3">
+      <label v-tooltip="'The aperture (in meters) of the transducer'">Aperture</label>
+      <input :disabled="readOnly" type="number" step="any" class="form-control" placeholder="0.06"
+        v-model.number="aperture" required />
     </div>
-  </div>
-  <div class="row">
-    <div class="col mb-3">
-      <label v-tooltip="'Indicate the direction the source is pointing'">Direction X</label>
-      <input :disabled="readOnly" type="number" step="any" class="form-control" placeholder="-0.143"
-        v-model.number="directionX" />
+    <div class="mb-3">
+      <label v-tooltip="'The number of point sources to use when simulating the transducer'">Points</label>
+      <input :disabled="readOnly" type="number" class="form-control" placeholder="3000" v-model.number="numPoints"
+        required />
     </div>
-    <div class="col mb-3">
-      <label v-tooltip="'Indicate the direction the source is pointing'">Direction Y</label>
-      <input :disabled="readOnly" type="number" step="any" class="form-control" placeholder="-0.068"
-        v-model.number="directionY" />
+    <div class="mb-3">
+      <label v-tooltip="'The delay (in seconds) that the source will wait before emitting'">Delay</label>
+      <input :disabled="readOnly" type="number" step="any" class="form-control" placeholder="0.0" v-model.number="delay"
+        required />
     </div>
-    <div class="col mb-3" v-if="!is2d">
-      <label v-tooltip="'Indicate the direction the source is pointing'">Direction Z</label>
-      <input :disabled="readOnly" type="number" step="any" class="form-control" placeholder="0.0" v-if="!is2d"
-        v-model.number="directionZ" />
-    </div>
-  </div>
-  <div class="mb-3">
-    <label v-tooltip="'The aperture (in meters) of the transducer'">Aperture</label>
-    <input :disabled="readOnly" type="number" step="any" class="form-control" placeholder="0.06"
-      v-model.number="aperture" />
-  </div>
-  <div class="mb-3">
-    <label v-tooltip="'The number of point sources to use when simulating the transducer'">Points</label>
-    <input :disabled="readOnly" type="number" class="form-control" placeholder="3000" v-model.number="numPoints" />
-  </div>
-  <div class="mb-3">
-    <label v-tooltip="'The delay (in seconds) that the source will wait before emitting'">Delay</label>
-    <input :disabled="readOnly" type="number" step="any" class="form-control" placeholder="0.0"
-      v-model.number="delay" />
-  </div>
+  </form>
 </template>
 
 <script>
@@ -97,6 +100,13 @@ export default {
     },
   },
   methods: {
+    validateForm() {
+      if (!this.$refs.form.checkValidity()) {
+        this.$refs.form.reportValidity();
+        return false;
+      }
+      return true;
+    },
     getTransducerSettings() {
       let position = [this.positionX, this.positionY]
       if (!this.is2d) {

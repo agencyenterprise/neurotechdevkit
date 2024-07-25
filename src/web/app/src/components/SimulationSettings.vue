@@ -1,18 +1,19 @@
 <template>
-  <div class="mb-3">
-    <label v-tooltip="'The number of points per wavelength'">Simulation precision</label>
-    <input disabled type="number" v-model.number="simulationPrecision"
-      class="form-control" />
-  </div>
-  <div class="mb-3">
-    <label v-tooltip="'The center frequency of the transducers (in Hz)'">Center frequency</label>
-    <input :disabled="hasSimulation || isRunningSimulation" type="number" v-model.number="centerFrequency"
-      class="form-control" />
-  </div>
+  <form ref="form" @input="onInputChanged">
+    <div class="mb-3">
+      <label v-tooltip="'The number of points per wavelength'">Simulation precision</label>
+      <input disabled type="number" v-model.number="simulationPrecision" class="form-control" />
+    </div>
+    <div class="mb-3">
+      <label v-tooltip="'The center frequency of the transducers (in Hz)'">Center frequency</label>
+      <input :disabled="hasSimulation || isRunningSimulation" type="number" v-model.number="centerFrequency"
+        class="form-control" required />
+    </div>
+  </form>
 
   <div class="mb-3">
     <label>Material properties</label>
-    <MaterialsSettings />
+    <MaterialsSettings ref="materials" />
   </div>
   <div class="mb-3">
     <label>Simulation type</label>
@@ -38,12 +39,33 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex';
+import { EventBus } from '../event-bus';
+import { mapGetters, mapActions } from 'vuex';
 import MaterialsSettings from './MaterialsSettings.vue';
 
 export default {
   components: {
     MaterialsSettings
+  },
+  beforeUnmount() {
+    EventBus.off('validate', this.validate);
+  },
+  mounted() {
+    EventBus.on('validate', this.validate);
+  },
+  methods: {
+    ...mapActions(['updateValidityState']),
+    validate() {
+      const isValid = this.$refs.form.checkValidity();
+      const areMaterialsValid = this.$refs.materials.validate();
+      this.updateValidityState({ component: 'simulation', isValid: isValid && areMaterialsValid });
+      return isValid;
+    },
+    onInputChanged() {
+      if (!this.validate()) {
+        this.$refs.form.reportValidity();
+      }
+    }
   },
   computed: {
     ...mapGetters(['hasSimulation', 'isRunningSimulation']),

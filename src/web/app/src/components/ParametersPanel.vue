@@ -45,11 +45,11 @@ export default {
     ...mapGetters('scenarioSettings', ['scenario', 'isScenarioValid']),
     accordionItems() {
       const items = [
-        { title: 'Scenario', component: 'ScenarioSettings', disabled: false }, // Scenario is always enabled
-        ...(!this.is2d ? [{ title: 'Display', component: 'DisplaySettings', disabled: !this.isScenarioValid }] : []),
-        { title: 'Transducers', component: 'TransducersSettings', disabled: !this.isScenarioValid },
-        { title: 'Target', component: 'TargetSettings', disabled: !this.isScenarioValid },
-        { title: 'Simulation settings', component: 'SimulationSettings', disabled: !this.isScenarioValid }
+        { title: 'Scenario', name: 'scenario', component: 'ScenarioSettings', disabled: false }, // Scenario is always enabled
+        ...(!this.is2d ? [{ title: 'Display', name: 'display', component: 'DisplaySettings', disabled: !this.isScenarioValid }] : []),
+        { title: 'Transducers', name: 'transducers', component: 'TransducersSettings', disabled: !this.isScenarioValid },
+        { title: 'Target', name: 'target', component: 'TargetSettings', disabled: !this.isScenarioValid },
+        { title: 'Simulation settings', name: 'simulation', component: 'SimulationSettings', disabled: !this.isScenarioValid }
       ];
       return items;
     },
@@ -73,21 +73,29 @@ export default {
   },
   methods: {
     ...mapActions(['set2d', 'getInitialData', 'reset']),
+    openPanel(panel) {
+      const index = this.accordionItems.findIndex(item => item.name === panel);
+      if (index !== -1) {
+        this.opened = index;
+      }
+    },
     accordionToggle(index) {
       if (!this.accordionItems[index].disabled) {
         this.opened = this.opened === index ? null : index;
       }
     },
     resetAccordion() {
-      this.opened = null; 
+      this.opened = null;
     },
   },
   beforeUnmount() {
     EventBus.off('reset-parameters-panel', this.resetAccordion);
+    EventBus.off('open-panel', this.openPanel);
   },
   mounted() {
     this.getInitialData();
     EventBus.on('reset-parameters-panel', this.resetAccordion);
+    EventBus.on('open-panel', this.openPanel);
   },
 }
 </script>
@@ -127,10 +135,14 @@ h1 span {
 }
 
 .btn-smaller {
-  padding: 0.5rem 1rem; /* Smaller padding */
-  font-size: 0.875rem; /* Smaller font size */
-  margin: 0 0.25rem; /* Space out buttons */
-  flex-grow: 1; /* Make buttons take up equal width */
+  padding: 0.5rem 1rem;
+  /* Smaller padding */
+  font-size: 0.875rem;
+  /* Smaller font size */
+  margin: 0 0.25rem;
+  /* Space out buttons */
+  flex-grow: 1;
+  /* Make buttons take up equal width */
 }
 
 .btn-primary {

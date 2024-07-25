@@ -1,6 +1,6 @@
 const initialState = () => ({
-  sliceAxis: "x",
-  slicePosition: .1,
+  sliceAxis: "",
+  slicePosition: null,
 });
 export default {
   namespaced: true,

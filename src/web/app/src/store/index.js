@@ -9,7 +9,6 @@ import transducersSettings from "./modules/transducersSettings";
 import debounce from "lodash/debounce";
 
 const initialState = () => ({
-  is2d: true,
   hasSimulation: false,
   isRunningSimulation: false,
   isProcessing: false,
@@ -28,18 +27,32 @@ const store = createStore({
     targetSettings,
     transducersSettings,
   },
-  state: initialState,
+  state() {
+    return {
+      is2d: true,
+      validity: {
+        scenario: false,
+        display: false,
+        target: false,
+        simulation: false,
+      },
+      ...initialState(),
+    };
+  },
   mutations: {
+    setComponentValidity(state, { component, isValid }) {
+      state.validity = {
+        ...state.validity,
+        [component]: isValid,
+      };
+    },
     reset(state) {
-      const is2d = state.is2d;
       Object.assign(state, initialState());
-      state.is2d = is2d;
     },
     set2d(state, payload) {
       state.is2d = payload;
     },
     setInitialValues(state, payload) {
-      console.log("Setting initial values, payload: ", payload);
       state.hasSimulation = payload.has_simulation;
       state.isRunningSimulation = payload.is_running_simulation;
       state.materials = payload.materials;
@@ -111,6 +124,9 @@ const store = createStore({
     },
   },
   actions: {
+    updateValidityState({ commit }, { component, isValid }) {
+      commit("setComponentValidity", { component, isValid });
+    },
     setIsProcessing({ commit }, payload) {
       commit("setIsProcessing", payload);
     },
@@ -229,6 +245,10 @@ const store = createStore({
         getters.isRunningSimulation
       )
         return;
+      EventBus.emit("validate");
+      if (!getters.areAllComponentsValid) {
+        return;
+      }
       commit("setIsProcessing", true);
       commit("setRenderedOutput", null);
       commit("setProcessingMessage", "Rendering layout...");
@@ -286,6 +306,18 @@ const store = createStore({
     },
   },
   getters: {
+    areAllComponentsValid(state) {
+      for (const key in state.validity) {
+        if (!state.validity[key]) {
+          if (key === "display" && state.is2d) {
+            continue;
+          }
+          EventBus.emit("open-panel", key);
+          return false;
+        }
+      }
+      return true;
+    },
     canRenderLayout(state, getters) {
       return getters["scenarioSettings/isScenarioValid"];
     },
