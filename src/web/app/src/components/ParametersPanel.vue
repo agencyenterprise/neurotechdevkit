@@ -4,10 +4,10 @@
     <div class="mb-3 btn-group">
       <input :disabled="is2dDisabled" class="btn-check" type="radio" id="is2d" value="2D" v-model="simulationType"
         name="simulation">
-      <label :class="{ 'disabled': is2dDisabled }" class="btn btn-primary btn-wide" for="is2d">2D</label>
+      <label :class="{ 'disabled': is2dDisabled, 'btn-smaller': true }" class="btn btn-primary" for="is2d">2D</label>
       <input :disabled="is3dDisabled" class="btn-check" type="radio" id="is3d" value="3D" v-model="simulationType"
         name="simulation">
-      <label :class="{ 'disabled': is3dDisabled }" class="btn btn-primary btn-wide" for="is3d">3D</label>
+      <label :class="{ 'disabled': is3dDisabled, 'btn-smaller': true }" class="btn btn-primary" for="is3d">3D</label>
     </div>
     <AccordionItem v-for="(item, index) in accordionItems" :key="index" :title="item.title" :index="index"
       :is-open="opened === index" @toggle="accordionToggle" :disabled="item.disabled">
@@ -124,6 +124,13 @@ h1 span {
 .btn-check {
   display: none;
   /* Hide the default radio input */
+}
+
+.btn-smaller {
+  padding: 0.5rem 1rem; /* Smaller padding */
+  font-size: 0.875rem; /* Smaller font size */
+  margin: 0 0.25rem; /* Space out buttons */
+  flex-grow: 1; /* Make buttons take up equal width */
 }
 
 .btn-primary {
