@@ -1,5 +1,6 @@
 import { createStore } from "vuex";
 
+import { EventBus } from "../event-bus";
 import scenarioSettings from "./modules/scenarioSettings";
 import simulationSettings from "./modules/simulationSettings";
 import displaySettings from "./modules/displaySettings";
@@ -186,10 +187,7 @@ const store = createStore({
           });
         });
     },
-    async cleanSimulation() {
-      await this.dispatch("cancelSimulation");
-    },
-    async cancelSimulation({ commit, dispatch }) {
+    async cleanSimulation({ commit, dispatch }) {
       // call the backend to cancel the simulation
       try {
         const response = await fetch(
@@ -209,6 +207,7 @@ const store = createStore({
       commit("setHasSimulation", false);
       commit("setIsRunningSimulation", false);
       dispatch("reset");
+      EventBus.emit("reset-parameters-panel");
     },
     getPayload({ state, rootGetters }) {
       const body = {
