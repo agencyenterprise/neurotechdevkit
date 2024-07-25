@@ -1,5 +1,12 @@
 <template>
   <div class="row">
+    <div class="col text-end">
+      <button type="button" class="btn btn-link" @click="fillDefaultValues">
+        Fill default values
+      </button>
+    </div>
+  </div>
+  <div class="row">
     <div class="col mb-3">
       <label for="positionX"
         v-tooltip="'The coordinate (in meters) of the point at the center of the transducer'">Position
@@ -38,10 +45,16 @@ export default {
   },
   data() {
     return {
-      positionX: 0.0,
-      positionY: 0.0,
-      positionZ: 0.0,
-      delay: 0.0,
+      defaultValues: {
+        positionX: '0.0',
+        positionY: '0.0',
+        positionZ: '0.0',
+        delay: '0.0',
+      },
+      positionX: null,
+      positionY: null,
+      positionZ: null,
+      delay: null,
     };
   },
   computed: {
@@ -67,7 +80,12 @@ export default {
       this.positionZ = settings.position[2] || 0.0;
       this.delay = settings.delay;
     },
-
+    fillDefaultValues() {
+      // Automatically set each field to its default value
+      for (const key in this.defaultValues) {
+        this[key] = this.defaultValues[key];
+      }
+    }
   },
 }
 </script>

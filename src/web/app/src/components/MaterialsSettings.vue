@@ -30,7 +30,7 @@
             <label class="form-label"
               v-tooltip="'The color used when rendering this material in the scenario layout plot'">Color</label>
             <input :disabled="hasSimulation || isRunningSimulation" type="color" class="form-control form-control-color"
-              v-model="properties.renderColor" v-tooltip="'Choose your color'" />
+              v-model="properties.renderColor" v-tooltip="'Click to choose your color'" />
           </div>
         </div>
       </div>
