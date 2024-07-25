@@ -5,9 +5,9 @@
         id="preBuilt" v-model="scenarioType" name="scenarioType" />
       <label class="btn btn-primary btn-wide" for="preBuilt"
         v-tooltip="'Use a prebuilt scenario with a target and transducers'">Prebuilt</label>
-      <input :disabled="hasSimulation || isRunningSimulation" class="btn-check" type="radio" id="ctFile" value="ctFile"
+      <input :disabled="hasSimulation || isRunningSimulation" class="btn-check" type="radio" id="ctScan" value="ctScan"
         v-model="scenarioType" name="scenarioType" />
-      <label class="btn btn-primary btn-wide" for="ctFile" v-tooltip="'Load a CT scan from a file'">CT Scan</label>
+      <label class="btn btn-primary btn-wide" for="ctScan" v-tooltip="'Load a CT scan from a file'">CT Scan</label>
     </div>
   </div>
   <div class="mb-3">
