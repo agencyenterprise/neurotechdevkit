@@ -90,7 +90,7 @@ export default {
       if (!this.is2d) {
         position.push(this.positionZ)
       }
-      let direction = [this.directionY, this.directionX]
+      let direction = [this.directionX, this.directionY]
       if (!this.is2d) {
         direction.push(this.directionZ)
       }
@@ -109,8 +109,8 @@ export default {
       this.positionX = settings.position[0];
       this.positionY = settings.position[1];
       this.positionZ = settings.position[2] || 0.0;
-      this.directionX = settings.direction[1];
-      this.directionY = settings.direction[0];
+      this.directionX = settings.direction[0];
+      this.directionY = settings.direction[1];
       this.directionZ = settings.direction[2] || 0.0;
       this.aperture = settings.aperture;
       this.focalLength = settings.focalLength;

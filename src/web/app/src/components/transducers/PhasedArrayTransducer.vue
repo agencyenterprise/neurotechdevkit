@@ -62,7 +62,7 @@
   </div>
   <div class="mb-3">
     <label v-tooltip="'The number of elements of the phased array'">Elements</label>
-    <input :disabled="readOnly" type="number" class="form-control" placeholder="16" v-model.number="elements" />
+    <input :disabled="readOnly" type="number" class="form-control" placeholder="16" v-model.number="numElements" />
   </div>
   <div class="mb-3">
     <label
@@ -83,9 +83,10 @@
   <div class="mb-3">
     <label>Focused</label>
     <div class="form-check form-switch">
-      <input :disabled="readOnly" class="form-check-input" type="checkbox" id="focalLengthCheck" />
+      <input :disabled="readOnly" class="form-check-input" type="checkbox" id="focalLengthCheck"
+        v-model="focalLengthEnabled" />
     </div>
-    <div class="mb-3 ms-3" data-focal-length="true">
+    <div class="mb-3 ms-3" v-if="focalLengthEnabled">
       <label v-tooltip="'The focal length (in meters) of the transducer'">Focal length</label>
       <input :disabled="readOnly" type="number" step="any" class="form-control" id="focalLength" placeholder="0"
         v-model.number="focalLength" />
@@ -123,13 +124,15 @@ export default {
       centerY: 0.0,
       centerZ: 1.0,
       numPoints: 20000,
-      elements: 16,
+      numElements: 16,
       pitch: 0.0015,
       elementWidth: 0.0012,
       tiltAngle: 30,
       focalLength: 0,
       height: 0.005,
       delay: 0.0,
+
+      focalLengthEnabled: false,
     };
   },
   computed: {
@@ -143,20 +146,15 @@ export default {
       if (!this.is2d) {
         position.push(this.positionZ)
       }
-      let direction = [this.directionY, this.directionX]
+      let direction = [this.directionX, this.directionY]
       if (!this.is2d) {
         direction.push(this.directionZ)
       }
-      let center = [this.centerX, this.centerY]
-      if (!this.is2d) {
-        center.push(this.centerZ)
-      }
-      return {
+      const payload = {
         position,
         direction,
-        center,
         numPoints: this.numPoints,
-        elements: this.elements,
+        numElements: this.numElements,
         pitch: this.pitch,
         elementWidth: this.elementWidth,
         tiltAngle: this.tiltAngle,
@@ -164,24 +162,32 @@ export default {
         height: this.height,
         delay: this.delay,
         transducerType: 'phasedArraySource',
-      };
+      }
+      if (!this.is2d) {
+        let center = [this.centerX, this.centerY, this.centerZ]
+        payload.center = center
+      }
+      return payload;
     },
 
     setTransducerSettings(settings) {
       this.positionX = settings.position[0];
       this.positionY = settings.position[1];
       this.positionZ = settings.position[2] || 0.0;
-      this.directionX = settings.direction[1];
-      this.directionY = settings.direction[0];
+      this.directionX = settings.direction[0];
+      this.directionY = settings.direction[1];
       this.directionZ = settings.direction[2] || 0.0;
-      this.centerX = settings.center[0];
-      this.centerY = settings.center[1];
-      this.centerZ = settings.center[2] || 0.0;
+      if (settings.center) {
+        this.centerX = settings.center[0];
+        this.centerY = settings.center[1];
+        this.centerZ = settings.center[2] || 0.0;
+      }
       this.numPoints = settings.numPoints;
-      this.elements = settings.elements;
+      this.numElements = settings.numElements;
       this.pitch = settings.pitch;
       this.elementWidth = settings.elementWidth;
       this.tiltAngle = settings.tiltAngle;
+      this.focalLengthEnabled = settings.focalLength > 0;
       this.focalLength = settings.focalLength;
       this.height = settings.height;
       this.delay = settings.delay;
