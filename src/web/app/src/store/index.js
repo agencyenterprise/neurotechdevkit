@@ -110,6 +110,12 @@ const store = createStore({
     },
   },
   actions: {
+    setIsProcessing({ commit }, payload) {
+      commit("setIsProcessing", payload);
+    },
+    setProcessingMessage({ commit }, payload) {
+      commit("setProcessingMessage", payload);
+    },
     reset({ commit }) {
       // Reset root state
       commit("setRenderedOutput", null);
