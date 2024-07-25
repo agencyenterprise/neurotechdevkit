@@ -123,7 +123,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['reset']),
+    ...mapActions(['setIsProcessing', 'setProcessingMessage']),
     ...mapActions('scenarioSettings', [
       'setBuiltinScenario',
       'setCTFile',
@@ -143,7 +143,8 @@ export default {
         data.append('file_0', input.files[0], input.files[0].name);
         data.append('file_1', input.files[1], input.files[1].name);
 
-
+        this.setIsProcessing(true);
+        this.setProcessingMessage('Uploading CT scan...');
         fetch(`http://${process.env.VUE_APP_BACKEND_URL}/ct_scan`, {
           method: 'POST',
           body: data
@@ -159,10 +160,12 @@ export default {
             this.setAvailableCTs(message.available_cts)
             this.setCTFile(message.selected_ct.filename);
             this.filesReady = false; // Reset files readiness
+            this.setIsProcessing(false);
           })
           .catch(error => {
             console.error('Error:', error);
             this.filesReady = false; // Reset files readiness
+            this.setIsProcessing(false);
           });
       }
     },
