@@ -12,6 +12,7 @@ const initialState = () => ({
   hasSimulation: false,
   isRunningSimulation: false,
   isProcessing: false,
+  processingMessage: "",
 
   materials: [],
   materialProperties: [],
@@ -101,6 +102,9 @@ const store = createStore({
     setIsRunningSimulation(state, payload) {
       state.isRunningSimulation = payload;
     },
+    setProcessingMessage(state, payload) {
+      state.processingMessage = payload;
+    },
     setIsProcessing(state, payload) {
       state.isProcessing = payload;
     },
@@ -142,6 +146,7 @@ const store = createStore({
       commit("setRenderedOutput", null);
       commit("setIsRunningSimulation", true);
       commit("setIsProcessing", true);
+      commit("setProcessingMessage", "Running simulation...");
       const payload = await dispatch("getPayload");
 
       await fetch(`http://${process.env.VUE_APP_BACKEND_URL}/simulation`, {
@@ -221,6 +226,8 @@ const store = createStore({
       )
         return;
       commit("setIsProcessing", true);
+      commit("setRenderedOutput", null);
+      commit("setProcessingMessage", "Rendering layout...");
       const payload = await dispatch("getPayload");
       try {
         const response = await fetch(
@@ -247,6 +254,10 @@ const store = createStore({
       }
     },
     async getSimulation({ commit }) {
+      commit("setRenderedOutput", null);
+      commit("setIsRunningSimulation", true);
+      commit("setIsProcessing", true);
+      commit("setProcessingMessage", "Running simulation...");
       try {
         const response = await fetch(
           `http://${process.env.VUE_APP_BACKEND_URL}/simulation`,
@@ -263,8 +274,10 @@ const store = createStore({
         commit("setRenderedOutput", data.data);
         commit("setHasSimulation", true);
         commit("setIsRunningSimulation", false);
+        commit("setIsProcessing", false);
       } catch (error) {
         console.error("There was a problem with the fetch operation:", error);
+        commit("setIsProcessing", false);
       }
     },
   },
@@ -283,6 +296,12 @@ const store = createStore({
     },
     isRunningSimulation(state) {
       return state.isRunningSimulation;
+    },
+    isProcessing(state) {
+      return state.isProcessing;
+    },
+    processingMessage(state) {
+      return state.processingMessage;
     },
     hasSimulation(state) {
       return state.hasSimulation;

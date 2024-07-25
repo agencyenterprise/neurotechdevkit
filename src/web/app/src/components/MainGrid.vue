@@ -16,9 +16,11 @@
     <button v-show="showCleanButton" @click="cleanSimulation" class="simulation-button">
       Clean simulation
     </button>
-
-    <div v-if="isRunningSimulation" class="simulation-message">
-      Running simulation...
+    <div v-if="isProcessing" class="simulation-message">
+      <!-- Spinner -->
+      <div class="spinner-border" role="status" style="width: 10rem; height: 10rem"></div>
+      <!-- Text Message -->
+      <span class="simulation-text">{{ processingMessage }}</span>
     </div>
   </div>
 </template>
@@ -29,7 +31,7 @@ import { mapGetters, mapActions } from 'vuex';
 export default {
   name: 'MainGrid',
   computed: {
-    ...mapGetters(['renderedOutput', 'hasSimulation', 'isRunningSimulation', 'canRunSimulation']),
+    ...mapGetters(['renderedOutput', 'hasSimulation', 'isRunningSimulation', 'isProcessing', 'canRunSimulation', 'processingMessage']),
 
     showRunButton() {
       return !this.isRunningSimulation && !this.hasSimulation;
@@ -103,7 +105,6 @@ export default {
   color: #a1a1a1;
   /* Disabled text color */
   cursor: not-allowed;
-  /* Indicate that the button is not clickable */
   box-shadow: none;
   /* No shadow for disabled buttons */
 }
@@ -114,10 +115,21 @@ export default {
   left: 50%;
   transform: translate(-50%, -50%);
   z-index: 10;
-  color: white;
+  color: black;
   font-size: 1.5em;
-  background-color: rgba(0, 0, 0, 0.7);
   padding: 10px;
   border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+  /* Stack items vertically */
+  align-items: center;
+  /* Center spinner and text horizontally */
+  justify-content: center;
+  /* Center spinner and text vertically */
+}
+
+.simulation-text {
+  margin-top: 20px;
+  /* Add some space between the spinner and the text */
 }
 </style>
