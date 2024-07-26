@@ -166,7 +166,6 @@ class ScenarioFlatSkull_3D(ScenarioFlatSkull, Scenario3D):
 
 
 def _create_scenario_mask(material, grid):
-
     # layers are defined by X position
     dx = grid.space.spacing[0]
 

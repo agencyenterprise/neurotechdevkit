@@ -91,6 +91,7 @@ result.render_pulsed_simulation_animation()
 # the true array elements. Here, we coarsely approximate these delays by
 # finding the pressure argmax at each element's nearest-neighbor coordinates.
 
+
 # Map array elements onto the nearest pixels in our simulation
 def map_coordinates_to_indices(coordinates, origin, dx):
     indices = np.round((coordinates - origin) / dx).astype(int)

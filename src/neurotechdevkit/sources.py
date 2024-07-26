@@ -1323,7 +1323,6 @@ class PhasedArraySource3D(PhasedArraySource):
         n_remaining = n_points - points.shape[0]
 
         if n_remaining > 0:
-
             # First compute the center
             x_width = x_max - x_min
             centre = np.array([(x_min + x_max) / 2, height / 2])
