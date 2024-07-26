@@ -64,8 +64,14 @@ jobs:
           restore-keys: |
             venv-${{ runner.os }}
 
+      - name: Install package dependencies
+        run: poetry install --no-interaction --no-root
+
+      - name: Install stride
+        run: poetry run pip install git+https://github.com/trustimaging/stride
+
       - name: Install neurotechdevkit
-        run: poetry install
+        run: poetry install --only-root
 
       - name: Run tests
         run: |
