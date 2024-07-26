@@ -65,7 +65,8 @@ line-length = 88
 [tool.mypy]
 ignore_missing_imports = "True"
 exclude = [
-    "tests"
+    "tests",
+    ".venv"
 ]
 
 [tool.isort]
