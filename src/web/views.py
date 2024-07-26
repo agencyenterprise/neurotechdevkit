@@ -1,10 +1,17 @@
 """Views for the web app."""
 
+import os
 import shutil
 import tempfile
 from pathlib import Path
 
-from flask import Blueprint, current_app, jsonify, render_template, request
+from flask import (
+    Blueprint,
+    current_app,
+    send_from_directory,
+    jsonify,
+    request,
+)
 from pydantic import ValidationError
 from web.computed_tomography import get_available_cts, validate_ct
 from web.controller import (
@@ -24,23 +31,14 @@ bp = Blueprint("main", __name__, url_prefix="/")
 DEFAULT_CENTER_FREQUENCY = 5e5
 
 
-@bp.route("/")
-async def index():
-    """Render the index page, listing all the built-in scenarios."""
-    return render_template(
-        "index.html",
-        title="Neurotech Web App",
-        has_simulation=SimulationRunner().has_last_result,
-        is_running_simulation=SimulationRunner().is_running,
-        configuration=SimulationRunner().configuration,
-        built_in_scenarios=get_built_in_scenarios(),
-        all_materials=MaterialName.get_material_titles(),
-        all_material_properties=get_default_material_properties(
-            DEFAULT_CENTER_FREQUENCY
-        ).dict(),
-        all_transducer_types=TransducerType.get_transducer_titles(),
-        available_cts=get_available_cts(current_app.config["CT_FOLDER"]),
-    )
+@bp.route("/", defaults={"path": ""})
+@bp.route("/<path:path>")
+def serve_spa(path):
+    """Serve the single page app."""
+    if path != "" and os.path.exists(os.path.join(current_app.static_folder, path)):
+        return send_from_directory(current_app.static_folder, path)
+    else:
+        return send_from_directory(current_app.static_folder, "index.html")
 
 
 @bp.route("/info")
