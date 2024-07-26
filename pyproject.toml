@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "neurotechdevkit"
-version = "v0.6.1"
+version = "v0.6.2"
 description = "Neurotech Development Kit: an open-source software library designed to enhance accessibility to cutting-edge neurotechnology"
 authors = ["AE Studio <bci@ae.studio>"]
 maintainers = ["AE Studio <bci@ae.studio>"]
@@ -47,12 +47,13 @@ pyrevolve = ">=2.2.3"
 pydicom = "^2.4.3"
 nibabel = "^5.1.0"
 flask-cors = "^4.0.0"
+mypy = "1.11"
 
 [tool.poetry.group.dev.dependencies]
 black = {extras = ["jupyter"], version = "^23.9.1"}
 flake8 = "^5.0.4"
 isort = "^5.10.1"
-mypy = "^0.990"
+mypy = "^1.11"
 pytest = "^7.2.0"
 pytest-cov = "^4.0.0"
 pytest-asyncio = "^0.20.2"
@@ -105,5 +106,6 @@ markers = [
 include = ["src"]
 reportGeneralTypeIssues = "none"
 exclude = ["src/web/app"]
+
 # [tool.flake8]
 # flake8 does not support config in pyproject.toml, see .flake8

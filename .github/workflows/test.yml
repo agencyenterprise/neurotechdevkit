@@ -79,13 +79,28 @@ jobs:
         uses: codecov/codecov-action@v3
         if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.9'
 
-      - name: Install gcc-11
+      - name: Install dependencies for macOS
         if: matrix.os == 'macos-latest'
         run: |
-          brew install gcc@11
+          brew install libomp llvm
+
+      - name: Set environment variables for macOS
+        if: matrix.os == 'macos-latest'
+        run: |
+          echo "PATH=$(brew --prefix llvm)/bin:$PATH" >> $GITHUB_ENV
+          echo "LDFLAGS=-L$(brew --prefix llvm)/lib" >> $GITHUB_ENV
+          echo "CPPFLAGS=-I$(brew --prefix llvm)/include" >> $GITHUB_ENV
+          echo "CPATH=$(brew --prefix libomp)/include" >> $GITHUB_ENV
+          echo "DEVITO_ARCH=clang" >> $GITHUB_ENV
+
+      - name: Run integration test on macOS
+        if: matrix.os == 'macos-latest'
+        run: |
+          make test-integration
 
       - name: Run integration test
+        if: matrix.os == 'ubuntu-latest'
         env:
-          DEVITO_ARCH: gcc-11
+          DEVITO_ARCH: gcc
         run: |
           make test-integration

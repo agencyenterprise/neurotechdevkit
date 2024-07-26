@@ -29,7 +29,7 @@ first.
 """
 
 # %%
-from typing import List
+from typing import List, cast
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -129,6 +129,7 @@ scenario.render_layout()
 # - rho - density
 # - alpha - attenuation
 fig, axs = plt.subplots(1, 3, figsize=(15, 5))
+axs = cast(np.ndarray, axs)
 
 for idx, attribute in enumerate(["vp", "rho", "alpha"]):
     im = axs[idx].imshow(getattr(scenario.problem.medium, attribute).data)

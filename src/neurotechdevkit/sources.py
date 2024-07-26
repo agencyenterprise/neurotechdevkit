@@ -36,8 +36,8 @@ class Source(abc.ABC):
     def __init__(
         self,
         *,
-        position: npt.ArrayLike,
-        direction: npt.ArrayLike,
+        position: list[float],
+        direction: list[float],
         aperture: float,
         focal_length: float,
         num_points: int,
@@ -162,7 +162,7 @@ class PointSource(Source):
     def __init__(
         self,
         *,
-        position: npt.ArrayLike,
+        position: list[float],
         num_dim: int = 2,
         delay: float = 0.0,
     ) -> None:
@@ -209,7 +209,7 @@ class PointSource2D(PointSource):
     def __init__(
         self,
         *,
-        position: npt.ArrayLike,
+        position: list[float],
         delay: float = 0.0,
     ) -> None:
         """Initialize a new 2-D point source."""
@@ -226,7 +226,7 @@ class PointSource3D(PointSource):
     def __init__(
         self,
         *,
-        position: npt.ArrayLike,
+        position: list[float],
         delay: float = 0.0,
     ) -> None:
         """Initialize a new 3-D point source."""
@@ -486,8 +486,8 @@ class UnfocusedSource(Source, abc.ABC):
     def __init__(
         self,
         *,
-        position: npt.ArrayLike,
-        direction: npt.ArrayLike,
+        position: list[float],
+        direction: list[float],
         aperture: float,
         num_points: int,
         delay: float = 0.0,
@@ -624,8 +624,8 @@ class PhasedArraySource(Source):
     def __init__(
         self,
         *,
-        position: npt.ArrayLike,
-        direction: npt.ArrayLike,
+        position: list[float],
+        direction: list[float],
         num_points: int,
         num_elements: int,
         pitch: float,
@@ -1173,9 +1173,9 @@ class PhasedArraySource3D(PhasedArraySource):
     def __init__(
         self,
         *,
-        position: npt.ArrayLike,
-        direction: npt.ArrayLike,
-        center_line: npt.ArrayLike,
+        position: list[float],
+        direction: list[float],
+        center_line: list[float],
         num_points: int,
         num_elements: int,
         pitch: float,
