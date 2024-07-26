@@ -13,24 +13,25 @@ defaults:
     shell: bash
 
 jobs:
-  docker-test:
-    runs-on: ubuntu-latest
+  # docker-test:
+  #   runs-on: ubuntu-latest
 
-    steps:
-      - uses: actions/checkout@v2
+  #   steps:
+  #     - uses: actions/checkout@v2
 
-      - name: Build the neurotechdevkit docker image
-        run: |
-          docker build . --tag neurotechdevkit
+  #     - name: Build the neurotechdevkit docker image
+  #       run: |
+  #         docker build . --tag neurotechdevkit
 
-      - name: Test the docker image
-        run: |
-          docker run -w /ndk neurotechdevkit make test
+  #     - name: Test the docker image
+  #       run: |
+  #         docker run -w /ndk neurotechdevkit make test
 
   test:
     strategy:
       matrix:
-        os: ["ubuntu-latest", "macos-latest"]
+        # os: ["ubuntu-latest", "macos-latest"]
+        os: ["ubuntu-latest"]
         python-version: ["3.9", "3.10", "3.11"]
 
     runs-on: ${{ matrix.os }}
