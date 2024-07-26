@@ -13,7 +13,7 @@ from matplotlib import rc
 from web.simulation_runner import SimulationRunner
 
 CT_FOLDER = pathlib.Path("./ct-scans/")
-WEB_SERVER_HOST = os.getenv("WEB_SERVER_HOST", "0.0.0.0")
+WEB_SERVER_HOST = os.getenv("WEB_SERVER_HOST", "localhost")
 WEB_SERVER_PORT = os.getenv("WEB_SERVER_PORT", 8080)
 CURRENT_DIR = pathlib.Path(__file__).parent
 APP_DIR = CURRENT_DIR / "app"
