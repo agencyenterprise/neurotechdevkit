@@ -45,11 +45,19 @@ As a last step **before running NDK**, follow the instructions below depending o
 
 ??? "Before running on MacOS"
 
+<<<<<<< HEAD
     The two main compiler options for MacOS are **clang** and **gcc**.
 
     ### clang
 
     If you prefer to use **clang** you will have to install `libomp` and `llvm`, you will also have to export a few environment variables needed by the compiler.
+=======
+    The single compiler option for MacOS is **clang**.
+
+    ### clang
+
+    To setup your environment you will have to install `libomp` and `llvm`, you will also have to export a few environment variables needed by the compiler.
+>>>>>>> main
 
     1. Install libomp
 
@@ -89,6 +97,7 @@ As a last step **before running NDK**, follow the instructions below depending o
         source ~/.zshrc
         ```
 
+<<<<<<< HEAD
     ### gcc
 
     On MacOS the `gcc` executable is a symbolic link to `clang`, so by defining ~~DEVITO_ARCH=gcc~~ devito will try to add `gcc` flags to the `clang` compiler, and the compilation will most probably fail.
@@ -114,6 +123,8 @@ As a last step **before running NDK**, follow the instructions below depending o
         ```
 
 
+=======
+>>>>>>> main
 ??? "Before running on Linux"
 
     1. Export the `DEVITO_ARCH` environment variable, or add it to your shell profile:

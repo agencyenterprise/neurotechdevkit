@@ -169,6 +169,8 @@ class PhasedArraySettings(_BaseSourceSettings):
             focalLength=focal_length,
             delay=source._delay,
             elementDelays=element_delays,
+            centerLine=None,
+            height=None,
         )
 
     def to_ndk_source(self) -> Union[PhasedArraySource2D, PhasedArraySource3D]:
