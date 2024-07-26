@@ -79,6 +79,9 @@ exclude = [
     "tests"
 ]
 
+[tool.pylint.MASTER]
+ignore-paths = ["src/web/app/node_modules"]
+
 [tool.isort]
 profile = "black"
 src_paths = "."
