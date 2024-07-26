@@ -81,12 +81,20 @@ jobs:
         uses: codecov/codecov-action@v3
         if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.9'
 
-      - name: Install gcc-13
+      - name: Install dependencies for macOS
         if: matrix.os == 'macos-latest'
         run: |
-          brew install gcc@13
+          brew install libomp llvm
 
       - name: Run integration test
+        if: matrix.os == 'macos-latest'
+        env:
+          DEVITO_ARCH: clang
+        run: |
+          make test-integration
+
+      - name: Run integration test
+        if: matrix.os == 'ubuntu-latest'
         env:
           DEVITO_ARCH: gcc
         run: |
