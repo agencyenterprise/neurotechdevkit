@@ -13,27 +13,25 @@ defaults:
     shell: bash
 
 jobs:
-  # docker-test:
-  #   runs-on: ubuntu-latest
+  docker-test:
+    runs-on: ubuntu-latest
 
-  #   steps:
-  #     - uses: actions/checkout@v2
+    steps:
+      - uses: actions/checkout@v2
 
-  #     - name: Build the neurotechdevkit docker image
-  #       run: |
-  #         docker build . --tag neurotechdevkit
+      - name: Build the neurotechdevkit docker image
+        run: |
+          docker build . --tag neurotechdevkit
 
-  #     - name: Test the docker image
-  #       run: |
-  #         docker run -w /ndk neurotechdevkit make test
+      - name: Test the docker image
+        run: |
+          docker run -w /ndk neurotechdevkit make test
 
   test:
     strategy:
       matrix:
-        # os: ["ubuntu-latest", "macos-latest"]
-        os: ["macos-latest"]
-        # python-version: ["3.9", "3.10", "3.11"]
-        python-version: ["3.9"]
+        os: ["ubuntu-latest", "macos-latest"]
+        python-version: ["3.9", "3.10", "3.11"]
 
     runs-on: ${{ matrix.os }}
 
@@ -73,6 +71,14 @@ jobs:
       - name: Install neurotechdevkit
         run: poetry install --only-root
 
+      - name: Run tests
+        run: |
+          make test-coverage
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v3
+        if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.9'
+
       - name: Install dependencies for macOS
         if: matrix.os == 'macos-latest'
         run: |
@@ -86,18 +92,6 @@ jobs:
           echo "CPPFLAGS=-I$(brew --prefix llvm)/include" >> $GITHUB_ENV
           echo "CPATH=$(brew --prefix libomp)/include" >> $GITHUB_ENV
           echo "DEVITO_ARCH=clang" >> $GITHUB_ENV
-
-      - name: Log $GITHUB_ENV
-        if: matrix.os == 'macos-latest'
-        run: cat $GITHUB_ENV
-
-      - name: Run tests
-        run: |
-          make test-coverage
-
-      - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v3
-        if: matrix.os == 'ubuntu-latest' && matrix.python-version == '3.9'
 
       - name: Run integration test on macOS
         if: matrix.os == 'macos-latest'
