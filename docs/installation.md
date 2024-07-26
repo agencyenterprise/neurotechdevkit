@@ -95,16 +95,16 @@ As a last step **before running NDK**, follow the instructions below depending o
 
     You can tell devito to use the correct `gcc` compiler doing the following:
 
-    1. Install gcc-11
+    1. Install gcc-13
 
         ```
-        brew install gcc@11
+        brew install gcc@13
         ```
 
     1. Run the command that exports the `DEVITO_ARCH` environment variable:
 
         ```
-        echo 'export DEVITO_ARCH="gcc-11"' >> ~/.zshrc
+        echo 'export DEVITO_ARCH="gcc"' >> ~/.zshrc
         ```
 
     1. Load the modified zsh configuration file:
