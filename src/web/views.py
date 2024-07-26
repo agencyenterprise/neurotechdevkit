@@ -5,13 +5,7 @@ import shutil
 import tempfile
 from pathlib import Path
 
-from flask import (
-    Blueprint,
-    current_app,
-    send_from_directory,
-    jsonify,
-    request,
-)
+from flask import Blueprint, current_app, jsonify, request, send_from_directory
 from pydantic import ValidationError
 from web.computed_tomography import get_available_cts, validate_ct
 from web.controller import (

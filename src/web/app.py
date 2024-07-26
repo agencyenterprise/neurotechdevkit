@@ -3,10 +3,10 @@
 import os
 import pathlib
 import shutil
+import webbrowser
 import zipfile
 
 import matplotlib
-import webbrowser
 from flask import Flask
 from flask_cors import CORS
 from matplotlib import rc
