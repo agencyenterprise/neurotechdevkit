@@ -17,7 +17,6 @@ def test_index(test_client):
     """Test the index page."""
     response = test_client.get("/")
     assert response.status_code == 200
-    assert b"Scenario0" in response.data
 
 
 def test_render_layout(test_client, request_payload_example):
@@ -27,7 +26,8 @@ def test_render_layout(test_client, request_payload_example):
         data=json.dumps(request_payload_example),
         content_type="application/json",
     )
-    assert b"<img src='data:image/png;base64," in response.data
+    assert "data" in response.json
+    assert len(response.json["data"]) == 48192
     assert response.status_code == 200
 
 
@@ -45,18 +45,19 @@ def test_invalid_payload_render_layout(test_client):
 def test_simulate(test_client, request_payload_example):
     """Test the simulate endpoint with the simplest payload."""
     response = test_client.post(
-        "/simulate",
+        "/simulation",
         data=json.dumps(request_payload_example),
         content_type="application/json",
     )
-    assert b"<img src='data:image/png;base64," in response.data
+    assert "data" in response.json
+    assert len(response.json["data"]) == 80936
     assert response.status_code == 200
 
 
 def test_invalid_payload_simulate(test_client):
     """/simulate returns a 400 Bad Request when given an invalid payload."""
     response = test_client.post(
-        "/simulate",
+        "/simulation",
         data=json.dumps({"INCOMPLETE": "PAYLOAD"}),
         content_type="application/json",
     )

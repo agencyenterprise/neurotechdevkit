@@ -47,7 +47,7 @@ def assign_CT_FOLDER(app):
 
 def extract_static_files():
     """
-    Extract web app build from dist.zip to app folder, so that it can be served by Flask.
+    Extract web app build from dist.zip to app folder, so that it can be served.
     """
     dist_dir = APP_DIR / "dist"
     if os.path.exists(dist_dir) and os.path.isdir(dist_dir):
