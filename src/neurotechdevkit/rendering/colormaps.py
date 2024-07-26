@@ -1387,14 +1387,13 @@ _parula_data = [
 from matplotlib.colors import ListedColormap  # noqa: E402
 
 cmaps = {}
-for (name, data) in (
+for name, data in (
     ("magma", _magma_data),
     ("inferno", _inferno_data),
     ("plasma", _plasma_data),
     ("viridis", _viridis_data),
     ("parula", _parula_data),
 ):
-
     cmaps[name] = ListedColormap(data, name=name)
 
 magma = cmaps["magma"]
