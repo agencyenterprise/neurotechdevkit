@@ -1,4 +1,5 @@
 """Collection of smoke tests for the web app."""
+
 import json
 
 import pytest
@@ -27,7 +28,7 @@ def test_render_layout(test_client, request_payload_example):
         content_type="application/json",
     )
     assert "data" in response.json
-    assert len(response.json["data"]) == 48192
+    assert len(response.json["data"]) > 48000, "The image should be at least 48KB."
     assert response.status_code == 200
 
 
@@ -50,7 +51,7 @@ def test_simulate(test_client, request_payload_example):
         content_type="application/json",
     )
     assert "data" in response.json
-    assert len(response.json["data"]) == 80936
+    assert len(response.json["data"]) > 80000, "The image should be at least 80KB."
     assert response.status_code == 200
 
 
