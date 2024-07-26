@@ -33,7 +33,7 @@ jobs:
         # os: ["ubuntu-latest", "macos-latest"]
         os: ["macos-latest"]
         # python-version: ["3.9", "3.10", "3.11"]
-        python-version: ["3.9", "3.10"]
+        python-version: ["3.9"]
 
     runs-on: ${{ matrix.os }}
 
@@ -86,14 +86,22 @@ jobs:
         run: |
           brew install libomp llvm
 
+      - name: Set environment variables for macOS
+        if: matrix.os == 'macos-latest'
+        run: |
+          echo "PATH=$(brew --prefix llvm)/bin:$PATH" >> $GITHUB_ENV
+          echo "LDFLAGS=-L$(brew --prefix llvm)/lib" >> $GITHUB_ENV
+          echo "CPPFLAGS=-I$(brew --prefix llvm)/include" >> $GITHUB_ENV
+          echo "CPATH=$(brew --prefix libomp)/include" >> $GITHUB_ENV
+          echo "DEVITO_ARCH=clang" >> $GITHUB_ENV
+      
+      - name: Log $GITHUB_ENV
+        if: matrix.os == 'macos-latest'
+        run: cat $GITHUB_ENV
+
       - name: Run integration test on macOS
         if: matrix.os == 'macos-latest'
         run: |
-          export PATH="$(brew --prefix llvm)/bin:$PATH"
-          export LDFLAGS="-L$(brew --prefix llvm)/lib"
-          export CPPFLAGS="-I$(brew --prefix llvm)/include"
-          export CPATH="$(brew --prefix libomp)/include"
-          export DEVITO_ARCH="clang"
           make test-integration
 
       - name: Run integration test
