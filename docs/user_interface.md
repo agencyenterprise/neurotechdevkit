@@ -43,7 +43,7 @@ There are multiple ways of running the web server, you can choose between:
 1. Open a terminal and run the following command:
 
    ```
-   docker run -p 8080:8080 -w "/ndk" -it ghcr.io/agencyenterprise/neurotechdevkit:latest python src/web/app.py
+   docker run -p 8080:8080 -e WEB_SERVER_HOST=0.0.0.0 -w "/ndk" -it ghcr.io/agencyenterprise/neurotechdevkit:latest python src/web/app.py
    ```
 
 
