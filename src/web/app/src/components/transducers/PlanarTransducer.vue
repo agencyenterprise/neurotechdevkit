@@ -1,7 +1,7 @@
 <template>
   <div class="row">
     <div class="col text-end">
-      <button type="button" class="btn btn-link" @click="fillDefaultValues">
+      <button :disabled="readOnly" type="button" class="btn btn-link" @click="fillDefaultValues">
         Fill default values
       </button>
     </div>
