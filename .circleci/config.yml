@@ -104,7 +104,7 @@ jobs:
             - "b3:36:18:ed:6f:30:4a:b6:5d:93:f8:f2:b4:2d:b4:15"
       - run:
           name: Deploy docs to gh-pages branch
-          command: gh-pages --dist site
+          command: gh-pages --no-history --dist site
 
 workflows:
   version: 2
