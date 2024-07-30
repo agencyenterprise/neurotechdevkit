@@ -88,7 +88,7 @@ jobs:
 
   docs-deploy:
     docker:
-      - image: node:8.10.0
+      - image: node:20.16.0
     steps:
       - checkout
       - attach_workspace:
