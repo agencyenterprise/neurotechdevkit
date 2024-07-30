@@ -7,7 +7,7 @@ Neurotech Development Kit has a built-in web server that allows you to create an
 
 
 <figure markdown>
-  ![Web UI](./images/web_ui.png){ width="900" }
+  ![Web UI](./images/web_ui.jpg){ width="900" }
 </figure>
 
 
