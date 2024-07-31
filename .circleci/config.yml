@@ -100,7 +100,7 @@ jobs:
       - run:
           name: Sync to S3
           command: |
-            aws s3 sync site/ s3://ndk-docs/ --delete
+            aws s3 sync site/ s3://ndk-docs/
 
 workflows:
   version: 2
