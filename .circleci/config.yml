@@ -1,4 +1,6 @@
 version: 2.1
+orbs:
+  aws-s3: circleci/aws-s3@4.0.0
 
 jobs:
   build_docs_pr:
@@ -88,23 +90,15 @@ jobs:
 
   docs-deploy:
     docker:
-      - image: node:20.16.0
+      - image: cimg/base:2024.07
     steps:
       - checkout
       - attach_workspace:
           at: .
-      - run:
-          name: Install and configure dependencies
-          command: |
-            npm install -g --silent gh-pages@3.0.0
-            git config user.email "bcibotae@ae.studio"
-            git config user.name "bcibotae"
-      - add_ssh_keys:
-          fingerprints:
-            - "b3:36:18:ed:6f:30:4a:b6:5d:93:f8:f2:b4:2d:b4:15"
-      - run:
-          name: Deploy docs to gh-pages branch
-          command: gh-pages --no-history --dist site
+      - aws-s3/sync:
+        from: site/
+        to: 's3://ndk-docs/'
+        arguments: --delete
 
 workflows:
   version: 2
