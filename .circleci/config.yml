@@ -105,22 +105,18 @@ jobs:
 workflows:
   version: 2
 
-  # generate_website_docs:
-  #   when:
-  #     equal: [main, << pipeline.git.branch >>]
-  #   jobs:
-  #     - build_docs_no_cache
-  #     - docs-deploy:
-  #         requires:
-  #           - build_docs_no_cache
+  generate_website_docs:
+    when:
+      equal: [main, << pipeline.git.branch >>]
+    jobs:
+      - build_docs_no_cache
+      - docs-deploy:
+          requires:
+            - build_docs_no_cache
 
   default:
     when:
       not:
         equal: [main, << pipeline.git.branch >>] # Not building on main branch
     jobs:
-      # - build_docs_pr
-      - build_docs_no_cache
-      - docs-deploy:
-          requires:
-            - build_docs_no_cache
+      - build_docs_pr
