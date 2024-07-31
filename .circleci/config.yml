@@ -1,6 +1,4 @@
 version: 2.1
-orbs:
-  aws-s3: circleci/aws-s3@4.0.0
 
 jobs:
   build_docs_pr:
@@ -90,16 +88,15 @@ jobs:
 
   docs-deploy:
     docker:
-      - image: cimg/base:2024.07
+      - image: amazon/aws-cli:2.17.20
     steps:
       - checkout
       - attach_workspace:
           at: .
-      - run: echo "export PATH='$PATH:/root/.local/bin'" >> $BASH_ENV
-      - aws-s3/sync:
-          from: site/
-          to: 's3://ndk-docs/'
-          arguments: --delete
+      - run:
+          name: Sync to S3
+          command: |
+            aws s3 sync site/ s3://ndk-docs/ --delete
 
 workflows:
   version: 2
