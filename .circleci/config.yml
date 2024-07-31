@@ -91,6 +91,10 @@ jobs:
       - image: amazon/aws-cli:2.17.20
     steps:
       - checkout
+      - run:
+          name: Install tar utility
+          command: |
+            yum install -y tar gzip
       - attach_workspace:
           at: .
       - run:
