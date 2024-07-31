@@ -62,4 +62,4 @@ except ImportError:
 # %%
 # If you have napari installed you should have been able to see an image like
 # the following:
-# ![3d-visualization](../../images/3d_visualization.gif)
+# ![3d-visualization](http://ndk-docs.s3-website.us-east-2.amazonaws.com/images/3d_visualization.gif)

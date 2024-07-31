@@ -88,23 +88,19 @@ jobs:
 
   docs-deploy:
     docker:
-      - image: node:20.16.0
+      - image: amazon/aws-cli:2.17.20
     steps:
       - checkout
+      - run:
+          name: Install tar utility
+          command: |
+            yum install -y tar gzip
       - attach_workspace:
           at: .
       - run:
-          name: Install and configure dependencies
+          name: Sync to S3
           command: |
-            npm install -g --silent gh-pages@3.0.0
-            git config user.email "bcibotae@ae.studio"
-            git config user.name "bcibotae"
-      - add_ssh_keys:
-          fingerprints:
-            - "b3:36:18:ed:6f:30:4a:b6:5d:93:f8:f2:b4:2d:b4:15"
-      - run:
-          name: Deploy docs to gh-pages branch
-          command: gh-pages --no-history --dist site
+            aws s3 sync site/ s3://ndk-docs/
 
 workflows:
   version: 2

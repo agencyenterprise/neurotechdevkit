@@ -8,7 +8,7 @@ The [_Neurotech Development Kit_ (NDK)](https://agencyenterprise.github.io/neuro
 
 As a community-driven project, we encourage you to contribute code, feedback, and features to help accelerate the development of transformative neurotechnology.
 
-![Simulation](https://raw.githubusercontent.com/agencyenterprise/neurotechdevkit/main/docs/images/ndk_example.gif)
+![Simulation](http://ndk-docs.s3-website.us-east-2.amazonaws.com/images/ndk_example.gif)
 
 Check out the [NDK documentation page](https://agencyenterprise.github.io/neurotechdevkit/).
 
