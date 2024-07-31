@@ -90,11 +90,12 @@ jobs:
 
   docs-deploy:
     docker:
-      - image: circleci/aws-cli:4.1.3 
+      - image: cimg/base:2024.07
     steps:
       - checkout
       - attach_workspace:
           at: .
+      - run: echo "export PATH='$PATH:/root/.local/bin'" >> $BASH_ENV
       - aws-s3/sync:
           from: site/
           to: 's3://ndk-docs/'
