@@ -90,7 +90,7 @@ jobs:
 
   docs-deploy:
     docker:
-      - image: cimg/base:2024.07
+      - image: circleci/aws-cli:4.1.3 
     steps:
       - checkout
       - attach_workspace:
