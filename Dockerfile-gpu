@@ -46,7 +46,7 @@ LABEL org.opencontainers.image.source="https://github.com/agencyenterprise/neuro
 RUN ./venv/bin/pip install .
 
 WORKDIR /ndk/notebooks
-RUN wget "https://agencyenterprise.github.io/neurotechdevkit/generated/gallery/gallery_jupyter.zip" -O temp.zip && unzip temp.zip && rm temp.zip
+RUN wget "http://ndk-docs.s3-website.us-east-2.amazonaws.com/generated/gallery/gallery_jupyter.zip" -O temp.zip && unzip temp.zip && rm temp.zip
 
 EXPOSE 8888
 CMD ["/ndk/run_jupyter_server.sh"]

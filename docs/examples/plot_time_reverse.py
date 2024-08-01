@@ -73,7 +73,7 @@ reversed_scenario = ndk.scenarios.built_in.Scenario2_2D()
 point_source = ndk.sources.PointSource2D(
     position=true_scenario.target.center,
 )
-reversed_scenario.sources.append(point_source)
+reversed_scenario.sources = [point_source]
 
 reversed_scenario.make_grid()
 reversed_scenario.compile_problem()
@@ -112,7 +112,7 @@ pressure_at_elements = result.wavefield[element_indices[:, 0], element_indices[:
 element_reverse_delays = np.argmax(pressure_at_elements, axis=1) * result.effective_dt
 plt.plot(element_reverse_delays, marker="o")
 plt.xlabel("element index")
-plt.ylabel("delay [s]")
+_ = plt.ylabel("delay [s]")
 
 
 # %%
@@ -176,10 +176,9 @@ steady_state_result.render_steady_state_amplitudes()
 # %%
 # We can also calculate how far the "time reverse" estimate is from the true
 # target.
-max_pressure_flat_idx = np.nanargmax(steady_state_pressure)
-max_pressure_idx = np.unravel_index(max_pressure_flat_idx, steady_state_pressure.shape)
-max_pressure_idx
-
+max_pressure_idx = steady_state_result.metrics["focal_position"]["value"]
+assert isinstance(max_pressure_idx, tuple)
+assert all(np.issubdtype(type(idx), np.integer) for idx in max_pressure_idx)
 grid = steady_state_result.traces.grid.space.grid
 focal_point = np.array(
     [
