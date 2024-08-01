@@ -20,7 +20,7 @@ from neurotechdevkit.results._metrics import (
     calculate_mechanical_index,
 )
 from neurotechdevkit.results._results import SteadyStateResult2D
-from neurotechdevkit.scenarios.built_in import Scenario1_2D
+from neurotechdevkit.scenarios.built_in import ScenarioFlatSkull_2D
 
 GRID_SHAPE = (21, 31)
 CENTER_FREQUENCY = 1.5e6
@@ -340,7 +340,7 @@ def test_compare_metrics_to_aubry2022():
     # Benchmark 4 corresponds to scenario 1
     # The simulation resolution was slightly different, but
     # let's use the object to wrap the data anyway
-    scenario = Scenario1_2D()
+    scenario = ScenarioFlatSkull_2D()
     scenario.make_grid()
     scenario.compile_problem()
     result = SteadyStateResult2D(

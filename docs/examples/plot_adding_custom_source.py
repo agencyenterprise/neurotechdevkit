@@ -37,7 +37,7 @@ source = ndk.sources.FocusedSource2D(
     num_points=1000,
 )
 
-scenario = ndk.built_in.Scenario0()
+scenario = ndk.built_in.ScenarioSimple()
 scenario.sources = [source]
 scenario.make_grid()
 scenario.compile_problem()

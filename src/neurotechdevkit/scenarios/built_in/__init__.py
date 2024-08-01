@@ -1,32 +1,32 @@
 """Contain built-in scenarios for NDK."""
-from ._scenario_0 import Scenario0
-from ._scenario_1 import Scenario1_2D, Scenario1_3D
-from ._scenario_2 import (
-    Scenario2_2D,
-    Scenario2_2D_Benchmark7,
-    Scenario2_3D,
-    Scenario2_3D_Benchmark7,
+from ._scenario_flat_skull import ScenarioFlatSkull_2D, ScenarioFlatSkull_3D
+from ._scenario_realistic_skull import (
+    ScenarioRealisticSkull_2D,
+    ScenarioRealisticSkull_3D,
+    ScenarioRealisticSkullCropped_2D,
+    ScenarioRealisticSkullCropped_3D,
 )
-from ._scenario_3 import Scenario3
+from ._scenario_simple import ScenarioSimple
+from ._scenario_ultrasound_phantom import ScenarioUltrasoundPhantom
 
 __all__ = [
-    "Scenario0",
-    "Scenario1_2D",
-    "Scenario1_3D",
-    "Scenario2_2D",
-    "Scenario2_3D",
-    "Scenario2_2D_Benchmark7",
-    "Scenario2_3D_Benchmark7",
-    "Scenario3",
+    "ScenarioSimple",
+    "ScenarioFlatSkull_2D",
+    "ScenarioFlatSkull_3D",
+    "ScenarioRealisticSkull_2D",
+    "ScenarioRealisticSkull_3D",
+    "ScenarioRealisticSkullCropped_2D",
+    "ScenarioRealisticSkullCropped_3D",
+    "ScenarioUltrasoundPhantom",
 ]
 
 BUILT_IN_SCENARIOS = {
-    "Scenario0": Scenario0,
-    "Scenario1_2D": Scenario1_2D,
-    "Scenario1_3D": Scenario1_3D,
-    "Scenario2_2D": Scenario2_2D,
-    "Scenario2_3D": Scenario2_3D,
-    "Scenario2_2D_Benchmark7": Scenario2_2D_Benchmark7,
-    "Scenario2_3D_Benchmark7": Scenario2_3D_Benchmark7,
-    "Scenario3": Scenario3,
+    "ScenarioSimple": ScenarioSimple,
+    "ScenarioFlatSkull_2D": ScenarioFlatSkull_2D,
+    "ScenarioFlatSkull_3D": ScenarioFlatSkull_3D,
+    "ScenarioRealisticSkull_2D": ScenarioRealisticSkull_2D,
+    "ScenarioRealisticSkull_3D": ScenarioRealisticSkull_3D,
+    "ScenarioRealisticSkullCropped_2D": ScenarioRealisticSkullCropped_2D,
+    "ScenarioRealisticSkullCropped_3D": ScenarioRealisticSkullCropped_3D,
+    "ScenarioUltrasoundPhantom": ScenarioUltrasoundPhantom,
 }
