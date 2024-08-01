@@ -42,7 +42,7 @@ You can run `neurotechdevkit` inside a docker container with just a couple of st
 
 ### Local installation
 
-To install and run **neurotechdevkit** locally check the [installation](https://agencyenterprise.github.io/neurotechdevkit/installation/) page.
+To install and run **neurotechdevkit** locally check the [installation](http://ndk-docs.s3-website.us-east-2.amazonaws.com/installation/) page.
 
 ## Usage
 
