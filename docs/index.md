@@ -38,11 +38,11 @@ You can run `neurotechdevkit` inside a docker container with just a couple of st
 >    ```
 >    The command above will create a folder `notebooks` in your current directory where you can put your jupyter notebooks.
 >
->    We recommend downloading the `.zip` file with example notebooks from this [link](https://agencyenterprise.github.io/neurotechdevkit/generated/gallery/gallery_jupyter.zip), and extracting it into your local `notebooks` folder so you can access them from the docker.
+>    We recommend downloading the `.zip` file with example notebooks from this [link](http://ndk-docs.s3-website.us-east-2.amazonaws.com/generated/gallery/gallery_jupyter.zip), and extracting it into your local `notebooks` folder so you can access them from the docker.
 
 ### Local installation
 
-To install and run **neurotechdevkit** locally check the [installation](https://agencyenterprise.github.io/neurotechdevkit/installation/) page.
+To install and run **neurotechdevkit** locally check the [installation](http://ndk-docs.s3-website.us-east-2.amazonaws.com/installation/) page.
 
 ## Usage
 

@@ -131,7 +131,7 @@ Pull requests merged with the tag `norelease` will not trigger any of the action
 
 ### Gallery of examples
 
-The examples you can find in the official [documentation](https://agencyenterprise.github.io/neurotechdevkit/generated/gallery/) are [python scripts](https://github.com/agencyenterprise/neurotechdevkit/tree/main/docs/examples) executed in CI.
+The examples you can find in the official [documentation](http://ndk-docs.s3-website.us-east-2.amazonaws.com/generated/gallery/) are [python scripts](https://github.com/agencyenterprise/neurotechdevkit/tree/main/docs/examples) executed in CI.
 
 Running these scripts is a resource intensive and time consuming task, for this reason we are using CircleCI instead of Github Actions (as we can choose a more powerful machine to execute the job).
 
