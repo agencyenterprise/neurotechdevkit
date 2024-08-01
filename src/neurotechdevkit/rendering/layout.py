@@ -56,9 +56,7 @@ def create_layout_fig(
     fig = plt.figure()
     ax = fig.gca()
     # the extent for imshow is "(left, right, bottom, top)"
-    imshow_extent = np.array(
-        [origin[1], origin[1] + extent[1], origin[0] + extent[0], origin[0]]
-    )
+    imshow_extent = (origin[1], origin[1] + extent[1], origin[0] + extent[0], origin[0])
 
     cmap = matplotlib.colors.ListedColormap(color_sequence)
     clim = (-0.5, len(color_sequence) - 0.5)

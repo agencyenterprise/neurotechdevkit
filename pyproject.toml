@@ -4,7 +4,10 @@ version = "v0.6.10"
 description = "Neurotech Development Kit: an open-source software library designed to enhance accessibility to cutting-edge neurotechnology"
 authors = ["AE Studio <bci@ae.studio>"]
 maintainers = ["AE Studio <bci@ae.studio>"]
-packages = [{include = "neurotechdevkit", from = "src" }]
+packages = [
+    {include = "neurotechdevkit", from = "src" },
+    {include = "web", from = "src" }
+    ]
 
 readme = "README.md"
 license = "Apache-2.0"
@@ -20,6 +23,8 @@ classifiers = [
 "Documentation" = "https://agencyenterprise.github.io/neurotechdevkit/"
 "Bug Tracker" = "https://github.com/agencyenterprise/neurotechdevkit/issues"
 
+[tool.poetry.scripts]
+ndk-ui = "web.app:run"
 
 [tool.poetry.dependencies]
 python = ">=3.9,<3.12"
@@ -36,12 +41,19 @@ psutil = "^5.9.0"
 nest-asyncio = "^1.5.6"
 mkdocs-gallery = "0.7.6"
 xarray = ">=2022.3.0"
+flask = {extras = ["async"], version = "^2.3.3"}
+pydantic = "<2"
+pyrevolve = ">=2.2.3"
+pydicom = "^2.4.3"
+nibabel = "^5.1.0"
+flask-cors = "^4.0.0"
+mypy = "1.11"
 
 [tool.poetry.group.dev.dependencies]
-black = "^22.8.0"
+black = {extras = ["jupyter"], version = "^23.9.1"}
 flake8 = "^5.0.4"
 isort = "^5.10.1"
-mypy = "^0.990"
+mypy = "^1.11"
 pytest = "^7.2.0"
 pytest-cov = "^4.0.0"
 pytest-asyncio = "^0.20.2"
@@ -51,9 +63,9 @@ mkdocs-offline-links-plugin = { git = "https://github.com/agencyenterprise/mkdoc
 mkdocstrings = {extras = ["python"], version = "^0.21.2"}
 codespell = "^2.2.4"
 pydocstyle = "^6.3.0"
-pyright = "^1.1.306"
 pooch = "^1.7.0"
 pylint = {extras = ["spelling"], version = "^2.17.4"}
+pyright = "1.1.331"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
@@ -67,6 +79,9 @@ ignore_missing_imports = "True"
 exclude = [
     "tests"
 ]
+
+[tool.pylint.MASTER]
+ignore-paths = ["src/web/app/node_modules"]
 
 [tool.isort]
 profile = "black"
@@ -90,5 +105,7 @@ markers = [
 [tool.pyright]
 include = ["src"]
 reportGeneralTypeIssues = "none"
+exclude = ["src/web/app"]
+
 # [tool.flake8]
 # flake8 does not support config in pyproject.toml, see .flake8

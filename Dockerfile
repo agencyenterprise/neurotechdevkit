@@ -1,4 +1,9 @@
-FROM python:3.10.0 as build
+FROM python:3.11.0 as build
+
+# Install system dependencies for HDF5
+RUN apt-get update && apt-get install -y \
+    libhdf5-dev python3-h5py \
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /ndk
 
@@ -19,7 +24,7 @@ ENV POETRY_VIRTUALENVS_CREATE=false
 RUN ./venv/bin/poetry install && \
     ./venv/bin/pip install git+https://github.com/trustimaging/stride@2520c59
 
-FROM python:3.10.0-slim
+FROM python:3.11.0-slim
 
 COPY --from=build /ndk /ndk
 WORKDIR /ndk
@@ -27,7 +32,7 @@ WORKDIR /ndk
 RUN ./venv/bin/pip install --upgrade pip
 
 RUN apt-get update && \
-    apt-get install -y g++ jq make unzip wget ffmpeg && \
+    apt-get install -y g++ jq make unzip wget ffmpeg libhdf5-dev python3-h5py  && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
