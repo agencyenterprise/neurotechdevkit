@@ -4,11 +4,11 @@
 [![Tests](https://github.com/agencyenterprise/neurotechdevkit/actions/workflows/test.yml/badge.svg)](https://github.com/agencyenterprise/neurotechdevkit/actions/workflows/test.yml)
 [![Gallery examples](https://circleci.com/gh/agencyenterprise/neurotechdevkit.png?style=shield)](https://circleci.com/gh/agencyenterprise/neurotechdevkit)
 
-The [_Neurotech Development Kit_ (NDK)](https://agencyenterprise.github.io/neurotechdevkit/) is an open-source, community-driven software library designed to lower the barrier of entry to the next generation of neurotechnology for current researchers and companies. It also enables software developers without access to hardware and human subjects to solve open problems in the field. The initial release of NDK provides support for transcranial focused ultrasound stimulation, along with comprehensive documentation, API flexibility, and 2D/3D visualizations. Future areas of interest may include photoacoustic and optical whole-brain imaging.
+The [_Neurotech Development Kit_ (NDK)](https://agencyenterprise.github.io/neurotechdevkit/) is an [open-source](https://github.com/agencyenterprise/neurotechdevkit), community-driven software library designed to lower the barrier of entry to the next generation of neurotechnology for current researchers and companies. It also enables software developers without access to hardware and human subjects to solve open problems in the field. The initial release of NDK provides support for transcranial focused ultrasound stimulation, along with comprehensive documentation, API flexibility, and 2D/3D visualizations. Future areas of interest may include photoacoustic and optical whole-brain imaging.
 
 As a community-driven project, we encourage you to contribute code, feedback, and features to help accelerate the development of transformative neurotechnology.
 
-![Simulation](https://raw.githubusercontent.com/agencyenterprise/neurotechdevkit/main/docs/images/ndk_example.gif)
+![Simulation](http://ndk-docs.s3-website.us-east-2.amazonaws.com/images/ndk_example.gif)
 
 Check out the [NDK documentation page](https://agencyenterprise.github.io/neurotechdevkit/).
 
@@ -38,11 +38,11 @@ You can run `neurotechdevkit` inside a docker container with just a couple of st
 >    ```
 >    The command above will create a folder `notebooks` in your current directory where you can put your jupyter notebooks.
 >
->    We recommend downloading the `.zip` file with example notebooks from this [link](https://agencyenterprise.github.io/neurotechdevkit/generated/gallery/gallery_jupyter.zip), and extracting it into your local `notebooks` folder so you can access them from the docker.
+>    We recommend downloading the `.zip` file with example notebooks from this [link](http://ndk-docs.s3-website.us-east-2.amazonaws.com/generated/gallery/gallery_jupyter.zip), and extracting it into your local `notebooks` folder so you can access them from the docker.
 
 ### Local installation
 
-To install and run **neurotechdevkit** locally check the [installation](https://agencyenterprise.github.io/neurotechdevkit/installation/) page.
+To install and run **neurotechdevkit** locally check the [installation](http://ndk-docs.s3-website.us-east-2.amazonaws.com/installation/) page.
 
 ## Usage
 

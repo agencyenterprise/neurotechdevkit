@@ -11,7 +11,7 @@ from . import _results as results
 
 def calculate_all_metrics(
     result: results.SteadyStateResult,
-) -> dict[str, dict[str, float | int | str]]:
+) -> dict[str, dict[str, float | int | str | tuple]]:
     """Calculate all metrics for the steady-state result and return as a dictionary.
 
     The keys for the dictionary are the names of the metrics. The value for each metric
@@ -32,6 +32,13 @@ def calculate_all_metrics(
             "value": calculate_focal_pressure(result, layer="brain"),
             "unit-of-measurement": "Pa",
             "description": ("The peak pressure amplitude within the brain."),
+        },
+        "focal_position": {
+            "value": calculate_focal_position(result, layer="brain"),
+            "unit-of-measurement": "voxel-index",
+            "description": (
+                "The position of the peak pressure amplitude within the brain."
+            ),
         },
         "focal_volume": {
             "value": calculate_focal_volume(result, layer="brain"),
