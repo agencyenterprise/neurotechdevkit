@@ -90,9 +90,15 @@ def beamform_delay_and_sum(
     )
 
     # Beamform
-    iq_signals_column_vec = iq_signals.reshape(-1, 1)
+    if iq_signals.ndim == 2:
+        iq_signals_column_vec = iq_signals.reshape(-1, 1)
+    else:
+        iq_signals_column_vec = iq_signals.reshape(-1, num_echoes)
     beamformed_iq_signals = das_matrix @ iq_signals_column_vec
-    beamformed_iq_signals = beamformed_iq_signals.reshape(x.shape)
+    if iq_signals.ndim == 2:
+        beamformed_iq_signals = beamformed_iq_signals.reshape(x.shape)
+    else:
+        beamformed_iq_signals = beamformed_iq_signals.reshape(x.shape + (-1,))
 
     return beamformed_iq_signals
 
