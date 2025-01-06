@@ -3,14 +3,18 @@ name: Markdown Link Check
 on:
   push:
     branches:
-      - 'main'
+      - "main"
   pull_request:
     branches:
-      - '*'
+      - "*"
+  schedule:
+    - cron: "0 0 * * 0" # Runs at 00:00 on Sunday
 
 jobs:
   markdown-link-check:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - uses: ruzickap/action-my-markdown-link-checker@v1
+      - uses: actions/checkout@v2
+      - uses: ruzickap/action-my-markdown-link-checker@v1
+        with:
+          config_file: .mlc_config.json
