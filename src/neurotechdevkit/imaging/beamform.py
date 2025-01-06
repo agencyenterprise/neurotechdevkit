@@ -63,6 +63,7 @@ def beamform_delay_and_sum(
     # Check input arguments
     if iq_signals.ndim == 2:
         num_time_samples, num_channels = iq_signals.shape
+        num_echoes = 1
     elif iq_signals.ndim == 3:
         num_time_samples, num_channels, num_echoes = iq_signals.shape
     else:
