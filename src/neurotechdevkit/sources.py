@@ -36,7 +36,7 @@ class Source(abc.ABC):
     def __init__(
         self,
         *,
-        position: npt.ArrayLike,
+        position: list[float],
         direction: list[float],
         aperture: float,
         focal_length: float,
@@ -47,6 +47,7 @@ class Source(abc.ABC):
         self._validate_delay(delay)
 
         self._position = position
+        self._direction = direction
         self._unit_direction = np.array(direction) / np.linalg.norm(direction)
         self._aperture = aperture
         self._focal_length = focal_length
@@ -228,7 +229,7 @@ class PointSource3D(PointSource):
         position: list[float],
         delay: float = 0.0,
     ) -> None:
-        """Initialize a new 2-D point source."""
+        """Initialize a new 3-D point source."""
         super().__init__(
             position=position,
             num_dim=3,
@@ -632,7 +633,7 @@ class PhasedArraySource(Source):
         tilt_angle: float = 0.0,
         focal_length: float = np.inf,
         delay: float = 0.0,
-        element_delays: npt.NDArray[np.float_] | None = None,
+        element_delays: npt.ArrayLike | None = None,
     ) -> None:
         """Initialize a new phased array source."""
         self._validate_input_configuration(
@@ -661,7 +662,7 @@ class PhasedArraySource(Source):
             num_points=num_points,
             delay=delay,
         )
-
+        self._configured_element_delays = element_delays
         self._element_delays = self._set_element_delays(element_delays)
 
     @abc.abstractproperty
@@ -735,7 +736,7 @@ class PhasedArraySource(Source):
         tilt_angle: float,
         focal_length: float,
         delay: float,
-        element_delays: npt.NDArray[np.float_] | None,
+        element_delays: npt.ArrayLike | None,
     ) -> None:
         """Check that the input arguments for delays yield a valid configuration.
 
@@ -980,7 +981,7 @@ class PhasedArraySource(Source):
 
     def _set_element_delays(
         self,
-        element_delays: npt.NDArray[np.float_] | None,
+        element_delays: npt.ArrayLike | None,
     ) -> npt.NDArray[np.float_]:
         """
         Calculate delays (in seconds) per element of the phased array.
@@ -1002,8 +1003,7 @@ class PhasedArraySource(Source):
 
         """
         if element_delays is not None:
-            element_delays = np.array(element_delays)
-            return element_delays
+            return np.array(element_delays, dtype=float)
 
         if np.isfinite(self.focal_length):
             delays = self._calculate_focus_tilt_element_delays()
@@ -1175,7 +1175,7 @@ class PhasedArraySource3D(PhasedArraySource):
         *,
         position: list[float],
         direction: list[float],
-        center_line: npt.NDArray[np.float_],
+        center_line: list[float],
         num_points: int,
         num_elements: int,
         pitch: float,
@@ -1184,10 +1184,11 @@ class PhasedArraySource3D(PhasedArraySource):
         tilt_angle: float = 0.0,
         focal_length: float = np.inf,
         delay: float = 0.0,
-        element_delays: npt.NDArray[np.float_] | None = None,
+        element_delays: npt.ArrayLike | None = None,
     ) -> None:
         """Initialize a new phased array source."""
         self._height = height
+        self._center_line = center_line
         self._unit_center_line = self._validate_center_line(
             center_line, np.array(direction, dtype=float)
         )
@@ -1234,7 +1235,7 @@ class PhasedArraySource3D(PhasedArraySource):
 
     @staticmethod
     def _validate_center_line(
-        center_line: npt.NDArray[np.float_], direction: npt.NDArray[np.float_]
+        center_line: npt.ArrayLike, direction: npt.NDArray[np.float_]
     ) -> npt.NDArray[np.float_]:
         """Ensure that the center line input parameter is a valid one.
 
@@ -1260,10 +1261,11 @@ class PhasedArraySource3D(PhasedArraySource):
             When the input center line needs to be transformed to an orthogonal unit
             center line.
         """
-        center_line = _unit_vector(center_line)
+        _center_line = np.array(center_line, dtype=float)
+        _center_line = _unit_vector(_center_line)
         direction = _unit_vector(direction)
 
-        dot_prod = np.dot(center_line, direction)
+        dot_prod = np.dot(_center_line, direction)
 
         # Raise error if parallel
         if np.isclose(np.abs(dot_prod), 1):
@@ -1273,11 +1275,11 @@ class PhasedArraySource3D(PhasedArraySource):
             )
 
         if dot_prod == 0:
-            return center_line
+            return _center_line
         else:
             # remove orthogonal component
             parallel_to_normal_component = dot_prod * direction
-            orth_center_line = center_line - parallel_to_normal_component
+            orth_center_line = _center_line - parallel_to_normal_component
             warnings.warn(
                 "The received value for `center_line` is not perpendicular"
                 " to `direction`. Only the perpendicular component will be"

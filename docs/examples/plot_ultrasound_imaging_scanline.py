@@ -30,7 +30,7 @@ resulting image.
 """
 
 # %%
-from typing import List
+from typing import List, cast
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -129,6 +129,7 @@ scenario.render_layout()
 # - rho - density
 # - alpha - attenuation
 fig, axs = plt.subplots(1, 3, figsize=(15, 5))
+axs = cast(np.ndarray, axs)
 
 for idx, attribute in enumerate(["vp", "rho", "alpha"]):
     im = axs[idx].imshow(getattr(scenario.problem.medium, attribute).data)
@@ -220,16 +221,16 @@ channel_idxs.sort()
 time_mask = (40e-6 < time_arr) & (time_arr < 140e-6)
 
 # Plot with some offsets
-_ = plt.plot(
+plt.plot(
     time_arr[time_mask] * 1000,
     rf_signals[time_mask][:, channel_idxs]
     + np.linspace(-1000, 1000, num=NUM_VISUALIZE, endpoint=True),
     label=[f"channel-{channel_idx}" for channel_idx in channel_idxs],
 )
-_ = plt.legend()
-_ = plt.title("Example radiofrequency signals (RF)")
-_ = plt.xlabel("time [ms]")
-_ = plt.ylabel("amplitude and channel offset [a.u]")
+plt.legend()
+plt.title("Example radiofrequency signals (RF)")
+plt.xlabel("time [ms]")
+plt.ylabel("amplitude and channel offset [a.u]")
 
 # %% [markdown]
 # The transmitted signals consisted of a high-frequency pulse, so

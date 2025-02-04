@@ -37,10 +37,13 @@ def create_target_drawing_artist(
     upper_left = data_location - target_radius
     lower_right = data_location + target_radius
     bbox = Bbox([upper_left, lower_right])
-    bbox = TransformedBbox(bbox, transform)
+    transformed_bbox = TransformedBbox(bbox, transform)
 
     img_box = BboxImage(
-        bbox, resample=True, interpolation="antialiased", interpolation_stage="rgba"
+        transformed_bbox,
+        resample=True,
+        interpolation="antialiased",
+        interpolation_stage="rgba",
     )
     img_box.set_data(target_data)
     return img_box
@@ -72,10 +75,13 @@ def create_target_legend_artist(
     upper_left = center_loc - target_radius
     lower_right = center_loc + target_radius
     bbox = Bbox([upper_left, lower_right])
-    bbox = TransformedBbox(bbox, transform)
+    transformed_bbox = TransformedBbox(bbox, transform)
 
     img_box = BboxImage(
-        bbox, resample=True, interpolation="antialiased", interpolation_stage="rgba"
+        transformed_bbox,
+        resample=True,
+        interpolation="antialiased",
+        interpolation_stage="rgba",
     )
     img_box.set_data(target_data)
     return img_box

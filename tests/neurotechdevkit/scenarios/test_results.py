@@ -112,8 +112,8 @@ def a_test_scenario_2d():
     original_sources = [source for source in scenario.sources]
     scenario.sources = [
         sources.FocusedSource2D(
-            position=np.array([0.02, 0.02]),
-            direction=np.array([1.0, -1.0]),
+            position=[0.02, 0.02],
+            direction=[1.0, -1.0],
             aperture=0.025,
             focal_length=0.07,
             num_points=100,

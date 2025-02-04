@@ -10,6 +10,7 @@ import nest_asyncio
 import numpy as np
 import numpy.typing as npt
 import stride
+from matplotlib.figure import Figure
 from mosaic.types import Struct
 from stride.problem import StructuredData
 
@@ -55,7 +56,7 @@ class Scenario(abc.ABC):
     # Coordinates of point receivers in the scenario
     receiver_coords: npt.NDArray[np.float_] | list[npt.NDArray[np.float_]] = []
 
-    material_outline_upsample_factor: int = 16
+    material_outline_upsample_factor: int
 
     _center_frequency: float
     _problem: Problem
@@ -69,7 +70,7 @@ class Scenario(abc.ABC):
         material_masks: Optional[Mapping[str, npt.NDArray[np.bool_]]] = None,
         origin: Optional[list[float]] = None,
         sources: Optional[list[Source]] = None,
-        material_outline_upsample_factor: Optional[int] = None,
+        material_outline_upsample_factor: Optional[int] = 16,
         target: Optional[Target] = None,
         problem: Optional[Problem] = None,
         grid: Optional[Grid] = None,
@@ -93,7 +94,7 @@ class Scenario(abc.ABC):
                 scenario. Defaults to None.
             material_outline_upsample_factor (Optional[int], optional): The factor by
                 which to upsample the material outline when rendering the scenario.
-                Defaults to None.
+                Defaults to 16.
             target (Optional[Target], optional): The target in the scenario. Defaults
                 to None.
             problem (Optional[Problem], optional): The problem definition for the
@@ -860,7 +861,7 @@ class Scenario2D(Scenario):
         show_sources: bool = True,
         show_target: bool = True,
         show_material_outlines: bool = False,
-    ) -> None:
+    ) -> Figure:
         """Create a matplotlib figure showing the 2D scenario layout.
 
         The grid can be turned on via: `plt.grid(True)`
@@ -906,6 +907,7 @@ class Scenario2D(Scenario):
             extent=self.extent,
             origin=np.array(self.origin, dtype=float),
         )
+        return fig
 
 
 class Scenario3D(Scenario):
@@ -1050,7 +1052,7 @@ class Scenario3D(Scenario):
         show_sources: bool = True,
         show_target: bool = True,
         show_material_outlines: bool = False,
-    ) -> None:
+    ) -> Figure:
         """Create a matplotlib figure showing a 2D slice of the scenario layout.
 
         In order to visualize the 3D scenario in a 2D plot, a slice through the scenario
@@ -1113,6 +1115,7 @@ class Scenario3D(Scenario):
             horizontal_label=horz_name,
             title=f"Scenario Layout\nSlice: {slice_name} = {slice_position} m",
         )
+        return fig
 
     def render_layout_3d(
         self,

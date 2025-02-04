@@ -29,6 +29,7 @@ theme:
 nav:
   - Home: index.md
   - Installation: installation.md
+  - User Interface: user_interface.md
   - Usage:
       - Scenarios: usage/loading_scenarios.md
       - Sources: usage/defining_sources.md

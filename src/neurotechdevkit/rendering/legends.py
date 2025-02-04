@@ -71,7 +71,7 @@ class LegendConfig:
         return self._custom_handlers.copy()
 
 
-class TargetHandle:
+class TargetHandle(matplotlib.artist.Artist):
     """A handle for the target symbol.
 
     This class is used to trigger the TargetHandler in order to draw the correct icon
@@ -92,9 +92,9 @@ class TargetHandler(matplotlib.legend_handler.HandlerBase):
     def legend_artist(
         self,
         legend: matplotlib.legend.Legend,
-        orig_handle: TargetHandle,
+        orig_handle: matplotlib.artist.Artist,
         fontsize: float,
-        handlebox: matplotlib.offsetbox.DrawingArea,
+        handlebox: matplotlib.offsetbox.OffsetBox,
     ) -> matplotlib.artist.Artist:
         """Return the artist that draws the target in the legend.
 
@@ -111,6 +111,7 @@ class TargetHandler(matplotlib.legend_handler.HandlerBase):
             An artist that draws the target in the legend.
         """
         TARGET_LEGEND_SCALE_FACTOR = 1.5
+        assert isinstance(handlebox, matplotlib.offsetbox.DrawingArea)
         center = np.array(  # in scenario coordinates
             [
                 handlebox.xdescent + handlebox.width / 2,
@@ -149,9 +150,9 @@ class SourceHandler(matplotlib.legend_handler.HandlerBase):
     def legend_artist(
         self,
         legend: matplotlib.legend.Legend,
-        orig_handle: TargetHandle,
+        orig_handle: matplotlib.artist.Artist,
         fontsize: float,
-        handlebox: matplotlib.offsetbox.DrawingArea,
+        handlebox: matplotlib.offsetbox.OffsetBox,
     ) -> matplotlib.artist.Artist:
         """Return the artist that draws the source in the legend.
 
@@ -168,7 +169,7 @@ class SourceHandler(matplotlib.legend_handler.HandlerBase):
             An artist that draws the source in the legend.
         """
         SOURCE_LEGEND_SCALE_FACTOR = 1.0
-
+        assert isinstance(handlebox, matplotlib.offsetbox.DrawingArea)
         center = np.array(  # in display coordinates (I think)
             [
                 handlebox.xdescent + handlebox.width / 2,
