@@ -7,7 +7,7 @@ Implementing a full scenario
     NDK and its examples are under constant development, more information
     and content will be added to this example soon!
 
-The following code is a simplified implementation of NDK's Scenario 1.
+The following code is a simplified implementation of NDK's ScenarioFlatSkull.
 """
 # %%
 # Implementing a Scenario

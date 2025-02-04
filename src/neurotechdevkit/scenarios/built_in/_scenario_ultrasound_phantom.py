@@ -14,7 +14,7 @@ from .._base import Scenario2D, Target
 from .._utils import create_grid_circular_mask
 
 
-class Scenario3(Scenario2D):
+class ScenarioUltrasoundPhantom(Scenario2D):
     """Imaging Scenario: grainy phantoms in water."""
 
     _PHANTOM_RADIUS = 0.01  # m
@@ -55,7 +55,7 @@ class Scenario3(Scenario2D):
     material_outline_upsample_factor = 4
 
     def make_grid(self):
-        """Make the grid for scenario 2 3D."""
+        """Make the scenario's 3D grid."""
         self.grid = Grid.make_grid(
             extent=self._extent,
             speed_water=1500,  # m/s
